@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="CareSync.APIs/CareSync.APIs.csproj" />
+  <Project Path="CareSync.ApplicationLayer/CareSync.ApplicationLayer.csproj" />
+  <Project Path="CareSync.Data/CareSync.DataLayer.csproj" />
+  <Project Path="CareSync.UI/CareSync.csproj" />
+</Solution>

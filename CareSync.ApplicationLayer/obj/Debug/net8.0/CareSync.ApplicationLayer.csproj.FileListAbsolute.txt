@@ -1,0 +1,15 @@
+C:\Users\DELL\source\repos\CareSync\CareSync.ApplicationLayer\bin\Debug\net8.0\CareSync.ApplicationLayer.deps.json
+C:\Users\DELL\source\repos\CareSync\CareSync.ApplicationLayer\bin\Debug\net8.0\CareSync.ApplicationLayer.dll
+C:\Users\DELL\source\repos\CareSync\CareSync.ApplicationLayer\bin\Debug\net8.0\CareSync.ApplicationLayer.pdb
+C:\Users\DELL\source\repos\CareSync\CareSync.ApplicationLayer\bin\Debug\net8.0\CareSync.DataLayer.dll
+C:\Users\DELL\source\repos\CareSync\CareSync.ApplicationLayer\bin\Debug\net8.0\CareSync.DataLayer.pdb
+C:\Users\DELL\source\repos\CareSync\CareSync.ApplicationLayer\obj\Debug\net8.0\CareSync.ApplicationLayer.csproj.AssemblyReference.cache
+C:\Users\DELL\source\repos\CareSync\CareSync.ApplicationLayer\obj\Debug\net8.0\CareSync.ApplicationLayer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\DELL\source\repos\CareSync\CareSync.ApplicationLayer\obj\Debug\net8.0\CareSync.ApplicationLayer.AssemblyInfoInputs.cache
+C:\Users\DELL\source\repos\CareSync\CareSync.ApplicationLayer\obj\Debug\net8.0\CareSync.ApplicationLayer.AssemblyInfo.cs
+C:\Users\DELL\source\repos\CareSync\CareSync.ApplicationLayer\obj\Debug\net8.0\CareSync.ApplicationLayer.csproj.CoreCompileInputs.cache
+C:\Users\DELL\source\repos\CareSync\CareSync.ApplicationLayer\obj\Debug\net8.0\CareSync.8E3CB817.Up2Date
+C:\Users\DELL\source\repos\CareSync\CareSync.ApplicationLayer\obj\Debug\net8.0\CareSync.ApplicationLayer.dll
+C:\Users\DELL\source\repos\CareSync\CareSync.ApplicationLayer\obj\Debug\net8.0\refint\CareSync.ApplicationLayer.dll
+C:\Users\DELL\source\repos\CareSync\CareSync.ApplicationLayer\obj\Debug\net8.0\CareSync.ApplicationLayer.pdb
+C:\Users\DELL\source\repos\CareSync\CareSync.ApplicationLayer\obj\Debug\net8.0\ref\CareSync.ApplicationLayer.dll
