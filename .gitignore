@@ -52,3 +52,11 @@ TestResult.xml
 /CareSync.Data/obj/
 /CareSync.UI/bin/
 /CareSync.UI/obj/
+*.dll
+/CareSync.APIs/bin/Debug/net8.0
+/CareSync.APIs/bin/Debug/net8.0
+/CareSync.APIs/bin/Debug
+/CareSync.APIs/bin
+/CareSync.UI/obj
+/CareSync.APIs/bin/Debug/net8.0
+CareSync.APIs/bin/Debug/net8.0/CareSync.APIs.dll
