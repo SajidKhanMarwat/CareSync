@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CareSync.DataLayer.Entities;
 
-public class T_RoleClaim : IdentityRoleClaim<Guid>
+public class T_UserClaim : IdentityUserClaim<Guid>
 {
     // Navigation properties
-    public virtual T_Roles Role { get; set; }
+    public virtual T_Users User { get; set; }
 }
