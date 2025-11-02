@@ -1,0 +1,54 @@
+## Ignore Visual Studio and .NET build artifacts
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+[Tt]emp/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+out/
+publish/
+
+# VS Code and Rider settings
+.vscode/
+.idea/
+*.sln.iml
+
+# Visual Studio cache/options directory
+.vs/
+
+# Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.coverage
+*.coveragexml
+coverage.opencover.xml
+TestResult.xml
+
+ # Ignore build artifacts
+[Bb]in/
+[Oo]bj/
+
+# Clean Architecture specific folders
+/CareSync.APIs/bin/
+/CareSync.APIs/obj/
+/CareSync.ApplicationLayer/bin/
+/CareSync.ApplicationLayer/obj/
+/CareSync.Data/bin/
+/CareSync.Data/obj/
+/CareSync.UI/bin/
+/CareSync.UI/obj/
