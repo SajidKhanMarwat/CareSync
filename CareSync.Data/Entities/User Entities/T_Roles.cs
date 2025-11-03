@@ -1,8 +1,73 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 
-namespace CareSync.DataLayer.Entities
+namespace CareSync.DataLayer.Entities;
+
+/// <summary>
+/// Represents user roles in the CareSync medical management system.
+/// Extends ASP.NET Core Identity's IdentityRole to provide role-based access control
+/// for different types of users including doctors, patients, lab technicians, and administrators.
+/// Each role defines specific permissions and system access levels within the medical platform.
+/// </summary>
+public class T_Roles : IdentityRole<Guid>
 {
-    public class T_Roles : IdentityRole<string>
-    {
-    }
+    /// <summary>
+    /// Arabic translation of the role name for multilingual support.
+    /// Enables the system to display role names in Arabic language for localized user interfaces.
+    /// Nullable as not all deployments may require Arabic language support.
+    /// </summary>
+    public string? ArabicName { get; set; }
+
+    /// <summary>
+    /// Detailed description of the role's purpose and responsibilities within the system.
+    /// Provides clear explanation of what permissions and access this role grants to users.
+    /// Nullable but recommended for administrative clarity and user management.
+    /// </summary>
+    public string? Description { get; set; }
+
+    /// <summary>
+    /// Indicates whether this record has been soft deleted.
+    /// When true, the record is considered deleted but remains in the database for audit purposes.
+    /// Default value is false.
+    /// </summary>
+    public bool IsDeleted { get; set; } = false;
+
+    /// <summary>
+    /// The unique identifier of the user who created this record.
+    /// References the UserID from T_Users table.
+    /// Nullable to handle system-generated records.
+    /// </summary>
+    public Guid? CreatedBy { get; set; }
+
+    /// <summary>
+    /// The date and time when this record was created.
+    /// Automatically set to current UTC time when the record is first created.
+    /// Nullable to handle legacy data migration scenarios.
+    /// </summary>
+    public DateTime? CreatedOn { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// The unique identifier of the user who last updated this record.
+    /// References the UserID from T_Users table.
+    /// Nullable until the first update operation occurs.
+    /// </summary>
+    public Guid? UpdatedBy { get; set; }
+
+    /// <summary>
+    /// The date and time when this record was last updated.
+    /// Set automatically during update operations.
+    /// Nullable until the first update operation occurs.
+    /// </summary>
+    public DateTime? UpdatedOn { get; set; }
+    // Navigation properties
+    /// <summary>
+    /// Navigation property to all users assigned to this role.
+    /// Provides access to the complete list of users who have this role's permissions and access levels.
+    /// </summary>
+    public virtual ICollection<T_Users> Users { get; set; } = new List<T_Users>();
+
+    /// <summary>
+    /// Navigation property to specific rights and permissions assigned to this role.
+    /// Defines the granular permissions that users with this role can perform in the system.
+    /// </summary>
+    public virtual ICollection<T_RoleRights> RoleRights { get; set; } = new List<T_RoleRights>();
 }

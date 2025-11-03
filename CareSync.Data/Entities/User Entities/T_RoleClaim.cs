@@ -1,8 +1,19 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 
-namespace CareSync.DataLayer.Entities
+namespace CareSync.DataLayer.Entities;
+
+/// <summary>
+/// Represents custom claims associated with roles in the CareSync medical management system.
+/// Extends ASP.NET Core Identity's IdentityRoleClaim to store additional role-specific
+/// attributes and permissions that apply to all users within that role.
+/// Role claims provide a way to assign common attributes or permissions to entire user groups.
+/// </summary>
+public class T_RoleClaim : IdentityRoleClaim<Guid>
 {
-    public class T_RoleClaim : IdentityRoleClaim<string>
-    {
-    }
+    // Navigation properties
+    /// <summary>
+    /// Navigation property to the role that owns this claim.
+    /// Provides access to role details, description, and all users assigned to this role.
+    /// </summary>
+    public virtual T_Roles? Role { get; set; }
 }
