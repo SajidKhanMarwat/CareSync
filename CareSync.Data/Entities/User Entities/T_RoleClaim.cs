@@ -10,10 +10,4 @@ namespace CareSync.DataLayer.Entities;
 /// </summary>
 public class T_RoleClaim : IdentityRoleClaim<Guid>
 {
-    // Navigation properties
-    /// <summary>
-    /// Navigation property to the role that owns this claim.
-    /// Provides access to role details, description, and all users assigned to this role.
-    /// </summary>
-    public virtual T_Roles? Role { get; set; }
 }

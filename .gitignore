@@ -223,3 +223,7 @@ CareSync.UI/obj/Debug/net8.0/rjsmrazor.dswa.cache.json
 CareSync.UI/obj/Debug/net8.0/staticwebassets.build.endpoints.json
 CareSync.UI/obj/Debug/net8.0/staticwebassets.build.json
 CareSync.UI/obj/Debug/net8.0/staticwebassets.build.json.cache
+/CareSync.APIs/obj
+/CareSync.UI/obj
+/CareSync.UI/bin
+/CareSync.ApplicationLayer/obj

@@ -10,7 +10,7 @@ namespace CareSync.DataLayer;
 /// Extends IdentityDbContext to provide ASP.NET Core Identity integration with custom entities.
 /// Manages all medical entities including users, patients, doctors, appointments, and prescriptions.
 /// </summary>
-public class CareSyncDbContext : IdentityDbContext<T_Users, T_Roles, Guid, T_UserClaim, T_UserRole, T_UserLogin, T_RoleClaim, T_UserToken>
+public class CareSyncDbContext : IdentityDbContext<T_Users, T_Roles, Guid, IdentityUserClaim<Guid>, T_UserRole, T_UserLogin, T_RoleClaim, T_UserToken>
 {
     public CareSyncDbContext(DbContextOptions<CareSyncDbContext> options) : base(options)
     {        
@@ -19,13 +19,13 @@ public class CareSyncDbContext : IdentityDbContext<T_Users, T_Roles, Guid, T_Use
     // Identity entities
     public DbSet<T_Users> T_Users { get; set; }
     public DbSet<T_Roles> T_Roles { get; set; }
-    public DbSet<T_UserClaim> T_UserClaims { get; set; }
+    //public DbSet<T_UserClaim> T_UserClaims { get; set; }
     public DbSet<T_UserRole> T_UserRoles { get; set; }
     public DbSet<T_UserLogin> T_UserLogins { get; set; }
     public DbSet<T_UserToken> T_UserTokens { get; set; }
     public DbSet<T_RoleClaim> T_RoleClaims { get; set; }
-    public DbSet<T_Rights> T_Rights { get; set; }
-    public DbSet<T_RoleRights> T_RoleRights { get; set; }
+    //public DbSet<T_Rights> T_Rights { get; set; }
+    //public DbSet<T_RoleRights> T_RoleRights { get; set; }
 
     // Medical entities
     public DbSet<T_PatientDetails> T_PatientDetails { get; set; }
@@ -61,11 +61,11 @@ public class CareSyncDbContext : IdentityDbContext<T_Users, T_Roles, Guid, T_Use
         // Configure Identity table names to match database schema
         builder.Entity<T_Users>().ToTable("T_Users");
         builder.Entity<T_Roles>().ToTable("T_Roles");
-        builder.Entity<T_UserClaim>().ToTable("UserClaims");
-        builder.Entity<T_UserRole>().ToTable("UserRoles");
-        builder.Entity<T_UserLogin>().ToTable("UserLogins");
-        builder.Entity<T_UserToken>().ToTable("UserTokens");
-        builder.Entity<T_RoleClaim>().ToTable("RoleClaims");
+        //builder.Entity<T_UserClaim>().ToTable("T_UserClaims");
+        builder.Entity<T_UserRole>().ToTable("T_UserRoles");
+        builder.Entity<T_UserLogin>().ToTable("T_UserLogins");
+        builder.Entity<T_UserToken>().ToTable("T_UserTokens");
+        builder.Entity<T_RoleClaim>().ToTable("T_RoleClaims");
         #endregion
 
         #region Medical Entity Configuration
@@ -121,22 +121,22 @@ public class CareSyncDbContext : IdentityDbContext<T_Users, T_Roles, Guid, T_Use
             .WithMany(p => p.PrescriptionItems)
             .HasForeignKey(pi => pi.PrescriptionID);
 
-        // Configure Rights and RoleRights
-        builder.Entity<T_Rights>()
-            .HasKey(r => r.RightID);
+        //// Configure Rights and RoleRights
+        //builder.Entity<T_Rights>()
+        //    .HasKey(r => r.RightID);
 
-        builder.Entity<T_RoleRights>()
-            .HasKey(rr => rr.RoleRightID);
+        //builder.Entity<T_RoleRights>()
+        //    .HasKey(rr => rr.RoleRightID);
 
-        builder.Entity<T_RoleRights>()
-            .HasOne(rr => rr.Role)
-            .WithMany(r => r.RoleRights)
-            .HasForeignKey(rr => rr.RoleID);
+        //builder.Entity<T_RoleRights>()
+        //    .HasOne(rr => rr.Role)
+        //    .WithMany(r => r.RoleRights)
+        //    .HasForeignKey(rr => rr.RoleID);
 
-        builder.Entity<T_RoleRights>()
-            .HasOne(rr => rr.Right)
-            .WithMany(r => r.RoleRights)
-            .HasForeignKey(rr => rr.RightID);
+        //builder.Entity<T_RoleRights>()
+        //    .HasOne(rr => rr.Right)
+        //    .WithMany(r => r.RoleRights)
+        //    .HasForeignKey(rr => rr.RightID);
         #endregion
 
         #region Global Query Filters for Soft Delete
@@ -156,8 +156,8 @@ public class CareSyncDbContext : IdentityDbContext<T_Users, T_Roles, Guid, T_Use
         builder.Entity<T_MedicationPlan>().HasQueryFilter(e => !e.IsDeleted);
         builder.Entity<T_PatientVitals>().HasQueryFilter(e => !e.IsDeleted);
         builder.Entity<T_Qualifications>().HasQueryFilter(e => !e.IsDeleted);
-        builder.Entity<T_Rights>().HasQueryFilter(e => !e.IsDeleted);
-        builder.Entity<T_RoleRights>().HasQueryFilter(e => !e.IsDeleted);
+        //builder.Entity<T_Rights>().HasQueryFilter(e => !e.IsDeleted);
+        //builder.Entity<T_RoleRights>().HasQueryFilter(e => !e.IsDeleted);
         #endregion
     }
 }

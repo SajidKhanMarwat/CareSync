@@ -11,7 +11,7 @@ public static class ApplicationLayerDependencies
         #region Serilog
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Information()
-            .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+            .WriteTo.File($"Logs/logs{DateTime.Today.Date}.txt", rollingInterval: RollingInterval.Day)
             .WriteTo.Console()
             .CreateLogger();
 

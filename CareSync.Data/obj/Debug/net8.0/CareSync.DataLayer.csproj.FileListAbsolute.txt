@@ -27,3 +27,12 @@ D:\Projects\CareSync.Data\obj\Debug\net8.0\refint\CareSync.DataLayer.dll
 D:\Projects\CareSync.Data\obj\Debug\net8.0\CareSync.DataLayer.pdb
 D:\Projects\CareSync.Data\obj\Debug\net8.0\CareSync.DataLayer.genruntimeconfig.cache
 D:\Projects\CareSync.Data\obj\Debug\net8.0\ref\CareSync.DataLayer.dll
+C:\Users\DELL\source\CareSync\CareSync.Data\obj\Debug\net8.0\CareSync.DataLayer.csproj.AssemblyReference.cache
+C:\Users\DELL\source\CareSync\CareSync.Data\obj\Debug\net8.0\CareSync.DataLayer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\DELL\source\CareSync\CareSync.Data\obj\Debug\net8.0\CareSync.DataLayer.AssemblyInfoInputs.cache
+C:\Users\DELL\source\CareSync\CareSync.Data\obj\Debug\net8.0\CareSync.DataLayer.AssemblyInfo.cs
+C:\Users\DELL\source\CareSync\CareSync.Data\obj\Debug\net8.0\CareSync.DataLayer.csproj.CoreCompileInputs.cache
+C:\Users\DELL\source\CareSync\CareSync.Data\obj\Debug\net8.0\CareSync.DataLayer.sourcelink.json
+C:\Users\DELL\source\CareSync\CareSync.Data\obj\Debug\net8.0\CareSync.DataLayer.dll
+C:\Users\DELL\source\CareSync\CareSync.Data\obj\Debug\net8.0\refint\CareSync.DataLayer.dll
+C:\Users\DELL\source\CareSync\CareSync.Data\obj\Debug\net8.0\CareSync.DataLayer.pdb

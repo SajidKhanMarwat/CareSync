@@ -15,7 +15,14 @@ public class T_Roles : IdentityRole<Guid>
     /// Enables the system to display role names in Arabic language for localized user interfaces.
     /// Nullable as not all deployments may require Arabic language support.
     /// </summary>
-    public string? ArabicName { get; set; }
+    public required string RoleName { get; set; }
+
+    /// <summary>
+    /// Arabic translation of the role name for multilingual support.
+    /// Enables the system to display role names in Arabic language for localized user interfaces.
+    /// Nullable as not all deployments may require Arabic language support.
+    /// </summary>
+    public required string RoleArabicName { get; set; }
 
     /// <summary>
     /// Detailed description of the role's purpose and responsibilities within the system.
@@ -36,14 +43,14 @@ public class T_Roles : IdentityRole<Guid>
     /// References the UserID from T_Users table.
     /// Nullable to handle system-generated records.
     /// </summary>
-    public Guid? CreatedBy { get; set; }
+    public Guid CreatedBy { get; set; }
 
     /// <summary>
     /// The date and time when this record was created.
     /// Automatically set to current UTC time when the record is first created.
     /// Nullable to handle legacy data migration scenarios.
     /// </summary>
-    public DateTime? CreatedOn { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// The unique identifier of the user who last updated this record.
@@ -58,16 +65,4 @@ public class T_Roles : IdentityRole<Guid>
     /// Nullable until the first update operation occurs.
     /// </summary>
     public DateTime? UpdatedOn { get; set; }
-    // Navigation properties
-    /// <summary>
-    /// Navigation property to all users assigned to this role.
-    /// Provides access to the complete list of users who have this role's permissions and access levels.
-    /// </summary>
-    public virtual ICollection<T_Users> Users { get; set; } = new List<T_Users>();
-
-    /// <summary>
-    /// Navigation property to specific rights and permissions assigned to this role.
-    /// Defines the granular permissions that users with this role can perform in the system.
-    /// </summary>
-    public virtual ICollection<T_RoleRights> RoleRights { get; set; } = new List<T_RoleRights>();
 }
