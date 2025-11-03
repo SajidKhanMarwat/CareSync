@@ -10,10 +10,4 @@ namespace CareSync.DataLayer.Entities;
 /// </summary>
 public class T_UserLogin : IdentityUserLogin<Guid>
 {
-    // Navigation properties
-    /// <summary>
-    /// Navigation property to the user account associated with this external login.
-    /// Provides access to the complete user profile and medical information linked to the external authentication.
-    /// </summary>
-    public virtual T_Users? User { get; set; }
 }

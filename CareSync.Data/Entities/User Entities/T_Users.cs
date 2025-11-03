@@ -1,3 +1,4 @@
+using CareSync.DataLayer.DataEnums;
 using Microsoft.AspNetCore.Identity;
 
 namespace CareSync.DataLayer.Entities;
@@ -29,14 +30,14 @@ public class T_Users : IdentityUser<Guid>
     /// Allows the system to display usernames in Arabic language.
     /// Nullable as not all users may require Arabic username display.
     /// </summary>
-    public string? ArabicUserName { get; set; }
+    public required string ArabicUserName { get; set; }
 
     /// <summary>
     /// The user's first name or given name.
     /// Used for personalization and formal communication within the system.
     /// Nullable to handle cases where full name information is not available.
     /// </summary>
-    public string? FirstName { get; set; }
+    public required string FirstName { get; set; }
 
     /// <summary>
     /// The user's last name or family name.
@@ -57,7 +58,7 @@ public class T_Users : IdentityUser<Guid>
     /// Used for medical records, statistical analysis, and personalized care.
     /// Nullable to respect privacy preferences and handle incomplete profiles.
     /// </summary>
-    public string? Gender { get; set; }
+    public required Gender Gender { get; set; }
 
     /// <summary>
     /// The user's date of birth.
@@ -71,14 +72,14 @@ public class T_Users : IdentityUser<Guid>
     /// When false, the user cannot log in or perform any system operations.
     /// Default value is true for new user registrations.
     /// </summary>
-    public bool? IsActive { get; set; } = true;
+    public bool IsActive { get; set; } = true;
 
     /// <summary>
     /// String representation of the user's role type for quick reference.
     /// Examples: "Doctor", "Patient", "Lab Technician", "Administrator".
     /// Provides human-readable role information without joining to roles table.
     /// </summary>
-    public string? RoleType { get; set; }
+    public required RoleType RoleType { get; set; } = RoleType.Patient;
 
     /// <summary>
     /// Timestamp of the user's last successful login to the system.
@@ -114,14 +115,14 @@ public class T_Users : IdentityUser<Guid>
     /// References the UserID from T_Users table.
     /// Nullable to handle system-generated records.
     /// </summary>
-    public Guid? CreatedBy { get; set; }
+    public required Guid CreatedBy { get; set; }
 
     /// <summary>
     /// The date and time when this record was created.
     /// Automatically set to current UTC time when the record is first created.
     /// Nullable to handle legacy data migration scenarios.
     /// </summary>
-    public DateTime? CreatedOn { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// The unique identifier of the user who last updated this record.

@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace CareSync.DataLayer.Entities;
 
 /// <summary>
@@ -62,5 +64,7 @@ public class T_PrescriptionItems : BaseEntity
     /// Navigation property to the parent prescription containing this medication item.
     /// Provides access to prescription details, prescribing doctor, patient information, and appointment context.
     /// </summary>
+    /// 
+    [JsonIgnore]
     public virtual T_Prescriptions? Prescription { get; set; }
 }
