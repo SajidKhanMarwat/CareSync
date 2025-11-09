@@ -145,6 +145,8 @@ public class T_Users : IdentityUser<string>
     /// </summary>
     public virtual T_Roles? Role { get; set; }
 
+    public virtual ICollection<T_UserRole>? UserRole { get; set; }
+
     ///// <summary>
     ///// Navigation property to doctor-specific details if the user is a doctor.
     ///// Contains medical specialization, qualifications, and practice information.
