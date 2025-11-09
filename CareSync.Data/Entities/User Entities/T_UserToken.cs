@@ -8,6 +8,6 @@ namespace CareSync.DataLayer.Entities;
 /// password reset tokens, email confirmation tokens, and two-factor authentication tokens.
 /// Critical for secure user authentication and account verification processes.
 /// </summary>
-public class T_UserToken : IdentityUserToken<Guid>
+public class T_UserToken : IdentityUserToken<string>
 {
 }

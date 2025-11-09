@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CareSync.Data\CareSync.DataLayer.csproj" />
+    <ProjectReference Include="..\CareSync.Shared\CareSync.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,7 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="15.1.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+    <PackageReference Include="SajidCode.ResultPattern" Version="1.1.1" />
     <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
   </ItemGroup>

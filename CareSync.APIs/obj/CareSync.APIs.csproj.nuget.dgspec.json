@@ -35,6 +35,9 @@
             "projectReferences": {
               "C:\\Users\\DELL\\source\\CareSync\\CareSync.ApplicationLayer\\CareSync.ApplicationLayer.csproj": {
                 "projectPath": "C:\\Users\\DELL\\source\\CareSync\\CareSync.ApplicationLayer\\CareSync.ApplicationLayer.csproj"
+              },
+              "C:\\Users\\DELL\\source\\CareSync\\CareSync.Shared\\CareSync.Shared.csproj": {
+                "projectPath": "C:\\Users\\DELL\\source\\CareSync\\CareSync.Shared\\CareSync.Shared.csproj"
               }
             }
           }
@@ -128,6 +131,9 @@
             "projectReferences": {
               "C:\\Users\\DELL\\source\\CareSync\\CareSync.Data\\CareSync.DataLayer.csproj": {
                 "projectPath": "C:\\Users\\DELL\\source\\CareSync\\CareSync.Data\\CareSync.DataLayer.csproj"
+              },
+              "C:\\Users\\DELL\\source\\CareSync\\CareSync.Shared\\CareSync.Shared.csproj": {
+                "projectPath": "C:\\Users\\DELL\\source\\CareSync\\CareSync.Shared\\CareSync.Shared.csproj"
               }
             }
           }
@@ -148,9 +154,13 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
-            "AutoMapper": {
+            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
               "target": "Package",
-              "version": "[15.1.0, )"
+              "version": "[12.0.0, )"
+            },
+            "SajidCode.ResultPattern": {
+              "target": "Package",
+              "version": "[1.1.1, )"
             },
             "Serilog.AspNetCore": {
               "target": "Package",
@@ -243,6 +253,72 @@
               "version": "[9.0.10, )"
             }
           },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100-rc.2.25502.107/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\DELL\\source\\CareSync\\CareSync.Shared\\CareSync.Shared.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\DELL\\source\\CareSync\\CareSync.Shared\\CareSync.Shared.csproj",
+        "projectName": "CareSync.Shared",
+        "projectPath": "C:\\Users\\DELL\\source\\CareSync\\CareSync.Shared\\CareSync.Shared.csproj",
+        "packagesPath": "C:\\Users\\DELL\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\DELL\\source\\CareSync\\CareSync.Shared\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\DELL\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "C:\\NuGetPackages": {},
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.100"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
           "imports": [
             "net461",
             "net462",

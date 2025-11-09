@@ -8,6 +8,6 @@ namespace CareSync.DataLayer.Entities;
 /// such as Google, Facebook, Microsoft, or other OAuth providers.
 /// Enables users to log in using external credentials while maintaining their medical records.
 /// </summary>
-public class T_UserLogin : IdentityUserLogin<Guid>
+public class T_UserLogin : IdentityUserLogin<string>
 {
 }

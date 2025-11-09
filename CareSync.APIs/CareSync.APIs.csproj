@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CareSync.ApplicationLayer\CareSync.ApplicationLayer.csproj" />
+    <ProjectReference Include="..\CareSync.Shared\CareSync.Shared.csproj" />
   </ItemGroup>
 
 </Project>

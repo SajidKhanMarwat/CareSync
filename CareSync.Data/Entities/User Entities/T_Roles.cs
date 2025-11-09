@@ -8,7 +8,7 @@ namespace CareSync.DataLayer.Entities;
 /// for different types of users including doctors, patients, lab technicians, and administrators.
 /// Each role defines specific permissions and system access levels within the medical platform.
 /// </summary>
-public class T_Roles : IdentityRole<Guid>
+public class T_Roles : IdentityRole<string>
 {
     /// <summary>
     /// Arabic translation of the role name for multilingual support.
@@ -43,7 +43,7 @@ public class T_Roles : IdentityRole<Guid>
     /// References the UserID from T_Users table.
     /// Nullable to handle system-generated records.
     /// </summary>
-    public Guid CreatedBy { get; set; }
+    public required string CreatedBy { get; set; }
 
     /// <summary>
     /// The date and time when this record was created.
@@ -57,7 +57,7 @@ public class T_Roles : IdentityRole<Guid>
     /// References the UserID from T_Users table.
     /// Nullable until the first update operation occurs.
     /// </summary>
-    public Guid? UpdatedBy { get; set; }
+    public string? UpdatedBy { get; set; }
 
     /// <summary>
     /// The date and time when this record was last updated.

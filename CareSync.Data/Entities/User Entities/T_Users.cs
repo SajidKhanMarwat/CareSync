@@ -9,21 +9,21 @@ namespace CareSync.DataLayer.Entities;
 /// This entity stores comprehensive user information including personal details, role assignments,
 /// and system access information for doctors, patients, lab technicians, and administrators.
 /// </summary>
-public class T_Users : IdentityUser<Guid>
+public class T_Users : IdentityUser<string>
 {
     /// <summary>
     /// The role identifier assigned to this user.
     /// References the RoleID from T_Roles table to determine user permissions and access levels.
     /// Required field that defines the user's primary role in the system.
     /// </summary>
-    public Guid RoleID { get; set; }
+    public required string RoleID { get; set; }
 
     /// <summary>
     /// Optional legacy login identifier for backward compatibility.
     /// Used during system migration or integration with external systems.
     /// Nullable as not all users may have a legacy login ID.
     /// </summary>
-    public int? LoginID { get; set; }
+    public required int LoginID { get; set; }
 
     /// <summary>
     /// Arabic version of the username for multilingual support.
@@ -115,7 +115,7 @@ public class T_Users : IdentityUser<Guid>
     /// References the UserID from T_Users table.
     /// Nullable to handle system-generated records.
     /// </summary>
-    public required Guid CreatedBy { get; set; }
+    public required string CreatedBy { get; set; }
 
     /// <summary>
     /// The date and time when this record was created.
@@ -129,7 +129,7 @@ public class T_Users : IdentityUser<Guid>
     /// References the UserID from T_Users table.
     /// Nullable until the first update operation occurs.
     /// </summary>
-    public Guid? UpdatedBy { get; set; }
+    public string? UpdatedBy { get; set; }
 
     /// <summary>
     /// The date and time when this record was last updated.
@@ -145,24 +145,24 @@ public class T_Users : IdentityUser<Guid>
     /// </summary>
     public virtual T_Roles? Role { get; set; }
 
-    /// <summary>
-    /// Navigation property to doctor-specific details if the user is a doctor.
-    /// Contains medical specialization, qualifications, and practice information.
-    /// Empty collection for non-doctor users.
-    /// </summary>
-    public virtual ICollection<T_DoctorDetails> DoctorDetails { get; set; } = new List<T_DoctorDetails>();
+    ///// <summary>
+    ///// Navigation property to doctor-specific details if the user is a doctor.
+    ///// Contains medical specialization, qualifications, and practice information.
+    ///// Empty collection for non-doctor users.
+    ///// </summary>
+    //public virtual ICollection<T_DoctorDetails> DoctorDetails { get; set; } = new List<T_DoctorDetails>();
 
-    /// <summary>
-    /// Navigation property to patient-specific details if the user is a patient.
-    /// Contains medical history, emergency contacts, and patient-specific information.
-    /// Empty collection for non-patient users.
-    /// </summary>
-    public virtual ICollection<T_PatientDetails> PatientDetails { get; set; } = new List<T_PatientDetails>();
+    ///// <summary>
+    ///// Navigation property to patient-specific details if the user is a patient.
+    ///// Contains medical history, emergency contacts, and patient-specific information.
+    ///// Empty collection for non-patient users.
+    ///// </summary>
+    //public virtual ICollection<T_PatientDetails> PatientDetails { get; set; } = new List<T_PatientDetails>();
 
-    /// <summary>
-    /// Navigation property to laboratory details if the user represents a lab facility.
-    /// Contains lab-specific information, services offered, and operational details.
-    /// Empty collection for non-lab users.
-    /// </summary>
-    public virtual ICollection<T_Lab> Labs { get; set; } = new List<T_Lab>();
+    ///// <summary>
+    ///// Navigation property to laboratory details if the user represents a lab facility.
+    ///// Contains lab-specific information, services offered, and operational details.
+    ///// Empty collection for non-lab users.
+    ///// </summary>
+    //public virtual ICollection<T_Lab> Labs { get; set; } = new List<T_Lab>();
 }

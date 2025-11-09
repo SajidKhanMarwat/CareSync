@@ -11,7 +11,7 @@ public class T_LabServices : BaseEntity
     public decimal? Price { get; set; }
     public string? EstimatedTime { get; set; }
 
-    // Navigation properties
-    public virtual T_Lab Lab { get; set; }
-    public virtual ICollection<T_LabRequests> LabRequests { get; set; } = new List<T_LabRequests>();
+    //// Navigation properties
+    //public virtual T_Lab Lab { get; set; }
+    //public virtual ICollection<T_LabRequests> LabRequests { get; set; } = new List<T_LabRequests>();
 }

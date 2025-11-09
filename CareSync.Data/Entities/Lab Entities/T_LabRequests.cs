@@ -10,8 +10,8 @@ public class T_LabRequests : BaseEntity
     public string? Status { get; set; }
     public string? Remarks { get; set; }
 
-    // Navigation properties
-    public virtual T_Appointments Appointment { get; set; }
-    public virtual T_LabServices LabService { get; set; }
-    public virtual ICollection<T_LabReports> LabReports { get; set; } = new List<T_LabReports>();
+    //// Navigation properties
+    //public virtual T_Appointments Appointment { get; set; }
+    //public virtual T_LabServices LabService { get; set; }
+    //public virtual ICollection<T_LabReports> LabReports { get; set; } = new List<T_LabReports>();
 }

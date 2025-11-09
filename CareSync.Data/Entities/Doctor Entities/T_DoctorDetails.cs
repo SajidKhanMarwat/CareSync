@@ -20,7 +20,7 @@ public class T_DoctorDetails : BaseEntity
     /// Links the doctor's professional profile to their login credentials and basic user information.
     /// Required field as every doctor must have a corresponding user account for system access.
     /// </summary>
-    public Guid UserID { get; set; }
+    public required string UserID { get; set; }
 
     /// <summary>
     /// The doctor's medical specialization or field of expertise (e.g., Cardiology, Pediatrics, Orthopedics).

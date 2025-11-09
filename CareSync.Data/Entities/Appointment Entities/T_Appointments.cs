@@ -1,3 +1,5 @@
+using CareSync.DataLayer.DataEnums.Appointment;
+
 namespace CareSync.DataLayer.Entities;
 
 /// <summary>
@@ -20,14 +22,14 @@ public class T_Appointments : BaseEntity
     /// Links to the DoctorID in T_DoctorDetails table to identify the healthcare provider.
     /// Required field as every appointment must have an assigned doctor.
     /// </summary>
-    public int DoctorID { get; set; }
+    public required int DoctorID { get; set; }
 
     /// <summary>
     /// Reference to the patient who is scheduled for the appointment.
     /// Links to the PatientID in T_PatientDetails table to identify the patient.
     /// Required field as every appointment must have an associated patient.
     /// </summary>
-    public int PatientID { get; set; }
+    public required int PatientID { get; set; }
 
     /// <summary>
     /// The scheduled date and time for the appointment.
@@ -41,28 +43,21 @@ public class T_Appointments : BaseEntity
     /// Helps in appointment scheduling, resource allocation, and billing processes.
     /// Nullable to handle cases where appointment type is not specified during initial booking.
     /// </summary>
-    public string? AppointmentType { get; set; }
+    public required AppointmentType_Enum AppointmentType { get; set; }
 
     /// <summary>
     /// Current status of the appointment (e.g., Scheduled, Confirmed, In-Progress, Completed, Cancelled, No-Show).
     /// Essential for appointment management, workflow tracking, and patient communication.
     /// Nullable but typically populated with default status when appointment is created.
     /// </summary>
-    public string? Status { get; set; }
+    public AppointmentStatus_Enum Status { get; set; }
 
     /// <summary>
     /// The reason or purpose for the appointment as provided by the patient or referring doctor.
     /// Helps doctors prepare for the consultation and prioritize urgent cases.
     /// Nullable as patients may not always provide detailed reasons during booking.
     /// </summary>
-    public string? Reason { get; set; }
-
-    /// <summary>
-    /// Payment status for the appointment (e.g., Pending, Paid, Partially Paid, Insurance Claimed).
-    /// Important for billing management, insurance processing, and financial tracking.
-    /// Nullable to handle cases where payment processing is handled separately.
-    /// </summary>
-    public string? PaymentStatus { get; set; }
+    public required string Reason { get; set; }
 
     /// <summary>
     /// Additional notes or comments about the appointment.
