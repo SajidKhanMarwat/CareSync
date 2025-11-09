@@ -13,7 +13,7 @@ public class T_ChronicDiseases : BaseEntity
     /// Primary key that serves as the main reference for this specific chronic condition.
     /// Auto-incremented integer value assigned when a new chronic disease is diagnosed and recorded.
     /// </summary>
-    public int DiseaseID { get; set; }
+    public int ChronicDiseaseID { get; set; }
 
     /// <summary>
     /// Reference to the patient who has been diagnosed with this chronic disease.

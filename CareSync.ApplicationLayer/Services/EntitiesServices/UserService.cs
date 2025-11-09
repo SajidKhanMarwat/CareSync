@@ -5,13 +5,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using ReturnResult;
 using CareSync.ApplicationLayer.Contracts.UsersDTOs;
 using System.Security.Claims;
 using static CareSync.InfrastructureLayer.Services.CookieServices.CookieService;
 using static CareSync.InfrastructureLayer.Services.Security.JwtTokenGenerator;
 using CareSync.ApplicationLayer.IServices.EntitiesServices;
 using CareSync.ApplicationLayer.Common;
+using CareSync.ApplicationLayer.ApiResult;
 
 namespace CareSync.InfrastructureLayer.Services.EntitiesServices;
 
