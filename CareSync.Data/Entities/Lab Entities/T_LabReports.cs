@@ -2,7 +2,7 @@ namespace CareSync.DataLayer.Entities;
 
 public class T_LabReports : BaseEntity
 {
-    public int ReportID { get; set; }
+    public int LabReportID { get; set; }
     public int LabRequestID { get; set; }
     public string? PatientID { get; set; } // Note: This is nchar(10) in DB, seems inconsistent
     public string? ReportName { get; set; }

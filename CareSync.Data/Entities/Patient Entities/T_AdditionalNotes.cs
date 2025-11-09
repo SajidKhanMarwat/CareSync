@@ -12,7 +12,7 @@ public class T_AdditionalNotes : BaseEntity
     /// Unique identifier for the additional notes record.
     /// Primary key that serves as the main reference for this specific set of supplementary medical information.
     /// Auto-incremented integer value assigned when new additional notes are created for a patient.
-    /// </summary>
+    // </summary>
     public int NoteID { get; set; }
 
     /// <summary>
@@ -20,7 +20,7 @@ public class T_AdditionalNotes : BaseEntity
     /// Links to the PatientID in T_PatientDetails table to associate notes with the correct patient.
     /// Required field as every additional note must belong to a specific patient.
     /// </summary>
-    public int PatientID { get; set; }
+    public required int PatientID { get; set; }
 
     /// <summary>
     /// Detailed nutritional plan and dietary recommendations for the patient.

@@ -13,7 +13,7 @@ public class T_MedicalHistory : BaseEntity
     /// Primary key that serves as the main reference for this patient's historical medical information.
     /// Auto-incremented integer value assigned when medical history is first documented.
     /// </summary>
-    public int HistoryID { get; set; }
+    public int MedicalHistoryID { get; set; }
 
     /// <summary>
     /// Reference to the patient whose medical history is being documented.

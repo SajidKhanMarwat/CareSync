@@ -85,6 +85,42 @@ public class CareSyncDbContext : IdentityDbContext<T_Users, T_Roles, string, Ide
         builder.Entity<T_PrescriptionItems>()
             .HasKey(pi => pi.PrescriptionItemID);
 
+        builder.Entity<T_AdditionalNotes>()
+            .HasKey(pi => pi.NoteID);
+        builder.Entity<T_ChronicDiseases>()
+            .HasKey(pi => pi.ChronicDiseaseID);
+        builder.Entity<T_Lab>()
+            .HasKey(pi => pi.LabID);
+
+        builder.Entity<T_LabReports>()
+            .HasKey(pi => pi.LabReportID);
+
+        builder.Entity<T_LabRequests>()
+            .HasKey(pi => pi.LabRequestID);
+
+        builder.Entity<T_LabServices>()
+    .HasKey(pi => pi.LabServiceID);
+
+        builder.Entity<T_LifestyleInfo>()
+    .HasKey(pi => pi.LifestyleID);
+
+        builder.Entity<T_MedicalFollowUp>()
+    .HasKey(pi => pi.FollowUpID);
+
+        builder.Entity<T_MedicalHistory>()
+    .HasKey(pi => pi.MedicalHistoryID);
+
+        builder.Entity<T_MedicationPlan>()
+    .HasKey(pi => pi.MedicationID);
+
+        builder.Entity<T_PatientReports>()
+    .HasKey(pi => pi.PatientReportID);
+
+        builder.Entity<T_PatientVitals>()
+    .HasKey(pi => pi.VitalID);
+
+        builder.Entity<T_Qualifications>()
+    .HasKey(pi => pi.QualificationID);
         //// Configure relationships
         //builder.Entity<T_Users>()
         //    .HasOne(u => u.Role)
