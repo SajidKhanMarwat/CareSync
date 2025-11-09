@@ -8,15 +8,20 @@ public static class ApplicationLayerDependencies
 {
     public static IServiceCollection ApplicationLayerServices(this IServiceCollection services)
     {
-        #region Serilog
-        Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Information()
-            .WriteTo.File($"Logs/logs{DateTime.Today.Date}.txt", rollingInterval: RollingInterval.Day)
-            .WriteTo.Console()
-            .CreateLogger();
+        //services.AddAutoMapper(typeof(ApplicationLayerDependencies).Assembly);
+        //#region Serilog
+        //Log.Logger = new LoggerConfiguration()
+        //    .MinimumLevel.Information()
+        //    .WriteTo.File($"Logs/logs{DateTime.Today.Date}.txt", rollingInterval: RollingInterval.Day)
+        //    .WriteTo.Console()
+        //    .CreateLogger();
 
-        services.AddSerilog();
-        #endregion
+        //services.AddSerilog();
+        //#endregion
+
+        //#region Services
+        //services.AddScoped<IUserService, UserService>();
+        //#endregion
         return services;
     }
 

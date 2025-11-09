@@ -19,21 +19,21 @@ public class BaseEntity
     /// References the UserID from T_Users table.
     /// Nullable to handle system-generated records.
     /// </summary>
-    public Guid? CreatedBy { get; set; }
+    public required string CreatedBy { get; set; }
 
     /// <summary>
     /// The date and time when this record was created.
     /// Automatically set to current UTC time when the record is first created.
     /// Nullable to handle legacy data migration scenarios.
     /// </summary>
-    public DateTime? CreatedOn { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// The unique identifier of the user who last updated this record.
     /// References the UserID from T_Users table.
     /// Nullable until the first update operation occurs.
     /// </summary>
-    public Guid? UpdatedBy { get; set; }
+    public string? UpdatedBy { get; set; }
 
     /// <summary>
     /// The date and time when this record was last updated.

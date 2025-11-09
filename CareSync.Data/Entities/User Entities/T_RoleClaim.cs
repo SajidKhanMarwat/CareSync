@@ -8,6 +8,6 @@ namespace CareSync.DataLayer.Entities;
 /// attributes and permissions that apply to all users within that role.
 /// Role claims provide a way to assign common attributes or permissions to entire user groups.
 /// </summary>
-public class T_RoleClaim : IdentityRoleClaim<Guid>
+public class T_RoleClaim : IdentityRoleClaim<string>
 {
 }

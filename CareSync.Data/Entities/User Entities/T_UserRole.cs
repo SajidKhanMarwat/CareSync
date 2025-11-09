@@ -8,7 +8,7 @@ namespace CareSync.DataLayer.Entities;
 /// This entity determines which roles (and their associated permissions) are granted to each user,
 /// enabling role-based access control throughout the medical management platform.
 /// </summary>
-public class T_UserRole : IdentityUserRole<Guid>
+public class T_UserRole : IdentityUserRole<string>
 {
     // Navigation properties
     /// <summary>

@@ -12,6 +12,6 @@ public class T_LabReports : BaseEntity
     public int? ReviewedByDoctorID { get; set; }
     public DateTime? ReviewedDate { get; set; } = DateTime.UtcNow;
 
-    // Navigation properties
-    public virtual T_LabRequests LabRequest { get; set; }
+    //// Navigation properties
+    //public virtual T_LabRequests LabRequest { get; set; }
 }

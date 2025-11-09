@@ -1,6 +1,7 @@
 <Solution>
-  <Project Path="CareSync.APIs/CareSync.APIs.csproj" />
+  <Project Path="CareSync.API/CareSync.API.csproj" Id="0a07d293-3017-4924-a449-c16b2a4475e5" />
   <Project Path="CareSync.ApplicationLayer/CareSync.ApplicationLayer.csproj" />
   <Project Path="CareSync.Data/CareSync.DataLayer.csproj" />
+  <Project Path="CareSync.Shared/CareSync.Shared.csproj" Id="93a2dfef-4457-47e7-8b4d-7c4f17d69038" />
   <Project Path="CareSync.UI/CareSync.csproj" />
 </Solution>

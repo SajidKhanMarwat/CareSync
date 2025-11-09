@@ -85,11 +85,11 @@ public class CareSyncDbContext : IdentityDbContext<T_Users, T_Roles, Guid, Ident
         builder.Entity<T_PrescriptionItems>()
             .HasKey(pi => pi.PrescriptionItemID);
 
-        // Configure relationships
-        builder.Entity<T_Users>()
-            .HasOne(u => u.Role)
-            .WithMany(r => r.Users)
-            .HasForeignKey(u => u.RoleID);
+        //// Configure relationships
+        //builder.Entity<T_Users>()
+        //    .HasOne(u => u.Role)
+        //    .WithMany(r => r.Users)
+        //    .HasForeignKey(u => u.RoleID);
 
         builder.Entity<T_PatientDetails>()
             .HasOne(p => p.User)
