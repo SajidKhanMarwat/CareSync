@@ -14,28 +14,28 @@ public class T_PatientReports
     /// Primary key using GUID format that serves as the main reference for this specific medical document.
     /// GUID value assigned when a new patient report is uploaded or generated in the system.
     /// </summary>
-    public Guid PatientReprtsID { get; set; }
+    public int PatientReportID { get; set; }
 
     /// <summary>
     /// Reference to the appointment during which this report was generated or discussed.
     /// Links to appointment records to associate reports with specific medical consultations.
     /// Nullable as some reports may be generated outside of specific appointments (e.g., lab results).
     /// </summary>
-    public Guid? AppointmentID { get; set; }
+    public required int AppointmentID { get; set; }
 
     /// <summary>
     /// Reference to the doctor who generated, reviewed, or is responsible for this report.
     /// Links to doctor records to identify the medical professional associated with the document.
     /// Nullable as some reports may be system-generated or from external sources.
     /// </summary>
-    public Guid? DocterID { get; set; }
+    public int? DocterID { get; set; }
 
     /// <summary>
     /// Reference to the patient for whom this report was created.
     /// Links to patient records to associate medical documents with the correct patient.
     /// Nullable to handle system reports or documents that may not be patient-specific.
     /// </summary>
-    public Guid? PatientID { get; set; }
+    public int? PatientID { get; set; }
 
     /// <summary>
     /// Text content or summary of the medical document.

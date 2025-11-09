@@ -2,7 +2,7 @@ namespace CareSync.DataLayer.Entities;
 
 public class T_LabRequests : BaseEntity
 {
-    public int RequestID { get; set; }
+    public int LabRequestID { get; set; }
     public int AppointmentID { get; set; }
     public int LabServiceID { get; set; }
     public int? RequestedByDoctorID { get; set; }
