@@ -10,7 +10,7 @@ namespace CareSync.DataLayer;
 /// Extends IdentityDbContext to provide ASP.NET Core Identity integration with custom entities.
 /// Manages all medical entities including users, patients, doctors, appointments, and prescriptions.
 /// </summary>
-public class CareSyncDbContext : IdentityDbContext<T_Users, T_Roles, Guid, IdentityUserClaim<Guid>, T_UserRole, T_UserLogin, T_RoleClaim, T_UserToken>
+public class CareSyncDbContext : IdentityDbContext<T_Users, T_Roles, string, IdentityUserClaim<string>, T_UserRole, T_UserLogin, T_RoleClaim, T_UserToken>
 {
     public CareSyncDbContext(DbContextOptions<CareSyncDbContext> options) : base(options)
     {        
@@ -91,15 +91,15 @@ public class CareSyncDbContext : IdentityDbContext<T_Users, T_Roles, Guid, Ident
         //    .WithMany(r => r.Users)
         //    .HasForeignKey(u => u.RoleID);
 
-        builder.Entity<T_PatientDetails>()
-            .HasOne(p => p.User)
-            .WithMany(u => u.PatientDetails)
-            .HasForeignKey(p => p.UserID);
+        //builder.Entity<T_PatientDetails>()
+        //    .HasOne(p => p.User)
+        //    .WithMany(u => u.PatientDetails)
+        //    .HasForeignKey(p => p.UserID);
 
-        builder.Entity<T_DoctorDetails>()
-            .HasOne(d => d.User)
-            .WithMany(u => u.DoctorDetails)
-            .HasForeignKey(d => d.UserID);
+        //builder.Entity<T_DoctorDetails>()
+        //    .HasOne(d => d.User)
+        //    .WithMany(u => u.DoctorDetails)
+        //    .HasForeignKey(d => d.UserID);
 
         builder.Entity<T_Appointments>()
             .HasOne(a => a.Doctor)
