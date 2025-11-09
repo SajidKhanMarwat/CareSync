@@ -1,7 +1,7 @@
 ﻿using CareSync.Shared.Models;
-using ReturnResult;
 using CareSync.ApplicationLayer.Common;
 using CareSync.ApplicationLayer.Contracts.UsersDTOs;
+using CareSync.ApplicationLayer.ApiResult;
 
 namespace CareSync.ApplicationLayer.IServices.EntitiesServices;
 

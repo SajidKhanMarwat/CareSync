@@ -1,9 +1,9 @@
 ﻿using CareSync.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
-using ReturnResult;
 using CareSync.ApplicationLayer.Common;
 using CareSync.ApplicationLayer.Contracts.UsersDTOs;
 using CareSync.ApplicationLayer.IServices.EntitiesServices;
+using CareSync.ApplicationLayer.ApiResult;
 
 namespace CareSync.APIs.Controllers;
 
