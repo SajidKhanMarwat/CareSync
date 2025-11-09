@@ -216,7 +216,7 @@ namespace CareSync.DataLayer.Migrations
 
                     b.Property<string>("UserID")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(128)");
 
                     b.HasKey("DoctorID");
 
@@ -688,15 +688,12 @@ namespace CareSync.DataLayer.Migrations
                     b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UserID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<string>("UserID")
+                        .HasColumnType("nvarchar(128)");
 
                     b.HasKey("PatientID");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserID");
 
                     b.ToTable("T_PatientDetails");
                 });
@@ -944,6 +941,7 @@ namespace CareSync.DataLayer.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasMaxLength(128)
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
@@ -956,7 +954,7 @@ namespace CareSync.DataLayer.Migrations
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(128)");
 
                     b.HasKey("Id");
 
@@ -968,7 +966,8 @@ namespace CareSync.DataLayer.Migrations
             modelBuilder.Entity("CareSync.DataLayer.Entities.T_Roles", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -1032,7 +1031,7 @@ namespace CareSync.DataLayer.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(128)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -1044,24 +1043,16 @@ namespace CareSync.DataLayer.Migrations
             modelBuilder.Entity("CareSync.DataLayer.Entities.T_UserRole", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("RoleId1")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("UserId1")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
-
-                    b.HasIndex("RoleId1");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("T_UserRoles", (string)null);
                 });
@@ -1069,7 +1060,7 @@ namespace CareSync.DataLayer.Migrations
             modelBuilder.Entity("CareSync.DataLayer.Entities.T_UserToken", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -1088,7 +1079,8 @@ namespace CareSync.DataLayer.Migrations
             modelBuilder.Entity("CareSync.DataLayer.Entities.T_Users", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
@@ -1174,7 +1166,7 @@ namespace CareSync.DataLayer.Migrations
 
                     b.Property<string>("RoleID")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<int>("RoleType")
                         .HasColumnType("int");
@@ -1226,7 +1218,7 @@ namespace CareSync.DataLayer.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(128)");
 
                     b.HasKey("Id");
 
@@ -1349,7 +1341,7 @@ namespace CareSync.DataLayer.Migrations
                 {
                     b.HasOne("CareSync.DataLayer.Entities.T_Users", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserID");
 
                     b.Navigation("User");
                 });
@@ -1381,19 +1373,19 @@ namespace CareSync.DataLayer.Migrations
                     b.HasOne("CareSync.DataLayer.Entities.T_Appointments", "Appointment")
                         .WithMany("Prescriptions")
                         .HasForeignKey("AppointmentID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CareSync.DataLayer.Entities.T_DoctorDetails", "Doctor")
                         .WithMany("Prescriptions")
                         .HasForeignKey("DoctorID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CareSync.DataLayer.Entities.T_PatientDetails", "Patient")
                         .WithMany("Prescriptions")
                         .HasForeignKey("PatientID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Appointment");
@@ -1430,25 +1422,17 @@ namespace CareSync.DataLayer.Migrations
 
             modelBuilder.Entity("CareSync.DataLayer.Entities.T_UserRole", b =>
                 {
-                    b.HasOne("CareSync.DataLayer.Entities.T_Roles", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("CareSync.DataLayer.Entities.T_Roles", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId1");
-
-                    b.HasOne("CareSync.DataLayer.Entities.T_Users", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CareSync.DataLayer.Entities.T_Users", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId1");
+                        .WithMany("UserRole")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Role");
 
@@ -1529,6 +1513,16 @@ namespace CareSync.DataLayer.Migrations
             modelBuilder.Entity("CareSync.DataLayer.Entities.T_Prescriptions", b =>
                 {
                     b.Navigation("PrescriptionItems");
+                });
+
+            modelBuilder.Entity("CareSync.DataLayer.Entities.T_Roles", b =>
+                {
+                    b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("CareSync.DataLayer.Entities.T_Users", b =>
+                {
+                    b.Navigation("UserRole");
                 });
 #pragma warning restore 612, 618
         }

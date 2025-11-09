@@ -65,4 +65,6 @@ public class T_Roles : IdentityRole<string>
     /// Nullable until the first update operation occurs.
     /// </summary>
     public DateTime? UpdatedOn { get; set; }
+
+    public virtual ICollection<T_UserRole>? UserRoles { get; set; }
 }
