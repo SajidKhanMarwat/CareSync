@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CareSync</title>
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="~/ApolloTheme/assets/images/favicon.svg">
+    
+    <!-- Fonts -->
+    <link rel="stylesheet" href="~/ApolloTheme/assets/fonts/remix/remixicon.css">
+    
+    <!-- Apollo Theme CSS -->
+    <link href="~/ApolloTheme/assets/css/main.min.css" rel="stylesheet" />
+    
+    <!-- Page Specific CSS -->
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="auth-body">
+    <!-- Auth wrapper starts -->
+    <div class="auth-wrapper">
+        
+        <!-- Auth container starts -->
+        <div class="auth-container">
+            
+            <!-- Brand logo -->
+            <div class="auth-brand">
+                <img src="~/ApolloTheme/assets/images/logo.svg" alt="CareSync" class="brand-logo">
+                <h2 class="brand-title">CareSync</h2>
+                <p class="brand-subtitle">Medical Management System</p>
+            </div>
+            
+            <!-- Auth content -->
+            <div class="auth-content">
+                @RenderBody()
+            </div>
+            
+            <!-- Auth footer -->
+            <div class="auth-footer">
+                <p>&copy; @DateTime.Now.Year CareSync. All rights reserved.</p>
+            </div>
+            
+        </div>
+        <!-- Auth container ends -->
+        
+        <!-- Auth background -->
+        <div class="auth-background">
+            <div class="auth-pattern"></div>
+        </div>
+        
+    </div>
+    <!-- Auth wrapper ends -->
+    
+    <!-- Apollo Theme JavaScript -->
+    <script src="~/ApolloTheme/assets/js/jquery.min.js"></script>
+    <script src="~/ApolloTheme/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="~/ApolloTheme/assets/js/modernizr.js"></script>
+    <script src="~/ApolloTheme/assets/js/custom.js"></script>
+    
+    <!-- Page Specific JavaScript -->
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,299 @@
+@page "/Admin/SystemOverview"
+@model CareSync.Pages.Admin.SystemOverviewModel
+@{
+    ViewData["Title"] = "System Overview";
+    ViewData["Breadcrumbs"] = new List<(string Name, string Url)>
+    {
+        ("Admin", "/Admin")
+    };
+}
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4 class="text-primary">156</h4>
+                <p class="mb-0">Total Users</p>
+                <small class="text-muted">+12 this month</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4 class="text-success">1,234</h4>
+                <p class="mb-0">Total Appointments</p>
+                <small class="text-muted">+89 this week</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4 class="text-info">567</h4>
+                <p class="mb-0">Lab Reports</p>
+                <small class="text-muted">+45 today</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4 class="text-warning">89</h4>
+                <p class="mb-0">Prescriptions</p>
+                <small class="text-muted">+23 today</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Recent System Activity</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>10:30 AM</td>
+                                <td>Dr. Smith</td>
+                                <td>Created Prescription</td>
+                                <td><span class="badge bg-success">Success</span></td>
+                            </tr>
+                            <tr>
+                                <td>10:15 AM</td>
+                                <td>Lab Central</td>
+                                <td>Generated Report</td>
+                                <td><span class="badge bg-success">Success</span></td>
+                            </tr>
+                            <tr>
+                                <td>09:45 AM</td>
+                                <td>Mary Johnson</td>
+                                <td>Booked Appointment</td>
+                                <td><span class="badge bg-success">Success</span></td>
+                            </tr>
+                            <tr>
+                                <td>09:30 AM</td>
+                                <td>Admin</td>
+                                <td>User Login Failed</td>
+                                <td><span class="badge bg-danger">Failed</span></td>
+                            </tr>
+                            <tr>
+                                <td>09:15 AM</td>
+                                <td>Dr. Wilson</td>
+                                <td>Updated Patient Record</td>
+                                <td><span class="badge bg-success">Success</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">System Health</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>Database Connection</span>
+                        <span class="badge bg-success">Healthy</span>
+                    </div>
+                    <div class="progress mt-1">
+                        <div class="progress-bar bg-success" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>Server Performance</span>
+                        <span class="badge bg-success">Good</span>
+                    </div>
+                    <div class="progress mt-1">
+                        <div class="progress-bar bg-success" style="width: 85%"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>Memory Usage</span>
+                        <span class="badge bg-warning">Moderate</span>
+                    </div>
+                    <div class="progress mt-1">
+                        <div class="progress-bar bg-warning" style="width: 65%"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>Storage Space</span>
+                        <span class="badge bg-info">Available</span>
+                    </div>
+                    <div class="progress mt-1">
+                        <div class="progress-bar bg-info" style="width: 45%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">User Distribution</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Patients</span>
+                        <span class="badge bg-primary">98 (63%)</span>
+                    </li>
+                    <li class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Doctors</span>
+                        <span class="badge bg-info">45 (29%)</span>
+                    </li>
+                    <li class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Lab Technicians</span>
+                        <span class="badge bg-secondary">8 (5%)</span>
+                    </li>
+                    <li class="d-flex justify-content-between align-items-center">
+                        <span>Admins</span>
+                        <span class="badge bg-dark">5 (3%)</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Monthly Statistics</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="d-flex justify-content-between align-items-center mb-2">
+                        <span>New Appointments</span>
+                        <span class="text-success">+234</span>
+                    </li>
+                    <li class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Completed Tests</span>
+                        <span class="text-info">+567</span>
+                    </li>
+                    <li class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Prescriptions Issued</span>
+                        <span class="text-warning">+189</span>
+                    </li>
+                    <li class="d-flex justify-content-between align-items-center">
+                        <span>New Registrations</span>
+                        <span class="text-primary">+45</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">System Alerts</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning alert-sm">
+                    <strong>Warning:</strong> Memory usage is at 65%
+                </div>
+                <div class="alert alert-info alert-sm">
+                    <strong>Info:</strong> Scheduled maintenance in 2 days
+                </div>
+                <div class="alert alert-success alert-sm">
+                    <strong>Success:</strong> Database backup completed
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Database Tables Overview</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Table Name</th>
+                                <th>Record Count</th>
+                                <th>Size</th>
+                                <th>Last Updated</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>T_Users</td>
+                                <td>156</td>
+                                <td>2.3 MB</td>
+                                <td>2024-11-10 10:30</td>
+                                <td><span class="badge bg-success">Healthy</span></td>
+                            </tr>
+                            <tr>
+                                <td>T_Appointments</td>
+                                <td>1,234</td>
+                                <td>15.7 MB</td>
+                                <td>2024-11-10 10:15</td>
+                                <td><span class="badge bg-success">Healthy</span></td>
+                            </tr>
+                            <tr>
+                                <td>T_PatientDetails</td>
+                                <td>98</td>
+                                <td>1.8 MB</td>
+                                <td>2024-11-10 09:45</td>
+                                <td><span class="badge bg-success">Healthy</span></td>
+                            </tr>
+                            <tr>
+                                <td>T_DoctorDetails</td>
+                                <td>45</td>
+                                <td>0.9 MB</td>
+                                <td>2024-11-10 08:30</td>
+                                <td><span class="badge bg-success">Healthy</span></td>
+                            </tr>
+                            <tr>
+                                <td>T_LabReports</td>
+                                <td>567</td>
+                                <td>8.2 MB</td>
+                                <td>2024-11-10 10:00</td>
+                                <td><span class="badge bg-success">Healthy</span></td>
+                            </tr>
+                            <tr>
+                                <td>T_Prescriptions</td>
+                                <td>789</td>
+                                <td>5.4 MB</td>
+                                <td>2024-11-10 09:30</td>
+                                <td><span class="badge bg-success">Healthy</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section PageActions {
+    <button type="button" class="btn btn-primary">Refresh Data</button>
+    <button type="button" class="btn btn-outline-secondary">Export Report</button>
+    <button type="button" class="btn btn-outline-warning">System Maintenance</button>
+}
