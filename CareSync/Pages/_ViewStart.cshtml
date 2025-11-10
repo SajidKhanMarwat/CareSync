@@ -1,9 +1,25 @@
-﻿@{
-    Layout = "_Layout";
+@{
+    // Determine layout based on page location or ViewData
+    var layoutName = ViewData["Layout"]?.ToString();
+    
+    if (string.IsNullOrEmpty(layoutName))
+    {
+        // Auto-detect layout based on page path
+        var pagePath = ViewContext.ActionDescriptor.DisplayName ?? "";
+        
+        if (pagePath.Contains("/Auth/") || pagePath.Contains("Login") || pagePath.Contains("Register"))
+        {
+            layoutName = "Layouts/_AuthLayout";
+        }
+        else if (ViewData["UseBlankLayout"] as bool? == true)
+        {
+            layoutName = "Layouts/_BlankLayout";
+        }
+        else
+        {
+            layoutName = "Layouts/_MainLayout";
+        }
+    }
+    
+    Layout = layoutName;
 }
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="shortcut icon" href="~/ApolloTheme/assets/images/favicon.svg">
-<link rel="stylesheet" href="~/ApolloTheme/assets/fonts/remix/remixicon.css">
-<link href="~/ApolloTheme/assets/css/main.css" rel="stylesheet" />
-<link href="~/ApolloTheme/assets/css/main.min.css" rel="stylesheet" />

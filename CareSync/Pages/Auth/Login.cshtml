@@ -1,29 +1,29 @@
-﻿@page
-@model LoginModel
+@page "/Auth/Login"
+@model CareSync.Pages.LoginModel
 @{
     ViewData["Title"] = "Login";
+    ViewData["Layout"] = "Layouts/_AuthLayout";
 }
-<title>Login to your account</title>
 
 <!-- Container starts -->
 <div class="container">
-
     <!-- Auth wrapper starts -->
     <div class="auth-wrapper">
-
         <!-- Form starts -->
         <form method="post">
-
             <div class="auth-box">
                 <a href="" class="auth-logo mb-4">
-                    <img src="assets/images/logo.svg" alt="Bootstrap Gallery">
+                    <img src="~/ApolloTheme/assets/images/logo.svg" alt="CareSync">
                 </a>
 
-                <h4 class="mb-4">Login</h4>
+                <h4 class="mb-4">Login to CareSync</h4>
+
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
                 <div class="mb-3">
                     <label class="form-label" for="email">Your email <span class="text-danger">*</span></label>
-                    <input type="text" asp-for="LoginRequest.Email" id="email" class="form-control" placeholder="Enter your email">
+                    <input type="email" asp-for="LoginRequest.Email" id="email" class="form-control" placeholder="Enter your email">
+                    <span asp-validation-for="LoginRequest.Email" class="text-danger"></span>
                 </div>
 
                 <div class="mb-2">
@@ -34,24 +34,25 @@
                             <i class="ri-eye-line text-primary"></i>
                         </button>
                     </div>
+                    <span asp-validation-for="LoginRequest.Password" class="text-danger"></span>
                 </div>
 
                 <div class="d-flex justify-content-end mb-3">
-                    <a href="forgot-password.html" class="text-decoration-underline">Forgot password?</a>
+                    <a href="/Auth/ForgotPassword" class="text-decoration-underline">Forgot password?</a>
                 </div>
 
                 <div class="mb-3 d-grid gap-2">
                     <button type="submit" class="btn btn-primary">Login</button>
-                    <a href="signup.html" class="btn btn-secondary">Not registered? Signup</a>
+                    <a href="/Auth/Register" class="btn btn-secondary">Not registered? Signup</a>
                 </div>
-
             </div>
-
         </form>
         <!-- Form ends -->
-
     </div>
     <!-- Auth wrapper ends -->
-
 </div>
 <!-- Container ends -->
+
+@{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}

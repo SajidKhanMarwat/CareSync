@@ -1,0 +1,350 @@
+@page "/Patient/Dashboard"
+@model CareSync.Pages.Patient.DashboardModel
+@{
+    ViewData["Title"] = "Patients Dashboard";
+    ViewData["Breadcrumbs"] = new List<(string Name, string Url)>
+    {
+        ("Patients", "/Patients")
+    };
+}
+
+@section PageActions {
+    <div class="input-group">
+        <span class="input-group-text bg-primary-lighten">
+            <i class="ri-calendar-2-line text-primary"></i>
+        </span>
+        <input type="text" id="abc" class="form-control custom-daterange">
+    </div>
+}
+
+  <!-- Row starts -->
+  <div class="row gx-3">
+    <div class="col-sm-12">
+      <div class="card mb-3">
+        <div class="card-body">
+
+          <div class="d-flex flex-wrap">
+            <!-- Stats starts -->
+            <div class="d-flex align-items-center flex-wrap gap-4">
+              <div class="d-flex align-items-center">
+                <div class="icon-box lg bg-primary-subtle rounded-5 me-2">
+                  <i class="ri-account-circle-line fs-3 text-primary"></i>
+                </div>
+                <div>
+                  <h4 class="mb-1">Juana</h4>
+                  <p class="m-0">Name</p>
+                </div>
+              </div>
+              <div class="d-flex align-items-center">
+                <div class="icon-box lg bg-primary-subtle rounded-5 me-2">
+                  <i class="ri-women-line fs-3 text-primary"></i>
+                </div>
+                <div>
+                  <h4 class="mb-1">Female</h4>
+                  <p class="m-0">Gender</p>
+                </div>
+              </div>
+              <div class="d-flex align-items-center">
+                <div class="icon-box lg bg-primary-subtle rounded-5 me-2">
+                  <i class="ri-arrow-right-up-line fs-3 text-primary"></i>
+                </div>
+                <div>
+                  <h4 class="mb-1">24</h4>
+                  <p class="m-0">Age</p>
+                </div>
+              </div>
+              <div class="d-flex align-items-center">
+                <div class="icon-box lg bg-primary-subtle rounded-5 me-2">
+                  <i class="ri-contrast-drop-2-line fs-3 text-primary"></i>
+                </div>
+                <div>
+                  <h4 class="mb-1">O+</h4>
+                  <p class="m-0">Blood Type</p>
+                </div>
+              </div>
+            </div>
+            <!-- Stats ends -->
+
+            <img src="~/ApolloTheme/assets/images/patient2.png" class="img-7x rounded-circle ms-auto"
+              alt="Patient Admin Template">
+          </div>
+
+        </div>
+        <div class="card-footer">
+          <div class="d-flex flex-row flex-wrap gap-3">
+            <div class="d-flex align-items-center">
+              <div class="icon-box sm bg-primary-subtle rounded-5 me-2">
+                <i class="ri-stethoscope-line fs-5 text-primary"></i>
+              </div>
+              <div>
+                Consulting Doctor: <span class="text-primary">Dr. Elina</span>
+              </div>
+            </div>
+            <div class="d-flex align-items-center">
+              <div class="icon-box sm bg-primary-subtle rounded-5 me-2">
+                <i class="ri-building-2-line fs-5 text-primary"></i>
+              </div>
+              <div>
+                Recent Visit: <span class="text-primary">28/08/2024</span>
+              </div>
+            </div>
+            <div class="d-flex align-items-center">
+              <div class="icon-box sm bg-primary-subtle rounded-5 me-2">
+                <i class="ri-calendar-2-line fs-5 text-primary"></i>
+              </div>
+              <div>
+                Upcoming Visit: <span class="text-primary">08/09/2024</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Row ends -->
+
+  <!-- Row starts -->
+  <div class="row gx-3">
+    <div class="col-sm-12">
+      <div class="card mb-3">
+        <div class="card-header">
+          <h5 class="card-title">Visits</h5>
+        </div>
+        <div class="card-body pt-0">
+          <div class="table-outer">
+            <div class="table-responsive">
+              <table class="table align-middle truncate m-0">
+                <thead>
+                  <tr>
+                    <th>Consulting Doctor</th>
+                    <th>Visit Date</th>
+                    <th>Department</th>
+                    <th>Fee Paid</th>
+                    <th>Lab Reports</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <img src="~/ApolloTheme/assets/images/doctor1.png" class="img-3x rounded-2" alt="Medical Dashboard">
+                      Dr. Hector
+                    </td>
+                    <td>20/05/2024</td>
+                    <td>Orthopaedics</td>
+                    <td>$200</td>
+                    <td>
+                      <div class="d-inline-flex gap-1">
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                          data-bs-target="#viewReportsModal1">
+                          View Reports
+                        </button>
+                        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip"
+                          data-bs-placement="top" data-bs-title="Download Report">
+                          <i class="ri-file-download-line"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="5">
+                      <h6>Prescription</h6>
+                      <p class="text-wrap m-0">The prescriptions featured in the dataset exhibit illegible
+                        handwriting, commonly encountered in medical practices. These images serve as
+                        invaluable resources for developing and evaluating algorithms aimed at enhancing
+                        handwriting recognition technologies within the medical domain.
+                      </p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="5">
+                      <h6>Reports</h6>
+                      <ul class="list-unstyled d-flex m-0">
+                        <li class="pe-2 border-end">Weight: 48lbs</li>
+                        <li class="px-2 border-end">Blood Pressure: 120</li>
+                        <li class="px-2 border-end">Sugar Levels Before: 90</li>
+                        <li class="px-2 border-end">Sugar Levels After: 180</li>
+                      </ul>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="5">
+                      <h6>Medicines</h6>
+                      <p>For 10 Days</p>
+                      <div class="d-flex gap-3">
+                        <ul class="d-flex gap-5 m-0">
+                          <li>
+                            <div>
+                              <h6>Aricep Tablet</h6>
+                              <ul class="list-unstyled d-flex mb-3">
+                                <li class="pe-2 border-end">Morning: 1</li>
+                                <li class="px-2 border-end">Afternoon: 0</li>
+                                <li class="px-2">Night: 1</li>
+                              </ul>
+                            </div>
+                          </li>
+                          <li>
+                            <div>
+                              <h6>Cresemba Capsule</h6>
+                              <ul class="list-unstyled d-flex mb-3">
+                                <li class="pe-2 border-end">Morning: 0</li>
+                                <li class="px-2 border-end">Afternoon: 1</li>
+                                <li class="px-2">Night: 1</li>
+                              </ul>
+                            </div>
+                          </li>
+                          <li>
+                            <div>
+                              <h6>Justoza Tablet</h6>
+                              <ul class="list-unstyled d-flex mb-3">
+                                <li class="pe-2 border-end">Morning: 1</li>
+                                <li class="px-2 border-end">Afternoon: 1</li>
+                                <li class="px-2">Night: 0</li>
+                              </ul>
+                            </div>
+                          </li>
+                        </ul>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Row ends -->
+
+  <!-- Row starts -->
+  <div class="row gx-3">
+    <div class="col-xxl-3 col-sm-6 col-12">
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="text-center">
+            <div class="mb-3">
+              <i class="ri-capsule-line fs-1 text-primary"></i>
+            </div>
+            <div class="mb-4">
+              <h5>BP Levels</h5>
+              <p class="m-0 opacity-50">Recent five visits</p>
+            </div>
+          </div>
+          <div class="overflow-hidden">
+            <div id="bpLevels" class="mb-3"></div>
+          </div>
+          <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>24/04/2024</div>
+              <div>140</div>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>16/04/2024</div>
+              <div>190</div>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>10/04/2024</div>
+              <div>230</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-xxl-3 col-sm-6 col-12">
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="text-center">
+            <div class="mb-3">
+              <i class="ri-contrast-drop-2-line fs-1 text-primary"></i>
+            </div>
+            <div class="mb-4">
+              <h5>Sugar Levels</h5>
+              <p class="m-0 opacity-50">Recent five visits</p>
+            </div>
+          </div>
+          <div class="overflow-hidden">
+            <div id="sugarLevels" class="mb-3"></div>
+          </div>
+          <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>24/04/2024</div>
+              <div>140</div>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>16/04/2024</div>
+              <div>190</div>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>10/04/2024</div>
+              <div>230</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-xxl-3 col-sm-6 col-12">
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="text-center">
+            <div class="mb-3">
+              <i class="ri-heart-pulse-line fs-1 text-primary"></i>
+            </div>
+            <div class="mb-4">
+              <h5>Heart Rate</h5>
+              <p class="m-0 opacity-50">Recent five visits</p>
+            </div>
+          </div>
+          <div class="overflow-hidden">
+            <div id="heartRate" class="mb-3"></div>
+          </div>
+          <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>24/04/2024</div>
+              <div>110</div>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>16/04/2024</div>
+              <div>120</div>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>10/04/2024</div>
+              <div>100</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-xxl-3 col-sm-6 col-12">
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="text-center">
+            <div class="mb-3">
+              <i class="ri-flask-line fs-1 text-primary"></i>
+            </div>
+            <div class="mb-4">
+              <h5>Cholesterol</h5>
+              <p class="m-0 opacity-50">Recent five visits</p>
+            </div>
+          </div>
+          <div class="overflow-hidden">
+            <div id="clolesterolLevels" class="mb-3"></div>
+          </div>
+          <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>24/04/2024</div>
+              <div>180</div>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>16/04/2024</div>
+              <div>220</div>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>10/04/2024</div>
+              <div>230</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Row ends -->

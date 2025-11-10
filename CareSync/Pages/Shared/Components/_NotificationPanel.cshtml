@@ -1,0 +1,112 @@
+@{
+    var alerts = TempData["Alerts"] as List<(string Type, string Message)> ?? new List<(string, string)>();
+    var notifications = ViewData["Notifications"] as List<(string Type, string Title, string Message, DateTime Time)> ?? new List<(string, string, string, DateTime)>();
+}
+
+<!-- Alert Messages -->
+@if (alerts.Any())
+{
+    <div class="alert-container mb-3">
+        @foreach (var alert in alerts)
+        {
+            <div class="alert alert-@alert.Type alert-dismissible fade show" role="alert">
+                <i class="ri-information-line me-2"></i>
+                @alert.Message
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    </div>
+}
+
+<!-- System Notifications -->
+@if (notifications.Any())
+{
+    <div class="notification-panel mb-3">
+        @foreach (var notification in notifications)
+        {
+            <div class="notification-card notification-@notification.Type">
+                <div class="notification-header">
+                    <div class="notification-icon">
+                        @switch (notification.Type.ToLower())
+                        {
+                            case "success":
+                                <i class="ri-check-circle-line text-success"></i>
+                                break;
+                            case "warning":
+                                <i class="ri-alert-line text-warning"></i>
+                                break;
+                            case "error":
+                                <i class="ri-error-warning-line text-danger"></i>
+                                break;
+                            case "info":
+                            default:
+                                <i class="ri-information-line text-info"></i>
+                                break;
+                        }
+                    </div>
+                    <div class="notification-title">
+                        <h6>@notification.Title</h6>
+                        <small class="text-muted">@notification.Time.ToString("MMM dd, yyyy HH:mm")</small>
+                    </div>
+                    <button type="button" class="btn-close notification-close" data-notification-id="@notification.GetHashCode()"></button>
+                </div>
+                <div class="notification-body">
+                    <p>@notification.Message</p>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<!-- Quick Stats Banner (Optional) -->
+@if (ViewData["ShowQuickStats"] as bool? == true)
+{
+    <div class="quick-stats-banner mb-3">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-icon bg-primary">
+                        <i class="ri-user-heart-line"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h6>@(ViewData["TotalPatients"] ?? "0")</h6>
+                        <p>Total Patients</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-icon bg-success">
+                        <i class="ri-calendar-check-line"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h6>@(ViewData["TodayAppointments"] ?? "0")</h6>
+                        <p>Today's Appointments</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-icon bg-info">
+                        <i class="ri-test-tube-line"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h6>@(ViewData["PendingLabs"] ?? "0")</h6>
+                        <p>Pending Lab Results</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-icon bg-warning">
+                        <i class="ri-medicine-bottle-line"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h6>@(ViewData["ActivePrescriptions"] ?? "0")</h6>
+                        <p>Active Prescriptions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
