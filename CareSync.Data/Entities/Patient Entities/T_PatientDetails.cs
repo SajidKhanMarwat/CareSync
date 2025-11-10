@@ -20,7 +20,7 @@ public class T_PatientDetails : BaseEntity
     /// Links patient medical records to the user's login credentials and basic profile.
     /// Nullable to support cases where patient records exist without user accounts (e.g., minors).
     /// </summary>
-    public Guid? UserID { get; set; }
+    public string? UserID { get; set; }
 
     /// <summary>
     /// The patient's blood group/type (e.g., A+, B-, O+, AB-).

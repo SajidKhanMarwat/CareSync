@@ -3,5 +3,5 @@
   <Project Path="CareSync.ApplicationLayer/CareSync.ApplicationLayer.csproj" />
   <Project Path="CareSync.Data/CareSync.DataLayer.csproj" />
   <Project Path="CareSync.Shared/CareSync.Shared.csproj" Id="93a2dfef-4457-47e7-8b4d-7c4f17d69038" />
-  <Project Path="CareSync.UI/CareSync.csproj" />
+  <Project Path="CareSync/CareSync.csproj" />
 </Solution>

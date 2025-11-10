@@ -16,7 +16,7 @@ public class T_UserRole : IdentityUserRole<string>
     /// Provides access to complete user profile, demographics, and other role assignments.
     /// </summary>
     public virtual T_Users? User { get; set; }
-
+    
     /// <summary>
     /// Navigation property to the role being assigned to the user.
     /// Provides access to role permissions, description, and associated rights.
