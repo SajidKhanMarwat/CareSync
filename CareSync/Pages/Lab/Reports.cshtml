@@ -1,0 +1,195 @@
+@page "/Lab/Reports"
+@model CareSync.Pages.Lab.ReportsModel
+@{
+    ViewData["Title"] = "Lab Reports";
+    ViewData["Breadcrumbs"] = new List<(string Name, string Url)>
+    {
+        ("Lab", "/Lab")
+    };
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Recent Lab Reports</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Report ID</th>
+                                <th>Patient</th>
+                                <th>Test Name</th>
+                                <th>Date Generated</th>
+                                <th>Expected Time</th>
+                                <th>Status</th>
+                                <th>Reviewed By</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#RPT001</td>
+                                <td>John Smith</td>
+                                <td>Complete Blood Count</td>
+                                <td>2024-11-10 09:30</td>
+                                <td>2-4 hours</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                                <td>Dr. Wilson</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                    <button class="btn btn-sm btn-outline-info">Download</button>
+                                    <button class="btn btn-sm btn-outline-secondary">Email</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#RPT002</td>
+                                <td>Mary Johnson</td>
+                                <td>Lipid Profile</td>
+                                <td>2024-11-10 08:15</td>
+                                <td>4-6 hours</td>
+                                <td><span class="badge bg-warning">Pending Review</span></td>
+                                <td>-</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                    <button class="btn btn-sm btn-outline-success">Mark Reviewed</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#RPT003</td>
+                                <td>Robert Davis</td>
+                                <td>Thyroid Function Test</td>
+                                <td>2024-11-09 16:45</td>
+                                <td>6-8 hours</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                                <td>Dr. Brown</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                    <button class="btn btn-sm btn-outline-info">Download</button>
+                                    <button class="btn btn-sm btn-outline-secondary">Email</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#RPT004</td>
+                                <td>Sarah Wilson</td>
+                                <td>Urine Analysis</td>
+                                <td>2024-11-09 14:20</td>
+                                <td>1-2 hours</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                                <td>Dr. Smith</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                    <button class="btn btn-sm btn-outline-info">Download</button>
+                                    <button class="btn btn-sm btn-outline-secondary">Email</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Generate New Report</h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Lab Request</label>
+                        <select class="form-select" name="LabRequestID">
+                            <option value="">Select Request</option>
+                            <option value="1">#LR001 - John Smith - CBC</option>
+                            <option value="2">#LR002 - Mary Johnson - Lipid Profile</option>
+                            <option value="3">#LR003 - Robert Davis - Thyroid Test</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Report Name</label>
+                        <input type="text" class="form-control" name="ReportName" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Expected Time</label>
+                        <input type="text" class="form-control" name="ExpectedTime" placeholder="e.g., 2-4 hours" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Result Summary</label>
+                        <textarea class="form-control" name="ResultSummary" rows="4" placeholder="Enter test results and findings"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Upload Report File</label>
+                        <input type="file" class="form-control" name="ReportFile" accept=".pdf,.doc,.docx" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Report Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <div class="text-center">
+                            <h4 class="text-primary">45</h4>
+                            <small>Total Reports Today</small>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="text-center">
+                            <h4 class="text-success">38</h4>
+                            <small>Completed</small>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="text-center">
+                            <h4 class="text-warning">7</h4>
+                            <small>Pending Review</small>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="text-center">
+                            <h4 class="text-info">12</h4>
+                            <small>In Progress</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h6>Most Common Tests</h6>
+                    <ul class="list-unstyled">
+                        <li class="d-flex justify-content-between">
+                            <span>Complete Blood Count</span>
+                            <span class="badge bg-primary">15</span>
+                        </li>
+                        <li class="d-flex justify-content-between">
+                            <span>Lipid Profile</span>
+                            <span class="badge bg-primary">12</span>
+                        </li>
+                        <li class="d-flex justify-content-between">
+                            <span>Urine Analysis</span>
+                            <span class="badge bg-primary">8</span>
+                        </li>
+                        <li class="d-flex justify-content-between">
+                            <span>Thyroid Function</span>
+                            <span class="badge bg-primary">6</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section PageActions {
+    <button type="button" class="btn btn-primary">Generate Report</button>
+    <button type="button" class="btn btn-outline-secondary">Export All</button>
+}

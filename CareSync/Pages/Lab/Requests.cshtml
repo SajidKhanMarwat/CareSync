@@ -1,0 +1,194 @@
+@page "/Lab/Requests"
+@model CareSync.Pages.Lab.RequestsModel
+@{
+    ViewData["Title"] = "Lab Requests";
+    ViewData["Breadcrumbs"] = new List<(string Name, string Url)>
+    {
+        ("Lab", "/Lab")
+    };
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Pending Lab Requests</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Date</th>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Service</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#LR001</td>
+                                <td>2024-11-10</td>
+                                <td>John Smith</td>
+                                <td>Dr. Wilson</td>
+                                <td>Complete Blood Count</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td><span class="badge bg-danger">Urgent</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-success">Accept</button>
+                                    <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#LR002</td>
+                                <td>2024-11-10</td>
+                                <td>Mary Johnson</td>
+                                <td>Dr. Brown</td>
+                                <td>Lipid Profile</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td><span class="badge bg-info">Normal</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-success">Accept</button>
+                                    <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#LR003</td>
+                                <td>2024-11-09</td>
+                                <td>Robert Davis</td>
+                                <td>Dr. Smith</td>
+                                <td>Thyroid Function Test</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td><span class="badge bg-info">Normal</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-success">Accept</button>
+                                    <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">In Progress</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Patient</th>
+                                <th>Service</th>
+                                <th>Started</th>
+                                <th>Expected Completion</th>
+                                <th>Progress</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#LR004</td>
+                                <td>Sarah Wilson</td>
+                                <td>Urine Analysis</td>
+                                <td>10:30 AM</td>
+                                <td>12:30 PM</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" style="width: 75%">75%</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">Update Status</button>
+                                    <button class="btn btn-sm btn-outline-success">Complete</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#LR005</td>
+                                <td>Michael Brown</td>
+                                <td>Blood Sugar Test</td>
+                                <td>9:00 AM</td>
+                                <td>11:00 AM</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-info" style="width: 50%">50%</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">Update Status</button>
+                                    <button class="btn btn-sm btn-outline-success">Complete</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Completed Today</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Patient</th>
+                                <th>Service</th>
+                                <th>Completed Time</th>
+                                <th>Report Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#LR006</td>
+                                <td>Emma Taylor</td>
+                                <td>Complete Blood Count</td>
+                                <td>8:45 AM</td>
+                                <td><span class="badge bg-success">Report Generated</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View Report</button>
+                                    <button class="btn btn-sm btn-outline-info">Send to Doctor</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#LR007</td>
+                                <td>James Wilson</td>
+                                <td>Liver Function Test</td>
+                                <td>7:30 AM</td>
+                                <td><span class="badge bg-success">Report Generated</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View Report</button>
+                                    <button class="btn btn-sm btn-outline-info">Send to Doctor</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section PageActions {
+    <button type="button" class="btn btn-primary">Refresh Requests</button>
+    <button type="button" class="btn btn-outline-secondary">Export Report</button>
+}

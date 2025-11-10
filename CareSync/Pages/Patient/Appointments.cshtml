@@ -1,0 +1,115 @@
+@page "/Patient/Appointments"
+@model CareSync.Pages.Patient.AppointmentsModel
+@{
+    ViewData["Title"] = "My Appointments";
+    ViewData["Breadcrumbs"] = new List<(string Name, string Url)>
+    {
+        ("Patient", "/Patient")
+    };
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Upcoming Appointments</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Doctor</th>
+                                <th>Type</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2024-11-15 10:00 AM</td>
+                                <td>Dr. Smith</td>
+                                <td>Consultation</td>
+                                <td>Regular Checkup</td>
+                                <td><span class="badge bg-success">Confirmed</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                    <button class="btn btn-sm btn-outline-warning">Reschedule</button>
+                                    <button class="btn btn-sm btn-outline-danger">Cancel</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2024-11-20 2:30 PM</td>
+                                <td>Dr. Johnson</td>
+                                <td>Follow-up</td>
+                                <td>Blood Test Results</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                    <button class="btn btn-sm btn-outline-warning">Reschedule</button>
+                                    <button class="btn btn-sm btn-outline-danger">Cancel</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Past Appointments</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Doctor</th>
+                                <th>Type</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2024-10-15 9:00 AM</td>
+                                <td>Dr. Wilson</td>
+                                <td>Consultation</td>
+                                <td>Flu Symptoms</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View Report</button>
+                                    <button class="btn btn-sm btn-outline-info">Download</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2024-09-20 11:30 AM</td>
+                                <td>Dr. Brown</td>
+                                <td>Specialist</td>
+                                <td>Cardiology Checkup</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View Report</button>
+                                    <button class="btn btn-sm btn-outline-info">Download</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section PageActions {
+    <button type="button" class="btn btn-primary">Book New Appointment</button>
+}

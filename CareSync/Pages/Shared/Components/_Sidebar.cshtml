@@ -32,299 +32,108 @@
   <!-- Sidebar menu starts -->
   <div class="sidebarMenuScroll">
     <ul class="sidebar-menu">
+      
+      <!-- Dashboard -->
       <li>
         <a href="~/Dashboard">
           <i class="ri-home-6-line"></i>
-          <span class="menu-text">Hospital Admin</span>
+          <span class="menu-text">Dashboard</span>
         </a>
       </li>
-      <li>
-        <a href="~/Dashboard/Medical">
-          <i class="ri-home-smile-2-line"></i>
-          <span class="menu-text">Medical Dashboard</span>
-        </a>
-      </li>
-      <li>
-        <a href="~/Dashboard/Clinic">
-          <i class="ri-home-5-line"></i>
-          <span class="menu-text">Clinic Dashboard</span>
-        </a>
-      </li>
-      <li>
-        <a href="~/Appointments">
-          <i class="ri-calendar-2-line"></i>
-          <span class="menu-text">Appointments</span>
-        </a>
-      </li>
-      <li>
-        <a href="~/Patients">
-          <i class="ri-empathize-line"></i>
-          <span class="menu-text">My Patients</span>
-        </a>
-      </li>
-      <li>
-        <a href="~/Patients/Profile">
-          <i class="ri-empathize-line"></i>
-          <span class="menu-text">Patient Profile</span>
-        </a>
-      </li>
-      <li>
-        <a href="~/Doctors/Dashboard">
-          <i class="ri-stethoscope-line"></i>
-          <span class="menu-text">Doctors Dashboard</span>
-        </a>
-      </li>
-      <li>
-        <a href="~/Doctors">
-          <i class="ri-stethoscope-line"></i>
-          <span class="menu-text">Doctors Grid</span>
-        </a>
-      </li>
-      <li>
-        <a href="~/Doctors/Cards">
-          <i class="ri-stethoscope-line"></i>
-          <span class="menu-text">Doctors Cards</span>
-        </a>
-      </li>
-      <li>
-        <a href="~/Doctors/Profile">
-          <i class="ri-stethoscope-line"></i>
-          <span class="menu-text">Doctors Profile</span>
-        </a>
-      </li>
-      <li>
-        <a href="~/Doctors/Add">
-          <i class="ri-stethoscope-line"></i>
-          <span class="menu-text">Add Doctor</span>
-        </a>
-      </li>
-      <li>
-        <a href="~/Doctors/Edit">
-          <i class="ri-stethoscope-line"></i>
-          <span class="menu-text">Edit Doctor</span>
-        </a>
-      </li>
-      <li class="active current-page">
-        <a href="~/Patient/Dashboard">
+      
+      <!-- Patient Section -->
+      <li class="treeview">
+        <a href="#!">
           <i class="ri-heart-pulse-line"></i>
-          <span class="menu-text">Patients Dashboard</span>
-        </a>
-      </li>
-      <li>
-        <a href="~/Patients/List">
-          <i class="ri-heart-pulse-line"></i>
-          <span class="menu-text">Patients List</span>
-        </a>
-      </li>
-      <li>
-        <a href="~/Patients/Add">
-          <i class="ri-heart-pulse-line"></i>
-          <span class="menu-text">Add Patient</span>
-        </a>
-      </li>
-      <li>
-        <a href="~/Patients/Edit">
-          <i class="ri-heart-pulse-line"></i>
-          <span class="menu-text">Edit Patient Details</span>
-        </a>
-      </li>
-      <li class="treeview">
-        <a href="#!">
-          <i class="ri-nurse-line"></i>
-          <span class="menu-text">Staff</span>
+          <span class="menu-text">Patient</span>
         </a>
         <ul class="treeview-menu">
           <li>
-            <a href="~/Staff">Staff List</a>
+            <a href="~/Patient/Dashboard">Patient Dashboard</a>
           </li>
           <li>
-            <a href="~/Staff/Add">Add Staff</a>
+            <a href="~/Patient/Profile">My Profile</a>
           </li>
           <li>
-            <a href="~/Staff/Edit">Edit Staff Details</a>
+            <a href="~/Patient/MedicalHistory">Medical History</a>
+          </li>
+          <li>
+            <a href="~/Patient/Vitals">Health Vitals</a>
+          </li>
+          <li>
+            <a href="~/Patient/Appointments">My Appointments</a>
           </li>
         </ul>
       </li>
+      
+      <!-- Doctor Section -->
       <li class="treeview">
         <a href="#!">
-          <i class="ri-dossier-line"></i>
-          <span class="menu-text">Appointments</span>
+          <i class="ri-stethoscope-line"></i>
+          <span class="menu-text">Doctor</span>
         </a>
         <ul class="treeview-menu">
           <li>
-            <a href="~/Appointments">Appointments</a>
+            <a href="~/Doctor/Profile">Doctor Profile</a>
           </li>
           <li>
-            <a href="~/Appointments/List">Appointments List</a>
+            <a href="~/Doctor/Appointments">Appointments</a>
           </li>
           <li>
-            <a href="~/Appointments/Book">Book Appointment</a>
-          </li>
-          <li>
-            <a href="~/Appointments/Success">Appointment Success</a>
-          </li>
-          <li>
-            <a href="~/Appointments/Edit">Edit Appointment</a>
+            <a href="~/Doctor/Prescriptions">Prescriptions</a>
           </li>
         </ul>
       </li>
+      
+      <!-- Lab Section -->
       <li class="treeview">
         <a href="#!">
-          <i class="ri-building-2-line"></i>
-          <span class="menu-text">Departments</span>
+          <i class="ri-test-tube-line"></i>
+          <span class="menu-text">Laboratory</span>
         </a>
         <ul class="treeview-menu">
           <li>
-            <a href="~/Departments">Departments List</a>
+            <a href="~/Lab/Profile">Lab Profile</a>
           </li>
           <li>
-            <a href="~/Departments/Add">Add Department</a>
+            <a href="~/Lab/Requests">Lab Requests</a>
           </li>
           <li>
-            <a href="~/Departments/Edit">Edit Department</a>
+            <a href="~/Lab/Reports">Lab Reports</a>
           </li>
         </ul>
       </li>
+      
+      <!-- Admin Section -->
       <li class="treeview">
         <a href="#!">
-          <i class="ri-secure-payment-line"></i>
-          <span class="menu-text">Accounts</span>
+          <i class="ri-admin-line"></i>
+          <span class="menu-text">Administration</span>
         </a>
         <ul class="treeview-menu">
           <li>
-            <a href="~/Accounts/Income">Income</a>
+            <a href="~/Admin/Dashboard">Admin Dashboard</a>
           </li>
           <li>
-            <a href="~/Accounts/Payments">Payments</a>
+            <a href="~/Admin/Users">User Management</a>
           </li>
           <li>
-            <a href="~/Accounts/Invoices">Invoices</a>
+            <a href="~/Admin/Roles">Role Management</a>
           </li>
           <li>
-            <a href="~/Accounts/InvoiceDetails">Invoice Details</a>
+            <a href="~/Admin/RoleRights">Role Rights Mapping</a>
           </li>
           <li>
-            <a href="~/Accounts/CreateInvoice">Create Invoice</a>
-          </li>
-          <li>
-            <a href="~/Accounts/Expenses">Expenses</a>
+            <a href="~/Admin/SystemOverview">System Overview</a>
           </li>
         </ul>
       </li>
-      <li class="treeview">
-        <a href="#!">
-          <i class="ri-group-2-line"></i>
-          <span class="menu-text">Human Resources</span>
-        </a>
-        <ul class="treeview-menu">
-          <li>
-            <a href="~/HR/Approvals">HR Approvals</a>
-          </li>
-          <li>
-            <a href="~/HR/Attendance">Attendance</a>
-          </li>
-          <li>
-            <a href="~/HR/Leaves">Staff Leaves</a>
-          </li>
-          <li>
-            <a href="~/HR/Holidays">Holidays</a>
-          </li>
-        </ul>
-      </li>
-      <li class="treeview">
-        <a href="#!">
-          <i class="ri-money-dollar-circle-line"></i>
-          <span class="menu-text">Salaries</span>
-        </a>
-        <ul class="treeview-menu">
-          <li>
-            <a href="~/Salaries">Salary List</a>
-          </li>
-          <li>
-            <a href="~/Salaries/Payslip">Payslip</a>
-          </li>
-        </ul>
-      </li>
-      <li class="treeview">
-        <a href="#!">
-          <i class="ri-hotel-bed-line"></i>
-          <span class="menu-text">Rooms</span>
-        </a>
-        <ul class="treeview-menu">
-          <li>
-            <a href="~/Rooms/Statistics">Statistics</a>
-          </li>
-          <li>
-            <a href="~/Rooms/Allotted">Rooms Allotted</a>
-          </li>
-          <li>
-            <a href="~/Rooms/ByDepartment">Rooms By Department</a>
-          </li>
-          <li>
-            <a href="~/Rooms/Available">Available Rooms</a>
-          </li>
-          <li>
-            <a href="~/Rooms/Book">Book Room</a>
-          </li>
-          <li>
-            <a href="~/Rooms/Add">Add Room</a>
-          </li>
-          <li>
-            <a href="~/Rooms/Edit">Edit Room</a>
-          </li>
-        </ul>
-      </li>
-      <li class="treeview">
-        <a href="#!">
-          <i class="ri-car-washing-line"></i>
-          <span class="menu-text">Ambulance</span>
-        </a>
-        <ul class="treeview-menu">
-          <li>
-            <a href="~/Ambulance">Ambulance List</a>
-          </li>
-          <li>
-            <a href="~/Ambulance/Add">Add Ambulance</a>
-          </li>
-          <li>
-            <a href="~/Ambulance/Edit">Edit Ambulance</a>
-          </li>
-          <li>
-            <a href="~/Ambulance/Calls">Ambulance Call List</a>
-          </li>
-          <li>
-            <a href="~/Drivers/Add">Add Driver</a>
-          </li>
-          <li>
-            <a href="~/Drivers/Edit">Edit Driver</a>
-          </li>
-          <li>
-            <a href="~/Drivers">Driver List</a>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="~/Events">
-          <i class="ri-calendar-line"></i>
-          <span class="menu-text">Event Management</span>
-        </a>
-      </li>
-      <li>
-        <a href="~/Gallery">
-          <i class="ri-tent-line"></i>
-          <span class="menu-text">Gallery</span>
-        </a>
-      </li>
-      <li>
-        <a href="~/News">
-          <i class="ri-news-line"></i>
-          <span class="menu-text">News & Updates</span>
-        </a>
-      </li>
+      
+      <!-- Settings -->
       <li>
         <a href="~/Settings">
           <i class="ri-settings-5-line"></i>
-          <span class="menu-text">Account Settings</span>
+          <span class="menu-text">Settings</span>
         </a>
       </li>
     </ul>
