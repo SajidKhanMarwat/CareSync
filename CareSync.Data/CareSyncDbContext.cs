@@ -68,6 +68,7 @@ public class CareSyncDbContext : IdentityDbContext<T_Users, T_Roles, string, Ide
         builder.Entity<T_RoleClaim>().ToTable("T_RoleClaims");
 
         builder.Entity<T_Users>().Property(x => x.Id).HasMaxLength(128);
+        builder.Entity<T_Users>().HasKey(x => x.Id);
         builder.Entity<T_Roles>().Property(x => x.Id).HasMaxLength(128);
         builder.Entity<T_UserRole>().Property(x => x.UserId).HasMaxLength(128);
         builder.Entity<T_UserRole>().Property(x => x.RoleId).HasMaxLength(128);

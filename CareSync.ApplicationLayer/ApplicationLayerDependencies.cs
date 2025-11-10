@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+using CareSync.ApplicationLayer.Extensions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
@@ -8,7 +9,9 @@ public static class ApplicationLayerDependencies
 {
     public static IServiceCollection ApplicationLayerServices(this IServiceCollection services)
     {
-        //services.AddAutoMapper(typeof(ApplicationLayerDependencies).Assembly);
+        services.AddAutoMapper(typeof(ApplicationLayerDependencies).Assembly);
+        services.AddSeedDataServices();
+        
         //#region Serilog
         //Log.Logger = new LoggerConfiguration()
         //    .MinimumLevel.Information()

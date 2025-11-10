@@ -228,3 +228,4 @@ CareSync.UI/obj/Debug/net8.0/staticwebassets.build.json.cache
 /CareSync.UI/bin
 /CareSync.ApplicationLayer/obj
 /CareSync.ApplicationLayer/obj
+/CareSync.API/appsettings.json
