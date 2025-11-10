@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using CareSync.DataLayer.Entities;
 using CareSync.Shared.Models;
 using Microsoft.AspNetCore.Identity;
@@ -39,7 +39,7 @@ public class UserService(UserManager<T_Users> userManager, SignInManager<T_Users
         (var newAccessToken, var newRefreshToken) =
             (await GenerateToken(user, userManager, roleManager), GenerateRefreshToken(userId));
 
-        await Set_RefreshToken_Cookies(newRefreshToken, 1);
+       // await Set_RefreshToken_Cookies(newRefreshToken, 1);
 
         return Result<LoginResponse>.Success(new LoginResponse()
         {
@@ -122,7 +122,7 @@ public class UserService(UserManager<T_Users> userManager, SignInManager<T_Users
                 await userManager.SetAuthenticationTokenAsync(user, "CareSync", "RefreshToken", refreshToken);
 
                 // Add RefreshToken to cookie here...
-                await Set_RefreshToken_Cookies(refreshToken, 1);
+                //await Set_RefreshToken_Cookies(refreshToken, 1);
             }
             return Result<LoginResponse>.Success(new LoginResponse()
             {
@@ -146,14 +146,37 @@ public class UserService(UserManager<T_Users> userManager, SignInManager<T_Users
         logger.LogInformation("Executing: RegisterNewUser");
         try
         {
-            var response = await userManager.CreateAsync(mapper.Map<T_Users>(request), request.Password);
+            var userEntity = mapper.Map<T_Users>(request);
+            
+            // Set default role for new users (Patient)
+            var patientRole = await roleManager.FindByNameAsync("Patient");
+            if (patientRole != null)
+            {
+                userEntity.RoleID = patientRole.Id;
+            }
+            else
+            {
+                // If Patient role doesn't exist, create a default role ID
+                userEntity.RoleID = "default-patient-role";
+            }
+           
+            var response = await userManager.CreateAsync(userEntity, request.Password);
 
             if (response.Succeeded)
+            {
+                // Assign the user to the Patient role
+                var roleAssignResult = await userManager.AddToRoleAsync(userEntity, "Patient");
+                if (!roleAssignResult.Succeeded)
+                {
+                    logger.LogWarning("Failed to assign Patient role to user {UserId}", userEntity.Id);
+                }
+                
                 return Result<GeneralResponse>.Success(new GeneralResponse()
                 {
                     Success = true,
                     Message = "account created successfully, check confirmation email.",
                 });
+            }
             return Result<GeneralResponse>.Failure(new GeneralResponse()
             {
                 Success = false,

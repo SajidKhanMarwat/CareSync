@@ -1,7 +1,9 @@
 using CareSync.ApplicationLayer;
+using CareSync.ApplicationLayer.Extensions;
 using CareSync.ApplicationLayer.IServices.EntitiesServices;
 using CareSync.DataLayer;
 using CareSync.DataLayer.Entities;
+using CareSync.InfrastructureLayer.Services.CookieServices;
 using CareSync.InfrastructureLayer.Services.EntitiesServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,13 +17,13 @@ builder.Host.UseSerilog();
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
-
+CareSync.InfrastructureLayer.Common.Constants.Configurations.Initialize(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContextPool<CareSyncDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("CareSyncConnection")));
 builder.Services.AddIdentity<T_Users, T_Roles>().AddEntityFrameworkStores<CareSyncDbContext>().AddDefaultTokenProviders();
-
-
 builder.Services.AddAutoMapper(typeof(ApplicationLayerDependencies).Assembly);
+builder.Services.ApplicationLayerServices();
+
 #region Serilog
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -49,4 +51,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.ApplicationLayerDI();
+
+// Seed database with initial data
+await app.SeedDatabaseAsync();
+
 app.Run();

@@ -1,0 +1,119 @@
+@page "/Auth/Register"
+@model CareSync.Pages.Auth.RegisterModel
+@{
+    ViewData["Title"] = "Register";
+    ViewData["Layout"] = "Layouts/_AuthLayout";
+}
+
+<!-- Container starts -->
+<div class="container">
+    <!-- Auth wrapper starts -->
+    <div class="auth-wrapper">
+        <!-- Form starts -->
+        <form method="post">
+            <div class="auth-box">
+                <a href="" class="auth-logo mb-4">
+                    <img src="~/ApolloTheme/assets/images/logo.svg" alt="CareSync">
+                </a>
+
+                <h4 class="mb-4">Signup</h4>
+
+                <!-- Success Message -->
+                @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @Model.SuccessMessage
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <!-- Error Message -->
+                @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @Model.ErrorMessage
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label class="form-label" asp-for="RegisterRequest.FirstName">Your name <span class="text-danger">*</span></label>
+                    <input type="text" asp-for="RegisterRequest.FirstName" class="form-control" placeholder="Enter your name">
+                    <span asp-validation-for="RegisterRequest.FirstName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" asp-for="RegisterRequest.UserName">Username <span class="text-danger">*</span></label>
+                    <input type="text" asp-for="RegisterRequest.UserName" class="form-control" placeholder="Choose a username">
+                    <span asp-validation-for="RegisterRequest.UserName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" asp-for="RegisterRequest.Email">Your email <span class="text-danger">*</span></label>
+                    <input type="email" asp-for="RegisterRequest.Email" class="form-control" placeholder="Enter your email">
+                    <span asp-validation-for="RegisterRequest.Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" asp-for="RegisterRequest.PhoneNumber">Phone number</label>
+                    <input type="tel" asp-for="RegisterRequest.PhoneNumber" class="form-control" placeholder="Enter your phone number">
+                    <span asp-validation-for="RegisterRequest.PhoneNumber" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" asp-for="RegisterRequest.Password">Your password <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <input type="password" asp-for="RegisterRequest.Password" class="form-control" placeholder="Enter password">
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('RegisterRequest_Password')">
+                            <i class="ri-eye-line text-primary"></i>
+                        </button>
+                    </div>
+                    <div class="form-text">
+                        Your password must be 6-20 characters long.
+                    </div>
+                    <span asp-validation-for="RegisterRequest.Password" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" asp-for="RegisterRequest.ConfirmPassword">Confirm password <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <input type="password" asp-for="RegisterRequest.ConfirmPassword" class="form-control" placeholder="Confirm password">
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('RegisterRequest_ConfirmPassword')">
+                            <i class="ri-eye-line text-primary"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="RegisterRequest.ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Signup</button>
+                    <a href="/Auth/Login" class="btn btn-secondary">Already have an account? Login</a>
+                </div>
+            </div>
+        </form>
+        <!-- Form ends -->
+    </div>
+    <!-- Auth wrapper ends -->
+</div>
+<!-- Container ends -->
+
+<script>
+    function togglePassword(fieldId) {
+        const field = document.getElementById(fieldId);
+        const button = field.nextElementSibling.querySelector('i');
+        
+        if (field.type === 'password') {
+            field.type = 'text';
+            button.className = 'ri-eye-off-line text-primary';
+        } else {
+            field.type = 'password';
+            button.className = 'ri-eye-line text-primary';
+        }
+    }
+</script>
+
+@{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
