@@ -1,3 +1,4 @@
+using CareSync.DataLayer.DataEnums;
 using Microsoft.AspNetCore.Identity;
 
 namespace CareSync.DataLayer.Entities;
@@ -23,6 +24,20 @@ public class T_Roles : IdentityRole<string>
     /// Nullable as not all deployments may require Arabic language support.
     /// </summary>
     public required string RoleArabicName { get; set; }
+
+    /// <summary>
+    /// The role type enumeration that categorizes this role.
+    /// Used for programmatic role checking and business logic decisions.
+    /// Required field that maps to the RoleType enum.
+    /// </summary>
+    public required RoleType RoleType { get; set; }
+
+    /// <summary>
+    /// Indicates whether this role is currently active and can be assigned to users.
+    /// When false, the role cannot be assigned to new users but existing assignments remain.
+    /// Default value is true for new roles.
+    /// </summary>
+    public bool IsActive { get; set; } = true;
 
     /// <summary>
     /// Detailed description of the role's purpose and responsibilities within the system.
