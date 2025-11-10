@@ -1,0 +1,177 @@
+@page "/Doctor/Prescriptions"
+@model CareSync.Pages.Doctor.PrescriptionsModel
+@{
+    ViewData["Title"] = "Prescriptions";
+    ViewData["Breadcrumbs"] = new List<(string Name, string Url)>
+    {
+        ("Doctor", "/Doctor")
+    };
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Recent Prescriptions</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Patient Name</th>
+                                <th>Appointment</th>
+                                <th>Medications</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2024-11-10</td>
+                                <td>John Smith</td>
+                                <td>Regular Checkup</td>
+                                <td>3 medications</td>
+                                <td>Take with food</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                    <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                                    <button class="btn btn-sm btn-outline-info">Print</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2024-11-09</td>
+                                <td>Mary Johnson</td>
+                                <td>Blood Pressure Follow-up</td>
+                                <td>2 medications</td>
+                                <td>Monitor BP daily</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                    <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                                    <button class="btn btn-sm btn-outline-info">Print</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2024-11-08</td>
+                                <td>Robert Wilson</td>
+                                <td>Chest Pain Consultation</td>
+                                <td>4 medications</td>
+                                <td>Follow-up in 2 weeks</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                    <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                                    <button class="btn btn-sm btn-outline-info">Print</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Create New Prescription</h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Patient</label>
+                            <select class="form-select" name="PatientID">
+                                <option value="">Select Patient</option>
+                                <option value="1">John Smith</option>
+                                <option value="2">Mary Johnson</option>
+                                <option value="3">Robert Wilson</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Appointment</label>
+                            <select class="form-select" name="AppointmentID">
+                                <option value="">Select Appointment</option>
+                                <option value="1">2024-11-10 - Regular Checkup</option>
+                                <option value="2">2024-11-09 - Follow-up</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Prescription Notes</label>
+                        <textarea class="form-control" name="Notes" rows="3" placeholder="General instructions and notes"></textarea>
+                    </div>
+                    
+                    <h6>Medications</h6>
+                    <div class="border p-3 mb-3">
+                        <div class="row">
+                            <div class="col-md-3 mb-2">
+                                <label class="form-label">Medicine Name</label>
+                                <input type="text" class="form-control" name="MedicineName" />
+                            </div>
+                            <div class="col-md-2 mb-2">
+                                <label class="form-label">Dosage</label>
+                                <input type="text" class="form-control" name="Dosage" placeholder="500mg" />
+                            </div>
+                            <div class="col-md-2 mb-2">
+                                <label class="form-label">Frequency</label>
+                                <select class="form-select" name="Frequency">
+                                    <option value="">Select</option>
+                                    <option value="Once daily">Once daily</option>
+                                    <option value="Twice daily">Twice daily</option>
+                                    <option value="Three times daily">Three times daily</option>
+                                    <option value="Four times daily">Four times daily</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 mb-2">
+                                <label class="form-label">Duration</label>
+                                <input type="text" class="form-control" name="Duration" placeholder="7 days" />
+                            </div>
+                            <div class="col-md-2 mb-2">
+                                <label class="form-label">Instructions</label>
+                                <input type="text" class="form-control" name="Instructions" placeholder="After meals" />
+                            </div>
+                            <div class="col-md-1 mb-2 d-flex align-items-end">
+                                <button type="button" class="btn btn-outline-success btn-sm">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Medicine</th>
+                                    <th>Dosage</th>
+                                    <th>Frequency</th>
+                                    <th>Duration</th>
+                                    <th>Instructions</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Paracetamol</td>
+                                    <td>500mg</td>
+                                    <td>Three times daily</td>
+                                    <td>5 days</td>
+                                    <td>After meals</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-danger">Remove</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section PageActions {
+    <button type="button" class="btn btn-primary">Save Prescription</button>
+    <button type="button" class="btn btn-outline-secondary">Print Preview</button>
+}

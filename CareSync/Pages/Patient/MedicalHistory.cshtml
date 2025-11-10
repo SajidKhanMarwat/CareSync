@@ -1,0 +1,102 @@
+@page "/Patient/MedicalHistory"
+@model CareSync.Pages.Patient.MedicalHistoryModel
+@{
+    ViewData["Title"] = "Medical History";
+    ViewData["Breadcrumbs"] = new List<(string Name, string Url)>
+    {
+        ("Patient", "/Patient")
+    };
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Medical History</h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Main Diagnosis</label>
+                            <textarea class="form-control" name="MainDiagnosis" rows="3"></textarea>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Chronic Diseases</label>
+                            <textarea class="form-control" name="ChronicDiseases" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Allergies</label>
+                            <textarea class="form-control" name="Allergies" rows="3"></textarea>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Past Diseases</label>
+                            <textarea class="form-control" name="PastDiseases" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Surgery History</label>
+                            <textarea class="form-control" name="Surgery" rows="3"></textarea>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Family History</label>
+                            <textarea class="form-control" name="FamilyHistory" rows="3"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Chronic Diseases Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Disease Name</th>
+                                <th>Diagnosed Date</th>
+                                <th>Current Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Diabetes Type 2</td>
+                                <td>2020-01-15</td>
+                                <td>Under Control</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                    <button class="btn btn-sm btn-outline-danger">Remove</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Hypertension</td>
+                                <td>2019-06-10</td>
+                                <td>Managed</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                    <button class="btn btn-sm btn-outline-danger">Remove</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section PageActions {
+    <button type="button" class="btn btn-success">Add Disease</button>
+    <button type="button" class="btn btn-primary">Save Changes</button>
+}

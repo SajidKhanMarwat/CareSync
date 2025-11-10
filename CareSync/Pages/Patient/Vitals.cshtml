@@ -1,0 +1,133 @@
+@page "/Patient/Vitals"
+@model CareSync.Pages.Patient.VitalsModel
+@{
+    ViewData["Title"] = "Patient Vitals";
+    ViewData["Breadcrumbs"] = new List<(string Name, string Url)>
+    {
+        ("Patient", "/Patient")
+    };
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Basic Vitals</h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Height (cm)</label>
+                            <input type="number" class="form-control" name="Height" step="0.01" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Weight (kg)</label>
+                            <input type="number" class="form-control" name="Weight" step="0.01" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Pulse Rate (bpm)</label>
+                            <input type="number" class="form-control" name="PulseRate" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Blood Pressure</label>
+                            <input type="text" class="form-control" name="BloodPressure" placeholder="120/80" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Health Conditions</h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="IsDiabetic" id="isDiabetic">
+                            <label class="form-check-label" for="isDiabetic">
+                                Diabetic
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Diabetic Readings</label>
+                        <textarea class="form-control" name="DiabeticReadings" rows="2" placeholder="Blood sugar levels, HbA1c, etc."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="HasHighBloodPressure" id="hasHighBP">
+                            <label class="form-check-label" for="hasHighBP">
+                                High Blood Pressure
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Blood Pressure Readings</label>
+                        <textarea class="form-control" name="BloodPressureReadings" rows="2" placeholder="Historical BP readings"></textarea>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Vitals History</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Height</th>
+                                <th>Weight</th>
+                                <th>Pulse Rate</th>
+                                <th>Blood Pressure</th>
+                                <th>BMI</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2024-11-10</td>
+                                <td>175 cm</td>
+                                <td>70 kg</td>
+                                <td>72 bpm</td>
+                                <td>120/80</td>
+                                <td>22.9</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2024-10-15</td>
+                                <td>175 cm</td>
+                                <td>72 kg</td>
+                                <td>75 bpm</td>
+                                <td>125/82</td>
+                                <td>23.5</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section PageActions {
+    <button type="button" class="btn btn-primary">Save Vitals</button>
+}

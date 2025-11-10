@@ -1,0 +1,235 @@
+@page "/Admin/Users"
+@model CareSync.Pages.Admin.UsersModel
+@{
+    ViewData["Title"] = "User Management";
+    ViewData["Breadcrumbs"] = new List<(string Name, string Url)>
+    {
+        ("Admin", "/Admin")
+    };
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">System Users</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>User ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Last Login</th>
+                                <th>Created Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#U001</td>
+                                <td>Dr. John Smith</td>
+                                <td>john.smith@caresync.com</td>
+                                <td><span class="badge bg-primary">Doctor</span></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>2024-11-10 08:30</td>
+                                <td>2024-01-15</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                    <button class="btn btn-sm btn-outline-warning">Suspend</button>
+                                    <button class="btn btn-sm btn-outline-info">View Details</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#U002</td>
+                                <td>Mary Johnson</td>
+                                <td>mary.johnson@email.com</td>
+                                <td><span class="badge bg-info">Patient</span></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>2024-11-09 14:20</td>
+                                <td>2024-02-20</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                    <button class="btn btn-sm btn-outline-warning">Suspend</button>
+                                    <button class="btn btn-sm btn-outline-info">View Details</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#U003</td>
+                                <td>Lab Central</td>
+                                <td>admin@labcentral.com</td>
+                                <td><span class="badge bg-secondary">Lab</span></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>2024-11-10 07:45</td>
+                                <td>2024-01-10</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                    <button class="btn btn-sm btn-outline-warning">Suspend</button>
+                                    <button class="btn btn-sm btn-outline-info">View Details</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#U004</td>
+                                <td>Robert Wilson</td>
+                                <td>robert.wilson@email.com</td>
+                                <td><span class="badge bg-info">Patient</span></td>
+                                <td><span class="badge bg-warning">Suspended</span></td>
+                                <td>2024-11-05 10:15</td>
+                                <td>2024-03-12</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                    <button class="btn btn-sm btn-outline-success">Activate</button>
+                                    <button class="btn btn-sm btn-outline-info">View Details</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Add New User</h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">First Name</label>
+                            <input type="text" class="form-control" name="FirstName" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" class="form-control" name="LastName" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="Email" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" name="PhoneNumber" />
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Role</label>
+                            <select class="form-select" name="RoleType">
+                                <option value="">Select Role</option>
+                                <option value="0">Admin</option>
+                                <option value="1">Doctor</option>
+                                <option value="2">Patient</option>
+                                <option value="3">Lab</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Gender</label>
+                            <select class="form-select" name="Gender">
+                                <option value="">Select Gender</option>
+                                <option value="0">Male</option>
+                                <option value="1">Female</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date of Birth</label>
+                        <input type="date" class="form-control" name="DateOfBirth" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <textarea class="form-control" name="Address" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">User Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <div class="text-center">
+                            <h4 class="text-primary">156</h4>
+                            <small>Total Users</small>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="text-center">
+                            <h4 class="text-success">142</h4>
+                            <small>Active Users</small>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="text-center">
+                            <h4 class="text-info">45</h4>
+                            <small>Doctors</small>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="text-center">
+                            <h4 class="text-warning">98</h4>
+                            <small>Patients</small>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="text-center">
+                            <h4 class="text-secondary">8</h4>
+                            <small>Labs</small>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="text-center">
+                            <h4 class="text-dark">5</h4>
+                            <small>Admins</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h6>Recent Registrations</h6>
+                    <ul class="list-unstyled">
+                        <li class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <strong>Sarah Davis</strong>
+                                <br><small class="text-muted">Patient</small>
+                            </div>
+                            <small>2024-11-09</small>
+                        </li>
+                        <li class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <strong>Dr. Michael Brown</strong>
+                                <br><small class="text-muted">Doctor</small>
+                            </div>
+                            <small>2024-11-08</small>
+                        </li>
+                        <li class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Quick Lab</strong>
+                                <br><small class="text-muted">Lab</small>
+                            </div>
+                            <small>2024-11-07</small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section PageActions {
+    <button type="button" class="btn btn-primary">Create User</button>
+    <button type="button" class="btn btn-outline-secondary">Export Users</button>
+    <button type="button" class="btn btn-outline-info">Import Users</button>
+}
