@@ -47,9 +47,14 @@ public class RegisterModel : PageModel
                 LastName = RegisterRequest.LastName,
                 Email = RegisterRequest.Email,
                 UserName = RegisterRequest.UserName,
+                ArabicUserName = RegisterRequest.ArabicUserName,
                 PhoneNumber = RegisterRequest.PhoneNumber ?? string.Empty,
                 Password = RegisterRequest.Password,
                 ConfirmPassword = RegisterRequest.ConfirmPassword,
+                Gender = RegisterRequest.Gender,
+                DateOfBirth = RegisterRequest.DateOfBirth,
+                Age = RegisterRequest.Age,
+                Address = RegisterRequest.Address,
                 TwoFactorEnabled = RegisterRequest.TwoFactorEnabled
             };
 
