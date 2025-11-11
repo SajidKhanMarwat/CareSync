@@ -37,14 +37,38 @@ public class LoginModel : PageModel
             {
                 var result = ApiResponseMapper.MapLoginResponse(await response.Content.ReadAsStringAsync());
 
-                if (result.IsSuccess)
-                    return RedirectToPage("/Dashboard/Index");
+                if (result.IsSuccess && result.Data != null)
+                {
+                    // Store user information in session
+                    HttpContext.Session.SetString("UserRole", result.Data.Role ?? "Patient");
+                    HttpContext.Session.SetString("UserToken", result.Data.Token ?? "");
+                    HttpContext.Session.SetString("RefreshToken", result.Data.RefreshToken ?? "");
+                    
+                    // Store role rights as JSON
+                    if (result.Data.RoleRights != null && result.Data.RoleRights.Any())
+                    {
+                        var roleRightsJson = JsonSerializer.Serialize(result.Data.RoleRights);
+                        HttpContext.Session.SetString("RoleRights", roleRightsJson);
+                    }
+
+                    // Redirect based on role
+                    return result.Data.Role?.ToLower() switch
+                    {
+                        "admin" => RedirectToPage("/Admin/Dashboard"),
+                        "doctor" => RedirectToPage("/Doctor/Dashboard"),
+                        "patient" => RedirectToPage("/Patient/Dashboard"),
+                        _ => RedirectToPage("/Dashboard/Index")
+                    };
+                }
                 else
-                    return RedirectToPage("/auth/login");
+                {
+                    ModelState.AddModelError(string.Empty, result.Data?.Message ?? "Login failed");
+                    return Page();
+                }
             }
             else
             {
-                loginResponse.Message = "Invalid email or password";
+                ModelState.AddModelError(string.Empty, "Invalid email or password");
                 return Page();
             }
         }

@@ -1,0 +1,38 @@
+@page "/Auth/AccessDenied"
+@model CareSync.Pages.Auth.AccessDeniedModel
+@{
+    ViewData["Title"] = "Access Denied";
+    ViewData["Layout"] = "Layouts/_AuthLayout";
+}
+
+<!-- Container starts -->
+<div class="container">
+    <!-- Auth wrapper starts -->
+    <div class="auth-wrapper">
+        <div class="auth-box text-center">
+            <div class="mb-4">
+                <i class="ri-error-warning-line display-1 text-danger"></i>
+            </div>
+            
+            <h4 class="mb-3 text-danger">Access Denied</h4>
+            <p class="mb-4 text-muted">
+                You don't have permission to access this page. 
+                Please contact your administrator if you believe this is an error.
+            </p>
+            
+            <div class="d-grid gap-2">
+                <a href="javascript:history.back()" class="btn btn-secondary">
+                    <i class="ri-arrow-left-line me-2"></i>Go Back
+                </a>
+                <a href="~/Dashboard" class="btn btn-primary">
+                    <i class="ri-home-line me-2"></i>Go to Dashboard
+                </a>
+                <a href="~/Auth/Logout" class="btn btn-outline-danger">
+                    <i class="ri-logout-box-line me-2"></i>Logout
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- Auth wrapper ends -->
+</div>
+<!-- Container ends -->

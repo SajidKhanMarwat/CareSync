@@ -1,9 +1,12 @@
+using System;
 using System.ComponentModel.DataAnnotations;
-
-namespace CareSync.Shared.ViewModels;
 
 public class Register_Request
 {
+    [Required(ErrorMessage = "Arabic name is required")]
+    [Display(Name = "Arabic Name")]
+    public required string ArabicUserName { get; set; }
+
     [Required(ErrorMessage = "First name is required")]
     [Display(Name = "First Name")]
     public required string FirstName { get; set; }
@@ -26,6 +29,20 @@ public class Register_Request
     [Phone(ErrorMessage = "Please enter a valid phone number")]
     [Display(Name = "Phone Number")]
     public string? PhoneNumber { get; set; }
+
+    [Required(ErrorMessage = "Gender is required")]
+    [Display(Name = "Gender")]
+    public int Gender { get; set; } // 1 = Male, 2 = Female, 3 = Other
+
+    [Display(Name = "Date of Birth")]
+    [DataType(DataType.Date)]
+    public DateTime? DateOfBirth { get; set; }
+
+    [Display(Name = "Age")]
+    public int? Age { get; set; }
+
+    [Display(Name = "Address")]
+    public string? Address { get; set; }
 
     [Required(ErrorMessage = "Password is required")]
     [DataType(DataType.Password)]

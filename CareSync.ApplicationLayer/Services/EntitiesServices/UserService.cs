@@ -91,10 +91,16 @@ public class UserService(UserManager<T_Users> userManager, SignInManager<T_Users
 
     private async Task<T_Users?> GetUserByEmailOrUsername(string Email)
     {
-        bool isEmail = Email.Contains("@") ? true : false;
-        var user = isEmail
-            ? await signInManager.UserManager.FindByEmailAsync(Email)
-            : await signInManager.UserManager.FindByNameAsync(Email);
+        bool isEmail = Email.Contains("@");
+        var query = signInManager?.UserManager?.Users?
+            .Include(u => u.UserRole)!
+            .ThenInclude(ur => ur.Role)!; 
+        T_Users? user;
+        if (isEmail)
+            user = await query.FirstOrDefaultAsync(u => u.Email == Email);
+        else
+            user = await query.FirstOrDefaultAsync(u => u.UserName == Email);
+
         return user;
     }
 
@@ -131,7 +137,9 @@ public class UserService(UserManager<T_Users> userManager, SignInManager<T_Users
                     ? "Success"
                     : "failed to login, please try again with correct email & password.",
                 Token = response.Succeeded ? token : string.Empty,
-                RefreshToken = refreshToken
+                RefreshToken = refreshToken,
+                Role=user?.Role?.RoleName!,
+
             });
         }
         catch (DbUpdateException ex)
