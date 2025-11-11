@@ -1,12 +1,18 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using CareSync.Pages.Shared;
 
 namespace CareSync.Pages.Doctor
 {
-    public class ProfileModel : PageModel
+    public class ProfileModel : BasePageModel
     {
-        public void OnGet()
+        public IActionResult OnGet()
         {
+            // Check if user is authenticated and has Doctor role
+            var authResult = RequireRole("Doctor");
+            if (authResult != null) return authResult;
+
+            // Doctor profile logic here
+            return Page();
         }
     }
 }

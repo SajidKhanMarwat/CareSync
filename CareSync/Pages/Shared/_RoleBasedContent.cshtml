@@ -1,0 +1,24 @@
+@{
+    var userRole = ViewContext.HttpContext.Session.GetString("UserRole") ?? "Patient";
+    var allowedRoles = ViewData["AllowedRoles"] as string[] ?? new string[] { };
+    var requiredRole = ViewData["RequiredRole"] as string ?? "";
+    var showContent = false;
+
+    if (!string.IsNullOrEmpty(requiredRole))
+    {
+        showContent = string.Equals(userRole, requiredRole, StringComparison.OrdinalIgnoreCase);
+    }
+    else if (allowedRoles.Any())
+    {
+        showContent = allowedRoles.Any(role => string.Equals(userRole, role, StringComparison.OrdinalIgnoreCase));
+    }
+    else
+    {
+        showContent = true; // Show content if no restrictions specified
+    }
+}
+
+@if (showContent)
+{
+    @RenderBody()
+}

@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Authorization;
+using CareSync.Pages.Shared;
 
 namespace CareSync.Pages.Admin
 {
-    public class DashboardModel : PageModel
+    public class DashboardModel : BasePageModel
     {
         private readonly ILogger<DashboardModel> _logger;
 
@@ -13,9 +12,14 @@ namespace CareSync.Pages.Admin
             _logger = logger;
         }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
+            // Check if user is authenticated and has Admin role
+            var authResult = RequireRole("Admin");
+            if (authResult != null) return authResult;
+
             // Admin dashboard logic here
+            return Page();
         }
     }
 }

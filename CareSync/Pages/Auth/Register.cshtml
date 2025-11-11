@@ -1,4 +1,4 @@
-@page "/Auth/Register"
+﻿@page "/Auth/Register"
 @model CareSync.Pages.Auth.RegisterModel
 @{
     ViewData["Title"] = "Register";
@@ -18,7 +18,6 @@
 
                 <h4 class="mb-4">Signup</h4>
 
-                <!-- Success Message -->
                 @if (!string.IsNullOrEmpty(Model.SuccessMessage))
                 {
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -27,7 +26,6 @@
                     </div>
                 }
 
-                <!-- Error Message -->
                 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
                 {
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -38,46 +36,89 @@
 
                 <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
+                <!-- Arabic User Name -->
                 <div class="mb-3">
-                    <label class="form-label" asp-for="RegisterRequest.FirstName">Your name <span class="text-danger">*</span></label>
+                    <label class="form-label" asp-for="RegisterRequest.ArabicUserName">Arabic Name <span class="text-danger">*</span></label>
+                    <input type="text" asp-for="RegisterRequest.ArabicUserName" class="form-control" placeholder="اكتب اسمك بالعربية">
+                    <span asp-validation-for="RegisterRequest.ArabicUserName" class="text-danger"></span>
+                </div>
+
+                <!-- First Name -->
+                <div class="mb-3">
+                    <label class="form-label" asp-for="RegisterRequest.FirstName">First Name <span class="text-danger">*</span></label>
                     <input type="text" asp-for="RegisterRequest.FirstName" class="form-control" placeholder="Enter your name">
                     <span asp-validation-for="RegisterRequest.FirstName" class="text-danger"></span>
                 </div>
 
+                <!-- Username -->
                 <div class="mb-3">
                     <label class="form-label" asp-for="RegisterRequest.UserName">Username <span class="text-danger">*</span></label>
                     <input type="text" asp-for="RegisterRequest.UserName" class="form-control" placeholder="Choose a username">
                     <span asp-validation-for="RegisterRequest.UserName" class="text-danger"></span>
                 </div>
 
+                <!-- Email -->
                 <div class="mb-3">
-                    <label class="form-label" asp-for="RegisterRequest.Email">Your email <span class="text-danger">*</span></label>
+                    <label class="form-label" asp-for="RegisterRequest.Email">Email <span class="text-danger">*</span></label>
                     <input type="email" asp-for="RegisterRequest.Email" class="form-control" placeholder="Enter your email">
                     <span asp-validation-for="RegisterRequest.Email" class="text-danger"></span>
                 </div>
 
+                <!-- Phone -->
                 <div class="mb-3">
                     <label class="form-label" asp-for="RegisterRequest.PhoneNumber">Phone number</label>
                     <input type="tel" asp-for="RegisterRequest.PhoneNumber" class="form-control" placeholder="Enter your phone number">
                     <span asp-validation-for="RegisterRequest.PhoneNumber" class="text-danger"></span>
                 </div>
 
+                <!-- Gender -->
                 <div class="mb-3">
-                    <label class="form-label" asp-for="RegisterRequest.Password">Your password <span class="text-danger">*</span></label>
+                    <label class="form-label" asp-for="RegisterRequest.Gender">Gender <span class="text-danger">*</span></label>
+                    <select asp-for="RegisterRequest.Gender" class="form-select">
+                        <option value="">Select Gender</option>
+                        <option value="1">Male</option>
+                        <option value="2">Female</option>
+                        <option value="3">Other</option>
+                    </select>
+                    <span asp-validation-for="RegisterRequest.Gender" class="text-danger"></span>
+                </div>
+
+                <!-- Date of Birth -->
+                <div class="mb-3">
+                    <label class="form-label" asp-for="RegisterRequest.DateOfBirth">Date of Birth</label>
+                    <input type="date" asp-for="RegisterRequest.DateOfBirth" class="form-control" onchange="calculateAge()">
+                    <span asp-validation-for="RegisterRequest.DateOfBirth" class="text-danger"></span>
+                </div>
+
+                <!-- Age -->
+                <div class="mb-3">
+                    <label class="form-label" asp-for="RegisterRequest.Age">Age</label>
+                    <input type="number" asp-for="RegisterRequest.Age" class="form-control" readonly>
+                    <span asp-validation-for="RegisterRequest.Age" class="text-danger"></span>
+                </div>
+
+                <!-- Address -->
+                <div class="mb-3">
+                    <label class="form-label" asp-for="RegisterRequest.Address">Address</label>
+                    <textarea asp-for="RegisterRequest.Address" class="form-control" rows="2" placeholder="Enter your address"></textarea>
+                    <span asp-validation-for="RegisterRequest.Address" class="text-danger"></span>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-3">
+                    <label class="form-label" asp-for="RegisterRequest.Password">Password <span class="text-danger">*</span></label>
                     <div class="input-group">
                         <input type="password" asp-for="RegisterRequest.Password" class="form-control" placeholder="Enter password">
                         <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('RegisterRequest_Password')">
                             <i class="ri-eye-line text-primary"></i>
                         </button>
                     </div>
-                    <div class="form-text">
-                        Your password must be 6-20 characters long.
-                    </div>
                     <span asp-validation-for="RegisterRequest.Password" class="text-danger"></span>
                 </div>
 
+                <!-- Confirm Password -->
                 <div class="mb-3">
-                    <label class="form-label" asp-for="RegisterRequest.ConfirmPassword">Confirm password <span class="text-danger">*</span></label>
+                    <label class="form-label" asp-for="RegisterRequest.ConfirmPassword">Confirm Password <span class="text-danger">*</span></label>
                     <div class="input-group">
                         <input type="password" asp-for="RegisterRequest.ConfirmPassword" class="form-control" placeholder="Confirm password">
                         <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('RegisterRequest_ConfirmPassword')">
@@ -87,12 +128,30 @@
                     <span asp-validation-for="RegisterRequest.ConfirmPassword" class="text-danger"></span>
                 </div>
 
+                <!-- Submit -->
                 <div class="mb-3 d-grid gap-2">
                     <button type="submit" class="btn btn-primary">Signup</button>
                     <a href="/Auth/Login" class="btn btn-secondary">Already have an account? Login</a>
                 </div>
             </div>
         </form>
+
+        <script>
+            function calculateAge() {
+                const dob = document.querySelector('[name="RegisterRequest.DateOfBirth"]').value;
+                if (dob) {
+                    const birthDate = new Date(dob);
+                    const today = new Date();
+                    let age = today.getFullYear() - birthDate.getFullYear();
+                    const m = today.getMonth() - birthDate.getMonth();
+                    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                        age--;
+                    }
+                    document.querySelector('[name="RegisterRequest.Age"]').value = age;
+                }
+            }
+        </script>
+
         <!-- Form ends -->
     </div>
     <!-- Auth wrapper ends -->

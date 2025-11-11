@@ -1,3 +1,8 @@
+@{
+    var userRole = ViewContext.HttpContext.Session.GetString("UserRole") ?? "Patient";
+    var currentPath = ViewContext.HttpContext.Request.Path.ToString();
+}
+
 <!-- Sidebar wrapper starts -->
 <nav id="sidebar" class="sidebar-wrapper">
 
@@ -23,9 +28,24 @@
 
   <!-- Sidebar profile starts -->
   <div class="sidebar-profile">
-    <img src="~/ApolloTheme/assets/images/doctor6.png" class="rounded-5" alt="CareSync">
-    <h6 class="mb-1 profile-name text-nowrap text-truncate text-primary">Ema Wilson</h6>
-    <small class="profile-name text-nowrap text-truncate">Department Admin</small>
+    @if (userRole == "Admin")
+    {
+      <img src="~/ApolloTheme/assets/images/admin.png" class="rounded-5" alt="CareSync">
+      <h6 class="mb-1 profile-name text-nowrap text-truncate text-primary">System Admin</h6>
+      <small class="profile-name text-nowrap text-truncate">Administrator</small>
+    }
+    else if (userRole == "Doctor")
+    {
+      <img src="~/ApolloTheme/assets/images/doctor6.png" class="rounded-5" alt="CareSync">
+      <h6 class="mb-1 profile-name text-nowrap text-truncate text-primary">Dr. Smith</h6>
+      <small class="profile-name text-nowrap text-truncate">Medical Doctor</small>
+    }
+    else
+    {
+      <img src="~/ApolloTheme/assets/images/patient2.png" class="rounded-5" alt="CareSync">
+      <h6 class="mb-1 profile-name text-nowrap text-truncate text-primary">Patient User</h6>
+      <small class="profile-name text-nowrap text-truncate">Patient</small>
+    }
   </div>
   <!-- Sidebar profile ends -->
 
@@ -33,107 +53,130 @@
   <div class="sidebarMenuScroll">
     <ul class="sidebar-menu">
       
-      <!-- Dashboard -->
-      <li>
-        <a href="~/Dashboard">
-          <i class="ri-home-6-line"></i>
-          <span class="menu-text">Dashboard</span>
-        </a>
-      </li>
+      @if (userRole == "Admin")
+      {
+        <!-- Admin Dashboard -->
+        <li class="@(currentPath.Contains("/Admin/Dashboard") ? "current-page" : "")">
+          <a href="~/Admin/Dashboard">
+            <i class="ri-dashboard-line"></i>
+            <span class="menu-text">Admin Dashboard</span>
+          </a>
+        </li>
+        
+        <!-- User Management -->
+        <li class="@(currentPath.Contains("/Admin/Users") ? "current-page" : "")">
+          <a href="~/Admin/Users">
+            <i class="ri-user-settings-line"></i>
+            <span class="menu-text">User Management</span>
+          </a>
+        </li>
+        
+        <!-- Role Management -->
+        <li class="@(currentPath.Contains("/Admin/Roles") ? "current-page" : "")">
+          <a href="~/Admin/Roles">
+            <i class="ri-shield-user-line"></i>
+            <span class="menu-text">Role Management</span>
+          </a>
+        </li>
+        
+        <!-- Role Rights Mapping -->
+        <li class="@(currentPath.Contains("/Admin/RoleRights") ? "current-page" : "")">
+          <a href="~/Admin/RoleRights">
+            <i class="ri-key-line"></i>
+            <span class="menu-text">Role Rights</span>
+          </a>
+        </li>
+        
+        <!-- System Overview -->
+        <li class="@(currentPath.Contains("/Admin/SystemOverview") ? "current-page" : "")">
+          <a href="~/Admin/SystemOverview">
+            <i class="ri-bar-chart-line"></i>
+            <span class="menu-text">System Overview</span>
+          </a>
+        </li>
+      }
+      else if (userRole == "Doctor")
+      {
+        <!-- Doctor Dashboard -->
+        <li class="@(currentPath.Contains("/Doctor/Dashboard") ? "current-page" : "")">
+          <a href="~/Doctor/Dashboard">
+            <i class="ri-dashboard-line"></i>
+            <span class="menu-text">Dashboard</span>
+          </a>
+        </li>
+        
+        <!-- Doctor Profile -->
+        <li class="@(currentPath.Contains("/Doctor/Profile") ? "current-page" : "")">
+          <a href="~/Doctor/Profile">
+            <i class="ri-user-line"></i>
+            <span class="menu-text">My Profile</span>
+          </a>
+        </li>
+        
+        <!-- Appointments -->
+        <li class="@(currentPath.Contains("/Doctor/Appointments") ? "current-page" : "")">
+          <a href="~/Doctor/Appointments">
+            <i class="ri-calendar-line"></i>
+            <span class="menu-text">Appointments</span>
+          </a>
+        </li>
+        
+        <!-- Prescriptions -->
+        <li class="@(currentPath.Contains("/Doctor/Prescriptions") ? "current-page" : "")">
+          <a href="~/Doctor/Prescriptions">
+            <i class="ri-medicine-bottle-line"></i>
+            <span class="menu-text">Prescriptions</span>
+          </a>
+        </li>
+      }
+      else if (userRole == "Patient")
+      {
+        <!-- Patient Dashboard -->
+        <li class="@(currentPath.Contains("/Patient/Dashboard") ? "current-page" : "")">
+          <a href="~/Patient/Dashboard">
+            <i class="ri-dashboard-line"></i>
+            <span class="menu-text">My Dashboard</span>
+          </a>
+        </li>
+        
+        <!-- My Profile -->
+        <li class="@(currentPath.Contains("/Patient/Profile") ? "current-page" : "")">
+          <a href="~/Patient/Profile">
+            <i class="ri-user-line"></i>
+            <span class="menu-text">My Profile</span>
+          </a>
+        </li>
+        
+        <!-- Medical History -->
+        <li class="@(currentPath.Contains("/Patient/MedicalHistory") ? "current-page" : "")">
+          <a href="~/Patient/MedicalHistory">
+            <i class="ri-file-text-line"></i>
+            <span class="menu-text">Medical History</span>
+          </a>
+        </li>
+        
+        <!-- Health Vitals -->
+        <li class="@(currentPath.Contains("/Patient/Vitals") ? "current-page" : "")">
+          <a href="~/Patient/Vitals">
+            <i class="ri-heart-pulse-line"></i>
+            <span class="menu-text">Health Vitals</span>
+          </a>
+        </li>
+        
+        <!-- My Appointments -->
+        <li class="@(currentPath.Contains("/Patient/Appointments") ? "current-page" : "")">
+          <a href="~/Patient/Appointments">
+            <i class="ri-calendar-check-line"></i>
+            <span class="menu-text">My Appointments</span>
+          </a>
+        </li>
+      }
       
-      <!-- Patient Section -->
-      <li class="treeview">
-        <a href="#!">
-          <i class="ri-heart-pulse-line"></i>
-          <span class="menu-text">Patient</span>
-        </a>
-        <ul class="treeview-menu">
-          <li>
-            <a href="~/Patient/Dashboard">Patient Dashboard</a>
-          </li>
-          <li>
-            <a href="~/Patient/Profile">My Profile</a>
-          </li>
-          <li>
-            <a href="~/Patient/MedicalHistory">Medical History</a>
-          </li>
-          <li>
-            <a href="~/Patient/Vitals">Health Vitals</a>
-          </li>
-          <li>
-            <a href="~/Patient/Appointments">My Appointments</a>
-          </li>
-        </ul>
-      </li>
-      
-      <!-- Doctor Section -->
-      <li class="treeview">
-        <a href="#!">
-          <i class="ri-stethoscope-line"></i>
-          <span class="menu-text">Doctor</span>
-        </a>
-        <ul class="treeview-menu">
-          <li>
-            <a href="~/Doctor/Profile">Doctor Profile</a>
-          </li>
-          <li>
-            <a href="~/Doctor/Appointments">Appointments</a>
-          </li>
-          <li>
-            <a href="~/Doctor/Prescriptions">Prescriptions</a>
-          </li>
-        </ul>
-      </li>
-      
-      <!-- Lab Section -->
-      <li class="treeview">
-        <a href="#!">
-          <i class="ri-test-tube-line"></i>
-          <span class="menu-text">Laboratory</span>
-        </a>
-        <ul class="treeview-menu">
-          <li>
-            <a href="~/Lab/Profile">Lab Profile</a>
-          </li>
-          <li>
-            <a href="~/Lab/Requests">Lab Requests</a>
-          </li>
-          <li>
-            <a href="~/Lab/Reports">Lab Reports</a>
-          </li>
-        </ul>
-      </li>
-      
-      <!-- Admin Section -->
-      <li class="treeview">
-        <a href="#!">
-          <i class="ri-admin-line"></i>
-          <span class="menu-text">Administration</span>
-        </a>
-        <ul class="treeview-menu">
-          <li>
-            <a href="~/Admin/Dashboard">Admin Dashboard</a>
-          </li>
-          <li>
-            <a href="~/Admin/Users">User Management</a>
-          </li>
-          <li>
-            <a href="~/Admin/Roles">Role Management</a>
-          </li>
-          <li>
-            <a href="~/Admin/RoleRights">Role Rights Mapping</a>
-          </li>
-          <li>
-            <a href="~/Admin/SystemOverview">System Overview</a>
-          </li>
-        </ul>
-      </li>
-      
-      <!-- Settings -->
-      <li>
-        <a href="~/Settings">
-          <i class="ri-settings-5-line"></i>
-          <span class="menu-text">Settings</span>
+      <!-- Logout (Common for all roles) -->
+      <li class="mt-4">
+        <a href="~/Auth/Logout" class="text-danger">
+          <i class="ri-logout-box-line"></i>
+          <span class="menu-text">Logout</span>
         </a>
       </li>
     </ul>

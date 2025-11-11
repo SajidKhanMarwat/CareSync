@@ -1,0 +1,277 @@
+@page "/Doctor/Dashboard"
+@model CareSync.Pages.Doctor.DashboardModel
+@{
+    ViewData["Title"] = "Doctor Dashboard";
+}
+
+@section PageActions {
+    <div class="input-group">
+        <span class="input-group-text bg-primary-lighten">
+            <i class="ri-calendar-2-line text-primary"></i>
+        </span>
+        <input type="text" id="dateRange" class="form-control custom-daterange" placeholder="Select Date Range">
+    </div>
+}
+
+<!-- Doctor Profile Header -->
+<div class="row gx-3">
+    <div class="col-sm-12">
+        <div class="card mb-3 border">
+            <div class="card-body">
+                <div class="row gx-3">
+                    <div class="col-xl-6 col-sm-12">
+                        <div class="d-flex align-items-start gap-3 flex-wrap">
+                            <img src="~/ApolloTheme/assets/images/doctors/1.jpg" class="mw-240 rounded-2" alt="Doctor Profile">
+                            <div class="">
+                                <span class="badge bg-primary-subtle text-primary">
+                                    <i class="ri-circle-fill me-1"></i>Available
+                                </span>
+                                <h6 class="fw-normal mt-2">Good Morning,</h6>
+                                <h5 class="fw-normal">@Model.DoctorName</h5>
+                                <h6 class="fw-normal">@Model.Specialization</h6>
+                                <h6 class="fw-normal">Speaks: English, and Arabic</h6>
+                                <div class="d-flex mt-3">
+                                    <div class="rating-stars">
+                                        <div class="readonly5"></div>
+                                    </div>
+                                    <span class="fw-bold ms-2">@Model.TotalRatings</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-6 col-sm-12">
+                        <!-- Statistics Cards -->
+                        <div class="row g-3">
+                            <div class="col-sm-4">
+                                <div class="card border rounded-5">
+                                    <div class="card-body">
+                                        <div class="text-center">
+                                            <div class="icon-box md border border-primary rounded-5 mb-2 m-auto">
+                                                <i class="ri-empathize-line fs-5 text-primary"></i>
+                                            </div>
+                                            <h3 class="text-primary">@Model.TotalPatients</h3>
+                                            <h6>Total Patients</h6>
+                                            <small class="text-primary">20% Higher than last week.</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="card border rounded-5">
+                                    <div class="card-body">
+                                        <div class="text-center">
+                                            <div class="icon-box md border border-primary rounded-5 mb-2 m-auto">
+                                                <i class="ri-stethoscope-line fs-5 text-primary"></i>
+                                            </div>
+                                            <h3 class="text-primary">@Model.TotalSurgeries</h3>
+                                            <h6>Surgeries</h6>
+                                            <small class="text-primary">30% Higher than last week.</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="card border rounded-5">
+                                    <div class="card-body">
+                                        <div class="text-center">
+                                            <div class="icon-box md border border-primary rounded-5 mb-2 m-auto">
+                                                <i class="ri-money-dollar-circle-line fs-5 text-primary"></i>
+                                            </div>
+                                            <h3 class="text-primary">$@Model.MonthlyEarnings</h3>
+                                            <h6>Earnings</h6>
+                                            <small class="text-primary">60% Higher than last week.</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Appointments Chart -->
+<div class="row gx-3">
+    <div class="col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Appointments Overview</h5>
+            </div>
+            <div class="card-body">
+                <div class="card-info bg-primary-subtle rounded-1 small lh-1">
+                    21% higher than last year.
+                </div>
+                <div class="overflow-hidden">
+                    <div id="appointmentsChart" style="height: 300px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Today's Appointments Table -->
+<div class="row gx-3">
+    <div class="col-sm-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Today's Appointments</h5>
+                <div class="table-responsive">
+                    <table class="table m-0 align-middle">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Patient Name</th>
+                                <th>Age</th>
+                                <th>Time</th>
+                                <th>Diagnosis</th>
+                                <th>Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var appointment in Model.TodayAppointments)
+                            {
+                                <tr>
+                                    <td>@appointment.Id.ToString("000")</td>
+                                    <td>
+                                        <img src="~/ApolloTheme/assets/images/patient.png" class="img-2x rounded-5 me-1" alt="Patient">
+                                        @appointment.PatientName
+                                    </td>
+                                    <td>@appointment.PatientAge</td>
+                                    <td>@appointment.AppointmentTime.ToString("HH:mm")</td>
+                                    <td>@appointment.Diagnosis</td>
+                                    <td>
+                                        <span class="badge @(appointment.Type == "General" ? "bg-warning-subtle text-warning" : "bg-primary-subtle text-primary") fs-6">
+                                            @appointment.Type
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-inline-flex gap-1">
+                                            <button type="button" class="btn btn-hover btn-sm rounded-5" 
+                                                    onclick="rejectAppointment(@appointment.Id)"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Reject">
+                                                <i class="ri-close-fill text-danger"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-hover btn-sm rounded-5" 
+                                                    onclick="approveAppointment(@appointment.Id)"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Approve">
+                                                <i class="ri-check-fill text-success"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Row with Reviews, Income, and Recent Patients -->
+<div class="row gx-3">
+    <!-- Patient Reviews -->
+    <div class="col-xxl-6 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Patient Reviews</h5>
+            </div>
+            <div class="card-body">
+                <div class="scroll300">
+                    <div class="d-grid gap-4">
+                        @foreach (var review in Model.PatientReviews)
+                        {
+                            <div class="d-flex">
+                                <img src="~/ApolloTheme/assets/images/patient@(review.PatientId % 5 + 1).png" 
+                                     class="img-4x rounded-2" alt="Patient">
+                                <div class="ms-3">
+                                    <h6>@review.PatientName</h6>
+                                    <p class="mb-2">@review.ReviewText</p>
+                                    <div class="rating-stars">
+                                        <div class="readonly@(review.Rating)"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Patients -->
+    <div class="col-xxl-6 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Recent Patients</h5>
+            </div>
+            <div class="card-body">
+                <div class="scroll300">
+                    <div class="d-flex flex-column gap-2">
+                        @foreach (var patient in Model.RecentPatients)
+                        {
+                            <div class="d-flex flex-column p-3 border rounded-2">
+                                <div class="d-flex align-items-center flex-row">
+                                    <img src="~/ApolloTheme/assets/images/patient@(patient.Id % 5 + 1).png" 
+                                         class="img-4x rounded-5 me-3" alt="Patient">
+                                    <div>
+                                        <h6 class="mb-1">@patient.Name</h6>
+                                        <p class="mb-1 small">Last Appointment @patient.LastAppointment.ToString("dd MMM yyyy")</p>
+                                        <span class="badge bg-primary-subtle text-primary">Patient ID: P@patient.Id.ToString("0000")</span>
+                                        <p class="mb-3 mt-1">@patient.Notes</p>
+                                        <div class="d-flex gap-2">
+                                            <a href="~/Doctor/Appointments" class="btn btn-primary btn-sm">
+                                                Schedule
+                                            </a>
+                                            <a href="~/Patient/Profile?id=@patient.Id" class="btn btn-outline-secondary btn-sm">
+                                                View Profile
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Appointment actions
+        function approveAppointment(appointmentId) {
+            if (confirm('Are you sure you want to approve this appointment?')) {
+                // Add AJAX call to approve appointment
+                console.log('Approving appointment:', appointmentId);
+                // Reload page or update UI
+                location.reload();
+            }
+        }
+
+        function rejectAppointment(appointmentId) {
+            if (confirm('Are you sure you want to reject this appointment?')) {
+                // Add AJAX call to reject appointment
+                console.log('Rejecting appointment:', appointmentId);
+                // Reload page or update UI
+                location.reload();
+            }
+        }
+
+        // Simple chart for appointments (you can replace with actual chart library)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize charts here if needed
+            console.log('Doctor Dashboard loaded for user role: @Model.UserRole');
+        });
+    </script>
+}
