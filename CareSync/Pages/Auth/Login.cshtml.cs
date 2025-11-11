@@ -1,4 +1,5 @@
 using CareSync.ApplicationLayer.ApiResult;
+using CareSync.Result;
 using CareSync.Shared.Models;
 using CareSync.Shared.ViewModels.Login;
 using Microsoft.AspNetCore.Mvc;
@@ -31,23 +32,15 @@ public class LoginModel : PageModel
             LoginResponse loginResponse = new LoginResponse();
             var client = _httpClientFactory.CreateClient("ApiClient");
             var response = await client.PostAsJsonAsync("account/login", LoginRequest);
-            var resultsString = await response.Content.ReadAsStringAsync();
+
             if (response.IsSuccessStatusCode)
             {
-                using var jsonDoc = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+                var result = ApiResponseMapper.MapLoginResponse(await response.Content.ReadAsStringAsync());
 
-                // Access the "data" property
-                var dataElement = jsonDoc.RootElement.GetProperty("data");
-
-                // Deserialize only the "data" object to your model
-                var result = JsonSerializer.Deserialize<LoginResponse>(dataElement.GetRawText());
-
-
-                //// Optionally store token in session/cookie
-                //HttpContext.Session.SetString("AuthToken", result.Token);
-
-                // Redirect after login
-                return RedirectToPage("/Dashboard/Index");
+                if (result.IsSuccess)
+                    return RedirectToPage("/Dashboard/Index");
+                else
+                    return RedirectToPage("/auth/login");
             }
             else
             {
