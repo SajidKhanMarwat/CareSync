@@ -1,9 +1,8 @@
 @{
-    var breadcrumbs = ViewData["Breadcrumbs"] as List<(string Name, string Url)> ?? new List<(string, string)>();
     var currentPage = ViewData["Title"]?.ToString() ?? "Page";
 }
 
-@if (breadcrumbs.Any() || !string.IsNullOrEmpty(currentPage))
+@if (!string.IsNullOrEmpty(currentPage))
 {
     <div class="breadcrumb-wrapper">
         <nav aria-label="breadcrumb">
@@ -14,19 +13,6 @@
                         Dashboard
                     </a>
                 </li>
-                @foreach (var breadcrumb in breadcrumbs)
-                {
-                    <li class="breadcrumb-item">
-                        @if (!string.IsNullOrEmpty(breadcrumb.Url))
-                        {
-                            <a href="@breadcrumb.Url">@breadcrumb.Name</a>
-                        }
-                        else
-                        {
-                            @breadcrumb.Name
-                        }
-                    </li>
-                }
                 @if (!string.IsNullOrEmpty(currentPage) && currentPage != "Dashboard")
                 {
                     <li class="breadcrumb-item active" aria-current="page">@currentPage</li>

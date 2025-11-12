@@ -1,126 +1,377 @@
 @page "/Patient/Profile"
 @model CareSync.Pages.Patient.ProfileModel
 @{
-    ViewData["Title"] = "Patient Profile";
-    ViewData["Breadcrumbs"] = new List<(string Name, string Url)>
-    {
-        ("Patient", "/Patient")
-    };
+    ViewData["Title"] = "My Profile";
 }
 
-<div class="row">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">Personal Information</h5>
-            </div>
-            <div class="card-body">
-                <form>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">First Name</label>
-                            <input type="text" class="form-control" name="FirstName" />
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Last Name</label>
-                            <input type="text" class="form-control" name="LastName" />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" name="Email" />
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" name="PhoneNumber" />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Date of Birth</label>
-                            <input type="date" class="form-control" name="DateOfBirth" />
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Gender</label>
-                            <select class="form-select" name="Gender">
-                                <option value="">Select Gender</option>
-                                <option value="0">Male</option>
-                                <option value="1">Female</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Address</label>
-                        <textarea class="form-control" name="Address" rows="3"></textarea>
-                    </div>
-                </form>
-            </div>
-        </div>
+@section PageActions {
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-primary">
+            <i class="ri-edit-line me-1"></i>Edit Profile
+        </button>
+        <button type="button" class="btn btn-success">
+            <i class="ri-save-line me-1"></i>Save Changes
+        </button>
+        <button type="button" class="btn btn-outline-info">
+            <i class="ri-download-line me-1"></i>Download Profile
+        </button>
     </div>
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">Medical Information</h5>
-            </div>
+}
+
+<!-- Patient Profile Header -->
+<div class="row gx-3 mb-3">
+    <div class="col-12">
+        <div class="card border rounded-5">
             <div class="card-body">
-                <form>
-                    <div class="mb-3">
-                        <label class="form-label">Blood Group</label>
-                        <select class="form-select" name="BloodGroup">
-                            <option value="">Select Blood Group</option>
-                            <option value="A+">A+</option>
-                            <option value="A-">A-</option>
-                            <option value="B+">B+</option>
-                            <option value="B-">B-</option>
-                            <option value="AB+">AB+</option>
-                            <option value="AB-">AB-</option>
-                            <option value="O+">O+</option>
-                            <option value="O-">O-</option>
-                        </select>
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <div class="position-relative">
+                            <img src="~/theme/images/patient-avatar.png" class="img-5x rounded-circle" alt="Patient Photo">
+                            <span class="position-absolute bottom-0 end-0 p-1 bg-success border border-light rounded-circle">
+                                <span class="visually-hidden">Online</span>
+                            </span>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Marital Status</label>
-                        <select class="form-select" name="MaritalStatus">
-                            <option value="">Select Status</option>
-                            <option value="Single">Single</option>
-                            <option value="Married">Married</option>
-                            <option value="Divorced">Divorced</option>
-                            <option value="Widowed">Widowed</option>
-                        </select>
+                    <div class="col">
+                        <h4 class="mb-1">Emily Johnson</h4>
+                        <p class="text-muted mb-2">Patient ID: P12345 • Age: 32 • Female</p>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-success-subtle text-success">
+                                <i class="ri-shield-check-line me-1"></i>Active Patient
+                            </span>
+                            <span class="badge bg-info-subtle text-info">
+                                <i class="ri-calendar-check-line me-1"></i>Last Visit: Nov 10, 2024
+                            </span>
+                        </div>
+                        <div class="d-flex gap-3">
+                            <small class="text-muted">
+                                <i class="ri-phone-line me-1"></i>+1 (555) 123-4567
+                            </small>
+                            <small class="text-muted">
+                                <i class="ri-mail-line me-1"></i>emily.johnson@email.com
+                            </small>
+                            <small class="text-muted">
+                                <i class="ri-map-pin-line me-1"></i>New York, NY
+                            </small>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Occupation</label>
-                        <input type="text" class="form-control" name="Occupation" />
+                    <div class="col-auto">
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary btn-sm">
+                                <i class="ri-edit-line"></i>
+                            </button>
+                            <button class="btn btn-outline-success btn-sm">
+                                <i class="ri-camera-line"></i>
+                            </button>
+                        </div>
                     </div>
-                </form>
-            </div>
-        </div>
-        
-        <div class="card mt-3">
-            <div class="card-header">
-                <h5 class="card-title">Emergency Contact</h5>
-            </div>
-            <div class="card-body">
-                <form>
-                    <div class="mb-3">
-                        <label class="form-label">Contact Name</label>
-                        <input type="text" class="form-control" name="EmergencyContactName" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Contact Number</label>
-                        <input type="tel" class="form-control" name="EmergencyContactNumber" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Relationship</label>
-                        <input type="text" class="form-control" name="RelationshipToEmergency" />
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-@section PageActions {
-    <button type="button" class="btn btn-primary">Save Changes</button>
+<!-- Main Profile Content -->
+<div class="row gx-3">
+    <div class="col-xl-8">
+        <!-- Personal Information -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-user-line me-2"></i>Personal Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="ri-user-line me-1"></i>First Name
+                            </label>
+                            <input type="text" class="form-control" name="FirstName" value="Emily" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="ri-user-line me-1"></i>Last Name
+                            </label>
+                            <input type="text" class="form-control" name="LastName" value="Johnson" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="ri-mail-line me-1"></i>Email Address
+                            </label>
+                            <input type="email" class="form-control" name="Email" value="emily.johnson@email.com" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="ri-phone-line me-1"></i>Phone Number
+                            </label>
+                            <input type="tel" class="form-control" name="PhoneNumber" value="+1 (555) 123-4567" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="ri-calendar-line me-1"></i>Date of Birth
+                            </label>
+                            <input type="date" class="form-control" name="DateOfBirth" value="1992-03-15" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="ri-user-heart-line me-1"></i>Gender
+                            </label>
+                            <select class="form-select" name="Gender">
+                                <option value="">Select Gender</option>
+                                <option value="0">Male</option>
+                                <option value="1" selected>Female</option>
+                                <option value="2">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="ri-briefcase-line me-1"></i>Occupation
+                            </label>
+                            <input type="text" class="form-control" name="Occupation" value="Software Engineer" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="ri-heart-line me-1"></i>Marital Status
+                            </label>
+                            <select class="form-select" name="MaritalStatus">
+                                <option value="">Select Status</option>
+                                <option value="Single">Single</option>
+                                <option value="Married" selected>Married</option>
+                                <option value="Divorced">Divorced</option>
+                                <option value="Widowed">Widowed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="ri-map-pin-line me-1"></i>Address
+                        </label>
+                        <textarea class="form-control" name="Address" rows="3">123 Main Street, Apartment 4B, New York, NY 10001</textarea>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Medical Information -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-heart-pulse-line me-2"></i>Medical Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="ri-drop-line me-1"></i>Blood Group
+                        </label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="BloodGroup" value="A+" readonly />
+                            <span class="input-group-text bg-danger text-white">
+                                <i class="ri-drop-fill"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="ri-ruler-line me-1"></i>Height (cm)
+                        </label>
+                        <input type="number" class="form-control" name="Height" value="165" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="ri-scales-line me-1"></i>Weight (kg)
+                        </label>
+                        <input type="number" class="form-control" name="Weight" value="58" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="ri-heart-pulse-line me-1"></i>BMI
+                        </label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" value="21.3" readonly />
+                            <span class="input-group-text bg-success text-white">Normal</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="ri-alert-line me-1"></i>Known Allergies
+                    </label>
+                    <textarea class="form-control" name="Allergies" rows="2" placeholder="List any known allergies...">Penicillin, Shellfish</textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="ri-file-text-line me-1"></i>Chronic Diseases
+                    </label>
+                    <textarea class="form-control" name="ChronicDiseases" rows="2" placeholder="List any chronic conditions...">None</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-4">
+        <!-- Emergency Contact -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-phone-line me-2"></i>Emergency Contact
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="ri-user-line me-1"></i>Contact Name
+                    </label>
+                    <input type="text" class="form-control" name="EmergencyContactName" value="Michael Johnson" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="ri-phone-line me-1"></i>Contact Number
+                    </label>
+                    <input type="tel" class="form-control" name="EmergencyContactNumber" value="+1 (555) 987-6543" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="ri-heart-line me-1"></i>Relationship
+                    </label>
+                    <select class="form-select" name="RelationshipToEmergency">
+                        <option value="">Select Relationship</option>
+                        <option value="Spouse" selected>Spouse</option>
+                        <option value="Parent">Parent</option>
+                        <option value="Child">Child</option>
+                        <option value="Sibling">Sibling</option>
+                        <option value="Friend">Friend</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Account Information -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-shield-user-line me-2"></i>Account Status
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted">Status:</span>
+                    <span class="badge bg-success">Active</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted">Member Since:</span>
+                    <span class="fw-semibold">January 2024</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted">Last Login:</span>
+                    <span class="fw-semibold">Today, 2:30 PM</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-muted">Total Visits:</span>
+                    <span class="badge bg-primary-subtle text-primary">24</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-dashboard-line me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary">
+                        <i class="ri-calendar-event-line me-2"></i>Book Appointment
+                    </button>
+                    <button class="btn btn-outline-success">
+                        <i class="ri-file-text-line me-2"></i>View Medical History
+                    </button>
+                    <button class="btn btn-outline-info">
+                        <i class="ri-medicine-bottle-line me-2"></i>My Prescriptions
+                    </button>
+                    <button class="btn btn-outline-warning">
+                        <i class="ri-test-tube-line me-2"></i>Lab Results
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Calculate and update BMI
+            function calculateBMI() {
+                const height = document.querySelector('input[name="Height"]').value;
+                const weight = document.querySelector('input[name="Weight"]').value;
+                
+                if (height && weight) {
+                    const heightInMeters = height / 100;
+                    const bmi = (weight / (heightInMeters * heightInMeters)).toFixed(1);
+                    const bmiInput = document.querySelector('input[value="21.3"]');
+                    const bmiStatus = bmiInput.nextElementSibling;
+                    
+                    bmiInput.value = bmi;
+                    
+                    // Update BMI status and color
+                    if (bmi < 18.5) {
+                        bmiStatus.textContent = 'Underweight';
+                        bmiStatus.className = 'input-group-text bg-warning text-white';
+                    } else if (bmi >= 18.5 && bmi < 25) {
+                        bmiStatus.textContent = 'Normal';
+                        bmiStatus.className = 'input-group-text bg-success text-white';
+                    } else if (bmi >= 25 && bmi < 30) {
+                        bmiStatus.textContent = 'Overweight';
+                        bmiStatus.className = 'input-group-text bg-warning text-white';
+                    } else {
+                        bmiStatus.textContent = 'Obese';
+                        bmiStatus.className = 'input-group-text bg-danger text-white';
+                    }
+                }
+            }
+            
+            // Add event listeners for height and weight changes
+            document.querySelector('input[name="Height"]').addEventListener('input', calculateBMI);
+            document.querySelector('input[name="Weight"]').addEventListener('input', calculateBMI);
+            
+            // Form validation and save functionality
+            document.querySelector('.btn-success').addEventListener('click', function() {
+                // Validate required fields
+                const requiredFields = ['FirstName', 'LastName', 'Email', 'PhoneNumber'];
+                let isValid = true;
+                
+                requiredFields.forEach(field => {
+                    const input = document.querySelector(`input[name="${field}"]`);
+                    if (!input.value.trim()) {
+                        input.classList.add('is-invalid');
+                        isValid = false;
+                    } else {
+                        input.classList.remove('is-invalid');
+                    }
+                });
+                
+                if (isValid) {
+                    // Show success message
+                    alert('Profile updated successfully!');
+                } else {
+                    alert('Please fill in all required fields.');
+                }
+            });
+        });
+    </script>
 }

@@ -1,0 +1,636 @@
+@page "/Patient/BookAppointment"
+@model CareSync.Pages.Patient.BookAppointmentModel
+@{
+    ViewData["Title"] = "Book Appointment";
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-primary">
+            <i class="ri-calendar-event-line me-1"></i>My Appointments
+        </button>
+        <button type="button" class="btn btn-outline-info">
+            <i class="ri-history-line me-1"></i>Appointment History
+        </button>
+    </div>
+}
+
+<!-- Booking Steps Progress -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="booking-steps">
+                    <div class="step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-title">Select Doctor</div>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-title">Choose Date & Time</div>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-title">Appointment Details</div>
+                    </div>
+                    <div class="step" data-step="4">
+                        <div class="step-number">4</div>
+                        <div class="step-title">Confirmation</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Booking Content -->
+<div class="row gx-3">
+    <div class="col-xl-8">
+        <!-- Step 1: Select Doctor -->
+        <div class="booking-step active" id="step1">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="ri-user-line me-2"></i>Select Doctor
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Search and Filter -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Search doctors by name or specialization...">
+                                <button class="btn btn-outline-secondary">
+                                    <i class="ri-search-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select">
+                                <option>All Specializations</option>
+                                <option>Cardiology</option>
+                                <option>General Medicine</option>
+                                <option>Dermatology</option>
+                                <option>Orthopedics</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select">
+                                <option>All Availability</option>
+                                <option>Available Today</option>
+                                <option>Available This Week</option>
+                                <option>Available Next Week</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Doctors List -->
+                    <div class="doctors-list">
+                        <!-- Doctor 1 -->
+                        <div class="doctor-card border rounded-4 p-3 mb-3 selectable-card" data-doctor-id="1">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <img src="~/theme/images/doctor1.png" class="img-4x rounded-circle" alt="Doctor">
+                                </div>
+                                <div class="col">
+                                    <h5 class="mb-1">Dr. Sarah Johnson</h5>
+                                    <p class="text-muted mb-2">Cardiologist | 15 years experience</p>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="rating me-2">
+                                            <i class="ri-star-fill text-warning"></i>
+                                            <i class="ri-star-fill text-warning"></i>
+                                            <i class="ri-star-fill text-warning"></i>
+                                            <i class="ri-star-fill text-warning"></i>
+                                            <i class="ri-star-fill text-warning"></i>
+                                        </div>
+                                        <span class="text-muted">4.9 (127 reviews)</span>
+                                    </div>
+                                    <div class="doctor-info">
+                                        <small class="text-muted">
+                                            <i class="ri-map-pin-line me-1"></i>City Medical Center
+                                            <i class="ri-money-dollar-circle-line ms-3 me-1"></i>$150 consultation
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="text-center">
+                                        <span class="badge bg-success mb-2">Available</span>
+                                        <div class="text-muted">
+                                            <small>Next: Tomorrow 10:00 AM</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Doctor 2 -->
+                        <div class="doctor-card border rounded-4 p-3 mb-3 selectable-card" data-doctor-id="2">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <img src="~/theme/images/doctor2.png" class="img-4x rounded-circle" alt="Doctor">
+                                </div>
+                                <div class="col">
+                                    <h5 class="mb-1">Dr. Michael Brown</h5>
+                                    <p class="text-muted mb-2">General Medicine | 12 years experience</p>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="rating me-2">
+                                            <i class="ri-star-fill text-warning"></i>
+                                            <i class="ri-star-fill text-warning"></i>
+                                            <i class="ri-star-fill text-warning"></i>
+                                            <i class="ri-star-fill text-warning"></i>
+                                            <i class="ri-star-line text-muted"></i>
+                                        </div>
+                                        <span class="text-muted">4.7 (89 reviews)</span>
+                                    </div>
+                                    <div class="doctor-info">
+                                        <small class="text-muted">
+                                            <i class="ri-map-pin-line me-1"></i>Downtown Clinic
+                                            <i class="ri-money-dollar-circle-line ms-3 me-1"></i>$120 consultation
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="text-center">
+                                        <span class="badge bg-warning mb-2">Busy</span>
+                                        <div class="text-muted">
+                                            <small>Next: Nov 18, 2:00 PM</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Doctor 3 -->
+                        <div class="doctor-card border rounded-4 p-3 mb-3 selectable-card" data-doctor-id="3">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <img src="~/theme/images/doctor3.png" class="img-4x rounded-circle" alt="Doctor">
+                                </div>
+                                <div class="col">
+                                    <h5 class="mb-1">Dr. Lisa Anderson</h5>
+                                    <p class="text-muted mb-2">Dermatologist | 10 years experience</p>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="rating me-2">
+                                            <i class="ri-star-fill text-warning"></i>
+                                            <i class="ri-star-fill text-warning"></i>
+                                            <i class="ri-star-fill text-warning"></i>
+                                            <i class="ri-star-fill text-warning"></i>
+                                            <i class="ri-star-half-line text-warning"></i>
+                                        </div>
+                                        <span class="text-muted">4.8 (156 reviews)</span>
+                                    </div>
+                                    <div class="doctor-info">
+                                        <small class="text-muted">
+                                            <i class="ri-map-pin-line me-1"></i>Skin Care Clinic
+                                            <i class="ri-money-dollar-circle-line ms-3 me-1"></i>$180 consultation
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="text-center">
+                                        <span class="badge bg-success mb-2">Available</span>
+                                        <div class="text-muted">
+                                            <small>Next: Today 4:00 PM</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Choose Date & Time -->
+        <div class="booking-step" id="step2" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="ri-calendar-line me-2"></i>Choose Date & Time
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="mb-3">Select Date</h6>
+                            <div class="calendar-widget">
+                                <input type="date" class="form-control" id="appointmentDate" min="2024-11-13">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="mb-3">Available Time Slots</h6>
+                            <div class="time-slots" id="timeSlots">
+                                <div class="text-muted">Please select a date first</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Appointment Details -->
+        <div class="booking-step" id="step3" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="ri-file-text-line me-2"></i>Appointment Details
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">Appointment Type</label>
+                            <select class="form-select" required>
+                                <option value="">Select appointment type...</option>
+                                <option value="consultation">General Consultation</option>
+                                <option value="followup">Follow-up Visit</option>
+                                <option value="checkup">Routine Checkup</option>
+                                <option value="emergency">Emergency Consultation</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Reason for Visit</label>
+                            <textarea class="form-control" rows="4" placeholder="Please describe your symptoms or reason for the appointment..." required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Current Medications (if any)</label>
+                            <textarea class="form-control" rows="2" placeholder="List any medications you are currently taking..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Allergies</label>
+                            <input type="text" class="form-control" placeholder="List any known allergies...">
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="insuranceCheck">
+                            <label class="form-check-label" for="insuranceCheck">
+                                I will use insurance for this appointment
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="reminderCheck" checked>
+                            <label class="form-check-label" for="reminderCheck">
+                                Send me appointment reminders via email and SMS
+                            </label>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Confirmation -->
+        <div class="booking-step" id="step4" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="ri-check-line me-2"></i>Confirm Appointment
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="appointment-summary border rounded-4 p-4 mb-4">
+                        <h6 class="mb-3">Appointment Summary</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="summary-item mb-3">
+                                    <strong>Doctor:</strong>
+                                    <div id="summaryDoctor">Dr. Sarah Johnson</div>
+                                </div>
+                                <div class="summary-item mb-3">
+                                    <strong>Specialization:</strong>
+                                    <div id="summarySpecialization">Cardiology</div>
+                                </div>
+                                <div class="summary-item mb-3">
+                                    <strong>Date:</strong>
+                                    <div id="summaryDate">November 15, 2024</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="summary-item mb-3">
+                                    <strong>Time:</strong>
+                                    <div id="summaryTime">10:00 AM</div>
+                                </div>
+                                <div class="summary-item mb-3">
+                                    <strong>Type:</strong>
+                                    <div id="summaryType">General Consultation</div>
+                                </div>
+                                <div class="summary-item mb-3">
+                                    <strong>Consultation Fee:</strong>
+                                    <div id="summaryFee">$150.00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <div class="d-flex align-items-start">
+                            <i class="ri-information-line me-2 mt-1"></i>
+                            <div>
+                                <strong>Important Notes:</strong>
+                                <ul class="mb-0 mt-2">
+                                    <li>Please arrive 15 minutes before your appointment time</li>
+                                    <li>Bring a valid ID and insurance card (if applicable)</li>
+                                    <li>You can reschedule or cancel up to 24 hours before the appointment</li>
+                                    <li>A confirmation email will be sent to your registered email address</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="d-flex justify-content-between mt-4">
+            <button type="button" class="btn btn-outline-secondary" id="prevBtn" style="display: none;">
+                <i class="ri-arrow-left-line me-1"></i>Previous
+            </button>
+            <button type="button" class="btn btn-primary" id="nextBtn">
+                Next <i class="ri-arrow-right-line ms-1"></i>
+            </button>
+            <button type="button" class="btn btn-success" id="confirmBtn" style="display: none;">
+                <i class="ri-check-line me-1"></i>Confirm Appointment
+            </button>
+        </div>
+    </div>
+
+    <div class="col-xl-4">
+        <!-- Selected Doctor Info -->
+        <div class="card mb-3" id="selectedDoctorCard" style="display: none;">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-user-line me-2"></i>Selected Doctor
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <img src="~/theme/images/doctor1.png" class="img-4x rounded-circle mb-2" alt="Doctor" id="selectedDoctorImage">
+                    <h6 id="selectedDoctorName">Dr. Sarah Johnson</h6>
+                    <p class="text-muted mb-0" id="selectedDoctorSpecialty">Cardiologist</p>
+                </div>
+                <div class="doctor-details">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Experience:</span>
+                        <span id="selectedDoctorExperience">15 years</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Rating:</span>
+                        <span id="selectedDoctorRating">4.9/5</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Consultation Fee:</span>
+                        <span id="selectedDoctorFee">$150</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Location:</span>
+                        <span id="selectedDoctorLocation">City Medical Center</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointment Summary -->
+        <div class="card mb-3" id="appointmentSummaryCard" style="display: none;">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-calendar-check-line me-2"></i>Appointment Summary
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="summary-item mb-2">
+                    <strong>Date:</strong>
+                    <div id="sidebarDate">-</div>
+                </div>
+                <div class="summary-item mb-2">
+                    <strong>Time:</strong>
+                    <div id="sidebarTime">-</div>
+                </div>
+                <div class="summary-item mb-2">
+                    <strong>Type:</strong>
+                    <div id="sidebarType">-</div>
+                </div>
+                <hr>
+                <div class="summary-item">
+                    <strong>Total Fee:</strong>
+                    <div class="text-success fw-bold" id="sidebarTotal">$150.00</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help & Support -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-customer-service-line me-2"></i>Need Help?
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="help-item mb-3">
+                    <h6 class="mb-1">Can't find the right doctor?</h6>
+                    <p class="text-muted mb-2">Our support team can help you find the perfect specialist for your needs.</p>
+                    <button class="btn btn-sm btn-outline-primary">Contact Support</button>
+                </div>
+                <div class="help-item mb-3">
+                    <h6 class="mb-1">Emergency?</h6>
+                    <p class="text-muted mb-2">For urgent medical needs, call our emergency hotline.</p>
+                    <button class="btn btn-sm btn-outline-danger">Emergency: 911</button>
+                </div>
+                <div class="help-item">
+                    <h6 class="mb-1">Technical Issues?</h6>
+                    <p class="text-muted mb-2">Having trouble with the booking system?</p>
+                    <button class="btn btn-sm btn-outline-info">Get Help</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let currentStep = 1;
+            let selectedDoctor = null;
+            let selectedDate = null;
+            let selectedTime = null;
+            
+            // Step navigation
+            function showStep(step) {
+                // Hide all steps
+                document.querySelectorAll('.booking-step').forEach(s => s.style.display = 'none');
+                document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+                
+                // Show current step
+                document.getElementById(`step${step}`).style.display = 'block';
+                document.querySelector(`[data-step="${step}"]`).classList.add('active');
+                
+                // Update navigation buttons
+                document.getElementById('prevBtn').style.display = step > 1 ? 'block' : 'none';
+                document.getElementById('nextBtn').style.display = step < 4 ? 'block' : 'none';
+                document.getElementById('confirmBtn').style.display = step === 4 ? 'block' : 'none';
+                
+                currentStep = step;
+            }
+            
+            // Doctor selection
+            document.querySelectorAll('.doctor-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    document.querySelectorAll('.doctor-card').forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    selectedDoctor = {
+                        id: this.dataset.doctorId,
+                        name: this.querySelector('h5').textContent,
+                        specialty: this.querySelector('p').textContent.split('|')[0].trim(),
+                        experience: this.querySelector('p').textContent.split('|')[1].trim(),
+                        fee: this.querySelector('.doctor-info').textContent.match(/\\$\\d+/)[0]
+                    };
+                    
+                    // Update selected doctor card
+                    document.getElementById('selectedDoctorCard').style.display = 'block';
+                    document.getElementById('selectedDoctorName').textContent = selectedDoctor.name;
+                    document.getElementById('selectedDoctorSpecialty').textContent = selectedDoctor.specialty;
+                    document.getElementById('selectedDoctorFee').textContent = selectedDoctor.fee;
+                });
+            });
+            
+            // Date selection
+            document.getElementById('appointmentDate').addEventListener('change', function() {
+                selectedDate = this.value;
+                const timeSlots = document.getElementById('timeSlots');
+                
+                // Generate time slots (mock data)
+                const slots = ['9:00 AM', '10:00 AM', '11:00 AM', '2:00 PM', '3:00 PM', '4:00 PM'];
+                timeSlots.innerHTML = '';
+                
+                slots.forEach(slot => {
+                    const slotBtn = document.createElement('button');
+                    slotBtn.className = 'btn btn-outline-primary me-2 mb-2 time-slot';
+                    slotBtn.textContent = slot;
+                    slotBtn.addEventListener('click', function() {
+                        document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('btn-primary'));
+                        document.querySelectorAll('.time-slot').forEach(s => s.classList.add('btn-outline-primary'));
+                        this.classList.remove('btn-outline-primary');
+                        this.classList.add('btn-primary');
+                        selectedTime = slot;
+                        
+                        // Update sidebar
+                        document.getElementById('sidebarDate').textContent = new Date(selectedDate).toLocaleDateString();
+                        document.getElementById('sidebarTime').textContent = selectedTime;
+                        document.getElementById('appointmentSummaryCard').style.display = 'block';
+                    });
+                    timeSlots.appendChild(slotBtn);
+                });
+            });
+            
+            // Navigation buttons
+            document.getElementById('nextBtn').addEventListener('click', function() {
+                if (currentStep === 1 && !selectedDoctor) {
+                    alert('Please select a doctor first.');
+                    return;
+                }
+                if (currentStep === 2 && (!selectedDate || !selectedTime)) {
+                    alert('Please select date and time.');
+                    return;
+                }
+                if (currentStep === 3) {
+                    const form = document.querySelector('#step3 form');
+                    if (!form.checkValidity()) {
+                        form.reportValidity();
+                        return;
+                    }
+                    
+                    // Update summary
+                    document.getElementById('summaryDoctor').textContent = selectedDoctor.name;
+                    document.getElementById('summarySpecialization').textContent = selectedDoctor.specialty;
+                    document.getElementById('summaryDate').textContent = new Date(selectedDate).toLocaleDateString();
+                    document.getElementById('summaryTime').textContent = selectedTime;
+                    document.getElementById('summaryType').textContent = form.querySelector('select').value;
+                    document.getElementById('summaryFee').textContent = selectedDoctor.fee + '.00';
+                }
+                
+                showStep(currentStep + 1);
+            });
+            
+            document.getElementById('prevBtn').addEventListener('click', function() {
+                showStep(currentStep - 1);
+            });
+            
+            // Confirm appointment
+            document.getElementById('confirmBtn').addEventListener('click', function() {
+                alert('Appointment booked successfully! You will receive a confirmation email shortly.');
+                window.location.href = '/Patient/Appointments';
+            });
+            
+            // Initialize
+            showStep(1);
+        });
+    </script>
+    
+    <style>
+        .booking-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        
+        .booking-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e9ecef;
+            z-index: 1;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .step.active .step-number {
+            background: #0d6efd;
+            color: white;
+        }
+        
+        .step-title {
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .doctor-card.selected {
+            border-color: #0d6efd !important;
+            background-color: #f8f9ff;
+        }
+        
+        .selectable-card {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .selectable-card:hover {
+            border-color: #0d6efd;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .time-slot {
+            min-width: 100px;
+        }
+    </style>
+}
