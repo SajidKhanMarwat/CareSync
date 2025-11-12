@@ -1,0 +1,614 @@
+@page "/Lab/ReportsManagement"
+@model CareSync.Pages.Lab.ReportsManagementModel
+@{
+    ViewData["Title"] = "Reports Management";
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-success">
+            <i class="ri-upload-line me-1"></i>Upload Report
+        </button>
+        <button type="button" class="btn btn-primary">
+            <i class="ri-download-line me-1"></i>Bulk Download
+        </button>
+        <button type="button" class="btn btn-outline-info">
+            <i class="ri-archive-line me-1"></i>Archive Reports
+        </button>
+    </div>
+}
+
+<!-- Reports Statistics -->
+<div class="row gx-3 mb-3">
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-success-subtle rounded-5 me-3">
+                        <i class="ri-file-text-line fs-4 text-success"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-success mb-1">1,247</h4>
+                        <small class="text-muted">Total Reports</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-warning-subtle rounded-5 me-3">
+                        <i class="ri-time-line fs-4 text-warning"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-warning mb-1">23</h4>
+                        <small class="text-muted">Pending Review</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-info-subtle rounded-5 me-3">
+                        <i class="ri-calendar-line fs-4 text-info"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-info mb-1">156</h4>
+                        <small class="text-muted">This Month</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-danger-subtle rounded-5 me-3">
+                        <i class="ri-alert-line fs-4 text-danger"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-danger mb-1">8</h4>
+                        <small class="text-muted">Critical Reports</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="row gx-3">
+    <div class="col-xl-9">
+        <!-- Reports List -->
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-folder-line me-2"></i>Lab Reports
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <div class="input-group" style="width: 300px;">
+                            <input type="text" class="form-control form-control-sm" placeholder="Search reports...">
+                            <button class="btn btn-outline-secondary btn-sm">
+                                <i class="ri-search-line"></i>
+                            </button>
+                        </div>
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>All Types</option>
+                            <option>Blood Tests</option>
+                            <option>Urine Tests</option>
+                            <option>Imaging</option>
+                            <option>Microbiology</option>
+                        </select>
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>All Status</option>
+                            <option>Completed</option>
+                            <option>Pending Review</option>
+                            <option>Critical</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Report Item 1 -->
+                <div class="report-item border rounded-4 p-3 mb-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start">
+                                <div class="icon-box md bg-success-subtle rounded-circle me-3">
+                                    <i class="ri-file-text-line text-success"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Complete Blood Count Report</h6>
+                                    <p class="text-muted mb-1">Patient: John Smith (P-2024-1156)</p>
+                                    <small class="text-muted">
+                                        <i class="ri-calendar-line me-1"></i>Nov 12, 2024 - 4:30 PM
+                                        <i class="ri-user-line ms-3 me-1"></i>Tech: Alice Johnson
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="report-info">
+                                <span class="badge bg-success mb-1">Completed</span>
+                                <div class="text-muted">
+                                    <small>Report ID: R-2024-1156</small>
+                                </div>
+                                <div class="text-muted">
+                                    <small>Size: 2.4 MB</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <div class="d-flex gap-1 justify-content-end">
+                                <button class="btn btn-sm btn-outline-primary" title="View Report">
+                                    <i class="ri-eye-line"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-success" title="Download PDF">
+                                    <i class="ri-download-line"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-info" title="Send to Doctor">
+                                    <i class="ri-send-plane-line"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" title="Edit Report">
+                                    <i class="ri-edit-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report Item 2 - Critical -->
+                <div class="report-item border border-danger rounded-4 p-3 mb-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start">
+                                <div class="icon-box md bg-danger-subtle rounded-circle me-3">
+                                    <i class="ri-alert-line text-danger"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Cardiac Enzymes Report</h6>
+                                    <p class="text-muted mb-1">Patient: Maria Garcia (P-2024-1157)</p>
+                                    <small class="text-muted">
+                                        <i class="ri-calendar-line me-1"></i>Nov 12, 2024 - 3:15 PM
+                                        <i class="ri-user-line ms-3 me-1"></i>Tech: Bob Wilson
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="report-info">
+                                <span class="badge bg-danger mb-1">Critical</span>
+                                <div class="text-muted">
+                                    <small>Report ID: R-2024-1157</small>
+                                </div>
+                                <div class="text-danger">
+                                    <small><i class="ri-alert-line me-1"></i>Troponin Elevated</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <div class="d-flex gap-1 justify-content-end">
+                                <button class="btn btn-sm btn-danger" title="Urgent - Contact Doctor">
+                                    <i class="ri-phone-line"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" title="View Report">
+                                    <i class="ri-eye-line"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-success" title="Download PDF">
+                                    <i class="ri-download-line"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-info" title="Send STAT">
+                                    <i class="ri-send-plane-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report Item 3 - Pending Review -->
+                <div class="report-item border border-warning rounded-4 p-3 mb-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start">
+                                <div class="icon-box md bg-warning-subtle rounded-circle me-3">
+                                    <i class="ri-time-line text-warning"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Lipid Profile Report</h6>
+                                    <p class="text-muted mb-1">Patient: David Lee (P-2024-1158)</p>
+                                    <small class="text-muted">
+                                        <i class="ri-calendar-line me-1"></i>Nov 12, 2024 - 2:45 PM
+                                        <i class="ri-user-line ms-3 me-1"></i>Tech: Carol Davis
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="report-info">
+                                <span class="badge bg-warning mb-1">Pending Review</span>
+                                <div class="text-muted">
+                                    <small>Report ID: R-2024-1158</small>
+                                </div>
+                                <div class="text-warning">
+                                    <small><i class="ri-time-line me-1"></i>Awaiting Approval</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <div class="d-flex gap-1 justify-content-end">
+                                <button class="btn btn-sm btn-warning" title="Review Report">
+                                    <i class="ri-check-line"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" title="View Report">
+                                    <i class="ri-eye-line"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" title="Edit Report">
+                                    <i class="ri-edit-line"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" title="Reject">
+                                    <i class="ri-close-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report Item 4 -->
+                <div class="report-item border rounded-4 p-3 mb-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start">
+                                <div class="icon-box md bg-info-subtle rounded-circle me-3">
+                                    <i class="ri-microscope-line text-info"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Urine Analysis Report</h6>
+                                    <p class="text-muted mb-1">Patient: Emma Wilson (P-2024-1159)</p>
+                                    <small class="text-muted">
+                                        <i class="ri-calendar-line me-1"></i>Nov 12, 2024 - 1:20 PM
+                                        <i class="ri-user-line ms-3 me-1"></i>Tech: Alice Johnson
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="report-info">
+                                <span class="badge bg-success mb-1">Completed</span>
+                                <div class="text-muted">
+                                    <small>Report ID: R-2024-1159</small>
+                                </div>
+                                <div class="text-muted">
+                                    <small>Size: 1.8 MB</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <div class="d-flex gap-1 justify-content-end">
+                                <button class="btn btn-sm btn-outline-primary" title="View Report">
+                                    <i class="ri-eye-line"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-success" title="Download PDF">
+                                    <i class="ri-download-line"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-info" title="Send to Doctor">
+                                    <i class="ri-send-plane-line"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" title="Archive">
+                                    <i class="ri-archive-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report Item 5 -->
+                <div class="report-item border rounded-4 p-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start">
+                                <div class="icon-box md bg-primary-subtle rounded-circle me-3">
+                                    <i class="ri-flask-line text-primary"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Blood Culture Report</h6>
+                                    <p class="text-muted mb-1">Patient: Michael Brown (P-2024-1160)</p>
+                                    <small class="text-muted">
+                                        <i class="ri-calendar-line me-1"></i>Nov 12, 2024 - 12:10 PM
+                                        <i class="ri-user-line ms-3 me-1"></i>Tech: Bob Wilson
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="report-info">
+                                <span class="badge bg-success mb-1">Completed</span>
+                                <div class="text-muted">
+                                    <small>Report ID: R-2024-1160</small>
+                                </div>
+                                <div class="text-success">
+                                    <small><i class="ri-check-line me-1"></i>No Growth</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <div class="d-flex gap-1 justify-content-end">
+                                <button class="btn btn-sm btn-outline-primary" title="View Report">
+                                    <i class="ri-eye-line"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-success" title="Download PDF">
+                                    <i class="ri-download-line"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-info" title="Send to Doctor">
+                                    <i class="ri-send-plane-line"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" title="Archive">
+                                    <i class="ri-archive-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                        </li>
+                        <li class="page-item active">
+                            <a class="page-link" href="#">1</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">2</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">3</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3">
+        <!-- Upload New Report -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-upload-line me-2"></i>Upload Report
+                </h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Report Type</label>
+                        <select class="form-select">
+                            <option value="">Select type...</option>
+                            <option value="blood">Blood Test</option>
+                            <option value="urine">Urine Analysis</option>
+                            <option value="imaging">Imaging</option>
+                            <option value="microbiology">Microbiology</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Patient ID</label>
+                        <input type="text" class="form-control" placeholder="P-2024-XXXX">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Report File</label>
+                        <input type="file" class="form-control" accept=".pdf,.doc,.docx">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Comments</label>
+                        <textarea class="form-control" rows="3" placeholder="Additional notes..."></textarea>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success">
+                            <i class="ri-upload-line me-1"></i>Upload Report
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Report Categories -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-folder-line me-2"></i>Categories
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="category-item d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box sm bg-danger-subtle rounded-circle me-2">
+                            <i class="ri-heart-pulse-line text-danger"></i>
+                        </div>
+                        <span>Blood Tests</span>
+                    </div>
+                    <span class="badge bg-primary">456</span>
+                </div>
+                <div class="category-item d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box sm bg-warning-subtle rounded-circle me-2">
+                            <i class="ri-drop-line text-warning"></i>
+                        </div>
+                        <span>Urine Tests</span>
+                    </div>
+                    <span class="badge bg-primary">234</span>
+                </div>
+                <div class="category-item d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box sm bg-info-subtle rounded-circle me-2">
+                            <i class="ri-scan-line text-info"></i>
+                        </div>
+                        <span>Imaging</span>
+                    </div>
+                    <span class="badge bg-primary">189</span>
+                </div>
+                <div class="category-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box sm bg-success-subtle rounded-circle me-2">
+                            <i class="ri-microscope-line text-success"></i>
+                        </div>
+                        <span>Microbiology</span>
+                    </div>
+                    <span class="badge bg-primary">368</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-dashboard-line me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-success">
+                        <i class="ri-upload-line me-2"></i>Bulk Upload
+                    </button>
+                    <button class="btn btn-outline-primary">
+                        <i class="ri-download-line me-2"></i>Export Reports
+                    </button>
+                    <button class="btn btn-outline-info">
+                        <i class="ri-printer-line me-2"></i>Print Queue
+                    </button>
+                    <button class="btn btn-outline-warning">
+                        <i class="ri-archive-line me-2"></i>Archive Old Reports
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Report actions
+            document.querySelectorAll('.report-item button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const reportItem = this.closest('.report-item');
+                    const reportName = reportItem.querySelector('h6').textContent;
+                    const patientName = reportItem.querySelector('p').textContent.split('(')[0].replace('Patient: ', '');
+                    const icon = this.querySelector('i').className;
+                    
+                    switch(true) {
+                        case icon.includes('eye'):
+                            alert(`Opening ${reportName} for ${patientName}...`);
+                            break;
+                        case icon.includes('download'):
+                            alert(`Downloading ${reportName} PDF...`);
+                            break;
+                        case icon.includes('send'):
+                            alert(`Sending ${reportName} to doctor...`);
+                            break;
+                        case icon.includes('edit'):
+                            alert(`Editing ${reportName}...`);
+                            break;
+                        case icon.includes('phone'):
+                            alert(`Calling doctor about critical results for ${patientName}...`);
+                            break;
+                        case icon.includes('check'):
+                            alert(`Approving ${reportName}...`);
+                            break;
+                        case icon.includes('close'):
+                            if (confirm(`Reject ${reportName}?`)) {
+                                alert('Report rejected and returned for revision.');
+                            }
+                            break;
+                        case icon.includes('archive'):
+                            alert(`Archiving ${reportName}...`);
+                            break;
+                    }
+                });
+            });
+            
+            // Upload form
+            document.querySelector('form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const reportType = this.querySelector('select').value;
+                const patientId = this.querySelector('input[type="text"]').value;
+                const file = this.querySelector('input[type="file"]').files[0];
+                
+                if (!reportType || !patientId || !file) {
+                    alert('Please fill in all required fields and select a file.');
+                    return;
+                }
+                
+                alert('Report uploaded successfully!');
+                this.reset();
+            });
+            
+            // Search functionality
+            document.querySelector('.input-group button').addEventListener('click', function() {
+                const searchTerm = this.previousElementSibling.value;
+                if (searchTerm) {
+                    alert(`Searching for: ${searchTerm}`);
+                } else {
+                    alert('Please enter a search term.');
+                }
+            });
+            
+            // Filter dropdowns
+            document.querySelectorAll('.card-header select').forEach(select => {
+                select.addEventListener('change', function() {
+                    const filter = this.value;
+                    console.log('Filtering by:', filter);
+                    alert(`Filtering reports by: ${filter || 'All'}`);
+                });
+            });
+            
+            // Category filters
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const category = this.querySelector('span').textContent;
+                    alert(`Filtering by category: ${category}`);
+                });
+            });
+            
+            // Quick actions
+            document.querySelectorAll('.card:last-child .btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.textContent.trim();
+                    
+                    switch(true) {
+                        case action.includes('Bulk Upload'):
+                            alert('Opening bulk upload interface...');
+                            break;
+                        case action.includes('Export Reports'):
+                            alert('Exporting selected reports...');
+                            break;
+                        case action.includes('Print Queue'):
+                            alert('Opening print queue...');
+                            break;
+                        case action.includes('Archive Old Reports'):
+                            alert('Archiving reports older than 1 year...');
+                            break;
+                    }
+                });
+            });
+            
+            // Highlight critical reports
+            document.querySelectorAll('.badge').forEach(badge => {
+                if (badge.textContent === 'Critical') {
+                    badge.closest('.report-item').style.boxShadow = '0 0 10px rgba(220, 53, 69, 0.3)';
+                }
+            });
+        });
+    </script>
+}

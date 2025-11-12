@@ -1,0 +1,568 @@
+@page "/Lab/TechnicianProfile"
+@model CareSync.Pages.Lab.TechnicianProfileModel
+@{
+    ViewData["Title"] = "Technician Profile";
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-primary">
+            <i class="ri-edit-line me-1"></i>Edit Profile
+        </button>
+        <button type="button" class="btn btn-success">
+            <i class="ri-save-line me-1"></i>Save Changes
+        </button>
+        <button type="button" class="btn btn-outline-info">
+            <i class="ri-download-line me-1"></i>Export Report
+        </button>
+    </div>
+}
+
+<!-- Profile Header -->
+<div class="row gx-3 mb-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <img src="~/theme/images/tech1.png" class="img-5x rounded-circle" alt="Technician">
+                    </div>
+                    <div class="col">
+                        <h4 class="mb-1">Alice Johnson</h4>
+                        <p class="text-muted mb-2">Senior Laboratory Technician</p>
+                        <div class="d-flex gap-3">
+                            <div>
+                                <small class="text-muted">Employee ID</small>
+                                <div class="fw-semibold">LAB-2024-001</div>
+                            </div>
+                            <div>
+                                <small class="text-muted">Department</small>
+                                <div class="fw-semibold">Hematology</div>
+                            </div>
+                            <div>
+                                <small class="text-muted">Experience</small>
+                                <div class="fw-semibold">8 Years</div>
+                            </div>
+                            <div>
+                                <small class="text-muted">Status</small>
+                                <span class="badge bg-success">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="text-center">
+                            <h5 class="text-success mb-1">95%</h5>
+                            <small class="text-muted">Performance Score</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Performance Statistics -->
+<div class="row gx-3 mb-3">
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-success-subtle rounded-5 me-3">
+                        <i class="ri-check-double-line fs-4 text-success"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-success mb-1">342</h4>
+                        <small class="text-muted">Tests Completed</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-primary-subtle rounded-5 me-3">
+                        <i class="ri-time-line fs-4 text-primary"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-primary mb-1">18</h4>
+                        <small class="text-muted">Current Workload</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-warning-subtle rounded-5 me-3">
+                        <i class="ri-star-line fs-4 text-warning"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-warning mb-1">4.8</h4>
+                        <small class="text-muted">Quality Rating</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-info-subtle rounded-5 me-3">
+                        <i class="ri-calendar-line fs-4 text-info"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-info mb-1">22</h4>
+                        <small class="text-muted">Days This Month</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="row gx-3">
+    <div class="col-xl-8">
+        <!-- Personal Information -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-user-line me-2"></i>Personal Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">First Name</label>
+                            <input type="text" class="form-control" value="Alice" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" class="form-control" value="Johnson" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" value="alice.johnson@caresync.com" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" value="+1 (555) 123-4567">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Date of Birth</label>
+                            <input type="date" class="form-control" value="1990-03-15" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Gender</label>
+                            <select class="form-select" disabled>
+                                <option selected>Female</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <textarea class="form-control" rows="2">123 Medical Center Drive, Healthcare City, HC 12345</textarea>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Professional Information -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-briefcase-line me-2"></i>Professional Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Employee ID</label>
+                            <input type="text" class="form-control" value="LAB-2024-001" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Position</label>
+                            <input type="text" class="form-control" value="Senior Laboratory Technician" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Department</label>
+                            <select class="form-select">
+                                <option selected>Hematology</option>
+                                <option>Chemistry</option>
+                                <option>Microbiology</option>
+                                <option>Immunology</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Hire Date</label>
+                            <input type="date" class="form-control" value="2016-08-15" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Shift</label>
+                            <select class="form-select">
+                                <option selected>Morning (8:00 AM - 4:00 PM)</option>
+                                <option>Evening (4:00 PM - 12:00 AM)</option>
+                                <option>Night (12:00 AM - 8:00 AM)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Supervisor</label>
+                            <input type="text" class="form-control" value="Dr. Robert Smith" readonly>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Certifications & Training -->
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-award-line me-2"></i>Certifications & Training
+                    </h5>
+                    <button class="btn btn-sm btn-outline-primary">
+                        <i class="ri-add-line me-1"></i>Add Certification
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="certification-item border rounded-4 p-3 mb-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h6 class="mb-1">Medical Laboratory Technician (MLT)</h6>
+                            <p class="text-muted mb-1">American Society for Clinical Pathology (ASCP)</p>
+                            <small class="text-muted">
+                                <i class="ri-calendar-line me-1"></i>Issued: June 2016
+                                <i class="ri-calendar-check-line ms-3 me-1"></i>Expires: June 2026
+                            </small>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <span class="badge bg-success mb-2">Active</span>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary me-1">
+                                    <i class="ri-eye-line"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-success">
+                                    <i class="ri-download-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="certification-item border rounded-4 p-3 mb-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h6 class="mb-1">Phlebotomy Technician Certification</h6>
+                            <p class="text-muted mb-1">National Phlebotomy Association (NPA)</p>
+                            <small class="text-muted">
+                                <i class="ri-calendar-line me-1"></i>Issued: March 2017
+                                <i class="ri-calendar-check-line ms-3 me-1"></i>Expires: March 2025
+                            </small>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <span class="badge bg-warning mb-2">Expiring Soon</span>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary me-1">
+                                    <i class="ri-eye-line"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning">
+                                    <i class="ri-refresh-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="certification-item border rounded-4 p-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h6 class="mb-1">Quality Control in Laboratory Medicine</h6>
+                            <p class="text-muted mb-1">Clinical Laboratory Management Association (CLMA)</p>
+                            <small class="text-muted">
+                                <i class="ri-calendar-line me-1"></i>Completed: September 2023
+                                <i class="ri-time-line ms-3 me-1"></i>40 Hours
+                            </small>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <span class="badge bg-info mb-2">Completed</span>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary me-1">
+                                    <i class="ri-eye-line"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-success">
+                                    <i class="ri-download-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4">
+        <!-- Current Workload -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-task-line me-2"></i>Current Workload
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="workload-progress mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <small class="fw-semibold">Daily Capacity</small>
+                        <small class="text-muted">18/20</small>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-warning" style="width: 90%"></div>
+                    </div>
+                    <small class="text-warning">90% Capacity</small>
+                </div>
+
+                <div class="workload-item d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <h6 class="mb-0">Blood Tests</h6>
+                        <small class="text-muted">In Progress</small>
+                    </div>
+                    <span class="badge bg-primary">12</span>
+                </div>
+                <div class="workload-item d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <h6 class="mb-0">Urine Analysis</h6>
+                        <small class="text-muted">Pending</small>
+                    </div>
+                    <span class="badge bg-warning">4</span>
+                </div>
+                <div class="workload-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">Quality Control</h6>
+                        <small class="text-muted">Scheduled</small>
+                    </div>
+                    <span class="badge bg-info">2</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Metrics -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-bar-chart-line me-2"></i>Performance Metrics
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="metric-item mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <small class="fw-semibold">Accuracy Rate</small>
+                        <small class="text-success">98.5%</small>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-success" style="width: 98.5%"></div>
+                    </div>
+                </div>
+                <div class="metric-item mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <small class="fw-semibold">Turnaround Time</small>
+                        <small class="text-primary">95%</small>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-primary" style="width: 95%"></div>
+                    </div>
+                </div>
+                <div class="metric-item mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <small class="fw-semibold">Quality Score</small>
+                        <small class="text-warning">92%</small>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-warning" style="width: 92%"></div>
+                    </div>
+                </div>
+                <div class="metric-item">
+                    <div class="d-flex justify-content-between mb-1">
+                        <small class="fw-semibold">Attendance</small>
+                        <small class="text-info">96%</small>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-info" style="width: 96%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-calendar-line me-2"></i>This Week's Schedule
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="schedule-item d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <h6 class="mb-0">Monday</h6>
+                        <small class="text-muted">8:00 AM - 4:00 PM</small>
+                    </div>
+                    <span class="badge bg-success">Scheduled</span>
+                </div>
+                <div class="schedule-item d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <h6 class="mb-0">Tuesday</h6>
+                        <small class="text-muted">8:00 AM - 4:00 PM</small>
+                    </div>
+                    <span class="badge bg-success">Scheduled</span>
+                </div>
+                <div class="schedule-item d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <h6 class="mb-0">Wednesday</h6>
+                        <small class="text-muted">8:00 AM - 4:00 PM</small>
+                    </div>
+                    <span class="badge bg-primary">Today</span>
+                </div>
+                <div class="schedule-item d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <h6 class="mb-0">Thursday</h6>
+                        <small class="text-muted">8:00 AM - 4:00 PM</small>
+                    </div>
+                    <span class="badge bg-outline-secondary">Scheduled</span>
+                </div>
+                <div class="schedule-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">Friday</h6>
+                        <small class="text-muted">Off Day</small>
+                    </div>
+                    <span class="badge bg-secondary">Off</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-dashboard-line me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary">
+                        <i class="ri-calendar-line me-2"></i>Request Time Off
+                    </button>
+                    <button class="btn btn-outline-success">
+                        <i class="ri-swap-line me-2"></i>Swap Shifts
+                    </button>
+                    <button class="btn btn-outline-info">
+                        <i class="ri-book-line me-2"></i>Training Records
+                    </button>
+                    <button class="btn btn-outline-warning">
+                        <i class="ri-settings-line me-2"></i>Update Preferences
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Form editing
+            let isEditing = false;
+            
+            document.querySelector('button[class*="btn-primary"]').addEventListener('click', function() {
+                if (!isEditing) {
+                    // Enable editing
+                    document.querySelectorAll('input:not([readonly]), textarea, select:not([disabled])').forEach(field => {
+                        field.removeAttribute('readonly');
+                        field.removeAttribute('disabled');
+                    });
+                    this.innerHTML = '<i class="ri-close-line me-1"></i>Cancel';
+                    this.className = 'btn btn-outline-danger';
+                    isEditing = true;
+                } else {
+                    // Cancel editing
+                    document.querySelectorAll('input, textarea, select').forEach(field => {
+                        if (!field.hasAttribute('data-editable')) {
+                            field.setAttribute('readonly', 'readonly');
+                        }
+                    });
+                    this.innerHTML = '<i class="ri-edit-line me-1"></i>Edit Profile';
+                    this.className = 'btn btn-primary';
+                    isEditing = false;
+                }
+            });
+            
+            // Save changes
+            document.querySelector('button[class*="btn-success"]').addEventListener('click', function() {
+                if (isEditing) {
+                    alert('Profile updated successfully!');
+                    // Reset edit mode
+                    document.querySelector('button[class*="btn-outline-danger"]').click();
+                } else {
+                    alert('Please click Edit Profile first to make changes.');
+                }
+            });
+            
+            // Certification actions
+            document.querySelectorAll('.certification-item button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const certName = this.closest('.certification-item').querySelector('h6').textContent;
+                    const icon = this.querySelector('i').className;
+                    
+                    if (icon.includes('eye')) {
+                        alert(`Viewing certificate: ${certName}`);
+                    } else if (icon.includes('download')) {
+                        alert(`Downloading certificate: ${certName}`);
+                    } else if (icon.includes('refresh')) {
+                        alert(`Renewing certificate: ${certName}`);
+                    }
+                });
+            });
+            
+            // Add certification
+            document.querySelector('.card-header button[class*="btn-outline-primary"]').addEventListener('click', function() {
+                alert('Opening certification upload form...');
+            });
+            
+            // Quick actions
+            document.querySelectorAll('.card:last-child .btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.textContent.trim();
+                    
+                    switch(true) {
+                        case action.includes('Request Time Off'):
+                            alert('Opening time off request form...');
+                            break;
+                        case action.includes('Swap Shifts'):
+                            alert('Opening shift swap interface...');
+                            break;
+                        case action.includes('Training Records'):
+                            alert('Opening training records...');
+                            break;
+                        case action.includes('Update Preferences'):
+                            alert('Opening preferences settings...');
+                            break;
+                    }
+                });
+            });
+        });
+    </script>
+}
