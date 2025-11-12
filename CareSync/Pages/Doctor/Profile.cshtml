@@ -2,177 +2,448 @@
 @model CareSync.Pages.Doctor.ProfileModel
 @{
     ViewData["Title"] = "Doctor Profile";
-    ViewData["Breadcrumbs"] = new List<(string Name, string Url)>
-    {
-        ("Doctor", "/Doctor")
-    };
 }
 
-<div class="row">
-    <div class="col-md-8">
-        <div class="card">
+@section PageActions {
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-success">
+            <i class="ri-add-line me-1"></i>Add Qualification
+        </button>
+        <button type="button" class="btn btn-primary">
+            <i class="ri-save-line me-1"></i>Save Changes
+        </button>
+    </div>
+}
+
+<!-- Doctor Profile Header -->
+<div class="row gx-3">
+    <div class="col-sm-12">
+        <div class="card mb-3 border">
+            <div class="card-body">
+                <div class="row gx-3">
+                    <div class="col-xl-4 col-sm-12">
+                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                            <div class="position-relative">
+                                <img src="~/theme/images/doctor5.png" class="img-5x rounded-5" alt="Doctor Profile">
+                                <span class="position-absolute bottom-0 end-0 bg-success rounded-circle p-1">
+                                    <span class="d-block bg-white rounded-circle" style="width: 8px; height: 8px;"></span>
+                                </span>
+                            </div>
+                            <div class="">
+                                <span class="badge bg-success-subtle text-success mb-2">
+                                    <i class="ri-circle-fill me-1"></i>Available
+                                </span>
+                                <h4 class="fw-semibold mb-1">Dr. Sarah Johnson</h4>
+                                <h6 class="text-muted mb-2">Cardiologist</h6>
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="rating-stars me-2">
+                                        <i class="ri-star-fill text-warning"></i>
+                                        <i class="ri-star-fill text-warning"></i>
+                                        <i class="ri-star-fill text-warning"></i>
+                                        <i class="ri-star-fill text-warning"></i>
+                                        <i class="ri-star-half-fill text-warning"></i>
+                                    </div>
+                                    <span class="fw-semibold">4.8</span>
+                                    <span class="text-muted ms-1">(245 reviews)</span>
+                                </div>
+                                <p class="text-muted mb-0">
+                                    <i class="ri-map-pin-line me-1"></i>New York, USA
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-8 col-sm-12">
+                        <!-- Quick Stats -->
+                        <div class="row g-3">
+                            <div class="col-sm-3">
+                                <div class="card border rounded-5 h-100">
+                                    <div class="card-body text-center">
+                                        <div class="icon-box md border border-primary rounded-5 mb-2 m-auto">
+                                            <i class="ri-empathize-line fs-5 text-primary"></i>
+                                        </div>
+                                        <h4 class="text-primary mb-1">1,247</h4>
+                                        <small class="text-muted">Total Patients</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="card border rounded-5 h-100">
+                                    <div class="card-body text-center">
+                                        <div class="icon-box md border border-success rounded-5 mb-2 m-auto">
+                                            <i class="ri-calendar-check-line fs-5 text-success"></i>
+                                        </div>
+                                        <h4 class="text-success mb-1">89</h4>
+                                        <small class="text-muted">This Month</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="card border rounded-5 h-100">
+                                    <div class="card-body text-center">
+                                        <div class="icon-box md border border-warning rounded-5 mb-2 m-auto">
+                                            <i class="ri-stethoscope-line fs-5 text-warning"></i>
+                                        </div>
+                                        <h4 class="text-warning mb-1">156</h4>
+                                        <small class="text-muted">Surgeries</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="card border rounded-5 h-100">
+                                    <div class="card-body text-center">
+                                        <div class="icon-box md border border-info rounded-5 mb-2 m-auto">
+                                            <i class="ri-time-line fs-5 text-info"></i>
+                                        </div>
+                                        <h4 class="text-info mb-1">12</h4>
+                                        <small class="text-muted">Years Exp.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row gx-3">
+    <div class="col-xl-8">
+        <!-- Personal Information -->
+        <div class="card mb-3">
             <div class="card-header">
-                <h5 class="card-title">Personal Information</h5>
+                <h5 class="card-title">
+                    <i class="ri-user-line me-2"></i>Personal Information
+                </h5>
             </div>
             <div class="card-body">
                 <form>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">First Name</label>
-                            <input type="text" class="form-control" name="FirstName" />
+                            <label class="form-label">
+                                <i class="ri-user-line me-1"></i>First Name
+                            </label>
+                            <input type="text" class="form-control" name="FirstName" value="Sarah" />
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Last Name</label>
-                            <input type="text" class="form-control" name="LastName" />
+                            <label class="form-label">
+                                <i class="ri-user-line me-1"></i>Last Name
+                            </label>
+                            <input type="text" class="form-control" name="LastName" value="Johnson" />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" name="Email" />
+                            <label class="form-label">
+                                <i class="ri-mail-line me-1"></i>Email Address
+                            </label>
+                            <input type="email" class="form-control" name="Email" value="sarah.johnson@caresync.com" />
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" name="PhoneNumber" />
+                            <label class="form-label">
+                                <i class="ri-phone-line me-1"></i>Phone Number
+                            </label>
+                            <input type="tel" class="form-control" name="PhoneNumber" value="+1 (555) 123-4567" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="ri-calendar-line me-1"></i>Date of Birth
+                            </label>
+                            <input type="date" class="form-control" name="DateOfBirth" value="1985-03-15" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="ri-user-2-line me-1"></i>Gender
+                            </label>
+                            <select class="form-select" name="Gender">
+                                <option value="2" selected>Female</option>
+                                <option value="1">Male</option>
+                                <option value="3">Other</option>
+                            </select>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Address</label>
-                        <textarea class="form-control" name="Address" rows="3"></textarea>
+                        <label class="form-label">
+                            <i class="ri-map-pin-line me-1"></i>Address
+                        </label>
+                        <textarea class="form-control" name="Address" rows="3">123 Medical Center Drive, New York, NY 10001</textarea>
                     </div>
                 </form>
             </div>
         </div>
         
-        <div class="card mt-3">
+        <!-- Professional Information -->
+        <div class="card mb-3">
             <div class="card-header">
-                <h5 class="card-title">Professional Information</h5>
+                <h5 class="card-title">
+                    <i class="ri-stethoscope-line me-2"></i>Professional Information
+                </h5>
             </div>
             <div class="card-body">
                 <form>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Specialization</label>
-                            <input type="text" class="form-control" name="Specialization" />
+                            <label class="form-label">
+                                <i class="ri-heart-pulse-line me-1"></i>Specialization
+                            </label>
+                            <input type="text" class="form-control" name="Specialization" value="Cardiology" />
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Experience Years</label>
-                            <input type="number" class="form-control" name="ExperienceYears" />
+                            <label class="form-label">
+                                <i class="ri-time-line me-1"></i>Experience Years
+                            </label>
+                            <input type="number" class="form-control" name="ExperienceYears" value="12" />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">License Number</label>
-                            <input type="text" class="form-control" name="LicenseNumber" />
+                            <label class="form-label">
+                                <i class="ri-file-text-line me-1"></i>License Number
+                            </label>
+                            <input type="text" class="form-control" name="LicenseNumber" value="MD-NY-123456" />
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Consultation Fee</label>
-                            <input type="number" class="form-control" name="ConsultationFee" step="0.01" />
+                            <label class="form-label">
+                                <i class="ri-money-dollar-circle-line me-1"></i>Consultation Fee
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" name="ConsultationFee" value="250" step="0.01" />
+                            </div>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Hospital Affiliation</label>
-                        <input type="text" class="form-control" name="HospitalAffiliation" />
+                        <label class="form-label">
+                            <i class="ri-hospital-line me-1"></i>Hospital Affiliation
+                        </label>
+                        <input type="text" class="form-control" name="HospitalAffiliation" value="New York Presbyterian Hospital" />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Qualification Summary</label>
-                        <textarea class="form-control" name="QualificationSummary" rows="3"></textarea>
+                        <label class="form-label">
+                            <i class="ri-file-list-3-line me-1"></i>Qualification Summary
+                        </label>
+                        <textarea class="form-control" name="QualificationSummary" rows="3">Board-certified cardiologist with 12+ years of experience in interventional cardiology. Specialized in cardiac catheterization, angioplasty, and preventive cardiology.</textarea>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card">
+    <div class="col-xl-4">
+        <!-- Schedule Card -->
+        <div class="card mb-3">
             <div class="card-header">
-                <h5 class="card-title">Schedule</h5>
+                <h5 class="card-title">
+                    <i class="ri-calendar-line me-2"></i>Schedule
+                </h5>
             </div>
             <div class="card-body">
                 <form>
                     <div class="mb-3">
                         <label class="form-label">Available Days</label>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="AvailableDays" value="Monday" id="monday">
-                            <label class="form-check-label" for="monday">Monday</label>
+                            <input class="form-check-input" type="checkbox" name="AvailableDays" value="Monday" id="monday" checked>
+                            <label class="form-check-label" for="monday">
+                                <i class="ri-calendar-line me-1"></i>Monday
+                            </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="AvailableDays" value="Tuesday" id="tuesday">
-                            <label class="form-check-label" for="tuesday">Tuesday</label>
+                            <input class="form-check-input" type="checkbox" name="AvailableDays" value="Tuesday" id="tuesday" checked>
+                            <label class="form-check-label" for="tuesday">
+                                <i class="ri-calendar-line me-1"></i>Tuesday
+                            </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="AvailableDays" value="Wednesday" id="wednesday">
-                            <label class="form-check-label" for="wednesday">Wednesday</label>
+                            <input class="form-check-input" type="checkbox" name="AvailableDays" value="Wednesday" id="wednesday" checked>
+                            <label class="form-check-label" for="wednesday">
+                                <i class="ri-calendar-line me-1"></i>Wednesday
+                            </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="AvailableDays" value="Thursday" id="thursday">
-                            <label class="form-check-label" for="thursday">Thursday</label>
+                            <input class="form-check-input" type="checkbox" name="AvailableDays" value="Thursday" id="thursday" checked>
+                            <label class="form-check-label" for="thursday">
+                                <i class="ri-calendar-line me-1"></i>Thursday
+                            </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="AvailableDays" value="Friday" id="friday">
-                            <label class="form-check-label" for="friday">Friday</label>
+                            <input class="form-check-input" type="checkbox" name="AvailableDays" value="Friday" id="friday" checked>
+                            <label class="form-check-label" for="friday">
+                                <i class="ri-calendar-line me-1"></i>Friday
+                            </label>
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="AvailableDays" value="Saturday" id="saturday">
-                            <label class="form-check-label" for="saturday">Saturday</label>
+                            <label class="form-check-label" for="saturday">
+                                <i class="ri-calendar-line me-1"></i>Saturday
+                            </label>
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="AvailableDays" value="Sunday" id="sunday">
-                            <label class="form-check-label" for="sunday">Sunday</label>
+                            <label class="form-check-label" for="sunday">
+                                <i class="ri-calendar-line me-1"></i>Sunday
+                            </label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-6 mb-3">
-                            <label class="form-label">Start Time</label>
-                            <input type="time" class="form-control" name="StartTime" />
+                            <label class="form-label">
+                                <i class="ri-time-line me-1"></i>Start Time
+                            </label>
+                            <input type="time" class="form-control" name="StartTime" value="09:00" />
                         </div>
                         <div class="col-6 mb-3">
-                            <label class="form-label">End Time</label>
-                            <input type="time" class="form-control" name="EndTime" />
+                            <label class="form-label">
+                                <i class="ri-time-line me-1"></i>End Time
+                            </label>
+                            <input type="time" class="form-control" name="EndTime" value="17:00" />
                         </div>
                     </div>
                 </form>
             </div>
         </div>
+        
+        <!-- Contact Information -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-contacts-line me-2"></i>Contact Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="icon-box sm bg-primary-subtle rounded-circle me-3">
+                        <i class="ri-phone-line text-primary"></i>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block">Phone</small>
+                        <span class="fw-semibold">+1 (555) 123-4567</span>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center mb-3">
+                    <div class="icon-box sm bg-success-subtle rounded-circle me-3">
+                        <i class="ri-mail-line text-success"></i>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block">Email</small>
+                        <span class="fw-semibold">sarah.johnson@caresync.com</span>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="icon-box sm bg-info-subtle rounded-circle me-3">
+                        <i class="ri-map-pin-line text-info"></i>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block">Location</small>
+                        <span class="fw-semibold">New York, USA</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="row mt-4">
+<!-- Qualifications Section -->
+<div class="row gx-3 mt-3">
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h5 class="card-title">Qualifications</h5>
+                <h5 class="card-title">
+                    <i class="ri-graduation-cap-line me-2"></i>Qualifications & Certifications
+                </h5>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
+                    <table class="table table-hover">
+                        <thead class="table-light">
                             <tr>
-                                <th>Degree</th>
-                                <th>Institution</th>
-                                <th>Year of Completion</th>
-                                <th>Certificate</th>
-                                <th>Actions</th>
+                                <th><i class="ri-book-line me-1"></i>Degree</th>
+                                <th><i class="ri-building-line me-1"></i>Institution</th>
+                                <th><i class="ri-calendar-line me-1"></i>Year</th>
+                                <th><i class="ri-file-text-line me-1"></i>Certificate</th>
+                                <th><i class="ri-settings-line me-1"></i>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>MBBS</td>
-                                <td>Harvard Medical School</td>
-                                <td>2015</td>
-                                <td><a href="#" class="btn btn-sm btn-outline-info">View</a></td>
                                 <td>
-                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
-                                    <button class="btn btn-sm btn-outline-danger">Remove</button>
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-box sm bg-primary-subtle rounded-circle me-2">
+                                            <i class="ri-graduation-cap-line text-primary"></i>
+                                        </div>
+                                        <span class="fw-semibold">MBBS</span>
+                                    </div>
+                                </td>
+                                <td>Harvard Medical School</td>
+                                <td><span class="badge bg-info-subtle text-info">2010</span></td>
+                                <td>
+                                    <a href="#" class="btn btn-sm btn-outline-success">
+                                        <i class="ri-eye-line me-1"></i>View
+                                    </a>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="ri-edit-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger">
+                                            <i class="ri-delete-bin-line"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr>
-                                <td>MD Cardiology</td>
-                                <td>Johns Hopkins</td>
-                                <td>2018</td>
-                                <td><a href="#" class="btn btn-sm btn-outline-info">View</a></td>
                                 <td>
-                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
-                                    <button class="btn btn-sm btn-outline-danger">Remove</button>
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-box sm bg-success-subtle rounded-circle me-2">
+                                            <i class="ri-heart-pulse-line text-success"></i>
+                                        </div>
+                                        <span class="fw-semibold">MD Cardiology</span>
+                                    </div>
+                                </td>
+                                <td>Johns Hopkins University</td>
+                                <td><span class="badge bg-info-subtle text-info">2013</span></td>
+                                <td>
+                                    <a href="#" class="btn btn-sm btn-outline-success">
+                                        <i class="ri-eye-line me-1"></i>View
+                                    </a>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="ri-edit-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger">
+                                            <i class="ri-delete-bin-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-box sm bg-warning-subtle rounded-circle me-2">
+                                            <i class="ri-award-line text-warning"></i>
+                                        </div>
+                                        <span class="fw-semibold">Board Certification</span>
+                                    </div>
+                                </td>
+                                <td>American Board of Cardiology</td>
+                                <td><span class="badge bg-info-subtle text-info">2014</span></td>
+                                <td>
+                                    <a href="#" class="btn btn-sm btn-outline-success">
+                                        <i class="ri-eye-line me-1"></i>View
+                                    </a>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="ri-edit-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger">
+                                            <i class="ri-delete-bin-line"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -182,8 +453,3 @@
         </div>
     </div>
 </div>
-
-@section PageActions {
-    <button type="button" class="btn btn-success">Add Qualification</button>
-    <button type="button" class="btn btn-primary">Save Changes</button>
-}

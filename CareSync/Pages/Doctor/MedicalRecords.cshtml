@@ -1,0 +1,500 @@
+@page "/Doctor/MedicalRecords"
+@model CareSync.Pages.Doctor.MedicalRecordsModel
+@{
+    ViewData["Title"] = "Medical Records";
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <div class="input-group" style="width: 300px;">
+            <span class="input-group-text bg-primary-subtle">
+                <i class="ri-search-line text-primary"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Search records...">
+        </div>
+        <button type="button" class="btn btn-success">
+            <i class="ri-add-line me-1"></i>New Record
+        </button>
+        <button type="button" class="btn btn-primary">
+            <i class="ri-download-line me-1"></i>Export
+        </button>
+    </div>
+}
+
+<!-- Medical Records Statistics Cards -->
+<div class="row gx-3 mb-3">
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-primary-subtle rounded-5 me-3">
+                        <i class="ri-file-text-line fs-4 text-primary"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-primary mb-1">2,847</h4>
+                        <small class="text-muted">Total Records</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-success-subtle rounded-5 me-3">
+                        <i class="ri-file-add-line fs-4 text-success"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-success mb-1">156</h4>
+                        <small class="text-muted">This Month</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-warning-subtle rounded-5 me-3">
+                        <i class="ri-file-edit-line fs-4 text-warning"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-warning mb-1">43</h4>
+                        <small class="text-muted">Updated Today</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-info-subtle rounded-5 me-3">
+                        <i class="ri-file-chart-line fs-4 text-info"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-info mb-1">89</h4>
+                        <small class="text-muted">Lab Reports</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Medical Records List -->
+<div class="row gx-3">
+    <div class="col-xl-8">
+        <div class="card mb-3">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-file-text-line me-2"></i>Recent Medical Records
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>All Records</option>
+                            <option>Medical History</option>
+                            <option>Lab Reports</option>
+                            <option>Prescriptions</option>
+                            <option>Vitals</option>
+                        </select>
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>Sort by Date</option>
+                            <option>Sort by Patient</option>
+                            <option>Sort by Type</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th><i class="ri-calendar-line me-1"></i>Date</th>
+                                <th><i class="ri-user-line me-1"></i>Patient</th>
+                                <th><i class="ri-file-text-line me-1"></i>Record Type</th>
+                                <th><i class="ri-chat-3-line me-1"></i>Description</th>
+                                <th><i class="ri-flag-line me-1"></i>Status</th>
+                                <th><i class="ri-settings-line me-1"></i>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-box sm bg-primary-subtle rounded-circle me-2">
+                                            <i class="ri-calendar-line text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <span class="fw-semibold">Nov 12, 2024</span>
+                                            <small class="text-muted d-block">Today</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/patient1.png" class="img-2x rounded-circle me-2" alt="Patient">
+                                        <div>
+                                            <span class="fw-semibold">John Smith</span>
+                                            <small class="text-muted d-block">ID: P001</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info-subtle text-info">
+                                        <i class="ri-heart-pulse-line me-1"></i>Vitals
+                                    </span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <span class="fw-semibold">Blood Pressure Check</span>
+                                        <small class="text-muted d-block">BP: 140/90, HR: 78</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">Complete</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-primary" title="View Details">
+                                            <i class="ri-eye-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" title="Download">
+                                            <i class="ri-download-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-warning" title="Edit">
+                                            <i class="ri-edit-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" title="Share">
+                                            <i class="ri-share-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-box sm bg-success-subtle rounded-circle me-2">
+                                            <i class="ri-calendar-line text-success"></i>
+                                        </div>
+                                        <div>
+                                            <span class="fw-semibold">Nov 11, 2024</span>
+                                            <small class="text-muted d-block">Yesterday</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/patient2.png" class="img-2x rounded-circle me-2" alt="Patient">
+                                        <div>
+                                            <span class="fw-semibold">Mary Johnson</span>
+                                            <small class="text-muted d-block">ID: P002</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning-subtle text-warning">
+                                        <i class="ri-test-tube-line me-1"></i>Lab Report
+                                    </span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <span class="fw-semibold">Blood Sugar Test</span>
+                                        <small class="text-muted d-block">HbA1c: 7.2%, Glucose: 145 mg/dL</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning">Pending Review</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-primary" title="View Details">
+                                            <i class="ri-eye-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" title="Download">
+                                            <i class="ri-download-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-warning" title="Review">
+                                            <i class="ri-check-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" title="Share">
+                                            <i class="ri-share-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-box sm bg-danger-subtle rounded-circle me-2">
+                                            <i class="ri-calendar-line text-danger"></i>
+                                        </div>
+                                        <div>
+                                            <span class="fw-semibold">Nov 10, 2024</span>
+                                            <small class="text-muted d-block">2 days ago</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/patient3.png" class="img-2x rounded-circle me-2" alt="Patient">
+                                        <div>
+                                            <span class="fw-semibold">Robert Davis</span>
+                                            <small class="text-muted d-block">ID: P003</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger-subtle text-danger">
+                                        <i class="ri-file-text-line me-1"></i>Medical History
+                                    </span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <span class="fw-semibold">Chest Pain Episode</span>
+                                        <small class="text-muted d-block">ECG Normal, Troponin Negative</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">Complete</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-primary" title="View Details">
+                                            <i class="ri-eye-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" title="Download">
+                                            <i class="ri-download-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary" title="Follow-up">
+                                            <i class="ri-calendar-event-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" title="Share">
+                                            <i class="ri-share-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-box sm bg-info-subtle rounded-circle me-2">
+                                            <i class="ri-calendar-line text-info"></i>
+                                        </div>
+                                        <div>
+                                            <span class="fw-semibold">Nov 9, 2024</span>
+                                            <small class="text-muted d-block">3 days ago</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/patient4.png" class="img-2x rounded-circle me-2" alt="Patient">
+                                        <div>
+                                            <span class="fw-semibold">Lisa Anderson</span>
+                                            <small class="text-muted d-block">ID: P004</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success-subtle text-success">
+                                        <i class="ri-medicine-bottle-line me-1"></i>Prescription
+                                    </span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <span class="fw-semibold">Annual Physical Medications</span>
+                                        <small class="text-muted d-block">Multivitamin, Calcium supplement</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">Filled</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-primary" title="View Details">
+                                            <i class="ri-eye-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" title="Download">
+                                            <i class="ri-download-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary" title="Refill">
+                                            <i class="ri-refresh-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" title="Share">
+                                            <i class="ri-share-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <nav aria-label="Medical records pagination" class="mt-3">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">
+                                <i class="ri-arrow-left-line"></i>
+                            </a>
+                        </li>
+                        <li class="page-item active">
+                            <a class="page-link" href="#">1</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">2</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">3</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">
+                                <i class="ri-arrow-right-line"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-4">
+        <!-- Record Categories -->\n        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-folder-line me-2"></i>Record Categories
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item border-0 px-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box sm bg-primary-subtle rounded-circle me-2">
+                                    <i class="ri-heart-pulse-line text-primary"></i>
+                                </div>
+                                <div>
+                                    <span class="fw-semibold">Vitals</span>
+                                    <small class="text-muted d-block">Blood pressure, heart rate</small>
+                                </div>
+                            </div>
+                            <span class="badge bg-primary-subtle text-primary">847</span>
+                        </div>
+                    </div>
+                    <div class="list-group-item border-0 px-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box sm bg-warning-subtle rounded-circle me-2">
+                                    <i class="ri-test-tube-line text-warning"></i>
+                                </div>
+                                <div>
+                                    <span class="fw-semibold">Lab Reports</span>
+                                    <small class="text-muted d-block">Blood tests, imaging</small>
+                                </div>
+                            </div>
+                            <span class="badge bg-warning-subtle text-warning">523</span>
+                        </div>
+                    </div>
+                    <div class="list-group-item border-0 px-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box sm bg-success-subtle rounded-circle me-2">
+                                    <i class="ri-medicine-bottle-line text-success"></i>
+                                </div>
+                                <div>
+                                    <span class="fw-semibold">Prescriptions</span>
+                                    <small class="text-muted d-block">Medications, dosages</small>
+                                </div>
+                            </div>
+                            <span class="badge bg-success-subtle text-success">1,247</span>
+                        </div>
+                    </div>
+                    <div class="list-group-item border-0 px-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box sm bg-info-subtle rounded-circle me-2">
+                                    <i class="ri-file-text-line text-info"></i>
+                                </div>
+                                <div>
+                                    <span class="fw-semibold">Medical History</span>
+                                    <small class="text-muted d-block">Diagnoses, treatments</small>
+                                </div>
+                            </div>
+                            <span class="badge bg-info-subtle text-info">230</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->\n        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-dashboard-line me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary">
+                        <i class="ri-file-add-line me-2"></i>Add Medical Record
+                    </button>
+                    <button class="btn btn-outline-success">
+                        <i class="ri-upload-line me-2"></i>Upload Lab Report
+                    </button>
+                    <button class="btn btn-outline-info">
+                        <i class="ri-search-line me-2"></i>Advanced Search
+                    </button>
+                    <button class="btn btn-outline-warning">
+                        <i class="ri-file-chart-line me-2"></i>Generate Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+            
+            // Search functionality
+            const searchInput = document.querySelector('input[placeholder="Search records..."]');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    console.log('Searching records:', this.value);
+                });
+            }
+            
+            // Filter and sort functionality
+            document.querySelectorAll('.form-select').forEach(select => {
+                select.addEventListener('change', function() {
+                    console.log('Filter/Sort changed:', this.value);
+                });
+            });
+            
+            // Record actions
+            document.querySelectorAll('[title="View Details"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    console.log('Viewing record details...');
+                });
+            });
+            
+            document.querySelectorAll('[title="Download"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    console.log('Downloading record...');
+                });
+            });
+        });
+    </script>
+}
