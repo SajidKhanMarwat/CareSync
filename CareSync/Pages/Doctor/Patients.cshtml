@@ -1,0 +1,416 @@
+@page "/Doctor/Patients"
+@model CareSync.Pages.Doctor.PatientsModel
+@{
+    ViewData["Title"] = "My Patients";
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <div class="input-group" style="width: 300px;">
+            <span class="input-group-text bg-primary-subtle">
+                <i class="ri-search-line text-primary"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Search patients...">
+        </div>
+        <button type="button" class="btn btn-success">
+            <i class="ri-user-add-line me-1"></i>Add Patient
+        </button>
+        <button type="button" class="btn btn-primary">
+            <i class="ri-download-line me-1"></i>Export
+        </button>
+    </div>
+}
+
+<!-- Patient Statistics Cards -->
+<div class="row gx-3 mb-3">
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-primary-subtle rounded-5 me-3">
+                        <i class="ri-empathize-line fs-4 text-primary"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-primary mb-1">1,247</h4>
+                        <small class="text-muted">Total Patients</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-success-subtle rounded-5 me-3">
+                        <i class="ri-user-heart-line fs-4 text-success"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-success mb-1">89</h4>
+                        <small class="text-muted">Active This Month</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-warning-subtle rounded-5 me-3">
+                        <i class="ri-user-follow-line fs-4 text-warning"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-warning mb-1">23</h4>
+                        <small class="text-muted">New This Week</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-info-subtle rounded-5 me-3">
+                        <i class="ri-calendar-check-line fs-4 text-info"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-info mb-1">156</h4>
+                        <small class="text-muted">Follow-ups Due</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Patients List -->
+<div class="row gx-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-group-2-line me-2"></i>Patient List
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>All Patients</option>
+                            <option>Active</option>
+                            <option>Inactive</option>
+                            <option>Critical</option>
+                        </select>
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>Sort by Name</option>
+                            <option>Sort by Date</option>
+                            <option>Sort by Age</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th><i class="ri-user-line me-1"></i>Patient</th>
+                                <th><i class="ri-phone-line me-1"></i>Contact</th>
+                                <th><i class="ri-calendar-line me-1"></i>Age</th>
+                                <th><i class="ri-drop-line me-1"></i>Blood Group</th>
+                                <th><i class="ri-calendar-event-line me-1"></i>Last Visit</th>
+                                <th><i class="ri-flag-line me-1"></i>Status</th>
+                                <th><i class="ri-settings-line me-1"></i>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/patient1.png" class="img-3x rounded-circle me-3" alt="Patient">
+                                        <div>
+                                            <h6 class="mb-1">John Smith</h6>
+                                            <small class="text-muted">ID: P001</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <span class="fw-semibold">+1 (555) 123-4567</span>
+                                        <small class="text-muted d-block">john.smith@email.com</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info-subtle text-info">45 years</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger text-white">O+</span>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold">Nov 10, 2024</span>
+                                    <small class="text-muted d-block">2 days ago</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">Active</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-primary" title="View Profile">
+                                            <i class="ri-eye-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" title="Schedule Appointment">
+                                            <i class="ri-calendar-event-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" title="Medical History">
+                                            <i class="ri-file-text-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-warning" title="Send Message">
+                                            <i class="ri-message-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/patient2.png" class="img-3x rounded-circle me-3" alt="Patient">
+                                        <div>
+                                            <h6 class="mb-1">Mary Johnson</h6>
+                                            <small class="text-muted">ID: P002</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <span class="fw-semibold">+1 (555) 987-6543</span>
+                                        <small class="text-muted d-block">mary.johnson@email.com</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info-subtle text-info">38 years</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success text-white">A+</span>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold">Nov 12, 2024</span>
+                                    <small class="text-success d-block">Today</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning">Follow-up Due</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-primary" title="View Profile">
+                                            <i class="ri-eye-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" title="Schedule Appointment">
+                                            <i class="ri-calendar-event-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" title="Medical History">
+                                            <i class="ri-file-text-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-warning" title="Send Message">
+                                            <i class="ri-message-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/patient3.png" class="img-3x rounded-circle me-3" alt="Patient">
+                                        <div>
+                                            <h6 class="mb-1">Robert Davis</h6>
+                                            <small class="text-muted">ID: P003</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <span class="fw-semibold">+1 (555) 456-7890</span>
+                                        <small class="text-muted d-block">robert.davis@email.com</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info-subtle text-info">52 years</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary text-white">B+</span>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold">Nov 8, 2024</span>
+                                    <small class="text-muted d-block">4 days ago</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger">Critical</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-primary" title="View Profile">
+                                            <i class="ri-eye-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" title="Schedule Appointment">
+                                            <i class="ri-calendar-event-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" title="Medical History">
+                                            <i class="ri-file-text-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-warning" title="Send Message">
+                                            <i class="ri-message-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/patient4.png" class="img-3x rounded-circle me-3" alt="Patient">
+                                        <div>
+                                            <h6 class="mb-1">Lisa Anderson</h6>
+                                            <small class="text-muted">ID: P004</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <span class="fw-semibold">+1 (555) 321-0987</span>
+                                        <small class="text-muted d-block">lisa.anderson@email.com</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info-subtle text-info">29 years</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning text-white">AB+</span>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold">Nov 5, 2024</span>
+                                    <small class="text-muted d-block">1 week ago</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">Active</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-primary" title="View Profile">
+                                            <i class="ri-eye-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" title="Schedule Appointment">
+                                            <i class="ri-calendar-event-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" title="Medical History">
+                                            <i class="ri-file-text-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-warning" title="Send Message">
+                                            <i class="ri-message-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/patient5.png" class="img-3x rounded-circle me-3" alt="Patient">
+                                        <div>
+                                            <h6 class="mb-1">Michael Brown</h6>
+                                            <small class="text-muted">ID: P005</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <span class="fw-semibold">+1 (555) 654-3210</span>
+                                        <small class="text-muted d-block">michael.brown@email.com</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info-subtle text-info">67 years</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary text-white">O-</span>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold">Oct 28, 2024</span>
+                                    <small class="text-muted d-block">2 weeks ago</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">Scheduled</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-primary" title="View Profile">
+                                            <i class="ri-eye-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" title="Schedule Appointment">
+                                            <i class="ri-calendar-event-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" title="Medical History">
+                                            <i class="ri-file-text-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-warning" title="Send Message">
+                                            <i class="ri-message-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <nav aria-label="Patient list pagination" class="mt-3">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">
+                                <i class="ri-arrow-left-line"></i>
+                            </a>
+                        </li>
+                        <li class="page-item active">
+                            <a class="page-link" href="#">1</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">2</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">3</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">
+                                <i class="ri-arrow-right-line"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+            
+            // Search functionality
+            const searchInput = document.querySelector('input[placeholder="Search patients..."]');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    // Implement search functionality
+                    console.log('Searching for:', this.value);
+                });
+            }
+            
+            // Filter and sort functionality
+            document.querySelectorAll('.form-select').forEach(select => {
+                select.addEventListener('change', function() {
+                    console.log('Filter/Sort changed:', this.value);
+                });
+            });
+        });
+    </script>
+}

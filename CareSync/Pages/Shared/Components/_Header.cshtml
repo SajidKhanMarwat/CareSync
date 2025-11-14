@@ -1,3 +1,9 @@
+@{
+    var userRole = ViewContext.HttpContext.Session.GetString("UserRole") ?? "Patient";
+    var userName = ViewContext.HttpContext.Session.GetString("UserName") ?? "User";
+    var userEmail = ViewContext.HttpContext.Session.GetString("UserEmail") ?? "";
+}
+
 <!-- App header starts -->
 <div class="app-header d-flex align-items-center">
 
@@ -6,8 +12,8 @@
 
     <!-- App brand starts -->
     <div class="app-brand">
-      <a href="~/Dashboard">
-        <img src="~/ApolloTheme/assets/images/logo.svg" class="logo" alt="CareSync">
+      <a href="/">
+        <img src="~/theme/images/logo.svg" class="logo" alt="CareSync Medical System">
       </a>
     </div>
     <!-- App brand ends -->
@@ -23,7 +29,7 @@
 
   <!-- Search container starts -->
   <div class="search-container d-xl-block d-none">
-    <input type="text" class="form-control" id="searchId" placeholder="Search">
+    <input type="text" class="form-control" id="searchId" placeholder="Search patients, doctors, appointments...">
     <i class="ri-search-line"></i>
   </div>
   <!-- Search container ends -->
@@ -34,70 +40,140 @@
     <!-- Header actions starts -->
     <div class="d-lg-flex d-none gap-2">
 
-      <!-- Select country dropdown starts -->
+      <!-- Quick Actions dropdown starts -->
       <div class="dropdown">
         <a class="dropdown-toggle header-icon" href="#!" role="button" data-bs-toggle="dropdown"
-          aria-expanded="false">
-          <img src="~/ApolloTheme/assets/images/flags/1x1/fr.svg" class="header-country-flag" alt="CareSync">
+          aria-expanded="false" title="Quick Actions">
+          <i class="ri-add-circle-line"></i>
         </a>
-        <div class="dropdown-menu dropdown-menu-end dropdown-mini">
-          <div class="country-container">
-            <a href="~/Dashboard" class="py-2">
-              <img src="~/ApolloTheme/assets/images/flags/1x1/us.svg" alt="USA">
+        <div class="dropdown-menu dropdown-menu-end dropdown-300">
+          <h6 class="fw-semibold px-3 py-2 text-primary mb-0">Quick Actions</h6>
+          <div class="dropdown-divider"></div>
+          
+          @if (userRole == "Doctor")
+          {
+            <a class="dropdown-item" href="~/Doctor/Appointments/Create">
+              <i class="ri-calendar-event-line me-2"></i>Schedule Appointment
             </a>
-            <a href="~/Dashboard" class="py-2">
-              <img src="~/ApolloTheme/assets/images/flags/1x1/in.svg" alt="India">
+            <a class="dropdown-item" href="~/Doctor/Prescriptions/Create">
+              <i class="ri-medicine-bottle-line me-2"></i>New Prescription
             </a>
-            <a href="~/Dashboard" class="py-2">
-              <img src="~/ApolloTheme/assets/images/flags/1x1/br.svg" alt="Brazil">
+            <a class="dropdown-item" href="~/Doctor/Patients/Search">
+              <i class="ri-user-search-line me-2"></i>Find Patient
             </a>
-            <a href="~/Dashboard" class="py-2">
-              <img src="~/ApolloTheme/assets/images/flags/1x1/tr.svg" alt="Turkey">
+          }
+          else if (userRole == "Patient")
+          {
+            <a class="dropdown-item" href="~/Patient/Appointments/Book">
+              <i class="ri-calendar-event-line me-2"></i>Book Appointment
             </a>
-            <a href="~/Dashboard" class="py-2">
-              <img src="~/ApolloTheme/assets/images/flags/1x1/gb.svg" alt="UK">
+            <a class="dropdown-item" href="~/Patient/Vitals/Add">
+              <i class="ri-heart-pulse-line me-2"></i>Record Vitals
             </a>
-          </div>
+            <a class="dropdown-item" href="~/Patient/Symptoms/Log">
+              <i class="ri-thermometer-line me-2"></i>Log Symptoms
+            </a>
+          }
+          else if (userRole == "Admin")
+          {
+            <a class="dropdown-item" href="~/Admin/Users/Add">
+              <i class="ri-user-add-line me-2"></i>Add User
+            </a>
+            <a class="dropdown-item" href="~/Admin/Departments/Add">
+              <i class="ri-building-2-line me-2"></i>Add Department
+            </a>
+            <a class="dropdown-item" href="~/Admin/Reports/Generate">
+              <i class="ri-file-chart-line me-2"></i>Generate Report
+            </a>
+          }
+          else if (userRole == "Lab")
+          {
+            <a class="dropdown-item" href="~/Lab/Reports/Create">
+              <i class="ri-file-add-line me-2"></i>Create Lab Report
+            </a>
+            <a class="dropdown-item" href="~/Lab/Requests/Process">
+              <i class="ri-test-tube-line me-2"></i>Process Request
+            </a>
+          }
         </div>
       </div>
-      <!-- Select country dropdown ends -->
+      <!-- Quick Actions dropdown ends -->
 
       <!-- Bookmarks starts -->
       <div class="dropdown">
         <a class="dropdown-toggle header-icon" href="#!" role="button" data-bs-toggle="dropdown"
-          aria-expanded="false">
+          aria-expanded="false" title="Bookmarks">
           <i class="ri-star-line"></i>
         </a>
         <div class="dropdown-menu dropdown-menu-end dropdown-300">
-          <h5 class="fw-semibold px-3 py-2 text-primary">Bookmarks</h5>
+          <h6 class="fw-semibold px-3 py-2 text-primary mb-0">Quick Access</h6>
+          <div class="dropdown-divider"></div>
 
-          <div class="d-flex justify-content-center gap-3">
-            <a href="~/Doctors/Cards" class="text-center">
-              <div class="icon-box lg bg-primary-subtle rounded-5 mb-1">
-                <i class="ri-stethoscope-line text-primary fs-4"></i>
-              </div>
-              Doctors
-            </a>
-            <a href="~/Staff" class="text-center">
-              <div class="icon-box lg bg-primary-subtle rounded-5 mb-1">
-                <i class="ri-nurse-line text-primary fs-4"></i>
-              </div>
-              Staff
-            </a>
-            <a href="~/Patients/List" class="text-center">
-              <div class="icon-box lg bg-primary-subtle rounded-5 mb-1">
-                <i class="ri-group-2-line text-primary fs-4"></i>
-              </div>
-              Patients
-            </a>
+          <div class="d-flex justify-content-center gap-3 p-3">
+            @if (userRole == "Admin")
+            {
+              <a href="~/Admin/Users" class="text-center">
+                <div class="icon-box lg bg-primary-subtle rounded-5 mb-1">
+                  <i class="ri-group-2-line text-primary fs-4"></i>
+                </div>
+                <small>Users</small>
+              </a>
+              <a href="~/Admin/SystemOverview" class="text-center">
+                <div class="icon-box lg bg-success-subtle rounded-5 mb-1">
+                  <i class="ri-bar-chart-line text-success fs-4"></i>
+                </div>
+                <small>Reports</small>
+              </a>
+              <a href="~/Admin/Departments" class="text-center">
+                <div class="icon-box lg bg-info-subtle rounded-5 mb-1">
+                  <i class="ri-building-2-line text-info fs-4"></i>
+                </div>
+                <small>Departments</small>
+              </a>
+            }
+            else if (userRole == "Doctor")
+            {
+              <a href="~/Doctor/Appointments" class="text-center">
+                <div class="icon-box lg bg-primary-subtle rounded-5 mb-1">
+                  <i class="ri-calendar-2-line text-primary fs-4"></i>
+                </div>
+                <small>Appointments</small>
+              </a>
+              <a href="~/Doctor/Patients" class="text-center">
+                <div class="icon-box lg bg-success-subtle rounded-5 mb-1">
+                  <i class="ri-empathize-line text-success fs-4"></i>
+                </div>
+                <small>Patients</small>
+              </a>
+              <a href="~/Doctor/Prescriptions" class="text-center">
+                <div class="icon-box lg bg-warning-subtle rounded-5 mb-1">
+                  <i class="ri-medicine-bottle-line text-warning fs-4"></i>
+                </div>
+                <small>Prescriptions</small>
+              </a>
+            }
+            else
+            {
+              <a href="~/Patient/Appointments" class="text-center">
+                <div class="icon-box lg bg-primary-subtle rounded-5 mb-1">
+                  <i class="ri-calendar-2-line text-primary fs-4"></i>
+                </div>
+                <small>Appointments</small>
+              </a>
+              <a href="~/Patient/MedicalHistory" class="text-center">
+                <div class="icon-box lg bg-info-subtle rounded-5 mb-1">
+                  <i class="ri-file-text-line text-info fs-4"></i>
+                </div>
+                <small>Records</small>
+              </a>
+              <a href="~/Patient/Vitals" class="text-center">
+                <div class="icon-box lg bg-danger-subtle rounded-5 mb-1">
+                  <i class="ri-heart-pulse-line text-danger fs-4"></i>
+                </div>
+                <small>Vitals</small>
+              </a>
+            }
           </div>
-
-          <!-- View all button starts -->
-          <div class="d-grid m-3">
-            <a href="javascript:void(0)" class="btn btn-outline-primary">Add New Bookmark</a>
-          </div>
-          <!-- View all button ends -->
-
         </div>
       </div>
       <!-- Bookmarks ends -->
@@ -127,7 +203,7 @@
                     <div class="ps-3 ms-2 border-start">
                       <div class="d-flex align-items-center mb-2">
                         <div class="flex-shrink-0">
-                          <img src="~/ApolloTheme/assets/images/products/1.jpg" class="img-3x rounded-1"
+                          <img src="~/theme/images/products/1.jpg" class="img-3x rounded-1"
                             alt="CareSync">
                         </div>
                         <div class="flex-grow-1 ms-3">
@@ -147,7 +223,7 @@
                     <div class="ps-3 ms-2 border-start">
                       <div class="d-flex align-items-center mb-2">
                         <div class="flex-shrink-0">
-                          <img src="~/ApolloTheme/assets/images/products/2.jpg" class="img-3x rounded-1"
+                          <img src="~/theme/images/products/2.jpg" class="img-3x rounded-1"
                             alt="CareSync">
                         </div>
                         <div class="flex-grow-1 ms-3">
@@ -167,7 +243,7 @@
                     <div class="ps-3 ms-2 border-start">
                       <div class="d-flex align-items-center mb-2">
                         <div class="flex-shrink-0">
-                          <img src="~/ApolloTheme/assets/images/products/8.jpg" class="img-3x rounded-1"
+                          <img src="~/theme/images/products/8.jpg" class="img-3x rounded-1"
                             alt="CareSync">
                         </div>
                         <div class="flex-grow-1 ms-3">
@@ -187,7 +263,7 @@
                     <div class="ps-3 ms-2 border-start">
                       <div class="d-flex align-items-center mb-2">
                         <div class="flex-shrink-0">
-                          <img src="~/ApolloTheme/assets/images/products/9.jpg" class="img-3x rounded-1"
+                          <img src="~/theme/images/products/9.jpg" class="img-3x rounded-1"
                             alt="CareSync">
                         </div>
                         <div class="flex-grow-1 ms-3">
@@ -298,34 +374,34 @@
             <!-- Messages list starts -->
             <div class="p-3">
               <div class="d-flex py-2">
-                <img src="~/ApolloTheme/assets/images/doctor3.png" class="img-3x me-3 rounded-5"
+                <img src="~/theme/images/doctor3.png" class="img-3x me-3 rounded-5"
                   alt="CareSync">
                 <div class="m-0">
-                  <h6 class="mb-1 fw-semibold">Albert Winters</h6>
+                  <h6 class="mb-1 fw-semibold">Dr. Albert Winters</h6>
                   <p class="mb-1">
-                    Appointed as a new President 2014-2025
+                    New appointment scheduled for tomorrow
                   </p>
                   <p class="small m-0 opacity-50">Today, 07:30pm</p>
                 </div>
               </div>
               <div class="d-flex py-2">
-                <img src="~/ApolloTheme/assets/images/doctor1.png" class="img-3x me-3 rounded-5"
+                <img src="~/theme/images/doctor1.png" class="img-3x me-3 rounded-5"
                   alt="CareSync">
                 <div class="m-0">
-                  <h6 class="mb-1 fw-semibold">Van Robinson</h6>
+                  <h6 class="mb-1 fw-semibold">Dr. Van Robinson</h6>
                   <p class="mb-1">
-                    Congratulate, James for new job.
+                    Lab results are ready for review
                   </p>
                   <p class="small m-0 opacity-50">Today, 08:00pm</p>
                 </div>
               </div>
               <div class="d-flex py-2">
-                <img src="~/ApolloTheme/assets/images/doctor4.png" class="img-3x me-3 rounded-5"
+                <img src="~/theme/images/doctor4.png" class="img-3x me-3 rounded-5"
                   alt="CareSync">
                 <div class="m-0">
-                  <h6 class="mb-1 fw-semibold">Mara Coffey</h6>
+                  <h6 class="mb-1 fw-semibold">Dr. Mara Coffey</h6>
                   <p class="mb-1">
-                    Lewis added new doctors training schedule.
+                    Updated treatment plan available
                   </p>
                   <p class="small m-0 opacity-50">Today, 09:30pm</p>
                 </div>
@@ -352,17 +428,74 @@
       <a id="userSettings" class="dropdown-toggle d-flex align-items-center" href="#!" role="button"
         data-bs-toggle="dropdown" aria-expanded="false">
         <div class="avatar-box">
-          <img src="~/ApolloTheme/assets/images/doctor5.png" class="img-2xx rounded-5" alt="CareSync">
-          <span class="status busy"></span>
+          @if (userRole == "Admin")
+          {
+            <img src="~/theme/images/admin.png" class="img-2xx rounded-5" alt="CareSync Admin">
+          }
+          else if (userRole == "Doctor")
+          {
+            <img src="~/theme/images/doctor5.png" class="img-2xx rounded-5" alt="CareSync Doctor">
+          }
+          else if (userRole == "Lab")
+          {
+            <img src="~/theme/images/lab-tech.png" class="img-2xx rounded-5" alt="CareSync Lab">
+          }
+          else
+          {
+            <img src="~/theme/images/patient2.png" class="img-2xx rounded-5" alt="CareSync Patient">
+          }
+          <span class="status online"></span>
         </div>
       </a>
       <div class="dropdown-menu dropdown-menu-end shadow-lg">
-        <div class="px-3 py-2">
-          <span class="small">Admin</span>
-          <h6 class="m-0">Max Goodwin</h6>
+        <div class="px-3 py-2 border-bottom">
+          <span class="small text-muted">@userRole</span>
+          <h6 class="m-0 fw-semibold">@userName</h6>
+          @if (!string.IsNullOrEmpty(userEmail))
+          {
+            <small class="text-muted">@userEmail</small>
+          }
         </div>
-        <div class="mx-3 my-2 d-grid">
-          <a href="~/Auth/Login" class="btn btn-danger">Logout</a>
+        
+        <div class="py-2">
+          @if (userRole == "Doctor")
+          {
+            <a class="dropdown-item" href="~/Doctor/Profile">
+              <i class="ri-user-line me-2"></i>My Profile
+            </a>
+          }
+          else if (userRole == "Patient")
+          {
+            <a class="dropdown-item" href="~/Patient/Profile">
+              <i class="ri-user-line me-2"></i>My Profile
+            </a>
+          }
+          else if (userRole == "Admin")
+          {
+            <a class="dropdown-item" href="~/Admin/Profile">
+              <i class="ri-user-line me-2"></i>Admin Profile
+            </a>
+          }
+          else if (userRole == "Lab")
+          {
+            <a class="dropdown-item" href="~/Lab/Profile">
+              <i class="ri-user-line me-2"></i>Lab Profile
+            </a>
+          }
+          
+          <a class="dropdown-item" href="~/Settings">
+            <i class="ri-settings-5-line me-2"></i>Settings
+          </a>
+          
+          <a class="dropdown-item" href="~/Help">
+            <i class="ri-question-line me-2"></i>Help & Support
+          </a>
+          
+          <div class="dropdown-divider"></div>
+          
+          <a class="dropdown-item text-danger" href="~/Auth/Logout">
+            <i class="ri-logout-box-line me-2"></i>Sign Out
+          </a>
         </div>
       </div>
     </div>

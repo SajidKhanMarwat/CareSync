@@ -1,60 +1,18 @@
 @{
-    var alerts = TempData["Alerts"] as List<(string Type, string Message)> ?? new List<(string, string)>();
-    var notifications = ViewData["Notifications"] as List<(string Type, string Title, string Message, DateTime Time)> ?? new List<(string, string, string, DateTime)>();
+    // Simplified notification system without tuples
+    var alertMessage = TempData["AlertMessage"]?.ToString();
+    var alertType = TempData["AlertType"]?.ToString() ?? "info";
 }
 
 <!-- Alert Messages -->
-@if (alerts.Any())
+@if (!string.IsNullOrEmpty(alertMessage))
 {
     <div class="alert-container mb-3">
-        @foreach (var alert in alerts)
-        {
-            <div class="alert alert-@alert.Type alert-dismissible fade show" role="alert">
-                <i class="ri-information-line me-2"></i>
-                @alert.Message
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        }
-    </div>
-}
-
-<!-- System Notifications -->
-@if (notifications.Any())
-{
-    <div class="notification-panel mb-3">
-        @foreach (var notification in notifications)
-        {
-            <div class="notification-card notification-@notification.Type">
-                <div class="notification-header">
-                    <div class="notification-icon">
-                        @switch (notification.Type.ToLower())
-                        {
-                            case "success":
-                                <i class="ri-check-circle-line text-success"></i>
-                                break;
-                            case "warning":
-                                <i class="ri-alert-line text-warning"></i>
-                                break;
-                            case "error":
-                                <i class="ri-error-warning-line text-danger"></i>
-                                break;
-                            case "info":
-                            default:
-                                <i class="ri-information-line text-info"></i>
-                                break;
-                        }
-                    </div>
-                    <div class="notification-title">
-                        <h6>@notification.Title</h6>
-                        <small class="text-muted">@notification.Time.ToString("MMM dd, yyyy HH:mm")</small>
-                    </div>
-                    <button type="button" class="btn-close notification-close" data-notification-id="@notification.GetHashCode()"></button>
-                </div>
-                <div class="notification-body">
-                    <p>@notification.Message</p>
-                </div>
-            </div>
-        }
+        <div class="alert alert-@alertType alert-dismissible fade show" role="alert">
+            <i class="ri-information-line me-2"></i>
+            @alertMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     </div>
 }
 

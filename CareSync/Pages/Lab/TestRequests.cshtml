@@ -1,0 +1,495 @@
+@page "/Lab/TestRequests"
+@model CareSync.Pages.Lab.TestRequestsModel
+@{
+    ViewData["Title"] = "Test Requests";
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-success">
+            <i class="ri-check-line me-1"></i>Batch Accept
+        </button>
+        <button type="button" class="btn btn-primary">
+            <i class="ri-filter-line me-1"></i>Filter Requests
+        </button>
+        <button type="button" class="btn btn-outline-info">
+            <i class="ri-download-line me-1"></i>Export List
+        </button>
+    </div>
+}
+
+<!-- Test Request Statistics -->
+<div class="row gx-3 mb-3">
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-warning-subtle rounded-5 me-3">
+                        <i class="ri-inbox-line fs-4 text-warning"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-warning mb-1">32</h4>
+                        <small class="text-muted">New Requests</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-info-subtle rounded-5 me-3">
+                        <i class="ri-check-line fs-4 text-info"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-info mb-1">18</h4>
+                        <small class="text-muted">Accepted</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-success-subtle rounded-5 me-3">
+                        <i class="ri-flask-line fs-4 text-success"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-success mb-1">45</h4>
+                        <small class="text-muted">In Progress</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-danger-subtle rounded-5 me-3">
+                        <i class="ri-alarm-warning-line fs-4 text-danger"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-danger mb-1">5</h4>
+                        <small class="text-muted">Urgent</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="row gx-3">
+    <div class="col-xl-9">
+        <!-- Test Requests List -->
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-list-check me-2"></i>Incoming Test Requests
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>All Priorities</option>
+                            <option>STAT</option>
+                            <option>Urgent</option>
+                            <option>Routine</option>
+                        </select>
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>All Departments</option>
+                            <option>Hematology</option>
+                            <option>Chemistry</option>
+                            <option>Microbiology</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Request Item 1 - STAT -->
+                <div class="request-item border border-danger rounded-4 p-3 mb-3">
+                    <div class="row">
+                        <div class="col-md-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="req1">
+                                <label class="form-check-label" for="req1"></label>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">Cardiac Enzymes Panel</h6>
+                                    <p class="text-muted mb-1">Patient: John Smith (ID: P-2024-1156) | Age: 65</p>
+                                    <small class="text-muted">
+                                        <i class="ri-user-line me-1"></i>Dr. Sarah Johnson - Cardiology
+                                        <i class="ri-calendar-line ms-3 me-1"></i>Requested: Nov 12, 2024 - 2:30 PM
+                                    </small>
+                                </div>
+                                <span class="badge bg-danger">STAT</span>
+                            </div>
+                            <div class="clinical-info bg-light rounded p-2 mb-2">
+                                <small class="fw-semibold">Clinical Info:</small>
+                                <small class="d-block text-muted">Chest pain, suspected MI. Patient in ER.</small>
+                            </div>
+                            <div class="test-details">
+                                <small class="fw-semibold">Tests Requested:</small>
+                                <div class="d-flex gap-1 mt-1">
+                                    <span class="badge bg-primary-subtle text-primary">Troponin I</span>
+                                    <span class="badge bg-primary-subtle text-primary">CK-MB</span>
+                                    <span class="badge bg-primary-subtle text-primary">Myoglobin</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <div class="priority-indicator mb-2">
+                                <div class="text-danger fw-bold">STAT</div>
+                                <small class="text-muted">TAT: 1 hour</small>
+                            </div>
+                            <div class="sample-info">
+                                <small class="text-muted">Sample:</small>
+                                <div class="fw-semibold">Serum</div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <div class="d-grid gap-1">
+                                <button class="btn btn-sm btn-danger">Accept STAT</button>
+                                <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                <button class="btn btn-sm btn-outline-warning">Contact Doctor</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Request Item 2 - Urgent -->
+                <div class="request-item border border-warning rounded-4 p-3 mb-3">
+                    <div class="row">
+                        <div class="col-md-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="req2">
+                                <label class="form-check-label" for="req2"></label>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">Blood Culture & Sensitivity</h6>
+                                    <p class="text-muted mb-1">Patient: Maria Garcia (ID: P-2024-1157) | Age: 42</p>
+                                    <small class="text-muted">
+                                        <i class="ri-user-line me-1"></i>Dr. Michael Brown - Internal Medicine
+                                        <i class="ri-calendar-line ms-3 me-1"></i>Requested: Nov 12, 2024 - 1:45 PM
+                                    </small>
+                                </div>
+                                <span class="badge bg-warning">Urgent</span>
+                            </div>
+                            <div class="clinical-info bg-light rounded p-2 mb-2">
+                                <small class="fw-semibold">Clinical Info:</small>
+                                <small class="d-block text-muted">Fever 102°F, suspected sepsis. Start antibiotics pending culture.</small>
+                            </div>
+                            <div class="test-details">
+                                <small class="fw-semibold">Tests Requested:</small>
+                                <div class="d-flex gap-1 mt-1">
+                                    <span class="badge bg-warning-subtle text-warning">Blood Culture</span>
+                                    <span class="badge bg-warning-subtle text-warning">Antibiotic Sensitivity</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <div class="priority-indicator mb-2">
+                                <div class="text-warning fw-bold">Urgent</div>
+                                <small class="text-muted">TAT: 4 hours</small>
+                            </div>
+                            <div class="sample-info">
+                                <small class="text-muted">Sample:</small>
+                                <div class="fw-semibold">Blood</div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <div class="d-grid gap-1">
+                                <button class="btn btn-sm btn-warning">Accept Urgent</button>
+                                <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                <button class="btn btn-sm btn-outline-info">Schedule</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Request Item 3 - Routine -->
+                <div class="request-item border rounded-4 p-3 mb-3">
+                    <div class="row">
+                        <div class="col-md-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="req3">
+                                <label class="form-check-label" for="req3"></label>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">Complete Blood Count (CBC)</h6>
+                                    <p class="text-muted mb-1">Patient: David Lee (ID: P-2024-1158) | Age: 35</p>
+                                    <small class="text-muted">
+                                        <i class="ri-user-line me-1"></i>Dr. Lisa Anderson - Family Medicine
+                                        <i class="ri-calendar-line ms-3 me-1"></i>Requested: Nov 12, 2024 - 11:20 AM
+                                    </small>
+                                </div>
+                                <span class="badge bg-success">Routine</span>
+                            </div>
+                            <div class="clinical-info bg-light rounded p-2 mb-2">
+                                <small class="fw-semibold">Clinical Info:</small>
+                                <small class="d-block text-muted">Annual physical exam. Patient feels well.</small>
+                            </div>
+                            <div class="test-details">
+                                <small class="fw-semibold">Tests Requested:</small>
+                                <div class="d-flex gap-1 mt-1">
+                                    <span class="badge bg-success-subtle text-success">CBC with Diff</span>
+                                    <span class="badge bg-success-subtle text-success">Platelet Count</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <div class="priority-indicator mb-2">
+                                <div class="text-success fw-bold">Routine</div>
+                                <small class="text-muted">TAT: 24 hours</small>
+                            </div>
+                            <div class="sample-info">
+                                <small class="text-muted">Sample:</small>
+                                <div class="fw-semibold">EDTA Blood</div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <div class="d-grid gap-1">
+                                <button class="btn btn-sm btn-success">Accept</button>
+                                <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                <button class="btn btn-sm btn-outline-info">Schedule</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Request Item 4 - Routine -->
+                <div class="request-item border rounded-4 p-3">
+                    <div class="row">
+                        <div class="col-md-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="req4">
+                                <label class="form-check-label" for="req4"></label>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">Lipid Profile</h6>
+                                    <p class="text-muted mb-1">Patient: Emma Wilson (ID: P-2024-1159) | Age: 28</p>
+                                    <small class="text-muted">
+                                        <i class="ri-user-line me-1"></i>Dr. James Wilson - Endocrinology
+                                        <i class="ri-calendar-line ms-3 me-1"></i>Requested: Nov 12, 2024 - 10:15 AM
+                                    </small>
+                                </div>
+                                <span class="badge bg-info">Fasting</span>
+                            </div>
+                            <div class="clinical-info bg-light rounded p-2 mb-2">
+                                <small class="fw-semibold">Clinical Info:</small>
+                                <small class="d-block text-muted">Family history of heart disease. Fasting 12 hours.</small>
+                            </div>
+                            <div class="test-details">
+                                <small class="fw-semibold">Tests Requested:</small>
+                                <div class="d-flex gap-1 mt-1">
+                                    <span class="badge bg-info-subtle text-info">Total Cholesterol</span>
+                                    <span class="badge bg-info-subtle text-info">HDL</span>
+                                    <span class="badge bg-info-subtle text-info">LDL</span>
+                                    <span class="badge bg-info-subtle text-info">Triglycerides</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <div class="priority-indicator mb-2">
+                                <div class="text-info fw-bold">Fasting</div>
+                                <small class="text-muted">TAT: 4 hours</small>
+                            </div>
+                            <div class="sample-info">
+                                <small class="text-muted">Sample:</small>
+                                <div class="fw-semibold">Serum</div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <div class="d-grid gap-1">
+                                <button class="btn btn-sm btn-info">Accept</button>
+                                <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                <button class="btn btn-sm btn-outline-success">Schedule</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3">
+        <!-- Quick Filters -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-filter-line me-2"></i>Quick Filters
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="filter-item mb-3">
+                    <h6 class="mb-2">By Priority</h6>
+                    <div class="d-grid gap-1">
+                        <button class="btn btn-sm btn-outline-danger">STAT (5)</button>
+                        <button class="btn btn-sm btn-outline-warning">Urgent (12)</button>
+                        <button class="btn btn-sm btn-outline-success">Routine (28)</button>
+                    </div>
+                </div>
+                <div class="filter-item mb-3">
+                    <h6 class="mb-2">By Department</h6>
+                    <div class="d-grid gap-1">
+                        <button class="btn btn-sm btn-outline-primary">Hematology (15)</button>
+                        <button class="btn btn-sm btn-outline-info">Chemistry (18)</button>
+                        <button class="btn btn-sm btn-outline-success">Microbiology (7)</button>
+                    </div>
+                </div>
+                <div class="filter-item">
+                    <h6 class="mb-2">By Time</h6>
+                    <div class="d-grid gap-1">
+                        <button class="btn btn-sm btn-outline-warning">Last Hour (8)</button>
+                        <button class="btn btn-sm btn-outline-info">Today (32)</button>
+                        <button class="btn btn-sm btn-outline-secondary">Yesterday (45)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Collection -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-test-tube-line me-2"></i>Sample Collection
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="collection-item d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <h6 class="mb-0">Blood Samples</h6>
+                        <small class="text-muted">Pending collection</small>
+                    </div>
+                    <span class="badge bg-warning">12</span>
+                </div>
+                <div class="collection-item d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <h6 class="mb-0">Urine Samples</h6>
+                        <small class="text-muted">Ready for testing</small>
+                    </div>
+                    <span class="badge bg-success">8</span>
+                </div>
+                <div class="collection-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">Other Samples</h6>
+                        <small class="text-muted">Various specimens</small>
+                    </div>
+                    <span class="badge bg-info">5</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-dashboard-line me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-success">
+                        <i class="ri-check-line me-2"></i>Accept Selected
+                    </button>
+                    <button class="btn btn-outline-primary">
+                        <i class="ri-calendar-line me-2"></i>Schedule Batch
+                    </button>
+                    <button class="btn btn-outline-info">
+                        <i class="ri-printer-line me-2"></i>Print Labels
+                    </button>
+                    <button class="btn btn-outline-warning">
+                        <i class="ri-message-line me-2"></i>Contact Doctors
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Request item actions
+            document.querySelectorAll('.request-item button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.textContent.trim();
+                    const testName = this.closest('.request-item').querySelector('h6').textContent;
+                    const patientName = this.closest('.request-item').querySelector('p').textContent.split('|')[0].replace('Patient: ', '');
+                    
+                    switch(true) {
+                        case action.includes('Accept'):
+                            alert(`Accepting ${testName} for ${patientName}...`);
+                            break;
+                        case action.includes('View Details'):
+                            alert(`Opening details for ${testName}...`);
+                            break;
+                        case action.includes('Contact Doctor'):
+                            alert(`Contacting doctor about ${testName}...`);
+                            break;
+                        case action.includes('Schedule'):
+                            alert(`Scheduling ${testName}...`);
+                            break;
+                    }
+                });
+            });
+            
+            // Filter buttons
+            document.querySelectorAll('.filter-item button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const filter = this.textContent.trim();
+                    alert(`Filtering by: ${filter}`);
+                });
+            });
+            
+            // Quick actions
+            document.querySelectorAll('.card:last-child .btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.textContent.trim();
+                    
+                    switch(true) {
+                        case action.includes('Accept Selected'):
+                            alert('Accepting selected test requests...');
+                            break;
+                        case action.includes('Schedule Batch'):
+                            alert('Opening batch scheduling...');
+                            break;
+                        case action.includes('Print Labels'):
+                            alert('Printing sample labels...');
+                            break;
+                        case action.includes('Contact Doctors'):
+                            alert('Opening doctor communication...');
+                            break;
+                    }
+                });
+            });
+            
+            // Checkbox selection
+            document.querySelectorAll('.form-check-input').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const requestItem = this.closest('.request-item');
+                    if (this.checked) {
+                        requestItem.style.backgroundColor = '#f8f9fa';
+                    } else {
+                        requestItem.style.backgroundColor = '';
+                    }
+                });
+            });
+        });
+    </script>
+}

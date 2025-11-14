@@ -1,0 +1,388 @@
+@page "/Patient/Appointments/All"
+@model CareSync.Pages.Patient.AllAppointmentsModel
+@{
+    ViewData["Title"] = "All Appointments";
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <a href="/Patient/Appointments/Create" class="btn btn-primary">
+            <i class="ri-add-line me-2"></i>Book New Appointment
+        </a>
+        <button class="btn btn-outline-secondary" onclick="exportAppointments()">
+            <i class="ri-download-line me-2"></i>Export
+        </button>
+    </div>
+}
+
+<!-- Appointment Statistics -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+        <div class="card border-primary">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="ri-calendar-line text-primary" style="font-size: 2rem;"></i>
+                </div>
+                <h3 class="card-title text-primary">24</h3>
+                <p class="card-text text-muted">Total Appointments</p>
+                <small class="text-success">All time</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+        <div class="card border-success">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="ri-calendar-check-line text-success" style="font-size: 2rem;"></i>
+                </div>
+                <h3 class="card-title text-success">18</h3>
+                <p class="card-text text-muted">Completed</p>
+                <small class="text-success">75% completion rate</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+        <div class="card border-info">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="ri-calendar-todo-line text-info" style="font-size: 2rem;"></i>
+                </div>
+                <h3 class="card-title text-info">3</h3>
+                <p class="card-text text-muted">Upcoming</p>
+                <small class="text-info">Next 30 days</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+        <div class="card border-warning">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="ri-calendar-close-line text-warning" style="font-size: 2rem;"></i>
+                </div>
+                <h3 class="card-title text-warning">3</h3>
+                <p class="card-text text-muted">Cancelled</p>
+                <small class="text-warning">12.5% cancellation rate</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Date Range</label>
+                        <input type="text" class="form-control" id="dateRange" placeholder="Select date range">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Doctor</label>
+                        <select class="form-select">
+                            <option value="">All Doctors</option>
+                            <option value="dr-johnson">Dr. Sarah Johnson</option>
+                            <option value="dr-chen">Dr. Michael Chen</option>
+                            <option value="dr-rodriguez">Dr. Emily Rodriguez</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Status</label>
+                        <select class="form-select">
+                            <option value="">All Status</option>
+                            <option value="scheduled">Scheduled</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">&nbsp;</label>
+                        <button class="btn btn-outline-primary w-100">
+                            <i class="ri-filter-line me-2"></i>Filter
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Appointments List -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-calendar-2-line me-2"></i>My Appointments
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="toggleView('list')">
+                            <i class="ri-list-check me-1"></i>List View
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary" onclick="toggleView('calendar')">
+                            <i class="ri-calendar-line me-1"></i>Calendar View
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- List View -->
+                <div id="listView">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Appointment</th>
+                                    <th>Doctor</th>
+                                    <th>Department</th>
+                                    <th>Date & Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <h6 class="mb-1">Regular Checkup</h6>
+                                            <small class="text-muted">Appointment ID: APT001</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="~/theme/images/doctors/1.jpg" class="img-2x rounded-circle me-2" alt="Doctor">
+                                            <div>
+                                                <h6 class="mb-0">Dr. Sarah Johnson</h6>
+                                                <small class="text-muted">Cardiologist</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-primary-subtle text-primary">Cardiology</span></td>
+                                    <td>
+                                        <div>
+                                            <span class="fw-semibold">Nov 20, 2024</span><br>
+                                            <small class="text-muted">10:00 AM - 10:30 AM</small>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-info">Scheduled</span></td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="View Details">
+                                                <i class="ri-eye-line"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" data-bs-toggle="tooltip" title="Reschedule">
+                                                <i class="ri-calendar-line"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Cancel" onclick="cancelAppointment('APT001')">
+                                                <i class="ri-close-line"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <h6 class="mb-1">Follow-up Consultation</h6>
+                                            <small class="text-muted">Appointment ID: APT002</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="~/theme/images/doctors/1.jpg" class="img-2x rounded-circle me-2" alt="Doctor">
+                                            <div>
+                                                <h6 class="mb-0">Dr. Sarah Johnson</h6>
+                                                <small class="text-muted">Cardiologist</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-primary-subtle text-primary">Cardiology</span></td>
+                                    <td>
+                                        <div>
+                                            <span class="fw-semibold">Nov 15, 2024</span><br>
+                                            <small class="text-muted">2:00 PM - 2:45 PM</small>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-success">Completed</span></td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="View Report">
+                                                <i class="ri-file-text-line"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" data-bs-toggle="tooltip" title="Book Follow-up">
+                                                <i class="ri-calendar-check-line"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip" title="Download Report">
+                                                <i class="ri-download-line"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <h6 class="mb-1">Specialist Consultation</h6>
+                                            <small class="text-muted">Appointment ID: APT003</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="~/theme/images/doctors/2.jpg" class="img-2x rounded-circle me-2" alt="Doctor">
+                                            <div>
+                                                <h6 class="mb-0">Dr. Michael Chen</h6>
+                                                <small class="text-muted">Neurologist</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-success-subtle text-success">Neurology</span></td>
+                                    <td>
+                                        <div>
+                                            <span class="fw-semibold">Nov 10, 2024</span><br>
+                                            <small class="text-muted">11:00 AM - 12:00 PM</small>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-warning">Cancelled</span></td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="View Details">
+                                                <i class="ri-eye-line"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" data-bs-toggle="tooltip" title="Rebook">
+                                                <i class="ri-calendar-check-line"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Calendar View (Hidden by default) -->
+                <div id="calendarView" style="display: none;">
+                    <div class="calendar-container">
+                        <div id="appointmentCalendar" style="height: 600px;">
+                            <!-- Calendar component would be initialized here -->
+                            <div class="text-center py-5">
+                                <i class="ri-calendar-line" style="font-size: 4rem; color: #ddd;"></i>
+                                <h5 class="text-muted mt-3">Calendar View</h5>
+                                <p class="text-muted">Calendar component can be integrated here</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pagination -->
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions Card -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="ri-flashlight-line me-2"></i>Quick Actions
+                </h5>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <a href="/Patient/Appointments/Create" class="btn btn-outline-primary w-100 py-3">
+                            <div class="mb-2">
+                                <i class="ri-calendar-check-line" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <span>Book New Appointment</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-outline-success w-100 py-3" onclick="bookWithPreviousDoctor()">
+                            <div class="mb-2">
+                                <i class="ri-user-star-line" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <span>Book with Previous Doctor</span>
+                        </button>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-outline-info w-100 py-3" onclick="viewMedicalHistory()">
+                            <div class="mb-2">
+                                <i class="ri-file-text-line" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <span>View Medical History</span>
+                        </button>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-outline-warning w-100 py-3" onclick="downloadReports()">
+                            <div class="mb-2">
+                                <i class="ri-download-line" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <span>Download Reports</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleView(viewType) {
+            const listView = document.getElementById('listView');
+            const calendarView = document.getElementById('calendarView');
+            
+            if (viewType === 'list') {
+                listView.style.display = 'block';
+                calendarView.style.display = 'none';
+            } else {
+                listView.style.display = 'none';
+                calendarView.style.display = 'block';
+            }
+        }
+
+        function cancelAppointment(appointmentId) {
+            if (confirm('Are you sure you want to cancel this appointment?')) {
+                alert(`Appointment ${appointmentId} cancelled successfully!`);
+                // Implementation for cancelling appointment
+            }
+        }
+
+        function bookWithPreviousDoctor() {
+            alert('Redirecting to book appointment with your previous doctors...');
+            // Implementation for booking with previous doctors
+        }
+
+        function viewMedicalHistory() {
+            window.location.href = '/Patient/MedicalHistory';
+        }
+
+        function downloadReports() {
+            alert('Downloading your medical reports...');
+            // Implementation for downloading reports
+        }
+
+        function exportAppointments() {
+            alert('Exporting appointments list...');
+            // Implementation for export functionality
+        }
+
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    </script>
+}

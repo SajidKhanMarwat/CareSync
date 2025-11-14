@@ -1,0 +1,497 @@
+@page "/Patient/Prescriptions"
+@model CareSync.Pages.Patient.PrescriptionsModel
+@{
+    ViewData["Title"] = "My Prescriptions";
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-success">
+            <i class="ri-add-line me-1"></i>Request Prescription
+        </button>
+        <button type="button" class="btn btn-primary">
+            <i class="ri-pharmacy-line me-1"></i>Find Pharmacy
+        </button>
+        <button type="button" class="btn btn-outline-info">
+            <i class="ri-download-line me-1"></i>Download All
+        </button>
+    </div>
+}
+
+<!-- Prescription Overview Cards -->
+<div class="row gx-3 mb-3">
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-success-subtle rounded-5 me-3">
+                        <i class="ri-medicine-bottle-line fs-4 text-success"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-success mb-1">5</h4>
+                        <small class="text-muted">Active Prescriptions</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-warning-subtle rounded-5 me-3">
+                        <i class="ri-time-line fs-4 text-warning"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-warning mb-1">2</h4>
+                        <small class="text-muted">Expiring Soon</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-info-subtle rounded-5 me-3">
+                        <i class="ri-calendar-check-line fs-4 text-info"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-info mb-1">12</h4>
+                        <small class="text-muted">This Month</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-primary-subtle rounded-5 me-3">
+                        <i class="ri-history-line fs-4 text-primary"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-primary mb-1">48</h4>
+                        <small class="text-muted">Total Prescriptions</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="row gx-3">
+    <div class="col-xl-8">
+        <!-- Active Prescriptions -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-medicine-bottle-line me-2"></i>Active Prescriptions
+                    </h5>
+                    <span class="badge bg-success-subtle text-success">5 Active</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Prescription 1 -->
+                <div class="prescription-item border rounded-4 p-3 mb-3">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">Metformin 500mg</h6>
+                                    <p class="text-muted mb-1">Take 1 tablet twice daily with meals</p>
+                                    <small class="text-muted">
+                                        <i class="ri-user-line me-1"></i>Dr. Sarah Johnson
+                                        <i class="ri-calendar-line ms-3 me-1"></i>Prescribed: Oct 15, 2024
+                                    </small>
+                                </div>
+                                <span class="badge bg-success">Active</span>
+                            </div>
+                            <div class="medication-schedule mb-2">
+                                <small class="text-muted fw-semibold">Daily Schedule:</small>
+                                <div class="d-flex gap-2 mt-1">
+                                    <span class="badge bg-primary-subtle text-primary">8:00 AM</span>
+                                    <span class="badge bg-primary-subtle text-primary">8:00 PM</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-end">
+                                <div class="mb-2">
+                                    <small class="text-muted">Refills Remaining</small>
+                                    <h6 class="mb-0">2 of 3</h6>
+                                </div>
+                                <div class="progress mb-2" style="height: 6px;">
+                                    <div class="progress-bar bg-success" style="width: 67%"></div>
+                                </div>
+                                <small class="text-success">Expires: Jan 15, 2025</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 mt-2">
+                        <button class="btn btn-sm btn-outline-primary">
+                            <i class="ri-eye-line me-1"></i>View Details
+                        </button>
+                        <button class="btn btn-sm btn-outline-success">
+                            <i class="ri-refresh-line me-1"></i>Request Refill
+                        </button>
+                        <button class="btn btn-sm btn-outline-info">
+                            <i class="ri-pharmacy-line me-1"></i>Find Pharmacy
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Prescription 2 -->
+                <div class="prescription-item border rounded-4 p-3 mb-3">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">Lisinopril 10mg</h6>
+                                    <p class="text-muted mb-1">Take 1 tablet once daily in the morning</p>
+                                    <small class="text-muted">
+                                        <i class="ri-user-line me-1"></i>Dr. Michael Brown
+                                        <i class="ri-calendar-line ms-3 me-1"></i>Prescribed: Sep 20, 2024
+                                    </small>
+                                </div>
+                                <span class="badge bg-warning">Expiring Soon</span>
+                            </div>
+                            <div class="medication-schedule mb-2">
+                                <small class="text-muted fw-semibold">Daily Schedule:</small>
+                                <div class="d-flex gap-2 mt-1">
+                                    <span class="badge bg-primary-subtle text-primary">8:00 AM</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-end">
+                                <div class="mb-2">
+                                    <small class="text-muted">Refills Remaining</small>
+                                    <h6 class="mb-0 text-warning">0 of 2</h6>
+                                </div>
+                                <div class="progress mb-2" style="height: 6px;">
+                                    <div class="progress-bar bg-warning" style="width: 100%"></div>
+                                </div>
+                                <small class="text-warning">Expires: Nov 20, 2024</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 mt-2">
+                        <button class="btn btn-sm btn-outline-primary">
+                            <i class="ri-eye-line me-1"></i>View Details
+                        </button>
+                        <button class="btn btn-sm btn-warning">
+                            <i class="ri-alarm-line me-1"></i>Renew Prescription
+                        </button>
+                        <button class="btn btn-sm btn-outline-info">
+                            <i class="ri-message-line me-1"></i>Contact Doctor
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Prescription 3 -->
+                <div class="prescription-item border rounded-4 p-3">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">Aspirin 81mg (Low Dose)</h6>
+                                    <p class="text-muted mb-1">Take 1 tablet once daily with food</p>
+                                    <small class="text-muted">
+                                        <i class="ri-user-line me-1"></i>Dr. Sarah Johnson
+                                        <i class="ri-calendar-line ms-3 me-1"></i>Prescribed: Aug 10, 2024
+                                    </small>
+                                </div>
+                                <span class="badge bg-success">Active</span>
+                            </div>
+                            <div class="medication-schedule mb-2">
+                                <small class="text-muted fw-semibold">Daily Schedule:</small>
+                                <div class="d-flex gap-2 mt-1">
+                                    <span class="badge bg-primary-subtle text-primary">9:00 AM</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-end">
+                                <div class="mb-2">
+                                    <small class="text-muted">Refills Remaining</small>
+                                    <h6 class="mb-0">5 of 6</h6>
+                                </div>
+                                <div class="progress mb-2" style="height: 6px;">
+                                    <div class="progress-bar bg-success" style="width: 83%"></div>
+                                </div>
+                                <small class="text-success">Expires: Feb 10, 2025</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 mt-2">
+                        <button class="btn btn-sm btn-outline-primary">
+                            <i class="ri-eye-line me-1"></i>View Details
+                        </button>
+                        <button class="btn btn-sm btn-outline-success">
+                            <i class="ri-refresh-line me-1"></i>Request Refill
+                        </button>
+                        <button class="btn btn-sm btn-outline-info">
+                            <i class="ri-pharmacy-line me-1"></i>Find Pharmacy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prescription History -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-history-line me-2"></i>Prescription History
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Medication</th>
+                                <th>Doctor</th>
+                                <th>Date Prescribed</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <h6 class="mb-0">Amoxicillin 500mg</h6>
+                                        <small class="text-muted">7-day course</small>
+                                    </div>
+                                </td>
+                                <td>Dr. Lisa Anderson</td>
+                                <td>Oct 1, 2024</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="ri-eye-line"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <h6 class="mb-0">Ibuprofen 400mg</h6>
+                                        <small class="text-muted">As needed for pain</small>
+                                    </div>
+                                </td>
+                                <td>Dr. James Wilson</td>
+                                <td>Sep 15, 2024</td>
+                                <td><span class="badge bg-secondary">Discontinued</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="ri-eye-line"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4">
+        <!-- Medication Reminders -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-alarm-line me-2"></i>Today's Medications
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="reminder-item d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box sm bg-success-subtle rounded-circle me-2">
+                            <i class="ri-check-line text-success"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Metformin</h6>
+                            <small class="text-muted">8:00 AM - Taken</small>
+                        </div>
+                    </div>
+                    <span class="badge bg-success-subtle text-success">✓</span>
+                </div>
+                <div class="reminder-item d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box sm bg-primary-subtle rounded-circle me-2">
+                            <i class="ri-time-line text-primary"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Lisinopril</h6>
+                            <small class="text-muted">8:00 AM - Taken</small>
+                        </div>
+                    </div>
+                    <span class="badge bg-success-subtle text-success">✓</span>
+                </div>
+                <div class="reminder-item d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box sm bg-warning-subtle rounded-circle me-2">
+                            <i class="ri-alarm-line text-warning"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Metformin</h6>
+                            <small class="text-muted">8:00 PM - Upcoming</small>
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-outline-warning">Remind</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nearby Pharmacies -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-pharmacy-line me-2"></i>Nearby Pharmacies
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="pharmacy-item border-bottom pb-2 mb-2">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">City Pharmacy</h6>
+                            <small class="text-muted">0.5 miles away</small>
+                            <div class="d-flex align-items-center mt-1">
+                                <div class="rating me-2">
+                                    <i class="ri-star-fill text-warning"></i>
+                                    <i class="ri-star-fill text-warning"></i>
+                                    <i class="ri-star-fill text-warning"></i>
+                                    <i class="ri-star-fill text-warning"></i>
+                                    <i class="ri-star-line text-muted"></i>
+                                </div>
+                                <small class="text-muted">4.2</small>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary">Call</button>
+                    </div>
+                </div>
+                <div class="pharmacy-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">MedPlus Pharmacy</h6>
+                            <small class="text-muted">1.2 miles away</small>
+                            <div class="d-flex align-items-center mt-1">
+                                <div class="rating me-2">
+                                    <i class="ri-star-fill text-warning"></i>
+                                    <i class="ri-star-fill text-warning"></i>
+                                    <i class="ri-star-fill text-warning"></i>
+                                    <i class="ri-star-fill text-warning"></i>
+                                    <i class="ri-star-fill text-warning"></i>
+                                </div>
+                                <small class="text-muted">4.8</small>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary">Call</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-dashboard-line me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-success">
+                        <i class="ri-add-line me-2"></i>Request Prescription
+                    </button>
+                    <button class="btn btn-outline-primary">
+                        <i class="ri-refresh-line me-2"></i>Request Refill
+                    </button>
+                    <button class="btn btn-outline-info">
+                        <i class="ri-alarm-line me-2"></i>Set Reminders
+                    </button>
+                    <button class="btn btn-outline-warning">
+                        <i class="ri-message-line me-2"></i>Contact Pharmacy
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Prescription actions
+            document.querySelectorAll('.prescription-item button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.textContent.trim();
+                    const medication = this.closest('.prescription-item').querySelector('h6').textContent;
+                    
+                    switch(true) {
+                        case action.includes('View Details'):
+                            alert(`Opening details for ${medication}...`);
+                            break;
+                        case action.includes('Request Refill'):
+                            alert(`Requesting refill for ${medication}...`);
+                            break;
+                        case action.includes('Find Pharmacy'):
+                            alert(`Finding pharmacies for ${medication}...`);
+                            break;
+                        case action.includes('Renew Prescription'):
+                            alert(`Renewing prescription for ${medication}...`);
+                            break;
+                        case action.includes('Contact Doctor'):
+                            alert(`Contacting doctor about ${medication}...`);
+                            break;
+                    }
+                });
+            });
+            
+            // Reminder actions
+            document.querySelectorAll('.reminder-item button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const medication = this.closest('.reminder-item').querySelector('h6').textContent;
+                    alert(`Setting reminder for ${medication}...`);
+                });
+            });
+            
+            // Pharmacy actions
+            document.querySelectorAll('.pharmacy-item button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const pharmacy = this.closest('.pharmacy-item').querySelector('h6').textContent;
+                    alert(`Calling ${pharmacy}...`);
+                });
+            });
+            
+            // Quick actions
+            document.querySelectorAll('.card:last-child .btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.textContent.trim();
+                    
+                    switch(true) {
+                        case action.includes('Request Prescription'):
+                            alert('Opening prescription request form...');
+                            break;
+                        case action.includes('Request Refill'):
+                            alert('Opening refill request form...');
+                            break;
+                        case action.includes('Set Reminders'):
+                            alert('Opening reminder settings...');
+                            break;
+                        case action.includes('Contact Pharmacy'):
+                            alert('Opening pharmacy contact form...');
+                            break;
+                    }
+                });
+            });
+        });
+    </script>
+}

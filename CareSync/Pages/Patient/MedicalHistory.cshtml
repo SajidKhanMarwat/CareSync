@@ -2,101 +2,457 @@
 @model CareSync.Pages.Patient.MedicalHistoryModel
 @{
     ViewData["Title"] = "Medical History";
-    ViewData["Breadcrumbs"] = new List<(string Name, string Url)>
-    {
-        ("Patient", "/Patient")
-    };
 }
 
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">Medical History</h5>
-            </div>
+@section PageActions {
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-success">
+            <i class="ri-add-line me-1"></i>Add Medical Record
+        </button>
+        <button type="button" class="btn btn-primary">
+            <i class="ri-save-line me-1"></i>Save Changes
+        </button>
+        <button type="button" class="btn btn-outline-info">
+            <i class="ri-download-line me-1"></i>Export History
+        </button>
+    </div>
+}
+
+<!-- Medical History Overview Cards -->
+<div class="row gx-3 mb-3">
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
             <div class="card-body">
-                <form>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Main Diagnosis</label>
-                            <textarea class="form-control" name="MainDiagnosis" rows="3"></textarea>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Chronic Diseases</label>
-                            <textarea class="form-control" name="ChronicDiseases" rows="3"></textarea>
-                        </div>
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-danger-subtle rounded-5 me-3">
+                        <i class="ri-heart-pulse-line fs-4 text-danger"></i>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Allergies</label>
-                            <textarea class="form-control" name="Allergies" rows="3"></textarea>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Past Diseases</label>
-                            <textarea class="form-control" name="PastDiseases" rows="3"></textarea>
-                        </div>
+                    <div>
+                        <h4 class="text-danger mb-1">2</h4>
+                        <small class="text-muted">Chronic Conditions</small>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Surgery History</label>
-                            <textarea class="form-control" name="Surgery" rows="3"></textarea>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Family History</label>
-                            <textarea class="form-control" name="FamilyHistory" rows="3"></textarea>
-                        </div>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">Chronic Diseases Details</h5>
-            </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
             <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Disease Name</th>
-                                <th>Diagnosed Date</th>
-                                <th>Current Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Diabetes Type 2</td>
-                                <td>2020-01-15</td>
-                                <td>Under Control</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
-                                    <button class="btn btn-sm btn-outline-danger">Remove</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Hypertension</td>
-                                <td>2019-06-10</td>
-                                <td>Managed</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
-                                    <button class="btn btn-sm btn-outline-danger">Remove</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-warning-subtle rounded-5 me-3">
+                        <i class="ri-alert-line fs-4 text-warning"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-warning mb-1">3</h4>
+                        <small class="text-muted">Allergies</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-info-subtle rounded-5 me-3">
+                        <i class="ri-surgical-mask-line fs-4 text-info"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-info mb-1">1</h4>
+                        <small class="text-muted">Surgeries</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-success-subtle rounded-5 me-3">
+                        <i class="ri-medicine-bottle-line fs-4 text-success"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-success mb-1">5</h4>
+                        <small class="text-muted">Current Medications</small>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-@section PageActions {
-    <button type="button" class="btn btn-success">Add Disease</button>
-    <button type="button" class="btn btn-primary">Save Changes</button>
+<!-- Main Content -->
+<div class="row gx-3">
+    <div class="col-xl-8">
+        <!-- Medical History Timeline -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-time-line me-2"></i>Medical History Timeline
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <!-- Timeline Item 1 -->
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-primary"></div>
+                        <div class="timeline-content">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">Diabetes Type 2 Diagnosis</h6>
+                                    <p class="text-muted mb-1">Diagnosed with Type 2 Diabetes during routine checkup</p>
+                                    <small class="text-muted">
+                                        <i class="ri-calendar-line me-1"></i>January 15, 2020
+                                        <i class="ri-user-line ms-3 me-1"></i>Dr. Sarah Johnson
+                                    </small>
+                                </div>
+                                <span class="badge bg-danger-subtle text-danger">Chronic</span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="ri-eye-line me-1"></i>View Details
+                                </button>
+                                <button class="btn btn-sm btn-outline-info">
+                                    <i class="ri-file-text-line me-1"></i>View Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Timeline Item 2 -->
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-warning"></div>
+                        <div class="timeline-content">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">Hypertension Diagnosis</h6>
+                                    <p class="text-muted mb-1">High blood pressure detected during follow-up visit</p>
+                                    <small class="text-muted">
+                                        <i class="ri-calendar-line me-1"></i>June 10, 2019
+                                        <i class="ri-user-line ms-3 me-1"></i>Dr. Michael Brown
+                                    </small>
+                                </div>
+                                <span class="badge bg-warning-subtle text-warning">Managed</span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="ri-eye-line me-1"></i>View Details
+                                </button>
+                                <button class="btn btn-sm btn-outline-info">
+                                    <i class="ri-file-text-line me-1"></i>View Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Timeline Item 3 -->
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-info"></div>
+                        <div class="timeline-content">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">Appendectomy Surgery</h6>
+                                    <p class="text-muted mb-1">Laparoscopic appendectomy performed successfully</p>
+                                    <small class="text-muted">
+                                        <i class="ri-calendar-line me-1"></i>March 22, 2018
+                                        <i class="ri-user-line ms-3 me-1"></i>Dr. James Wilson
+                                    </small>
+                                </div>
+                                <span class="badge bg-success">Recovered</span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="ri-eye-line me-1"></i>View Details
+                                </button>
+                                <button class="btn btn-sm btn-outline-info">
+                                    <i class="ri-file-text-line me-1"></i>Surgery Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chronic Diseases -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-heart-pulse-line me-2"></i>Chronic Conditions
+                    </h5>
+                    <button class="btn btn-sm btn-success">
+                        <i class="ri-add-line me-1"></i>Add Condition
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="condition-card border rounded-4 p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1 text-danger">Diabetes Type 2</h6>
+                                    <small class="text-muted">Diagnosed: January 15, 2020</small>
+                                </div>
+                                <span class="badge bg-success">Under Control</span>
+                            </div>
+                            <p class="text-muted mb-2">Current HbA1c: 6.8% (Target: <7%)</p>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary">Manage</button>
+                                <button class="btn btn-sm btn-outline-info">View Trends</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="condition-card border rounded-4 p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1 text-warning">Hypertension</h6>
+                                    <small class="text-muted">Diagnosed: June 10, 2019</small>
+                                </div>
+                                <span class="badge bg-warning">Monitoring</span>
+                            </div>
+                            <p class="text-muted mb-2">Last BP: 135/85 mmHg (Target: <130/80)</p>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary">Manage</button>
+                                <button class="btn btn-sm btn-outline-info">View Trends</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Allergies -->
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-alert-line me-2"></i>Allergies & Reactions
+                    </h5>
+                    <button class="btn btn-sm btn-warning">
+                        <i class="ri-add-line me-1"></i>Add Allergy
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="allergy-card border border-danger rounded-4 p-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="icon-box sm bg-danger-subtle rounded-circle me-2">
+                                    <i class="ri-medicine-bottle-line text-danger"></i>
+                                </div>
+                                <h6 class="mb-0 text-danger">Penicillin</h6>
+                            </div>
+                            <p class="text-muted mb-1">Severe allergic reaction</p>
+                            <small class="text-danger fw-semibold">HIGH RISK</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="allergy-card border border-warning rounded-4 p-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="icon-box sm bg-warning-subtle rounded-circle me-2">
+                                    <i class="ri-restaurant-line text-warning"></i>
+                                </div>
+                                <h6 class="mb-0 text-warning">Shellfish</h6>
+                            </div>
+                            <p class="text-muted mb-1">Mild skin reaction</p>
+                            <small class="text-warning fw-semibold">MODERATE</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="allergy-card border border-info rounded-4 p-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="icon-box sm bg-info-subtle rounded-circle me-2">
+                                    <i class="ri-leaf-line text-info"></i>
+                                </div>
+                                <h6 class="mb-0 text-info">Pollen</h6>
+                            </div>
+                            <p class="text-muted mb-1">Seasonal rhinitis</p>
+                            <small class="text-info fw-semibold">MILD</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-4">
+        <!-- Family History -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-group-line me-2"></i>Family History
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="family-history-item mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="icon-box sm bg-primary-subtle rounded-circle me-2">
+                            <i class="ri-parent-line text-primary"></i>
+                        </div>
+                        <h6 class="mb-0">Father</h6>
+                    </div>
+                    <ul class="list-unstyled mb-0">
+                        <li class="text-muted">• Diabetes Type 2 (Age 55)</li>
+                        <li class="text-muted">• Hypertension (Age 60)</li>
+                    </ul>
+                </div>
+                <div class="family-history-item mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="icon-box sm bg-pink-subtle rounded-circle me-2">
+                            <i class="ri-parent-line text-pink"></i>
+                        </div>
+                        <h6 class="mb-0">Mother</h6>
+                    </div>
+                    <ul class="list-unstyled mb-0">
+                        <li class="text-muted">• Breast Cancer (Age 48)</li>
+                        <li class="text-muted">• Osteoporosis (Age 65)</li>
+                    </ul>
+                </div>
+                <div class="family-history-item">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="icon-box sm bg-success-subtle rounded-circle me-2">
+                            <i class="ri-group-2-line text-success"></i>
+                        </div>
+                        <h6 class="mb-0">Siblings</h6>
+                    </div>
+                    <ul class="list-unstyled mb-0">
+                        <li class="text-muted">• Brother: Healthy</li>
+                        <li class="text-muted">• Sister: Asthma</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Current Medications -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-medicine-bottle-line me-2"></i>Current Medications
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="medication-item border-bottom pb-2 mb-2">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">Metformin</h6>
+                            <small class="text-muted">500mg twice daily</small>
+                        </div>
+                        <span class="badge bg-success-subtle text-success">Active</span>
+                    </div>
+                </div>
+                <div class="medication-item border-bottom pb-2 mb-2">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">Lisinopril</h6>
+                            <small class="text-muted">10mg once daily</small>
+                        </div>
+                        <span class="badge bg-success-subtle text-success">Active</span>
+                    </div>
+                </div>
+                <div class="medication-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">Aspirin</h6>
+                            <small class="text-muted">81mg once daily</small>
+                        </div>
+                        <span class="badge bg-success-subtle text-success">Active</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-dashboard-line me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary">
+                        <i class="ri-add-line me-2"></i>Add Medical Record
+                    </button>
+                    <button class="btn btn-outline-success">
+                        <i class="ri-upload-line me-2"></i>Upload Document
+                    </button>
+                    <button class="btn btn-outline-info">
+                        <i class="ri-share-line me-2"></i>Share with Doctor
+                    </button>
+                    <button class="btn btn-outline-warning">
+                        <i class="ri-printer-line me-2"></i>Print Summary
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Timeline interaction
+            document.querySelectorAll('.timeline-item button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.textContent.trim();
+                    console.log('Timeline action:', action);
+                    
+                    if (action.includes('View Details')) {
+                        alert('Opening detailed medical record...');
+                    } else if (action.includes('View Report')) {
+                        alert('Opening medical report...');
+                    }
+                });
+            });
+            
+            // Chronic condition management
+            document.querySelectorAll('.condition-card button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.textContent.trim();
+                    const condition = this.closest('.condition-card').querySelector('h6').textContent;
+                    
+                    if (action === 'Manage') {
+                        alert(`Opening management plan for ${condition}...`);
+                    } else if (action === 'View Trends') {
+                        alert(`Showing trends for ${condition}...`);
+                    }
+                });
+            });
+            
+            // Quick actions
+            document.querySelectorAll('.card:last-child .btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.textContent.trim();
+                    
+                    switch(true) {
+                        case action.includes('Add Medical Record'):
+                            alert('Opening medical record form...');
+                            break;
+                        case action.includes('Upload Document'):
+                            alert('Opening file upload dialog...');
+                            break;
+                        case action.includes('Share with Doctor'):
+                            alert('Opening sharing options...');
+                            break;
+                        case action.includes('Print Summary'):
+                            window.print();
+                            break;
+                    }
+                });
+            });
+            
+            // Allergy risk highlighting
+            document.querySelectorAll('.allergy-card').forEach(card => {
+                const riskLevel = card.querySelector('small').textContent;
+                if (riskLevel.includes('HIGH RISK')) {
+                    card.style.boxShadow = '0 0 10px rgba(220, 53, 69, 0.3)';
+                }
+            });
+        });
+    </script>
 }

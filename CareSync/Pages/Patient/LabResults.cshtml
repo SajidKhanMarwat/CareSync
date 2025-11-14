@@ -1,0 +1,550 @@
+@page "/Patient/LabResults"
+@model CareSync.Pages.Patient.LabResultsModel
+@{
+    ViewData["Title"] = "Lab Results";
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-success">
+            <i class="ri-add-line me-1"></i>Request New Test
+        </button>
+        <button type="button" class="btn btn-primary">
+            <i class="ri-download-line me-1"></i>Download All Reports
+        </button>
+        <button type="button" class="btn btn-outline-info">
+            <i class="ri-share-line me-1"></i>Share with Doctor
+        </button>
+    </div>
+}
+
+<!-- Lab Results Overview Cards -->
+<div class="row gx-3 mb-3">
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-success-subtle rounded-5 me-3">
+                        <i class="ri-check-double-line fs-4 text-success"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-success mb-1">12</h4>
+                        <small class="text-muted">Completed Tests</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-warning-subtle rounded-5 me-3">
+                        <i class="ri-time-line fs-4 text-warning"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-warning mb-1">2</h4>
+                        <small class="text-muted">Pending Results</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-danger-subtle rounded-5 me-3">
+                        <i class="ri-alert-line fs-4 text-danger"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-danger mb-1">1</h4>
+                        <small class="text-muted">Abnormal Results</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-info-subtle rounded-5 me-3">
+                        <i class="ri-calendar-line fs-4 text-info"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-info mb-1">3</h4>
+                        <small class="text-muted">This Month</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="row gx-3">
+    <div class="col-xl-8">
+        <!-- Recent Lab Results -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-test-tube-line me-2"></i>Recent Lab Results
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>All Tests</option>
+                            <option>Blood Tests</option>
+                            <option>Urine Tests</option>
+                            <option>Imaging</option>
+                        </select>
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>Last 6 Months</option>
+                            <option>Last Month</option>
+                            <option>Last Year</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Lab Result Item 1 -->
+                <div class="lab-result-item border rounded-4 p-3 mb-3">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <div class="icon-box md bg-success-subtle rounded-circle">
+                                <i class="ri-heart-pulse-line text-success"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">Complete Blood Count (CBC)</h6>
+                                    <p class="text-muted mb-1">Comprehensive blood analysis including RBC, WBC, platelets</p>
+                                    <small class="text-muted">
+                                        <i class="ri-calendar-line me-1"></i>November 10, 2024
+                                        <i class="ri-building-line ms-3 me-1"></i>City Lab Center
+                                    </small>
+                                </div>
+                                <span class="badge bg-success">Normal</span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="ri-eye-line me-1"></i>View Report
+                                </button>
+                                <button class="btn btn-sm btn-outline-info">
+                                    <i class="ri-download-line me-1"></i>Download PDF
+                                </button>
+                                <button class="btn btn-sm btn-outline-success">
+                                    <i class="ri-line-chart-line me-1"></i>View Trends
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lab Result Item 2 -->
+                <div class="lab-result-item border rounded-4 p-3 mb-3">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <div class="icon-box md bg-warning-subtle rounded-circle">
+                                <i class="ri-drop-line text-warning"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">Lipid Profile</h6>
+                                    <p class="text-muted mb-1">Cholesterol, HDL, LDL, and triglycerides analysis</p>
+                                    <small class="text-muted">
+                                        <i class="ri-calendar-line me-1"></i>November 8, 2024
+                                        <i class="ri-building-line ms-3 me-1"></i>Metro Diagnostics
+                                    </small>
+                                </div>
+                                <span class="badge bg-warning">Borderline</span>
+                            </div>
+                            <div class="alert alert-warning py-2 mb-2">
+                                <small><i class="ri-alert-line me-1"></i>LDL Cholesterol slightly elevated (145 mg/dL). Normal: <130 mg/dL</small>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="ri-eye-line me-1"></i>View Report
+                                </button>
+                                <button class="btn btn-sm btn-outline-info">
+                                    <i class="ri-download-line me-1"></i>Download PDF
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning">
+                                    <i class="ri-message-line me-1"></i>Discuss with Doctor
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lab Result Item 3 -->
+                <div class="lab-result-item border rounded-4 p-3 mb-3">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <div class="icon-box md bg-info-subtle rounded-circle">
+                                <i class="ri-medicine-bottle-line text-info"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">HbA1c (Diabetes Monitoring)</h6>
+                                    <p class="text-muted mb-1">3-month average blood sugar levels</p>
+                                    <small class="text-muted">
+                                        <i class="ri-calendar-line me-1"></i>November 5, 2024
+                                        <i class="ri-building-line ms-3 me-1"></i>City Lab Center
+                                    </small>
+                                </div>
+                                <span class="badge bg-success">Good Control</span>
+                            </div>
+                            <div class="alert alert-success py-2 mb-2">
+                                <small><i class="ri-check-line me-1"></i>HbA1c: 6.8% - Good diabetic control. Target: <7%</small>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="ri-eye-line me-1"></i>View Report
+                                </button>
+                                <button class="btn btn-sm btn-outline-info">
+                                    <i class="ri-download-line me-1"></i>Download PDF
+                                </button>
+                                <button class="btn btn-sm btn-outline-success">
+                                    <i class="ri-line-chart-line me-1"></i>View Trends
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lab Result Item 4 -->
+                <div class="lab-result-item border rounded-4 p-3">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <div class="icon-box md bg-primary-subtle rounded-circle">
+                                <i class="ri-microscope-line text-primary"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">Urine Analysis</h6>
+                                    <p class="text-muted mb-1">Complete urine examination for infections and abnormalities</p>
+                                    <small class="text-muted">
+                                        <i class="ri-calendar-line me-1"></i>October 28, 2024
+                                        <i class="ri-building-line ms-3 me-1"></i>Metro Diagnostics
+                                    </small>
+                                </div>
+                                <span class="badge bg-success">Normal</span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="ri-eye-line me-1"></i>View Report
+                                </button>
+                                <button class="btn btn-sm btn-outline-info">
+                                    <i class="ri-download-line me-1"></i>Download PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pending Tests -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-time-line me-2"></i>Pending Lab Tests
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="pending-test-card border border-warning rounded-4 p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1 text-warning">Thyroid Function Test</h6>
+                                    <small class="text-muted">Requested by Dr. Sarah Johnson</small>
+                                </div>
+                                <span class="badge bg-warning">Processing</span>
+                            </div>
+                            <p class="text-muted mb-2">Expected: November 15, 2024</p>
+                            <div class="progress mb-2" style="height: 6px;">
+                                <div class="progress-bar bg-warning" style="width: 75%"></div>
+                            </div>
+                            <small class="text-muted">Sample collected - Results pending</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="pending-test-card border border-info rounded-4 p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1 text-info">Vitamin D Level</h6>
+                                    <small class="text-muted">Requested by Dr. Michael Brown</small>
+                                </div>
+                                <span class="badge bg-info">Scheduled</span>
+                            </div>
+                            <p class="text-muted mb-2">Scheduled: November 18, 2024</p>
+                            <div class="progress mb-2" style="height: 6px;">
+                                <div class="progress-bar bg-info" style="width: 25%"></div>
+                            </div>
+                            <small class="text-muted">Sample collection pending</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-4">
+        <!-- Test Categories -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-folder-line me-2"></i>Test Categories
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="test-category-item d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box sm bg-danger-subtle rounded-circle me-2">
+                            <i class="ri-heart-pulse-line text-danger"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Blood Tests</h6>
+                            <small class="text-muted">8 tests</small>
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary">View</button>
+                </div>
+                <div class="test-category-item d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box sm bg-warning-subtle rounded-circle me-2">
+                            <i class="ri-drop-line text-warning"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Urine Tests</h6>
+                            <small class="text-muted">3 tests</small>
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary">View</button>
+                </div>
+                <div class="test-category-item d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box sm bg-info-subtle rounded-circle me-2">
+                            <i class="ri-scan-line text-info"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Imaging</h6>
+                            <small class="text-muted">2 tests</small>
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary">View</button>
+                </div>
+                <div class="test-category-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box sm bg-success-subtle rounded-circle me-2">
+                            <i class="ri-microscope-line text-success"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Microbiology</h6>
+                            <small class="text-muted">1 test</small>
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary">View</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Critical Values Alert -->
+        <div class="card mb-3">
+            <div class="card-header bg-danger-subtle">
+                <h5 class="card-title text-danger mb-0">
+                    <i class="ri-alert-line me-2"></i>Critical Values Alert
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-danger mb-3">
+                    <div class="d-flex align-items-start">
+                        <i class="ri-error-warning-line text-danger me-2 mt-1"></i>
+                        <div>
+                            <h6 class="mb-1">LDL Cholesterol Elevated</h6>
+                            <p class="mb-1">Current: 145 mg/dL (Normal: <130 mg/dL)</p>
+                            <small class="text-muted">Lipid Profile - Nov 8, 2024</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-grid">
+                    <button class="btn btn-danger btn-sm">
+                        <i class="ri-phone-line me-1"></i>Contact Doctor
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Lab Centers -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-building-line me-2"></i>Preferred Lab Centers
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="lab-center-item border-bottom pb-2 mb-2">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">City Lab Center</h6>
+                            <small class="text-muted">Downtown Branch</small>
+                            <div class="d-flex align-items-center mt-1">
+                                <div class="rating me-2">
+                                    <i class="ri-star-fill text-warning"></i>
+                                    <i class="ri-star-fill text-warning"></i>
+                                    <i class="ri-star-fill text-warning"></i>
+                                    <i class="ri-star-fill text-warning"></i>
+                                    <i class="ri-star-line text-muted"></i>
+                                </div>
+                                <small class="text-muted">4.0</small>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary">Book</button>
+                    </div>
+                </div>
+                <div class="lab-center-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">Metro Diagnostics</h6>
+                            <small class="text-muted">Medical District</small>
+                            <div class="d-flex align-items-center mt-1">
+                                <div class="rating me-2">
+                                    <i class="ri-star-fill text-warning"></i>
+                                    <i class="ri-star-fill text-warning"></i>
+                                    <i class="ri-star-fill text-warning"></i>
+                                    <i class="ri-star-fill text-warning"></i>
+                                    <i class="ri-star-fill text-warning"></i>
+                                </div>
+                                <small class="text-muted">4.8</small>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary">Book</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-dashboard-line me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-success">
+                        <i class="ri-add-line me-2"></i>Request New Test
+                    </button>
+                    <button class="btn btn-outline-primary">
+                        <i class="ri-calendar-line me-2"></i>Schedule Test
+                    </button>
+                    <button class="btn btn-outline-info">
+                        <i class="ri-history-line me-2"></i>View Test History
+                    </button>
+                    <button class="btn btn-outline-warning">
+                        <i class="ri-notification-line me-2"></i>Set Reminders
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lab result interactions
+            document.querySelectorAll('.lab-result-item button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.textContent.trim();
+                    const testName = this.closest('.lab-result-item').querySelector('h6').textContent;
+                    
+                    switch(true) {
+                        case action.includes('View Report'):
+                            alert(`Opening detailed report for ${testName}...`);
+                            break;
+                        case action.includes('Download PDF'):
+                            alert(`Downloading PDF report for ${testName}...`);
+                            break;
+                        case action.includes('View Trends'):
+                            alert(`Showing trends for ${testName}...`);
+                            break;
+                        case action.includes('Discuss with Doctor'):
+                            alert(`Opening communication with doctor about ${testName}...`);
+                            break;
+                    }
+                });
+            });
+            
+            // Test category filters
+            document.querySelectorAll('.test-category-item button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const category = this.closest('.test-category-item').querySelector('h6').textContent;
+                    alert(`Filtering results for ${category}...`);
+                });
+            });
+            
+            // Lab center booking
+            document.querySelectorAll('.lab-center-item button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const labName = this.closest('.lab-center-item').querySelector('h6').textContent;
+                    alert(`Opening booking form for ${labName}...`);
+                });
+            });
+            
+            // Quick actions
+            document.querySelectorAll('.card:last-child .btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.textContent.trim();
+                    
+                    switch(true) {
+                        case action.includes('Request New Test'):
+                            alert('Opening test request form...');
+                            break;
+                        case action.includes('Schedule Test'):
+                            alert('Opening test scheduling calendar...');
+                            break;
+                        case action.includes('View Test History'):
+                            alert('Loading complete test history...');
+                            break;
+                        case action.includes('Set Reminders'):
+                            alert('Opening reminder settings...');
+                            break;
+                    }
+                });
+            });
+            
+            // Critical values alert
+            document.querySelector('.alert-danger + .d-grid button').addEventListener('click', function() {
+                alert('Connecting you with your doctor regarding critical values...');
+            });
+            
+            // Filter dropdowns
+            document.querySelectorAll('.card-header select').forEach(select => {
+                select.addEventListener('change', function() {
+                    console.log('Filter changed:', this.value);
+                    alert(`Filtering results by: ${this.value}`);
+                });
+            });
+            
+            // Highlight abnormal results
+            document.querySelectorAll('.badge').forEach(badge => {
+                if (badge.textContent.includes('Borderline') || badge.textContent.includes('Abnormal')) {
+                    badge.closest('.lab-result-item').style.borderColor = '#ffc107';
+                    badge.closest('.lab-result-item').style.borderWidth = '2px';
+                }
+            });
+        });
+    </script>
+}
