@@ -57,6 +57,7 @@ public class LoginModel : PageModel
                         "admin" => RedirectToPage("/Admin/Dashboard"),
                         "doctor" => RedirectToPage("/Doctor/Dashboard"),
                         "patient" => RedirectToPage("/Patient/Dashboard"),
+                        "lab" => RedirectToPage("/Lab/Dashboard"),
                         _ => RedirectToPage("/Dashboard/Index")
                     };
                 }
