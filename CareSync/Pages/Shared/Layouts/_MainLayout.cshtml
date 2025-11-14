@@ -73,7 +73,18 @@
                         <!-- Breadcrumb and Page Actions starts -->
                         <div class="row gx-3 mb-3">
                             <div class="col-md-8">
-                                @await Html.PartialAsync("Components/_Breadcrumb")
+                                @if (IsSectionDefined("Breadcrumb"))
+                                {
+                                    <div class="breadcrumb-wrapper">
+                                        <nav aria-label="breadcrumb">
+                                            @await RenderSectionAsync("Breadcrumb", required: false)
+                                        </nav>
+                                    </div>
+                                }
+                                else
+                                {
+                                    @await Html.PartialAsync("Components/_Breadcrumb")
+                                }
                             </div>
                             <div class="col-md-4 text-end">
                                 <div class="page-actions">

@@ -1,0 +1,513 @@
+@page "/Admin/MedicalStaff"
+@model CareSync.Pages.Admin.MedicalStaffModel
+@{
+    ViewData["Title"] = "Medical Staff Management";
+}
+
+@section Breadcrumb {
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="~/Admin/Dashboard">
+                <i class="ri-home-3-line"></i>
+            </a>
+        </li>
+        <li class="breadcrumb-item text-primary" aria-current="page">
+            Medical Staff
+        </li>
+    </ol>
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStaffModal">
+            <i class="ri-user-add-line me-2"></i>Add Medical Staff
+        </button>
+        <button class="btn btn-outline-secondary" onclick="exportStaff()">
+            <i class="ri-download-line me-2"></i>Export
+        </button>
+    </div>
+}
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-primary text-white rounded-3 me-3">
+                        <i class="ri-stethoscope-line"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">24</h5>
+                        <p class="mb-0 text-muted">Total Doctors</p>
+                        <small class="text-success">+2 this month</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-success text-white rounded-3 me-3">
+                        <i class="ri-user-heart-line"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">1,247</h5>
+                        <p class="mb-0 text-muted">Total Patients</p>
+                        <small class="text-success">+5.2% this month</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-info text-white rounded-3 me-3">
+                        <i class="ri-test-tube-line"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">12</h5>
+                        <p class="mb-0 text-muted">Lab Staff</p>
+                        <small class="text-success">+1 this month</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-warning text-white rounded-3 me-3">
+                        <i class="ri-team-line"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">1,283</h5>
+                        <p class="mb-0 text-muted">Total Users</p>
+                        <small class="text-success">+7.2% this month</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-filter-line me-2"></i>Staff Filters
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Search Staff</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Name, ID, Specialization..." id="searchInput">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="ri-search-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Department</label>
+                        <select class="form-select" id="departmentFilter">
+                            <option value="">All Departments</option>
+                            <option value="Cardiology">Cardiology</option>
+                            <option value="Neurology">Neurology</option>
+                            <option value="Orthopedics">Orthopedics</option>
+                            <option value="Pediatrics">Pediatrics</option>
+                            <option value="Emergency">Emergency</option>
+                            <option value="Laboratory">Laboratory</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Role</label>
+                        <select class="form-select" id="roleFilter">
+                            <option value="">All Roles</option>
+                            <option value="Doctor">Doctor</option>
+                            <option value="Nurse">Nurse</option>
+                            <option value="Lab Technician">Lab Technician</option>
+                            <option value="Support Staff">Support Staff</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                            <option value="On Leave">On Leave</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Shift</label>
+                        <select class="form-select" id="shiftFilter">
+                            <option value="">All Shifts</option>
+                            <option value="Morning">Morning</option>
+                            <option value="Evening">Evening</option>
+                            <option value="Night">Night</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <label class="form-label">&nbsp;</label>
+                        <button class="btn btn-outline-secondary d-block w-100" onclick="clearFilters()">
+                            <i class="ri-refresh-line"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Medical Staff Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ri-team-line me-2"></i>Medical Staff Directory
+                </h5>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary btn-sm" onclick="toggleView('grid')">
+                        <i class="ri-grid-line"></i>
+                    </button>
+                    <button class="btn btn-primary btn-sm" onclick="toggleView('list')">
+                        <i class="ri-list-check"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="staffTable">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" class="form-check-input" id="selectAll">
+                                </th>
+                                <th>Staff ID</th>
+                                <th>Staff Member</th>
+                                <th>Role</th>
+                                <th>Department</th>
+                                <th>Contact</th>
+                                <th>Shift</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="form-check-input staff-checkbox">
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-primary">#D001</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/doctor1.png" class="rounded-circle me-2" width="32" height="32" alt="Doctor">
+                                        <div>
+                                            <h6 class="mb-0">Dr. Sarah Wilson</h6>
+                                            <small class="text-muted">Cardiologist</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">Doctor</span>
+                                </td>
+                                <td>
+                                    <span>Cardiology</span>
+                                </td>
+                                <td>
+                                    <span>+1 234 567 8901</span>
+                                    <small class="text-muted d-block">sarah.wilson@hospital.com</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">Morning</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">Active</span>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                            <i class="ri-more-2-line"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#"><i class="ri-eye-line me-2"></i>View Profile</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-edit-line me-2"></i>Edit Staff</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-calendar-line me-2"></i>View Schedule</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-file-text-line me-2"></i>Performance</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-danger" href="#"><i class="ri-user-unfollow-line me-2"></i>Deactivate</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="form-check-input staff-checkbox">
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-primary">#N001</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/nurse1.png" class="rounded-circle me-2" width="32" height="32" alt="Nurse">
+                                        <div>
+                                            <h6 class="mb-0">Maria Rodriguez</h6>
+                                            <small class="text-muted">Senior Nurse</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">Nurse</span>
+                                </td>
+                                <td>
+                                    <span>Emergency</span>
+                                </td>
+                                <td>
+                                    <span>+1 234 567 8902</span>
+                                    <small class="text-muted d-block">maria.rodriguez@hospital.com</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning">Night</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">Active</span>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                            <i class="ri-more-2-line"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#"><i class="ri-eye-line me-2"></i>View Profile</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-edit-line me-2"></i>Edit Staff</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-calendar-line me-2"></i>View Schedule</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-file-text-line me-2"></i>Performance</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-danger" href="#"><i class="ri-user-unfollow-line me-2"></i>Deactivate</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="form-check-input staff-checkbox">
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-primary">#L001</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/lab-tech.png" class="rounded-circle me-2" width="32" height="32" alt="Lab Tech">
+                                        <div>
+                                            <h6 class="mb-0">James Chen</h6>
+                                            <small class="text-muted">Lab Technician</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">Lab Tech</span>
+                                </td>
+                                <td>
+                                    <span>Laboratory</span>
+                                </td>
+                                <td>
+                                    <span>+1 234 567 8903</span>
+                                    <small class="text-muted d-block">james.chen@hospital.com</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">Morning</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning">On Leave</span>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                            <i class="ri-more-2-line"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#"><i class="ri-eye-line me-2"></i>View Profile</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-edit-line me-2"></i>Edit Staff</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-calendar-line me-2"></i>View Schedule</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-file-text-line me-2"></i>Performance</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-danger" href="#"><i class="ri-user-unfollow-line me-2"></i>Deactivate</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div>
+                        <span class="text-muted">Showing 1 to 3 of 62 staff members</span>
+                    </div>
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#"><i class="ri-arrow-left-s-line"></i></a>
+                            </li>
+                            <li class="page-item active">
+                                <a class="page-link" href="#">1</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">2</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">3</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#"><i class="ri-arrow-right-s-line"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Staff Modal -->
+<div class="modal fade" id="addStaffModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="ri-user-add-line me-2"></i>Add New Medical Staff
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addStaffForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">First Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="firstName" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="lastName" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" name="phone" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Role <span class="text-danger">*</span></label>
+                            <select class="form-select" name="role" required>
+                                <option value="">Select Role</option>
+                                <option value="Doctor">Doctor</option>
+                                <option value="Nurse">Nurse</option>
+                                <option value="Lab Technician">Lab Technician</option>
+                                <option value="Support Staff">Support Staff</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Department <span class="text-danger">*</span></label>
+                            <select class="form-select" name="department" required>
+                                <option value="">Select Department</option>
+                                <option value="Cardiology">Cardiology</option>
+                                <option value="Neurology">Neurology</option>
+                                <option value="Orthopedics">Orthopedics</option>
+                                <option value="Pediatrics">Pediatrics</option>
+                                <option value="Emergency">Emergency</option>
+                                <option value="Laboratory">Laboratory</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Specialization</label>
+                            <input type="text" class="form-control" name="specialization">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">License Number</label>
+                            <input type="text" class="form-control" name="licenseNumber">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveStaff()">
+                    <i class="ri-save-line me-2"></i>Save Staff Member
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Select all functionality
+        document.getElementById('selectAll').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.staff-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function() {
+            console.log('Searching for:', this.value);
+        });
+
+        // Filter functions
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('departmentFilter').value = '';
+            document.getElementById('roleFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('shiftFilter').value = '';
+        }
+
+        function exportStaff() {
+            alert('Exporting staff data...');
+        }
+
+        function toggleView(viewType) {
+            if (viewType === 'grid') {
+                alert('Grid view not implemented yet');
+            }
+        }
+
+        function saveStaff() {
+            const form = document.getElementById('addStaffForm');
+            if (form.checkValidity()) {
+                alert('Staff member added successfully!');
+                bootstrap.Modal.getInstance(document.getElementById('addStaffModal')).hide();
+                form.reset();
+            } else {
+                form.reportValidity();
+            }
+        }
+    </script>
+
+    <style>
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+    </style>
+}
