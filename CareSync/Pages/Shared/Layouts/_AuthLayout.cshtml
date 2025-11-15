@@ -21,16 +21,8 @@
     <!-- Page Specific CSS -->
     @await RenderSectionAsync("Styles", required: false)
 </head>
-<body class="login-bg">
-    <!-- Container starts -->
-    <div class="container">
-        <!-- Auth wrapper starts -->
-        <div class="auth-wrapper">
-            @RenderBody()
-        </div>
-        <!-- Auth wrapper ends -->
-    </div>
-    <!-- Container ends -->
+<body class="bg-light">
+    @RenderBody()
     
     <!-- JavaScript Files -->
     <script src="~/theme/js/jquery.min.js"></script>
