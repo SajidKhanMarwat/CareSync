@@ -1,231 +1,928 @@
 @page "/Admin/Users"
 @model CareSync.Pages.Admin.UsersModel
 @{
-    ViewData["Title"] = "User Management";
+    ViewData["Title"] = "All Users Management";
 }
 
-<div class="row">
+@section Breadcrumb {
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="~/Admin/Dashboard">
+                <i class="ri-home-3-line"></i>
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="~/Admin/Users">User Management</a>
+        </li>
+        <li class="breadcrumb-item text-primary" aria-current="page">
+            All Users
+        </li>
+    </ol>
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+            <i class="ri-user-add-line me-2"></i>Add User
+        </button>
+        <button class="btn btn-outline-secondary" onclick="exportUsers()">
+            <i class="ri-download-line me-2"></i>Export
+        </button>
+        <button class="btn btn-outline-info" onclick="importUsers()">
+            <i class="ri-upload-line me-2"></i>Import
+        </button>
+    </div>
+}
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-primary text-white rounded-3 me-3">
+                        <i class="ri-team-line"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">1,283</h5>
+                        <p class="mb-0 text-muted">Total Users</p>
+                        <small class="text-success">+7.2% this month</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-success text-white rounded-3 me-3">
+                        <i class="ri-stethoscope-line"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">24</h5>
+                        <p class="mb-0 text-muted">Doctors</p>
+                        <small class="text-success">+2 this month</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-info text-white rounded-3 me-3">
+                        <i class="ri-user-heart-line"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">1,247</h5>
+                        <p class="mb-0 text-muted">Patients</p>
+                        <small class="text-success">+5.2% this month</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-warning text-white rounded-3 me-3">
+                        <i class="ri-test-tube-line"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">12</h5>
+                        <p class="mb-0 text-muted">Lab Staff</p>
+                        <small class="text-success">+1 this month</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-4">
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h5 class="card-title">System Users</h5>
+                <h5 class="card-title mb-0">
+                    <i class="ri-filter-line me-2"></i>User Filters
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Search Users</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Name, Email, ID..." id="searchInput">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="ri-search-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Role</label>
+                        <select class="form-select" id="roleFilter">
+                            <option value="">All Roles</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Doctor">Doctor</option>
+                            <option value="Patient">Patient</option>
+                            <option value="Lab">Lab Staff</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                            <option value="Suspended">Suspended</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Registration Date</label>
+                        <select class="form-select" id="dateFilter">
+                            <option value="">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="year">This Year</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Department</label>
+                        <select class="form-select" id="departmentFilter">
+                            <option value="">All Departments</option>
+                            <option value="Cardiology">Cardiology</option>
+                            <option value="Neurology">Neurology</option>
+                            <option value="Orthopedics">Orthopedics</option>
+                            <option value="Pediatrics">Pediatrics</option>
+                            <option value="Emergency">Emergency</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <label class="form-label">&nbsp;</label>
+                        <button class="btn btn-outline-secondary d-block w-100" onclick="clearFilters()">
+                            <i class="ri-refresh-line"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- All Users Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ri-team-line me-2"></i>All Users Directory
+                </h5>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary btn-sm" onclick="toggleView('detailed')">
+                        <i class="ri-list-check"></i> Detailed
+                    </button>
+                    <button class="btn btn-primary btn-sm" onclick="toggleView('compact')">
+                        <i class="ri-grid-line"></i> Compact
+                    </button>
+                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-striped">
+                    <table class="table table-hover" id="usersTable">
                         <thead>
                             <tr>
+                                <th>
+                                    <input type="checkbox" class="form-check-input" id="selectAll">
+                                </th>
                                 <th>User ID</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Status</th>
-                                <th>Last Login</th>
-                                <th>Created Date</th>
+                                <th>User Details</th>
+                                <th>Role & Department</th>
+                                <th>Contact Info</th>
+                                <th>Status & Activity</th>
+                                <th>Professional Info</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
+                            <!-- Admin Users -->
                             <tr>
-                                <td>#U001</td>
-                                <td>Dr. John Smith</td>
-                                <td>john.smith@caresync.com</td>
-                                <td><span class="badge bg-primary">Doctor</span></td>
-                                <td><span class="badge bg-success">Active</span></td>
-                                <td>2024-11-10 08:30</td>
-                                <td>2024-01-15</td>
                                 <td>
-                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
-                                    <button class="btn btn-sm btn-outline-warning">Suspend</button>
-                                    <button class="btn btn-sm btn-outline-info">View Details</button>
+                                    <input type="checkbox" class="form-check-input user-checkbox">
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-primary">#A001</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/admin.png" class="rounded-circle me-2" width="40" height="40" alt="Admin">
+                                        <div>
+                                            <h6 class="mb-0">John Admin</h6>
+                                            <small class="text-muted">System Administrator</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger mb-1">Admin</span><br>
+                                    <small class="text-muted">System Management</small>
+                                </td>
+                                <td>
+                                    <span>john.admin@caresync.com</span>
+                                    <small class="text-muted d-block">+1 234 567 8901</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success mb-1">Active</span><br>
+                                    <small class="text-muted">Last: Nov 15, 2024</small>
+                                </td>
+                                <td>
+                                    <small class="text-muted">Full System Access</small><br>
+                                    <small class="text-success">All Permissions</small>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                            <i class="ri-more-2-line"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#"><i class="ri-eye-line me-2"></i>View Profile</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-edit-line me-2"></i>Edit User</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-key-line me-2"></i>Reset Password</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-warning" href="#"><i class="ri-user-unfollow-line me-2"></i>Suspend</a></li>
+                                        </ul>
+                                    </div>
                                 </td>
                             </tr>
+                            <!-- Doctor Users -->
                             <tr>
-                                <td>#U002</td>
-                                <td>Mary Johnson</td>
-                                <td>mary.johnson@email.com</td>
-                                <td><span class="badge bg-info">Patient</span></td>
-                                <td><span class="badge bg-success">Active</span></td>
-                                <td>2024-11-09 14:20</td>
-                                <td>2024-02-20</td>
                                 <td>
-                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
-                                    <button class="btn btn-sm btn-outline-warning">Suspend</button>
-                                    <button class="btn btn-sm btn-outline-info">View Details</button>
+                                    <input type="checkbox" class="form-check-input user-checkbox">
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-primary">#D001</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/doctor1.png" class="rounded-circle me-2" width="40" height="40" alt="Doctor">
+                                        <div>
+                                            <h6 class="mb-0">Dr. Sarah Wilson</h6>
+                                            <small class="text-muted">MBBS, MD Cardiology</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary mb-1">Doctor</span><br>
+                                    <small class="text-muted">Cardiology Dept.</small>
+                                </td>
+                                <td>
+                                    <span>sarah.wilson@caresync.com</span>
+                                    <small class="text-muted d-block">+1 234 567 8902</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success mb-1">Active</span><br>
+                                    <small class="text-muted">Last: Nov 14, 2024</small>
+                                </td>
+                                <td>
+                                    <small class="text-muted">12 years experience</small><br>
+                                    <small class="text-success">License: MD12345</small>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                            <i class="ri-more-2-line"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#"><i class="ri-eye-line me-2"></i>View Profile</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-edit-line me-2"></i>Edit Doctor</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-calendar-line me-2"></i>View Schedule</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-user-heart-line me-2"></i>View Patients</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-warning" href="#"><i class="ri-user-unfollow-line me-2"></i>Suspend</a></li>
+                                        </ul>
+                                    </div>
                                 </td>
                             </tr>
+                            <!-- Patient Users -->
                             <tr>
-                                <td>#U003</td>
-                                <td>Lab Central</td>
-                                <td>admin@labcentral.com</td>
-                                <td><span class="badge bg-secondary">Lab</span></td>
-                                <td><span class="badge bg-success">Active</span></td>
-                                <td>2024-11-10 07:45</td>
-                                <td>2024-01-10</td>
                                 <td>
-                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
-                                    <button class="btn btn-sm btn-outline-warning">Suspend</button>
-                                    <button class="btn btn-sm btn-outline-info">View Details</button>
+                                    <input type="checkbox" class="form-check-input user-checkbox">
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-primary">#P001</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/patient1.png" class="rounded-circle me-2" width="40" height="40" alt="Patient">
+                                        <div>
+                                            <h6 class="mb-0">Emily Johnson</h6>
+                                            <small class="text-muted">Patient ID: P001</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info mb-1">Patient</span><br>
+                                    <small class="text-muted">General Care</small>
+                                </td>
+                                <td>
+                                    <span>emily.johnson@email.com</span>
+                                    <small class="text-muted d-block">+1 234 567 8903</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success mb-1">Active</span><br>
+                                    <small class="text-muted">Last: Nov 12, 2024</small>
+                                </td>
+                                <td>
+                                    <small class="text-muted">Blood Type: O+</small><br>
+                                    <small class="text-info">Insurance: Active</small>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                            <i class="ri-more-2-line"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#"><i class="ri-eye-line me-2"></i>View Profile</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-edit-line me-2"></i>Edit Patient</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-file-text-line me-2"></i>Medical Records</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-calendar-line me-2"></i>Appointments</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-warning" href="#"><i class="ri-user-unfollow-line me-2"></i>Suspend</a></li>
+                                        </ul>
+                                    </div>
                                 </td>
                             </tr>
+                            <!-- Lab Staff Users -->
                             <tr>
-                                <td>#U004</td>
-                                <td>Robert Wilson</td>
-                                <td>robert.wilson@email.com</td>
-                                <td><span class="badge bg-info">Patient</span></td>
-                                <td><span class="badge bg-warning">Suspended</span></td>
-                                <td>2024-11-05 10:15</td>
-                                <td>2024-03-12</td>
                                 <td>
-                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
-                                    <button class="btn btn-sm btn-outline-success">Activate</button>
-                                    <button class="btn btn-sm btn-outline-info">View Details</button>
+                                    <input type="checkbox" class="form-check-input user-checkbox">
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-primary">#L001</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/lab-tech.png" class="rounded-circle me-2" width="40" height="40" alt="Lab Staff">
+                                        <div>
+                                            <h6 class="mb-0">James Chen</h6>
+                                            <small class="text-muted">Senior Lab Technician</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning mb-1">Lab Staff</span><br>
+                                    <small class="text-muted">Hematology Dept.</small>
+                                </td>
+                                <td>
+                                    <span>james.chen@caresync.com</span>
+                                    <small class="text-muted d-block">+1 234 567 8904</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success mb-1">Active</span><br>
+                                    <small class="text-muted">Last: Nov 15, 2024</small>
+                                </td>
+                                <td>
+                                    <small class="text-muted">BSc MLT, 8 years exp</small><br>
+                                    <small class="text-success">Morning Shift</small>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                            <i class="ri-more-2-line"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#"><i class="ri-eye-line me-2"></i>View Profile</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-edit-line me-2"></i>Edit Staff</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-calendar-line me-2"></i>View Schedule</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-flask-line me-2"></i>Lab Tests</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-warning" href="#"><i class="ri-user-unfollow-line me-2"></i>Suspend</a></li>
+                                        </ul>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+                
+                <!-- Pagination -->
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div>
+                        <span class="text-muted">Showing 1 to 4 of 1,283 users</span>
+                    </div>
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#"><i class="ri-arrow-left-s-line"></i></a>
+                            </li>
+                            <li class="page-item active">
+                                <a class="page-link" href="#">1</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">2</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">3</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#"><i class="ri-arrow-right-s-line"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row mt-4">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">Add New User</h5>
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="ri-user-add-line me-2"></i>Add New User
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="card-body">
-                <form>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">First Name</label>
-                            <input type="text" class="form-control" name="FirstName" />
+            <div class="modal-body">
+                <form id="addUserForm">
+                    <!-- Step 1: Basic Information -->
+                    <div class="step-content active" data-step="1">
+                        <h6 class="mb-3 text-primary">Basic Information</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="firstName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="lastName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" name="phoneNumber" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Gender <span class="text-danger">*</span></label>
+                                <select class="form-select" name="gender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Date of Birth <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" name="dateOfBirth" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">User Role <span class="text-danger">*</span></label>
+                                <select class="form-select" name="userRole" id="userRoleSelect" required onchange="toggleRoleSpecificFields()">
+                                    <option value="">Select Role</option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="Doctor">Doctor</option>
+                                    <option value="Patient">Patient</option>
+                                    <option value="Lab">Lab Staff</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Address</label>
+                                <textarea class="form-control" name="address" rows="2"></textarea>
+                            </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Last Name</label>
-                            <input type="text" class="form-control" name="LastName" />
+                    </div>
+
+                    <!-- Role-Specific Fields -->
+                    <!-- Doctor Specific Fields -->
+                    <div class="role-specific-fields" id="doctorFields" style="display: none;">
+                        <hr class="my-4">
+                        <h6 class="mb-3 text-success">Doctor Information</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Medical License Number</label>
+                                <input type="text" class="form-control" name="licenseNumber">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Years of Experience</label>
+                                <input type="number" class="form-control" name="experience" min="0" max="50">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Specialization</label>
+                                <select class="form-select" name="specialization">
+                                    <option value="">Select Specialization</option>
+                                    <option value="Cardiology">Cardiology</option>
+                                    <option value="Neurology">Neurology</option>
+                                    <option value="Orthopedics">Orthopedics</option>
+                                    <option value="Pediatrics">Pediatrics</option>
+                                    <option value="Emergency Medicine">Emergency Medicine</option>
+                                    <option value="Internal Medicine">Internal Medicine</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Department</label>
+                                <select class="form-select" name="department">
+                                    <option value="">Select Department</option>
+                                    <option value="Cardiology">Cardiology</option>
+                                    <option value="Neurology">Neurology</option>
+                                    <option value="Orthopedics">Orthopedics</option>
+                                    <option value="Pediatrics">Pediatrics</option>
+                                    <option value="Emergency">Emergency</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Qualifications</label>
+                                <input type="text" class="form-control" name="qualifications" placeholder="e.g., MBBS, MD">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Consultation Fee</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" name="consultationFee" min="0" step="0.01">
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-control" name="Email" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Phone Number</label>
-                        <input type="tel" class="form-control" name="PhoneNumber" />
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Role</label>
-                            <select class="form-select" name="RoleType">
-                                <option value="">Select Role</option>
-                                <option value="0">Admin</option>
-                                <option value="1">Doctor</option>
-                                <option value="2">Patient</option>
-                                <option value="3">Lab</option>
-                            </select>
+
+                    <!-- Patient Specific Fields -->
+                    <div class="role-specific-fields" id="patientFields" style="display: none;">
+                        <hr class="my-4">
+                        <h6 class="mb-3 text-info">Patient Information</h6>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Blood Group</label>
+                                <select class="form-select" name="bloodGroup">
+                                    <option value="">Select Blood Group</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Marital Status</label>
+                                <select class="form-select" name="maritalStatus">
+                                    <option value="">Select Status</option>
+                                    <option value="Single">Single</option>
+                                    <option value="Married">Married</option>
+                                    <option value="Divorced">Divorced</option>
+                                    <option value="Widowed">Widowed</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Occupation</label>
+                                <input type="text" class="form-control" name="occupation">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Emergency Contact Name</label>
+                                <input type="text" class="form-control" name="emergencyContactName">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Emergency Contact Number</label>
+                                <input type="tel" class="form-control" name="emergencyContactNumber">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Relationship to Emergency Contact</label>
+                                <input type="text" class="form-control" name="relationshipToEmergency" placeholder="e.g., Spouse, Parent, Sibling">
+                            </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Gender</label>
-                            <select class="form-select" name="Gender">
-                                <option value="">Select Gender</option>
-                                <option value="0">Male</option>
-                                <option value="1">Female</option>
-                            </select>
+                    </div>
+
+                    <!-- Lab Staff Specific Fields -->
+                    <div class="role-specific-fields" id="labFields" style="display: none;">
+                        <hr class="my-4">
+                        <h6 class="mb-3 text-warning">Lab Staff Information</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Position</label>
+                                <select class="form-select" name="position">
+                                    <option value="">Select Position</option>
+                                    <option value="Lab Technician">Lab Technician</option>
+                                    <option value="Senior Technician">Senior Technician</option>
+                                    <option value="Lab Supervisor">Lab Supervisor</option>
+                                    <option value="Lab Manager">Lab Manager</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Lab Department</label>
+                                <select class="form-select" name="labDepartment">
+                                    <option value="">Select Department</option>
+                                    <option value="Hematology">Hematology</option>
+                                    <option value="Biochemistry">Biochemistry</option>
+                                    <option value="Microbiology">Microbiology</option>
+                                    <option value="Pathology">Pathology</option>
+                                    <option value="Radiology">Radiology</option>
+                                    <option value="Immunology">Immunology</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Shift</label>
+                                <select class="form-select" name="shift">
+                                    <option value="">Select Shift</option>
+                                    <option value="Morning">Morning (6 AM - 2 PM)</option>
+                                    <option value="Evening">Evening (2 PM - 10 PM)</option>
+                                    <option value="Night">Night (10 PM - 6 AM)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Years of Experience</label>
+                                <input type="number" class="form-control" name="labExperience" min="0" max="40">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Qualifications</label>
+                                <input type="text" class="form-control" name="labQualifications" placeholder="e.g., BSc MLT, MSc Microbiology">
+                            </div>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Date of Birth</label>
-                        <input type="date" class="form-control" name="DateOfBirth" />
+
+                    <!-- Admin Specific Fields -->
+                    <div class="role-specific-fields" id="adminFields" style="display: none;">
+                        <hr class="my-4">
+                        <h6 class="mb-3 text-danger">Admin Information</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Admin Level</label>
+                                <select class="form-select" name="adminLevel">
+                                    <option value="">Select Level</option>
+                                    <option value="Super Admin">Super Admin</option>
+                                    <option value="System Admin">System Admin</option>
+                                    <option value="Department Admin">Department Admin</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Access Level</label>
+                                <select class="form-select" name="accessLevel">
+                                    <option value="">Select Access</option>
+                                    <option value="Full Access">Full Access</option>
+                                    <option value="Limited Access">Limited Access</option>
+                                    <option value="Read Only">Read Only</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Address</label>
-                        <textarea class="form-control" name="Address" rows="3"></textarea>
+
+                    <!-- Account Security -->
+                    <hr class="my-4">
+                    <h6 class="mb-3 text-secondary">Account Security</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Password <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" name="password" id="password" required>
+                            <small class="text-muted">Minimum 8 characters with uppercase, lowercase, number and special character</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" required>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="sendWelcomeEmail" id="sendWelcomeEmail" checked>
+                                <label class="form-check-label" for="sendWelcomeEmail">
+                                    Send welcome email with login credentials
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">User Statistics</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-6 mb-3">
-                        <div class="text-center">
-                            <h4 class="text-primary">156</h4>
-                            <small>Total Users</small>
-                        </div>
-                    </div>
-                    <div class="col-6 mb-3">
-                        <div class="text-center">
-                            <h4 class="text-success">142</h4>
-                            <small>Active Users</small>
-                        </div>
-                    </div>
-                    <div class="col-6 mb-3">
-                        <div class="text-center">
-                            <h4 class="text-info">45</h4>
-                            <small>Doctors</small>
-                        </div>
-                    </div>
-                    <div class="col-6 mb-3">
-                        <div class="text-center">
-                            <h4 class="text-warning">98</h4>
-                            <small>Patients</small>
-                        </div>
-                    </div>
-                    <div class="col-6 mb-3">
-                        <div class="text-center">
-                            <h4 class="text-secondary">8</h4>
-                            <small>Labs</small>
-                        </div>
-                    </div>
-                    <div class="col-6 mb-3">
-                        <div class="text-center">
-                            <h4 class="text-dark">5</h4>
-                            <small>Admins</small>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mt-4">
-                    <h6>Recent Registrations</h6>
-                    <ul class="list-unstyled">
-                        <li class="d-flex justify-content-between align-items-center mb-2">
-                            <div>
-                                <strong>Sarah Davis</strong>
-                                <br><small class="text-muted">Patient</small>
-                            </div>
-                            <small>2024-11-09</small>
-                        </li>
-                        <li class="d-flex justify-content-between align-items-center mb-2">
-                            <div>
-                                <strong>Dr. Michael Brown</strong>
-                                <br><small class="text-muted">Doctor</small>
-                            </div>
-                            <small>2024-11-08</small>
-                        </li>
-                        <li class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong>Quick Lab</strong>
-                                <br><small class="text-muted">Lab</small>
-                            </div>
-                            <small>2024-11-07</small>
-                        </li>
-                    </ul>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveUser()">
+                    <i class="ri-save-line me-2"></i>Create User
+                </button>
             </div>
         </div>
     </div>
 </div>
 
-@section PageActions {
-    <button type="button" class="btn btn-primary">Create User</button>
-    <button type="button" class="btn btn-outline-secondary">Export Users</button>
-    <button type="button" class="btn btn-outline-info">Import Users</button>
+@section Scripts {
+    <script>
+        // Select all functionality
+        document.getElementById('selectAll').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.user-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function() {
+            console.log('Searching for:', this.value);
+            // Implement search logic here
+        });
+
+        // Filter functions
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('roleFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('dateFilter').value = '';
+            document.getElementById('departmentFilter').value = '';
+        }
+
+        function exportUsers() {
+            alert('Exporting users data...');
+        }
+
+        function importUsers() {
+            alert('Import users functionality...');
+        }
+
+        function toggleView(viewType) {
+            if (viewType === 'detailed') {
+                // Show detailed view
+                console.log('Switching to detailed view');
+            } else if (viewType === 'compact') {
+                // Show compact view
+                console.log('Switching to compact view');
+            }
+        }
+
+        // Filter change handlers
+        document.getElementById('roleFilter').addEventListener('change', function() {
+            console.log('Role filter changed:', this.value);
+        });
+
+        document.getElementById('statusFilter').addEventListener('change', function() {
+            console.log('Status filter changed:', this.value);
+        });
+
+        document.getElementById('dateFilter').addEventListener('change', function() {
+            console.log('Date filter changed:', this.value);
+        });
+
+        document.getElementById('departmentFilter').addEventListener('change', function() {
+            console.log('Department filter changed:', this.value);
+        });
+
+        // Modal and User Creation Functions
+        function toggleRoleSpecificFields() {
+            const selectedRole = document.getElementById('userRoleSelect').value;
+            
+            // Hide all role-specific fields
+            document.querySelectorAll('.role-specific-fields').forEach(field => {
+                field.style.display = 'none';
+            });
+            
+            // Show fields based on selected role
+            if (selectedRole === 'Doctor') {
+                document.getElementById('doctorFields').style.display = 'block';
+            } else if (selectedRole === 'Patient') {
+                document.getElementById('patientFields').style.display = 'block';
+            } else if (selectedRole === 'Lab') {
+                document.getElementById('labFields').style.display = 'block';
+            } else if (selectedRole === 'Admin') {
+                document.getElementById('adminFields').style.display = 'block';
+            }
+        }
+
+        function saveUser() {
+            const form = document.getElementById('addUserForm');
+            const formData = new FormData(form);
+            
+            // Basic validation
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+            
+            // Password validation
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                document.getElementById('confirmPassword').classList.add('is-invalid');
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            if (!isValid) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            // Collect form data
+            const userData = {};
+            for (let [key, value] of formData.entries()) {
+                userData[key] = value;
+            }
+            
+            console.log('Creating user:', userData);
+            
+            // Here you would typically send the data to the server
+            // For now, we'll just show a success message
+            alert('User created successfully!');
+            
+            // Close modal and reset form
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
+            modal.hide();
+            form.reset();
+            toggleRoleSpecificFields(); // Hide role-specific fields
+            
+            // Optionally refresh the user list
+            // location.reload();
+        }
+
+        // Reset modal when it's closed
+        document.getElementById('addUserModal').addEventListener('hidden.bs.modal', function () {
+            const form = document.getElementById('addUserForm');
+            form.reset();
+            form.querySelectorAll('.is-invalid').forEach(field => {
+                field.classList.remove('is-invalid');
+            });
+            toggleRoleSpecificFields();
+        });
+
+        // Password strength indicator (optional enhancement)
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const strength = calculatePasswordStrength(password);
+            // You can add visual feedback here
+        });
+
+        function calculatePasswordStrength(password) {
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            return strength;
+        }
+    </script>
+
+    <style>
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .table th {
+            border-top: none;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .user-checkbox:checked {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        
+        .dropdown-menu {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+        
+        .modal-lg {
+            max-width: 800px;
+        }
+        
+        .role-specific-fields {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .is-invalid {
+            border-color: #dc3545 !important;
+        }
+        
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+    </style>
 }
