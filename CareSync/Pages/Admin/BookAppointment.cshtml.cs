@@ -1,17 +1,15 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace CareSync.Pages.Admin
 {
-    public class AppointmentReportsModel : PageModel
+    public class BookAppointmentModel : PageModel
     {
         public void OnGet()
         {
         }
 
-        public IActionResult OnPost()
+        public void OnPost()
         {
-            return Page();
         }
     }
 }

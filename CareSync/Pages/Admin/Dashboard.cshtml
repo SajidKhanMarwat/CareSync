@@ -4,11 +4,11 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
-@section PageActions {
+@* @section PageActions {
     <button class="btn btn-primary">
         <i class="ri-add-line me-2"></i>Quick Action
     </button>
-}
+} *@
 
 <!-- Welcome Section -->
 <div class="row mb-4">
@@ -46,53 +46,86 @@
     </div>
 </div>
 
-<!-- Statistics Cards -->
-<div class="row mb-4">
-    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <div class="mb-3">
-                    <i class="ri-user-heart-line text-primary" style="font-size: 2rem;"></i>
+<!-- Statistics Cards - Theme Design -->
+<div class="row gx-3 mb-4">
+    <div class="col-sm-4 col-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="p-2 border border-primary rounded-circle me-3">
+                        <div class="icon-box md bg-primary-lighten rounded-5">
+                            <i class="ri-calendar-check-line fs-4 text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <h1 class="lh-1">260</h1>
+                        <p class="m-0">Appointments</p>
+                    </div>
                 </div>
-                <h3 class="card-title">1,247</h3>
-                <p class="card-text text-muted">Total Patients</p>
-                <small class="text-success">+12% <i class="ri-arrow-up-line"></i></small>
+                <div class="d-flex align-items-end justify-content-between mt-1">
+                    <a class="text-primary" href="~/Admin/Appointments">
+                        <span>View All</span>
+                        <i class="ri-arrow-right-line text-primary ms-1"></i>
+                    </a>
+                    <div class="text-end">
+                        <p class="mb-0 text-primary">+30%</p>
+                        <span class="badge bg-primary-light text-primary small">this month</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <div class="mb-3">
-                    <i class="ri-calendar-check-line text-success" style="font-size: 2rem;"></i>
+    <div class="col-sm-4 col-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="p-2 border border-primary rounded-circle me-3">
+                        <div class="icon-box md bg-primary-lighten rounded-5">
+                            <i class="ri-stethoscope-line fs-4 text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <h1 class="lh-1">24</h1>
+                        <p class="m-0">Doctors</p>
+                    </div>
                 </div>
-                <h3 class="card-title">23</h3>
-                <p class="card-text text-muted">Today's Appointments</p>
-                <small class="text-success">+5 <i class="ri-arrow-up-line"></i></small>
+                <div class="d-flex align-items-end justify-content-between mt-1">
+                    <a class="text-primary" href="~/Admin/Doctors">
+                        <span>View All</span>
+                        <i class="ri-arrow-right-line ms-1"></i>
+                    </a>
+                    <div class="text-end">
+                        <p class="mb-0 text-primary">+2</p>
+                        <span class="badge bg-primary-light text-primary small">this month</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <div class="mb-3">
-                    <i class="ri-test-tube-line text-info" style="font-size: 2rem;"></i>
+    <div class="col-sm-4 col-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="p-2 border border-primary rounded-circle me-3">
+                        <div class="icon-box md bg-primary-lighten rounded-5">
+                            <i class="ri-user-heart-line fs-4 text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <h1 class="lh-1">980</h1>
+                        <p class="m-0">Patients</p>
+                    </div>
                 </div>
-                <h3 class="card-title">8</h3>
-                <p class="card-text text-muted">Pending Lab Results</p>
-                <small class="text-danger">-3 <i class="ri-arrow-down-line"></i></small>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <div class="mb-3">
-                    <i class="ri-medicine-bottle-line text-warning" style="font-size: 2rem;"></i>
+                <div class="d-flex align-items-end justify-content-between mt-1">
+                    <a class="text-primary" href="~/Admin/Patients">
+                        <span>View All</span>
+                        <i class="ri-arrow-right-line text-primary ms-1"></i>
+                    </a>
+                    <div class="text-end">
+                        <p class="mb-0 text-primary">+40%</p>
+                        <span class="badge bg-primary-light text-primary small">this month</span>
+                    </div>
                 </div>
-                <h3 class="card-title">156</h3>
-                <p class="card-text text-muted">Active Prescriptions</p>
-                <small class="text-success">+8% <i class="ri-arrow-up-line"></i></small>
             </div>
         </div>
     </div>
@@ -544,6 +577,39 @@
         
         .apexcharts-canvas {
             margin: 0 auto;
+        }
+        
+        /* Theme-based card styling */
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon-box.md {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .bg-primary-lighten {
+            background-color: rgba(13, 110, 253, 0.1) !important;
+        }
+        
+        .bg-primary-light {
+            background-color: rgba(13, 110, 253, 0.1) !important;
+        }
+        
+        .card .card-body h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .badge.bg-primary-light {
+            color: #0d6efd !important;
+            background-color: rgba(13, 110, 253, 0.1) !important;
         }
     </style>
 }

@@ -1,0 +1,525 @@
+@page "/Admin/BookAppointment"
+@model CareSync.Pages.Admin.BookAppointmentModel
+@{
+    ViewData["Title"] = "Book Appointment";
+}
+
+@section Breadcrumb {
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="~/Admin/Dashboard">
+                <i class="ri-home-3-line"></i>
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="~/Admin/Appointments">Appointments</a>
+        </li>
+        <li class="breadcrumb-item text-primary" aria-current="page">
+            Book Appointment
+        </li>
+    </ol>
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <a href="~/Admin/Appointments" class="btn btn-outline-secondary">
+            <i class="ri-arrow-left-line me-2"></i>Back to Appointments
+        </a>
+    </div>
+}
+
+<!-- Page Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-white bg-opacity-20 rounded-circle me-3">
+                        <i class="ri-calendar-event-line fs-2 text-white"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-white mb-1">Book New Appointment</h4>
+                        <p class="text-white-50 mb-0">Select a doctor and schedule your appointment</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search doctors..." id="searchDoctors">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="ri-search-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="filterSpecialty">
+                            <option value="">All Specialties</option>
+                            <option value="cardiology">Cardiology</option>
+                            <option value="neurology">Neurology</option>
+                            <option value="orthopedics">Orthopedics</option>
+                            <option value="pediatrics">Pediatrics</option>
+                            <option value="emergency">Emergency</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="filterAvailability">
+                            <option value="">All Doctors</option>
+                            <option value="available">Available Today</option>
+                            <option value="tomorrow">Available Tomorrow</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100" onclick="applyFilters()">
+                            <i class="ri-filter-line me-2"></i>Filter
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Doctors Cards -->
+<div class="row" id="doctorsContainer">
+    <!-- Doctor 1 -->
+    <div class="col-xl-4 col-lg-6 col-md-6 mb-4">
+        <div class="card doctor-card h-100">
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <img src="~/theme/images/doctor1.png" class="rounded-circle mb-3" width="80" height="80" alt="Doctor">
+                    <h5 class="card-title mb-1">Dr. Sarah Wilson</h5>
+                    <p class="text-muted mb-2">Cardiologist</p>
+                    <div class="d-flex justify-content-center align-items-center mb-2">
+                        <span class="badge bg-primary-light text-primary me-2">12 Years Experience</span>
+                        <div class="text-warning">
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <span class="text-muted ms-1">(4.8)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="doctor-details mb-3">
+                    <div class="row g-2 text-center">
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded">
+                                <i class="ri-user-line text-primary"></i>
+                                <small class="d-block text-muted">Age</small>
+                                <strong>42 Years</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded">
+                                <i class="ri-money-dollar-circle-line text-success"></i>
+                                <small class="d-block text-muted">Fee</small>
+                                <strong>$150</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="working-hours mb-3">
+                    <h6 class="mb-2"><i class="ri-time-line me-2"></i>Working Hours</h6>
+                    <div class="small">
+                        <div class="d-flex justify-content-between">
+                            <span>Mon - Fri:</span>
+                            <span class="text-success">9:00 AM - 5:00 PM</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Saturday:</span>
+                            <span class="text-success">9:00 AM - 1:00 PM</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Sunday:</span>
+                            <span class="text-danger">Closed</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="availability mb-3">
+                    <h6 class="mb-2"><i class="ri-calendar-check-line me-2"></i>Next Available</h6>
+                    <span class="badge bg-success">Today 2:00 PM</span>
+                    <span class="badge bg-info ms-1">Tomorrow 10:00 AM</span>
+                </div>
+                
+                <button class="btn btn-primary w-100" onclick="bookAppointment('dr-sarah-wilson', 'Dr. Sarah Wilson', 'Cardiology')">
+                    <i class="ri-calendar-event-line me-2"></i>Book Appointment
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Doctor 2 -->
+    <div class="col-xl-4 col-lg-6 col-md-6 mb-4">
+        <div class="card doctor-card h-100">
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <img src="~/theme/images/doctor2.png" class="rounded-circle mb-3" width="80" height="80" alt="Doctor">
+                    <h5 class="card-title mb-1">Dr. James Chen</h5>
+                    <p class="text-muted mb-2">Neurologist</p>
+                    <div class="d-flex justify-content-center align-items-center mb-2">
+                        <span class="badge bg-success-light text-success me-2">8 Years Experience</span>
+                        <div class="text-warning">
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-line"></i>
+                            <span class="text-muted ms-1">(4.6)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="doctor-details mb-3">
+                    <div class="row g-2 text-center">
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded">
+                                <i class="ri-user-line text-primary"></i>
+                                <small class="d-block text-muted">Age</small>
+                                <strong>38 Years</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded">
+                                <i class="ri-money-dollar-circle-line text-success"></i>
+                                <small class="d-block text-muted">Fee</small>
+                                <strong>$180</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="working-hours mb-3">
+                    <h6 class="mb-2"><i class="ri-time-line me-2"></i>Working Hours</h6>
+                    <div class="small">
+                        <div class="d-flex justify-content-between">
+                            <span>Mon - Thu:</span>
+                            <span class="text-success">10:00 AM - 6:00 PM</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Friday:</span>
+                            <span class="text-success">10:00 AM - 2:00 PM</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Weekends:</span>
+                            <span class="text-danger">Closed</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="availability mb-3">
+                    <h6 class="mb-2"><i class="ri-calendar-check-line me-2"></i>Next Available</h6>
+                    <span class="badge bg-warning">Tomorrow 11:00 AM</span>
+                    <span class="badge bg-info ms-1">Monday 9:00 AM</span>
+                </div>
+                
+                <button class="btn btn-primary w-100" onclick="bookAppointment('dr-james-chen', 'Dr. James Chen', 'Neurology')">
+                    <i class="ri-calendar-event-line me-2"></i>Book Appointment
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Doctor 3 -->
+    <div class="col-xl-4 col-lg-6 col-md-6 mb-4">
+        <div class="card doctor-card h-100">
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <img src="~/theme/images/doctor3.png" class="rounded-circle mb-3" width="80" height="80" alt="Doctor">
+                    <h5 class="card-title mb-1">Dr. Emily Rodriguez</h5>
+                    <p class="text-muted mb-2">Pediatrician</p>
+                    <div class="d-flex justify-content-center align-items-center mb-2">
+                        <span class="badge bg-warning-light text-warning me-2">15 Years Experience</span>
+                        <div class="text-warning">
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <span class="text-muted ms-1">(4.9)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="doctor-details mb-3">
+                    <div class="row g-2 text-center">
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded">
+                                <i class="ri-user-line text-primary"></i>
+                                <small class="d-block text-muted">Age</small>
+                                <strong>45 Years</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded">
+                                <i class="ri-money-dollar-circle-line text-success"></i>
+                                <small class="d-block text-muted">Fee</small>
+                                <strong>$120</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="working-hours mb-3">
+                    <h6 class="mb-2"><i class="ri-time-line me-2"></i>Working Hours</h6>
+                    <div class="small">
+                        <div class="d-flex justify-content-between">
+                            <span>Mon - Fri:</span>
+                            <span class="text-success">8:00 AM - 4:00 PM</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Saturday:</span>
+                            <span class="text-success">8:00 AM - 12:00 PM</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Sunday:</span>
+                            <span class="text-danger">Closed</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="availability mb-3">
+                    <h6 class="mb-2"><i class="ri-calendar-check-line me-2"></i>Next Available</h6>
+                    <span class="badge bg-success">Today 3:30 PM</span>
+                    <span class="badge bg-info ms-1">Tomorrow 8:00 AM</span>
+                </div>
+                
+                <button class="btn btn-primary w-100" onclick="bookAppointment('dr-emily-rodriguez', 'Dr. Emily Rodriguez', 'Pediatrics')">
+                    <i class="ri-calendar-event-line me-2"></i>Book Appointment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Appointment Booking Modal -->
+<div class="modal fade" id="appointmentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="ri-calendar-event-line me-2"></i>Book Appointment
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="appointmentForm">
+                    <div class="row">
+                        <!-- Doctor Info -->
+                        <div class="col-md-4 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <img id="modalDoctorImage" src="" class="rounded-circle mb-2" width="60" height="60" alt="Doctor">
+                                    <h6 id="modalDoctorName" class="mb-1"></h6>
+                                    <small id="modalDoctorSpecialty" class="text-muted"></small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Appointment Details -->
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Patient Name *</label>
+                                    <input type="text" class="form-control" id="patientName" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Patient Phone *</label>
+                                    <input type="tel" class="form-control" id="patientPhone" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Appointment Date *</label>
+                                    <input type="date" class="form-control" id="appointmentDate" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Appointment Time *</label>
+                                    <select class="form-select" id="appointmentTime" required>
+                                        <option value="">Select Time</option>
+                                        <option value="09:00">9:00 AM</option>
+                                        <option value="10:00">10:00 AM</option>
+                                        <option value="11:00">11:00 AM</option>
+                                        <option value="14:00">2:00 PM</option>
+                                        <option value="15:00">3:00 PM</option>
+                                        <option value="16:00">4:00 PM</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">Appointment Type</label>
+                                    <select class="form-select" id="appointmentType">
+                                        <option value="consultation">Consultation</option>
+                                        <option value="follow-up">Follow-up</option>
+                                        <option value="emergency">Emergency</option>
+                                        <option value="routine">Routine Check-up</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">Reason for Visit</label>
+                                    <textarea class="form-control" id="reasonForVisit" rows="3" placeholder="Describe the reason for the appointment..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitAppointment()">
+                    <i class="ri-calendar-check-line me-2"></i>Book Appointment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let selectedDoctor = null;
+        
+        function bookAppointment(doctorId, doctorName, specialty) {
+            selectedDoctor = { id: doctorId, name: doctorName, specialty: specialty };
+            
+            // Update modal content
+            document.getElementById('modalDoctorName').textContent = doctorName;
+            document.getElementById('modalDoctorSpecialty').textContent = specialty;
+            
+            // Set doctor image based on name
+            let imageSrc = '~/theme/images/doctor1.png';
+            if (doctorName.includes('James')) imageSrc = '~/theme/images/doctor2.png';
+            if (doctorName.includes('Emily')) imageSrc = '~/theme/images/doctor3.png';
+            document.getElementById('modalDoctorImage').src = imageSrc;
+            
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('appointmentDate').min = today;
+            
+            // Show modal
+            new bootstrap.Modal(document.getElementById('appointmentModal')).show();
+        }
+        
+        function submitAppointment() {
+            const form = document.getElementById('appointmentForm');
+            const formData = new FormData(form);
+            
+            // Validate required fields
+            const patientName = document.getElementById('patientName').value;
+            const patientPhone = document.getElementById('patientPhone').value;
+            const appointmentDate = document.getElementById('appointmentDate').value;
+            const appointmentTime = document.getElementById('appointmentTime').value;
+            
+            if (!patientName || !patientPhone || !appointmentDate || !appointmentTime) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            // Create appointment object
+            const appointment = {
+                doctorId: selectedDoctor.id,
+                doctorName: selectedDoctor.name,
+                specialty: selectedDoctor.specialty,
+                patientName: patientName,
+                patientPhone: patientPhone,
+                appointmentDate: appointmentDate,
+                appointmentTime: appointmentTime,
+                appointmentType: document.getElementById('appointmentType').value,
+                reasonForVisit: document.getElementById('reasonForVisit').value
+            };
+            
+            // Here you would typically send this to your backend
+            console.log('Appointment booked:', appointment);
+            
+            // Show success message
+            alert(`Appointment booked successfully with ${selectedDoctor.name} on ${appointmentDate} at ${appointmentTime}`);
+            
+            // Close modal and reset form
+            bootstrap.Modal.getInstance(document.getElementById('appointmentModal')).hide();
+            form.reset();
+            
+            // Redirect to appointments page
+            window.location.href = '/Admin/Appointments';
+        }
+        
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchDoctors').value.toLowerCase();
+            const specialty = document.getElementById('filterSpecialty').value.toLowerCase();
+            const availability = document.getElementById('filterAvailability').value;
+            
+            const doctorCards = document.querySelectorAll('.doctor-card');
+            
+            doctorCards.forEach(card => {
+                const doctorName = card.querySelector('.card-title').textContent.toLowerCase();
+                const doctorSpecialty = card.querySelector('.text-muted').textContent.toLowerCase();
+                
+                let showCard = true;
+                
+                // Apply search filter
+                if (searchTerm && !doctorName.includes(searchTerm)) {
+                    showCard = false;
+                }
+                
+                // Apply specialty filter
+                if (specialty && !doctorSpecialty.includes(specialty)) {
+                    showCard = false;
+                }
+                
+                // Show/hide card
+                card.closest('.col-xl-4').style.display = showCard ? 'block' : 'none';
+            });
+        }
+        
+        // Real-time search
+        document.getElementById('searchDoctors').addEventListener('input', applyFilters);
+    </script>
+
+    <style>
+        .doctor-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #e3e6f0;
+        }
+        
+        .doctor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+        
+        .icon-box.lg {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .bg-primary-light {
+            background-color: rgba(13, 110, 253, 0.1) !important;
+        }
+        
+        .bg-success-light {
+            background-color: rgba(25, 135, 84, 0.1) !important;
+        }
+        
+        .bg-warning-light {
+            background-color: rgba(255, 193, 7, 0.1) !important;
+        }
+        
+        .working-hours {
+            font-size: 0.875rem;
+        }
+        
+        .availability .badge {
+            font-size: 0.75rem;
+        }
+    </style>
+}
