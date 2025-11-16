@@ -1,0 +1,419 @@
+@page "/Doctor/LabRequest"
+@model CareSync.Pages.Doctor.LabRequestModel
+@{
+    ViewData["Title"] = "Lab Test Request";
+}
+
+@section Breadcrumb {
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="~/Doctor/Dashboard">
+                <i class="ri-home-3-line"></i>
+            </a>
+        </li>
+        <li class="breadcrumb-item text-primary" aria-current="page">
+            Lab Test Request
+        </li>
+    </ol>
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary" onclick="window.history.back()">
+            <i class="ri-arrow-left-line me-2"></i>Back
+        </button>
+    </div>
+}
+
+<!-- Request Form -->
+<div class="row justify-content-center">
+    <div class="col-xl-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-test-tube-line me-2"></i>Request Lab Test
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" id="labRequestForm">
+                    
+                    <!-- Patient Selection -->
+                    <div class="mb-4">
+                        <h6 class="mb-3"><i class="ri-user-line me-2"></i>Patient Information</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Select Patient <span class="text-danger">*</span></label>
+                                <select class="form-select" asp-for="Request.PatientID" required id="patientSelect">
+                                    <option value="">Choose a patient...</option>
+                                    @foreach (var patient in Model.Patients)
+                                    {
+                                        <option value="@patient.PatientID">@patient.Name - P@patient.PatientID.ToString("000") (@patient.Age years, @patient.Gender)</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="Request.PatientID" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Appointment (Optional)</label>
+                                <select class="form-select" asp-for="Request.AppointmentID" id="appointmentSelect">
+                                    <option value="">No specific appointment</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Patient Details Card (shown after selection) -->
+                        <div id="patientDetailsCard" class="alert alert-info mt-3" style="display: none;">
+                            <div class="d-flex align-items-center">
+                                <i class="ri-information-line fs-4 me-3"></i>
+                                <div id="patientDetails"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Lab Selection -->
+                    <div class="mb-4">
+                        <h6 class="mb-3"><i class="ri-hospital-line me-2"></i>Select Laboratory <span class="text-danger">*</span></h6>
+                        
+                        <div class="row g-3">
+                            @foreach (var lab in Model.AvailableLabs)
+                            {
+                                <div class="col-md-4">
+                                    <div class="form-check border rounded p-3 lab-card" data-lab-id="@lab.LabID">
+                                        <input class="form-check-input" type="radio" name="Request.LabID" value="@lab.LabID" id="lab_@lab.LabID" required>
+                                        <label class="form-check-label w-100" for="lab_@lab.LabID">
+                                            <h6 class="mb-2">@lab.LabName</h6>
+                                            <small class="text-muted d-block"><i class="ri-map-pin-line me-1"></i>@lab.Location</small>
+                                            <small class="text-muted d-block"><i class="ri-phone-line me-1"></i>@lab.ContactNumber</small>
+                                            <small class="text-success d-block mt-2"><i class="ri-time-line me-1"></i>@lab.OpeningTime - @lab.ClosingTime</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        
+                        <div id="labLoadingMessage" class="alert alert-warning mt-3" style="display: none;">
+                            <i class="ri-loader-4-line me-2 spinner-border spinner-border-sm"></i>
+                            Loading available tests for selected laboratory...
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Test Selection -->
+                    <div class="mb-4" id="testSelectionSection" style="display: none;">
+                        <h6 class="mb-3"><i class="ri-flask-line me-2"></i>Available Tests</h6>
+                        
+                        <!-- Test Category Filter -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Filter by Category</label>
+                                <select class="form-select" id="categoryFilter">
+                                    <option value="">All Categories</option>
+                                    <option value="Blood Test">Blood Tests</option>
+                                    <option value="Urine Test">Urine Tests</option>
+                                    <option value="Imaging">Imaging</option>
+                                    <option value="Pathology">Pathology</option>
+                                    <option value="Microbiology">Microbiology</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Search Test</label>
+                                <input type="text" class="form-control" id="testSearch" placeholder="Search test by name...">
+                            </div>
+                        </div>
+
+                        <!-- Available Tests -->
+                        <div class="mb-3">
+                            <label class="form-label">Select Tests <span class="text-danger">*</span></label>
+                            <div id="testsContainer" class="border rounded p-3" style="max-height: 400px; overflow-y: auto;">
+                                <div class="text-center py-5 text-muted">
+                                    <i class="ri-test-tube-line fs-1 mb-3 d-block"></i>
+                                    <p>Please select a laboratory to view available tests</p>
+                                </div>
+                            </div>
+                            <small class="text-muted">Select one or more tests</small>
+                        </div>
+
+                        <!-- Selected Tests Summary -->
+                        <div id="selectedTestsSummary" class="alert alert-success" style="display: none;">
+                            <h6><i class="ri-check-line me-2"></i>Selected Tests (<span id="selectedCount">0</span>)</h6>
+                            <div id="selectedTestsList"></div>
+                            <hr>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong>Total Estimated Cost:</strong>
+                                <strong class="text-success fs-5">$<span id="totalCost">0.00</span></strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Request Details -->
+                    <div class="mb-4">
+                        <h6 class="mb-3"><i class="ri-file-text-line me-2"></i>Request Details</h6>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Priority <span class="text-danger">*</span></label>
+                                <select class="form-select" asp-for="Request.Priority" required>
+                                    <option value="">Select Priority</option>
+                                    <option value="Routine">Routine</option>
+                                    <option value="Urgent">Urgent</option>
+                                    <option value="STAT">STAT (Immediate)</option>
+                                </select>
+                                <span asp-validation-for="Request.Priority" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Preferred Date</label>
+                                <input type="date" class="form-control" asp-for="Request.PreferredDate" min="@DateTime.Now.ToString("yyyy-MM-dd")">
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <label class="form-label">Clinical Notes / Reason for Test <span class="text-danger">*</span></label>
+                            <textarea class="form-control" asp-for="Request.ClinicalNotes" rows="4" placeholder="Enter clinical notes, symptoms, or reason for requesting these tests..." required></textarea>
+                            <span asp-validation-for="Request.ClinicalNotes" class="text-danger"></span>
+                        </div>
+
+                        <div class="mt-3">
+                            <label class="form-label">Special Instructions (Optional)</label>
+                            <textarea class="form-control" asp-for="Request.SpecialInstructions" rows="2" placeholder="Any special instructions for the lab..."></textarea>
+                        </div>
+
+                        <div class="mt-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" asp-for="Request.SendCopyToPatient" id="sendCopy">
+                                <label class="form-check-label" for="sendCopy">
+                                    Send notification to patient
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-outline-secondary" onclick="window.history.back()">
+                            <i class="ri-close-line me-1"></i>Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            <i class="ri-send-plane-line me-1"></i>Submit Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        $(document).ready(function() {
+            // Patient selection
+            $('#patientSelect').change(function() {
+                const patientId = $(this).val();
+                if (patientId) {
+                    const selectedText = $(this).find('option:selected').text();
+                    $('#patientDetails').html('<strong>Selected Patient:</strong> ' + selectedText);
+                    $('#patientDetailsCard').fadeIn();
+                    
+                    // Load patient appointments (TODO: implement AJAX call)
+                    loadPatientAppointments(patientId);
+                } else {
+                    $('#patientDetailsCard').fadeOut();
+                    $('#appointmentSelect').html('<option value="">No specific appointment</option>');
+                }
+            });
+
+            // Lab selection
+            $('input[name="Request.LabID"]').change(function() {
+                const labId = $(this).val();
+                if (labId) {
+                    loadLabServices(labId);
+                }
+            });
+
+            // Lab card visual feedback
+            $('.lab-card').click(function() {
+                $('.lab-card').removeClass('border-primary bg-light');
+                if ($(this).find('input').is(':checked')) {
+                    $(this).addClass('border-primary bg-light');
+                }
+            });
+
+            // Category filter
+            $('#categoryFilter').change(function() {
+                filterTests();
+            });
+
+            // Search filter
+            $('#testSearch').on('input', function() {
+                filterTests();
+            });
+
+            // Test selection
+            $('input[name="Request.SelectedTestIds"]').change(function() {
+                updateSelectedTests();
+            });
+
+            function filterTests() {
+                const category = $('#categoryFilter').val();
+                const search = $('#testSearch').val().toLowerCase();
+
+                $('.test-item').each(function() {
+                    const itemCategory = $(this).data('category');
+                    const itemName = $(this).data('name');
+                    
+                    const categoryMatch = !category || itemCategory === category;
+                    const searchMatch = !search || itemName.includes(search);
+                    
+                    if (categoryMatch && searchMatch) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            }
+
+            function updateSelectedTests() {
+                const selected = $('input[name="Request.SelectedTestIds"]:checked');
+                const count = selected.length;
+                
+                if (count > 0) {
+                    $('#selectedCount').text(count);
+                    
+                    let testsList = '<ul class="mb-2">';
+                    let totalCost = 0;
+                    
+                    selected.each(function() {
+                        const label = $(this).next('label');
+                        const testName = label.find('h6').text();
+                        const priceText = label.find('strong').text();
+                        const price = parseFloat(priceText.replace('$', ''));
+                        
+                        testsList += '<li>' + testName + ' - ' + priceText + '</li>';
+                        totalCost += price;
+                    });
+                    
+                    testsList += '</ul>';
+                    
+                    $('#selectedTestsList').html(testsList);
+                    $('#totalCost').text(totalCost.toFixed(2));
+                    $('#selectedTestsSummary').fadeIn();
+                } else {
+                    $('#selectedTestsSummary').fadeOut();
+                }
+            }
+
+            function loadLabServices(labId) {
+                // Show loading message
+                $('#labLoadingMessage').fadeIn();
+                $('#testSelectionSection').hide();
+                $('#testsContainer').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+                
+                // AJAX call to get lab services
+                $.get('/Doctor/LabRequest?handler=LabServices&labId=' + labId)
+                    .done(function(data) {
+                        $('#labLoadingMessage').fadeOut();
+                        
+                        if (data && data.length > 0) {
+                            let testsHtml = '';
+                            
+                            data.forEach(function(test) {
+                                testsHtml += `
+                                    <div class="form-check mb-3 pb-3 border-bottom test-item" data-category="${test.category}" data-name="${test.serviceName.toLowerCase()}">
+                                        <input class="form-check-input" type="checkbox" name="Request.SelectedTestIds" value="${test.labServiceID}" id="test_${test.labServiceID}">
+                                        <label class="form-check-label d-flex justify-content-between align-items-start w-100" for="test_${test.labServiceID}">
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-1">${test.serviceName}</h6>
+                                                <small class="text-muted d-block">${test.description}</small>
+                                                <div class="mt-2">
+                                                    <span class="badge bg-primary-subtle text-primary me-2">${test.category}</span>
+                                                    <span class="badge bg-info-subtle text-info me-2"><i class="ri-time-line"></i> ${test.estimatedTime}</span>
+                                                    <span class="badge bg-secondary-subtle text-secondary">Sample: ${test.sampleType}</span>
+                                                </div>
+                                            </div>
+                                            <div class="text-end ms-3">
+                                                <strong class="text-primary">$${test.price.toFixed(2)}</strong>
+                                            </div>
+                                        </label>
+                                    </div>
+                                `;
+                            });
+                            
+                            $('#testsContainer').html(testsHtml);
+                            $('#testSelectionSection').fadeIn();
+                            
+                            // Reattach event handlers
+                            $('input[name="Request.SelectedTestIds"]').change(function() {
+                                updateSelectedTests();
+                            });
+                        } else {
+                            $('#testsContainer').html('<div class="text-center py-5 text-muted"><i class="ri-emotion-sad-line fs-1 mb-3 d-block"></i><p>No tests available for this laboratory</p></div>');
+                            $('#testSelectionSection').fadeIn();
+                        }
+                    })
+                    .fail(function() {
+                        $('#labLoadingMessage').fadeOut();
+                        $('#testsContainer').html('<div class="alert alert-danger"><i class="ri-error-warning-line me-2"></i>Failed to load tests. Please try again.</div>');
+                        $('#testSelectionSection').fadeIn();
+                    });
+            }
+
+            function loadPatientAppointments(patientId) {
+                // TODO: Implement AJAX call to load patient appointments
+                console.log('Loading appointments for patient:', patientId);
+            }
+
+            // Form validation
+            $('#labRequestForm').submit(function(e) {
+                const selectedTests = $('input[name="Request.SelectedTestIds"]:checked').length;
+                
+                if (selectedTests === 0) {
+                    e.preventDefault();
+                    alert('Please select at least one test');
+                    return false;
+                }
+                
+                $('#submitBtn').prop('disabled', true).html('<i class="ri-loader-4-line me-1 spinner-border spinner-border-sm"></i>Submitting...');
+            });
+        });
+    </script>
+
+    <style>
+        .test-item {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .test-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .test-item:last-child {
+            border-bottom: none !important;
+        }
+        
+        .form-check-input:checked ~ .form-check-label {
+            background-color: #e7f3ff;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+        }
+        
+        .lab-card {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .lab-card:hover {
+            background-color: #f8f9fa;
+            border-color: #0d6efd !important;
+        }
+        
+        .lab-card.border-primary {
+            background-color: #e7f3ff;
+        }
+    </style>
+}

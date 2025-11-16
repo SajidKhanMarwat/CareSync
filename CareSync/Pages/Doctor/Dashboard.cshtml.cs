@@ -21,6 +21,17 @@ namespace CareSync.Pages.Doctor
         public int TotalPatients { get; set; }
         public int TotalSurgeries { get; set; }
         public decimal MonthlyEarnings { get; set; }
+        
+        // Detailed Insights
+        public int TodayAppointmentsCount { get; set; }
+        public int TotalPrescriptions { get; set; }
+        public int PendingAppointments { get; set; }
+        public int LabReports { get; set; }
+        
+        // Patient Statistics
+        public int NewPatients { get; set; }
+        public int RegularPatients { get; set; }
+        public int FollowUpPatients { get; set; }
 
         // Data Collections
         public List<TodayAppointment> TodayAppointments { get; set; } = new();
@@ -52,6 +63,17 @@ namespace CareSync.Pages.Doctor
             TotalPatients = 680;
             TotalSurgeries = 30;
             MonthlyEarnings = 980;
+            
+            // Load detailed insights
+            TodayAppointmentsCount = 15;
+            TotalPrescriptions = 245;
+            PendingAppointments = 8;
+            LabReports = 12;
+            
+            // Load patient statistics
+            NewPatients = 45;
+            RegularPatients = 520;
+            FollowUpPatients = 115;
 
             // Load today's appointments
             TodayAppointments = new List<TodayAppointment>

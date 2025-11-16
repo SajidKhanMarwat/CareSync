@@ -75,11 +75,15 @@
                                     <div class="card-body">
                                         <div class="text-center">
                                             <div class="icon-box md border border-primary rounded-5 mb-2 m-auto">
-                                                <i class="ri-money-dollar-circle-line fs-5 text-primary"></i>
+                                                <i class="fs-5 text-primary"></i>
+                                                @* <i class="ri-money-dollar-circle-line fs-5 text-primary"></i> *@
                                             </div>
-                                            <h3 class="text-primary">$@Model.MonthlyEarnings</h3>
-                                            <h6>Earnings</h6>
+                                            <h3 class="text-primary">000</h3>
+                                            <h6>KKKK</h6>
                                             <small class="text-primary">60% Higher than last week.</small>
+                                            @* <h3 class="text-primary">$@Model.MonthlyEarnings</h3> *@
+                                            @* <h6>Earnings</h6>
+                                            <small class="text-primary">60% Higher than last week.</small> *@
                                         </div>
                                     </div>
                                 </div>
@@ -92,9 +96,78 @@
     </div>
 </div>
 
-<!-- Appointments Chart -->
+<!-- Detailed Insights Row -->
 <div class="row gx-3">
-    <div class="col-sm-12">
+    <div class="col-xxl-3 col-sm-6">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-primary-subtle rounded-5 me-3">
+                        <i class="ri-calendar-check-line fs-4 text-primary"></i>
+                    </div>
+                    <div class="flex-fill">
+                        <h6 class="mb-0">Today's Appointments</h6>
+                        <h3 class="mb-0 text-primary">@Model.TodayAppointmentsCount</h3>
+                        <small class="text-success"><i class="ri-arrow-up-line"></i> 12% vs yesterday</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xxl-3 col-sm-6">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-success-subtle rounded-5 me-3">
+                        <i class="ri-file-list-3-line fs-4 text-success"></i>
+                    </div>
+                    <div class="flex-fill">
+                        <h6 class="mb-0">Prescriptions Written</h6>
+                        <h3 class="mb-0 text-success">@Model.TotalPrescriptions</h3>
+                        <small class="text-success"><i class="ri-arrow-up-line"></i> This month</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xxl-3 col-sm-6">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-warning-subtle rounded-5 me-3">
+                        <i class="ri-hourglass-line fs-4 text-warning"></i>
+                    </div>
+                    <div class="flex-fill">
+                        <h6 class="mb-0">Pending Appointments</h6>
+                        <h3 class="mb-0 text-warning">@Model.PendingAppointments</h3>
+                        <small class="text-muted">Awaiting approval</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xxl-3 col-sm-6">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-info-subtle rounded-5 me-3">
+                        <i class="ri-flask-line fs-4 text-info"></i>
+                    </div>
+                    <div class="flex-fill">
+                        <h6 class="mb-0">Lab Reports</h6>
+                        <h3 class="mb-0 text-info">@Model.LabReports</h3>
+                        <small class="text-info"><i class="ri-arrow-down-line"></i> Pending review</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row gx-3">
+    <!-- Appointments Chart -->
+    <div class="col-xxl-8 col-sm-12">
         <div class="card mb-3">
             <div class="card-header">
                 <h5 class="card-title">Appointments Overview</h5>
@@ -104,8 +177,58 @@
                     21% higher than last year.
                 </div>
                 <div class="overflow-hidden">
-                    <div id="appointmentsChart" style="height: 300px;"></div>
+                    <div id="appointmentsChart"></div>
                 </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Patient Status Chart -->
+    <div class="col-xxl-4 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Patient Status</h5>
+            </div>
+            <div class="card-body">
+                <div id="patientStatusChart"></div>
+                <div class="mt-4">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="d-flex align-items-center">
+                            <i class="ri-checkbox-blank-circle-fill text-primary me-2"></i>
+                            New Patients
+                        </span>
+                        <span class="fw-semibold">@Model.NewPatients</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="d-flex align-items-center">
+                            <i class="ri-checkbox-blank-circle-fill text-success me-2"></i>
+                            Regular Patients
+                        </span>
+                        <span class="fw-semibold">@Model.RegularPatients</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="d-flex align-items-center">
+                            <i class="ri-checkbox-blank-circle-fill text-warning me-2"></i>
+                            Follow-up Patients
+                        </span>
+                        <span class="fw-semibold">@Model.FollowUpPatients</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Appointments Calendar -->
+<div class="row gx-3">
+    <div class="col-sm-12">
+        <div class="card mb-3">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="card-title">Appointments Calendar</h5>
+                <a href="/Doctor/Appointments" class="btn btn-primary">View All Appointments</a>
+            </div>
+            <div class="card-body">
+                <div id="appointmentsCal"></div>
             </div>
         </div>
     </div>
@@ -136,7 +259,7 @@
                                 <tr>
                                     <td>@appointment.Id.ToString("000")</td>
                                     <td>
-                                        <img src="~/ApolloTheme/assets/images/patient.png" class="img-2x rounded-5 me-1" alt="Patient">
+                                        <img src="~/theme/images/patient.png" class="img-2x rounded-5 me-1" alt="Patient">
                                         @appointment.PatientName
                                     </td>
                                     <td>@appointment.PatientAge</td>
@@ -156,9 +279,13 @@
                                             </button>
                                             <button type="button" class="btn btn-hover btn-sm rounded-5" 
                                                     onclick="approveAppointment(@appointment.Id)"
-                                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Approve">
+                                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Accept">
                                                 <i class="ri-check-fill text-success"></i>
                                             </button>
+                                            <a href="/Doctor/Checkup?appointmentId=@appointment.Id" class="btn btn-hover btn-sm rounded-5"
+                                               data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Start Checkup">
+                                                <i class="ri-stethoscope-line text-primary"></i>
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>
@@ -241,7 +368,20 @@
     </div>
 </div>
 
+@section Styles {
+    <!-- Calendar CSS -->
+    <link rel="stylesheet" href="~/theme/vendor/calendar/css/main.min.css">
+    <link rel="stylesheet" href="~/theme/vendor/calendar/css/custom.css">
+    <!-- Apex Charts CSS -->
+    <link rel="stylesheet" href="~/theme/vendor/apex/apexcharts.css">
+}
+
 @section Scripts {
+    <!-- Apex Charts -->
+    <script src="~/theme/vendor/apex/apexcharts.min.js"></script>
+    <!-- Calendar JS -->
+    <script src="~/theme/vendor/calendar/js/main.min.js"></script>
+
     <script>
         // Initialize tooltips
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
@@ -251,27 +391,147 @@
 
         // Appointment actions
         function approveAppointment(appointmentId) {
-            if (confirm('Are you sure you want to approve this appointment?')) {
+            if (confirm('Are you sure you want to accept this appointment?')) {
                 // Add AJAX call to approve appointment
-                console.log('Approving appointment:', appointmentId);
-                // Reload page or update UI
-                location.reload();
+                fetch(`/api/appointments/${appointmentId}/approve`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Appointment accepted successfully!');
+                        location.reload();
+                    } else {
+                        alert('Failed to accept appointment');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
             }
         }
 
         function rejectAppointment(appointmentId) {
             if (confirm('Are you sure you want to reject this appointment?')) {
                 // Add AJAX call to reject appointment
-                console.log('Rejecting appointment:', appointmentId);
-                // Reload page or update UI
-                location.reload();
+                fetch(`/api/appointments/${appointmentId}/reject`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Appointment rejected successfully!');
+                        location.reload();
+                    } else {
+                        alert('Failed to reject appointment');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
             }
         }
 
-        // Simple chart for appointments (you can replace with actual chart library)
+        // Initialize charts and calendar
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize charts here if needed
-            console.log('Doctor Dashboard loaded for user role: @Model.UserRole');
+            // Appointments Overview Chart
+            var appointmentsChartOptions = {
+                chart: {
+                    type: 'area',
+                    height: 300,
+                    toolbar: {
+                        show: false
+                    }
+                },
+                series: [{
+                    name: 'Appointments',
+                    data: [30, 40, 45, 50, 49, 60, 70, 91, 85, 95, 100, 110]
+                }],
+                xaxis: {
+                    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                },
+                colors: ['#1e88e5'],
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.7,
+                        opacityTo: 0.3,
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 3
+                }
+            };
+            var appointmentsChart = new ApexCharts(document.querySelector("#appointmentsChart"), appointmentsChartOptions);
+            appointmentsChart.render();
+
+            // Patient Status Pie Chart
+            var patientStatusOptions = {
+                chart: {
+                    type: 'donut',
+                    height: 250
+                },
+                series: [@Model.NewPatients, @Model.RegularPatients, @Model.FollowUpPatients],
+                labels: ['New Patients', 'Regular Patients', 'Follow-up Patients'],
+                colors: ['#1e88e5', '#43a047', '#fb8c00'],
+                legend: {
+                    show: false
+                },
+                dataLabels: {
+                    enabled: true
+                }
+            };
+            var patientStatusChart = new ApexCharts(document.querySelector("#patientStatusChart"), patientStatusOptions);
+            patientStatusChart.render();
+
+            // Initialize Appointments Calendar
+            var calendarEl = document.getElementById('appointmentsCal');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: [
+                    @foreach (var appointment in Model.TodayAppointments)
+                    {
+                        @:{
+                        @:    title: '@appointment.PatientName',
+                        @:    start: '@appointment.AppointmentTime.ToString("yyyy-MM-ddTHH:mm:ss")',
+                        @:    backgroundColor: '@(appointment.Type == "General" ? "#fb8c00" : "#1e88e5")',
+                        @:    borderColor: '@(appointment.Type == "General" ? "#fb8c00" : "#1e88e5")'
+                        @:},
+                    }
+                ],
+                eventClick: function(info) {
+                    alert('Appointment: ' + info.event.title);
+                }
+            });
+            calendar.render();
+
+            // Initialize date range picker
+            if (typeof $.fn.daterangepicker !== 'undefined') {
+                $('#dateRange').daterangepicker({
+                    opens: 'left',
+                    autoUpdateInput: false
+                }, function(start, end, label) {
+                    $('#dateRange').val(start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+                });
+            }
         });
     </script>
 }
