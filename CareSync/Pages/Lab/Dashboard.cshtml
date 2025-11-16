@@ -6,15 +6,18 @@
 
 @section PageActions {
     <div class="d-flex gap-2">
-        <button type="button" class="btn btn-success">
+        <a href="~/Lab/ResultEntry" class="btn btn-success">
             <i class="ri-add-line me-1"></i>New Test Entry
-        </button>
-        <button type="button" class="btn btn-primary">
-            <i class="ri-upload-line me-1"></i>Upload Results
-        </button>
-        <button type="button" class="btn btn-outline-info">
-            <i class="ri-download-line me-1"></i>Export Reports
-        </button>
+        </a>
+        <a href="~/Lab/TestRequests" class="btn btn-primary">
+            <i class="ri-file-list-line me-1"></i>View All Requests
+        </a>
+        <a href="~/Lab/AddService" class="btn btn-outline-success">
+            <i class="ri-service-line me-1"></i>Add Service
+        </a>
+        <a href="~/Lab/Reports" class="btn btn-outline-info">
+            <i class="ri-file-chart-line me-1"></i>View Reports
+        </a>
     </div>
 }
 
@@ -75,6 +78,188 @@
                     <div>
                         <h4 class="text-danger mb-1">3</h4>
                         <small class="text-muted">Critical Results</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lab Requests Overview -->
+<div class="row gx-3 mb-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary-subtle">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-inbox-line me-2"></i>Recent Lab Requests
+                    </h5>
+                    <a href="~/Lab/Requests" class="btn btn-sm btn-primary">
+                        <i class="ri-list-check me-1"></i>View All Requests
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Patient</th>
+                                <th>Service</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>#LR001</strong></td>
+                                <td>
+                                    <div>
+                                        <h6 class="mb-0">John Smith</h6>
+                                        <small class="text-muted">P-2024-1156</small>
+                                    </div>
+                                </td>
+                                <td>Complete Blood Count</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td><span class="badge bg-danger">Urgent</span></td>
+                                <td>
+                                    <a href="~/Lab/RequestDetails/LR001" class="btn btn-sm btn-outline-primary">
+                                        <i class="ri-eye-line"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>#LR002</strong></td>
+                                <td>
+                                    <div>
+                                        <h6 class="mb-0">Mary Johnson</h6>
+                                        <small class="text-muted">P-2024-1157</small>
+                                    </div>
+                                </td>
+                                <td>Lipid Profile</td>
+                                <td><span class="badge bg-info">In Progress</span></td>
+                                <td><span class="badge bg-info">Normal</span></td>
+                                <td>
+                                    <a href="~/Lab/RequestDetails/LR002" class="btn btn-sm btn-outline-primary">
+                                        <i class="ri-eye-line"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>#LR003</strong></td>
+                                <td>
+                                    <div>
+                                        <h6 class="mb-0">Robert Davis</h6>
+                                        <small class="text-muted">P-2024-1158</small>
+                                    </div>
+                                </td>
+                                <td>Thyroid Function Test</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                                <td><span class="badge bg-info">Normal</span></td>
+                                <td>
+                                    <a href="~/Lab/RequestDetails/LR003" class="btn btn-sm btn-outline-success">
+                                        <i class="ri-file-chart-line"></i> Report
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lab Services Overview -->
+<div class="row gx-3 mb-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-success-subtle">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-service-line me-2"></i>Available Lab Services
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <a href="~/Lab/AddService" class="btn btn-sm btn-success">
+                            <i class="ri-add-line me-1"></i>Add New Service
+                        </a>
+                        <a href="~/Lab/ManageServices" class="btn btn-sm btn-outline-primary">
+                            <i class="ri-settings-3-line me-1"></i>Manage Services
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="service-card border rounded-4 p-3 h-100">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="icon-box md bg-primary-subtle rounded-circle me-3">
+                                    <i class="ri-drop-line text-primary"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Hematology</h6>
+                                    <small class="text-muted">12 Tests</small>
+                                </div>
+                            </div>
+                            <p class="text-muted small mb-2">Blood count, coagulation, blood typing</p>
+                            <a href="~/Lab/Services?category=Hematology" class="btn btn-sm btn-outline-primary w-100">
+                                <i class="ri-eye-line me-1"></i>View Tests
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="service-card border rounded-4 p-3 h-100">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="icon-box md bg-success-subtle rounded-circle me-3">
+                                    <i class="ri-flask-line text-success"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Clinical Chemistry</h6>
+                                    <small class="text-muted">24 Tests</small>
+                                </div>
+                            </div>
+                            <p class="text-muted small mb-2">Metabolic panels, enzymes, electrolytes</p>
+                            <a href="~/Lab/Services?category=Chemistry" class="btn btn-sm btn-outline-success w-100">
+                                <i class="ri-eye-line me-1"></i>View Tests
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="service-card border rounded-4 p-3 h-100">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="icon-box md bg-warning-subtle rounded-circle me-3">
+                                    <i class="ri-microscope-line text-warning"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Microbiology</h6>
+                                    <small class="text-muted">8 Tests</small>
+                                </div>
+                            </div>
+                            <p class="text-muted small mb-2">Culture, sensitivity, microscopy</p>
+                            <a href="~/Lab/Services?category=Microbiology" class="btn btn-sm btn-outline-warning w-100">
+                                <i class="ri-eye-line me-1"></i>View Tests
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="service-card border rounded-4 p-3 h-100">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="icon-box md bg-info-subtle rounded-circle me-3">
+                                    <i class="ri-virus-line text-info"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Immunology</h6>
+                                    <small class="text-muted">15 Tests</small>
+                                </div>
+                            </div>
+                            <p class="text-muted small mb-2">Serology, autoimmune markers</p>
+                            <a href="~/Lab/Services?category=Immunology" class="btn btn-sm btn-outline-info w-100">
+                                <i class="ri-eye-line me-1"></i>View Tests
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -194,12 +379,12 @@
                                 <td>Tech. Alice Johnson</td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <button class="btn btn-sm btn-outline-primary">
+                                        <a href="~/Lab/RequestDetails/T-2024-1156" class="btn btn-sm btn-outline-primary" title="View Details">
                                             <i class="ri-eye-line"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-success">
-                                            <i class="ri-send-plane-line"></i>
-                                        </button>
+                                        </a>
+                                        <a href="~/Lab/Reports?testId=T-2024-1156" class="btn btn-sm btn-outline-success" title="View Report">
+                                            <i class="ri-file-text-line"></i>
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
@@ -216,12 +401,12 @@
                                 <td>Tech. Bob Wilson</td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <button class="btn btn-sm btn-outline-primary">
+                                        <a href="~/Lab/RequestDetails/T-2024-1157" class="btn btn-sm btn-outline-primary" title="View Details">
                                             <i class="ri-eye-line"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-warning">
+                                        </a>
+                                        <a href="~/Lab/ResultEntry?testId=T-2024-1157" class="btn btn-sm btn-outline-warning" title="Enter Results">
                                             <i class="ri-edit-line"></i>
-                                        </button>
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
@@ -238,12 +423,12 @@
                                 <td>Tech. Carol Davis</td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <button class="btn btn-sm btn-outline-primary">
+                                        <a href="~/Lab/RequestDetails/T-2024-1158" class="btn btn-sm btn-outline-primary" title="View Details">
                                             <i class="ri-eye-line"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-success">
+                                        </a>
+                                        <a href="~/Lab/ResultEntry?testId=T-2024-1158" class="btn btn-sm btn-outline-success" title="Start Test">
                                             <i class="ri-play-line"></i>
-                                        </button>
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
@@ -253,7 +438,7 @@
             </div>
         </div>
 
-        <!-- Workload Distribution -->
+        @* <!-- Workload Distribution -->
         <div class="card">
             <div class="card-header">
                 <h5 class="card-title">
@@ -306,7 +491,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> *@
     </div>
 
     <div class="col-xl-4">
@@ -351,7 +536,7 @@
             </div>
         </div>
 
-        <!-- Equipment Status -->
+        @* <!-- Equipment Status -->
         <div class="card mb-3">
             <div class="card-header">
                 <h5 class="card-title">
@@ -396,7 +581,7 @@
                     <span class="badge bg-success">Online</span>
                 </div>
             </div>
-        </div>
+        </div> *@
 
         <!-- Quick Actions -->
         <div class="card">
@@ -407,18 +592,18 @@
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
-                    <button class="btn btn-outline-success">
+                    <a href="~/Lab/ResultEntry" class="btn btn-outline-success">
                         <i class="ri-add-line me-2"></i>New Test Entry
-                    </button>
-                    <button class="btn btn-outline-primary">
-                        <i class="ri-upload-line me-2"></i>Upload Results
-                    </button>
-                    <button class="btn btn-outline-info">
-                        <i class="ri-search-line me-2"></i>Search Tests
-                    </button>
-                    <button class="btn btn-outline-warning">
-                        <i class="ri-notification-line me-2"></i>Send Notifications
-                    </button>
+                    </a>
+                    <a href="~/Lab/TestRequests" class="btn btn-outline-primary">
+                        <i class="ri-file-list-line me-2"></i>View Requests
+                    </a>
+                    <a href="~/Lab/Services" class="btn btn-outline-info">
+                        <i class="ri-service-line me-2"></i>Manage Services
+                    </a>
+                    <a href="~/Lab/Reports" class="btn btn-outline-warning">
+                        <i class="ri-file-chart-line me-2"></i>View Reports
+                    </a>
                 </div>
             </div>
         </div>

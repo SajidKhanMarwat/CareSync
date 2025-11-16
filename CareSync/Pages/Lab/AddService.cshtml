@@ -1,0 +1,243 @@
+@page "/Lab/AddService"
+@model CareSync.Pages.Lab.AddServiceModel
+@{
+    ViewData["Title"] = "Add New Service";
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <a href="~/Lab/Services" class="btn btn-outline-secondary">
+            <i class="ri-arrow-left-line me-1"></i>Back to Services
+        </a>
+        <button type="submit" form="addServiceForm" class="btn btn-success">
+            <i class="ri-save-line me-1"></i>Save Service
+        </button>
+    </div>
+}
+
+<div class="row justify-content-center">
+    <div class="col-xl-10">
+        <div class="card">
+            <div class="card-header bg-success-subtle">
+                <h5 class="card-title mb-0">
+                    <i class="ri-add-circle-line me-2"></i>Add New Lab Service
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="addServiceForm" method="post">
+                    <div class="row">
+                        <!-- Basic Information -->
+                        <div class="col-12">
+                            <h6 class="mb-3 text-primary">
+                                <i class="ri-information-line me-2"></i>Basic Information
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="serviceName" class="form-label">Service Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="serviceName" name="ServiceName" required 
+                                   placeholder="e.g., Complete Blood Count">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
+                            <select class="form-select" id="category" name="Category" required>
+                                <option value="">Select Category</option>
+                                <option value="Hematology">Hematology</option>
+                                <option value="Clinical Chemistry">Clinical Chemistry</option>
+                                <option value="Microbiology">Microbiology</option>
+                                <option value="Immunology">Immunology</option>
+                                <option value="Molecular Biology">Molecular Biology</option>
+                                <option value="Pathology">Pathology</option>
+                                <option value="Toxicology">Toxicology</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="Description" rows="3" 
+                                      placeholder="Detailed description of the service"></textarea>
+                        </div>
+                        
+                        <!-- Sample Information -->
+                        <div class="col-12 mt-3">
+                            <h6 class="mb-3 text-primary">
+                                <i class="ri-flask-line me-2"></i>Sample Information
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="sampleType" class="form-label">Sample Type <span class="text-danger">*</span></label>
+                            <select class="form-select" id="sampleType" name="SampleType" required>
+                                <option value="">Select Sample Type</option>
+                                <option value="Blood">Blood</option>
+                                <option value="Serum">Serum</option>
+                                <option value="Plasma">Plasma</option>
+                                <option value="Urine">Urine</option>
+                                <option value="Stool">Stool</option>
+                                <option value="Sputum">Sputum</option>
+                                <option value="CSF">Cerebrospinal Fluid (CSF)</option>
+                                <option value="Tissue">Tissue</option>
+                                <option value="Swab">Swab</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="sampleVolume" class="form-label">Required Sample Volume</label>
+                            <input type="text" class="form-control" id="sampleVolume" name="SampleVolume" 
+                                   placeholder="e.g., 5 mL">
+                        </div>
+                        
+                        <div class="col-md-12 mb-3">
+                            <label for="samplePreparation" class="form-label">Sample Preparation Instructions</label>
+                            <textarea class="form-control" id="samplePreparation" name="SamplePreparation" rows="2" 
+                                      placeholder="Special preparation requirements (e.g., fasting, time restrictions)"></textarea>
+                        </div>
+                        
+                        <!-- Pricing & Timing -->
+                        <div class="col-12 mt-3">
+                            <h6 class="mb-3 text-primary">
+                                <i class="ri-money-dollar-circle-line me-2"></i>Pricing & Timing
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="price" class="form-label">Price (USD) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="price" name="Price" step="0.01" required 
+                                       placeholder="0.00">
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="estimatedTime" class="form-label">Estimated Time <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="estimatedTime" name="EstimatedTime" required 
+                                   placeholder="e.g., 2-4 hours">
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="urgentPrice" class="form-label">Urgent/STAT Price (USD)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="urgentPrice" name="UrgentPrice" step="0.01" 
+                                       placeholder="0.00">
+                            </div>
+                        </div>
+                        
+                        <!-- Technical Information -->
+                        <div class="col-12 mt-3">
+                            <h6 class="mb-3 text-primary">
+                                <i class="ri-settings-line me-2"></i>Technical Information
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="methodology" class="form-label">Test Methodology</label>
+                            <input type="text" class="form-control" id="methodology" name="Methodology" 
+                                   placeholder="e.g., Automated hematology analyzer">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="equipment" class="form-label">Required Equipment</label>
+                            <input type="text" class="form-control" id="equipment" name="Equipment" 
+                                   placeholder="e.g., Hematology Analyzer XYZ-1000">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="normalRange" class="form-label">Normal Reference Range</label>
+                            <input type="text" class="form-control" id="normalRange" name="NormalRange" 
+                                   placeholder="e.g., 4.5-11.0 x10^9/L">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="unit" class="form-label">Unit of Measurement</label>
+                            <input type="text" class="form-control" id="unit" name="Unit" 
+                                   placeholder="e.g., x10^9/L, mg/dL">
+                        </div>
+                        
+                        <!-- Additional Settings -->
+                        <div class="col-12 mt-3">
+                            <h6 class="mb-3 text-primary">
+                                <i class="ri-settings-3-line me-2"></i>Additional Settings
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
+                            <select class="form-select" id="status" name="Status" required>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                                <option value="Pending Review">Pending Review</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="requiresApproval" class="form-label">Requires Doctor Approval</label>
+                            <select class="form-select" id="requiresApproval" name="RequiresApproval">
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="priority" class="form-label">Default Priority</label>
+                            <select class="form-select" id="priority" name="Priority">
+                                <option value="Routine">Routine</option>
+                                <option value="Urgent">Urgent</option>
+                                <option value="STAT">STAT</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="notes" class="form-label">Additional Notes</label>
+                            <textarea class="form-control" id="notes" name="Notes" rows="3" 
+                                      placeholder="Any additional information or special instructions"></textarea>
+                        </div>
+                        
+                        <!-- Submit Buttons -->
+                        <div class="col-12 mt-4">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <a href="~/Lab/Services" class="btn btn-outline-secondary">
+                                    <i class="ri-close-line me-1"></i>Cancel
+                                </a>
+                                <button type="reset" class="btn btn-outline-warning">
+                                    <i class="ri-refresh-line me-1"></i>Reset
+                                </button>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="ri-save-line me-1"></i>Save Service
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('addServiceForm');
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validation
+                if (!form.checkValidity()) {
+                    form.classList.add('was-validated');
+                    return;
+                }
+                
+                // Show success message
+                alert('Service added successfully!');
+                
+                // Redirect to services page
+                window.location.href = '/Lab/Services';
+            });
+        });
+    </script>
+}

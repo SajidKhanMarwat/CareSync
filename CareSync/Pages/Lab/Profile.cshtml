@@ -4,152 +4,473 @@
     ViewData["Title"] = "Lab Profile";
 }
 
-<div class="row">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">Laboratory Information</h5>
-            </div>
-            <div class="card-body">
-                <form>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Lab Name</label>
-                            <input type="text" class="form-control" name="LabName" />
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">License Number</label>
-                            <input type="text" class="form-control" name="LicenseNumber" />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Contact Number</label>
-                            <input type="tel" class="form-control" name="ContactNumber" />
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" name="Email" />
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Location</label>
-                        <textarea class="form-control" name="Location" rows="3"></textarea>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Opening Time</label>
-                            <input type="time" class="form-control" name="OpeningTime" />
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Closing Time</label>
-                            <input type="time" class="form-control" name="ClosingTime" />
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
+@section PageActions {
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-primary" id="editProfileBtn">
+            <i class="ri-edit-line me-1"></i>Edit Profile
+        </button>
+        <button type="button" class="btn btn-success d-none" id="saveProfileBtn">
+            <i class="ri-save-line me-1"></i>Save Changes
+        </button>
+        <button type="button" class="btn btn-outline-secondary d-none" id="cancelEditBtn">
+            <i class="ri-close-line me-1"></i>Cancel
+        </button>
+        <button type="button" class="btn btn-outline-info">
+            <i class="ri-printer-line me-1"></i>Print Profile
+        </button>
     </div>
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">Lab Statistics</h5>
-            </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <h6 class="text-primary">Total Services</h6>
-                    <h4>45</h4>
-                </div>
-                <div class="mb-3">
-                    <h6 class="text-success">Completed Tests Today</h6>
-                    <h4>23</h4>
-                </div>
-                <div class="mb-3">
-                    <h6 class="text-warning">Pending Reports</h6>
-                    <h4>8</h4>
-                </div>
-                <div class="mb-3">
-                    <h6 class="text-info">Active Requests</h6>
-                    <h4>12</h4>
+}
+
+<!-- Profile Header -->
+<div class="row gx-3 mb-3">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <div class="avatar-circle" style="width: 100px; height: 100px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                            <i class="ri-flask-fill" style="font-size: 48px; color: white;"></i>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <h3 class="mb-1">@Model.LabName</h3>
+                        <p class="text-muted mb-2">@Model.LabType</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-success-subtle text-success">
+                                <i class="ri-checkbox-circle-fill me-1"></i>Verified
+                            </span>
+                            @if (Model.EmergencyServices)
+                            {
+                                <span class="badge bg-danger-subtle text-danger">
+                                    <i class="ri-alarm-warning-fill me-1"></i>24/7 Emergency
+                                </span>
+                            }
+                            <span class="badge bg-primary-subtle text-primary">
+                                <i class="ri-calendar-line me-1"></i>Est. @Model.EstablishedYear
+                            </span>
+                            <span class="badge bg-info-subtle text-info">
+                                <i class="ri-shield-check-fill me-1"></i>@Model.Certifications.Count Certifications
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-auto text-end">
+                        <div class="mb-2">
+                            <small class="text-muted">License Number</small>
+                            <h6 class="mb-0 text-primary">@Model.LicenseNumber</h6>
+                        </div>
+                        <div>
+                            <small class="text-muted">Accreditation</small>
+                            <h6 class="mb-0 text-success">@Model.AccreditationNumber</h6>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">Lab Services</h5>
+<!-- Statistics Row -->
+<div class="row gx-3 mb-3">
+    <div class="col-xl-3 col-sm-6 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-primary-subtle rounded-4 me-3">
+                        <i class="ri-test-tube-line fs-4 text-primary"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 text-primary">@Model.TotalServices</h4>
+                        <small class="text-muted">Total Services</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-success-subtle rounded-4 me-3">
+                        <i class="ri-check-double-line fs-4 text-success"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 text-success">@Model.CompletedTestsToday</h4>
+                        <small class="text-muted">Tests Today</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-warning-subtle rounded-4 me-3">
+                        <i class="ri-file-list-3-line fs-4 text-warning"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 text-warning">@Model.ActiveRequests</h4>
+                        <small class="text-muted">Active Requests</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-info-subtle rounded-4 me-3">
+                        <i class="ri-team-line fs-4 text-info"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 text-info">@Model.TotalStaff</h4>
+                        <small class="text-muted">Staff Members</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="row gx-3">
+    <!-- Left Column -->
+    <div class="col-lg-8">
+        <!-- Basic Information -->
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">
+                    <i class="ri-information-line me-2 text-primary"></i>Basic Information
+                </h5>
             </div>
             <div class="card-body">
+                <form id="profileForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="ri-hospital-line me-1"></i>Laboratory Name
+                            </label>
+                            <input type="text" class="form-control" value="@Model.LabName" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="ri-file-text-line me-1"></i>License Number
+                            </label>
+                            <input type="text" class="form-control" value="@Model.LicenseNumber" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="ri-shield-check-line me-1"></i>Accreditation Number
+                            </label>
+                            <input type="text" class="form-control" value="@Model.AccreditationNumber" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="ri-building-line me-1"></i>Lab Type
+                            </label>
+                            <input type="text" class="form-control" value="@Model.LabType" readonly>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">
+                    <i class="ri-contacts-line me-2 text-primary"></i>Contact Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="ri-phone-line me-1"></i>Primary Contact
+                        </label>
+                        <input type="tel" class="form-control" value="@Model.ContactNumber" readonly>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="ri-phone-fill me-1"></i>Alternate Contact
+                        </label>
+                        <input type="tel" class="form-control" value="@Model.AlternateNumber" readonly>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="ri-mail-line me-1"></i>Email Address
+                        </label>
+                        <input type="email" class="form-control" value="@Model.Email" readonly>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="ri-global-line me-1"></i>Website
+                        </label>
+                        <input type="text" class="form-control" value="@Model.Website" readonly>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        <i class="ri-map-pin-line me-1"></i>Full Address
+                    </label>
+                    <textarea class="form-control" rows="2" readonly>@Model.Address, @Model.City, @Model.State - @Model.ZipCode</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Operating Hours -->
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">
+                    <i class="ri-time-line me-2 text-primary"></i>Operating Hours
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="ri-sun-line me-1"></i>Opening Time
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="ri-time-line"></i></span>
+                            <input type="text" class="form-control" value="@Model.OpeningTime" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="ri-moon-line me-1"></i>Closing Time
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="ri-time-line"></i></span>
+                            <input type="text" class="form-control" value="@Model.ClosingTime" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="ri-calendar-line me-1"></i>Working Days
+                        </label>
+                        <input type="text" class="form-control" value="@Model.WorkingDays" readonly>
+                    </div>
+                </div>
+                @if (Model.EmergencyServices)
+                {
+                    <div class="alert alert-danger border-0 mb-0">
+                        <i class="ri-alarm-warning-fill me-2"></i>
+                        <strong>24/7 Emergency Services Available</strong>
+                        <p class="mb-0 small">This laboratory provides round-the-clock emergency testing services.</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Staff Members -->
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ri-team-line me-2 text-primary"></i>Staff Members
+                    <span class="badge bg-primary ms-2">@Model.StaffMembers.Count</span>
+                </h5>
+                <button class="btn btn-sm btn-primary">
+                    <i class="ri-add-line me-1"></i>Add Staff
+                </button>
+            </div>
+            <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
                             <tr>
-                                <th>Service Name</th>
-                                <th>Category</th>
-                                <th>Sample Type</th>
-                                <th>Price</th>
-                                <th>Estimated Time</th>
-                                <th>Actions</th>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Specialization</th>
+                                <th>Status</th>
+                                <th class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Complete Blood Count (CBC)</td>
-                                <td>Hematology</td>
-                                <td>Blood</td>
-                                <td>$25.00</td>
-                                <td>2-4 hours</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
-                                    <button class="btn btn-sm btn-outline-danger">Remove</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Lipid Profile</td>
-                                <td>Biochemistry</td>
-                                <td>Blood</td>
-                                <td>$35.00</td>
-                                <td>4-6 hours</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
-                                    <button class="btn btn-sm btn-outline-danger">Remove</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Urine Analysis</td>
-                                <td>Clinical Pathology</td>
-                                <td>Urine</td>
-                                <td>$15.00</td>
-                                <td>1-2 hours</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
-                                    <button class="btn btn-sm btn-outline-danger">Remove</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Thyroid Function Test</td>
-                                <td>Endocrinology</td>
-                                <td>Blood</td>
-                                <td>$45.00</td>
-                                <td>6-8 hours</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
-                                    <button class="btn btn-sm btn-outline-danger">Remove</button>
-                                </td>
-                            </tr>
+                            @foreach (var staff in Model.StaffMembers)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-sm bg-primary-subtle text-primary rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                                <i class="ri-user-line"></i>
+                                            </div>
+                                            <span class="fw-semibold">@staff.Name</span>
+                                        </div>
+                                    </td>
+                                    <td>@staff.Role</td>
+                                    <td><small class="text-muted">@staff.Specialization</small></td>
+                                    <td>
+                                        @if (staff.Status == "Active")
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning">@staff.Status</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-primary" title="View Profile">
+                                            <i class="ri-eye-line"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Right Column -->
+    <div class="col-lg-4">
+        <!-- Quick Stats -->
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">
+                    <i class="ri-bar-chart-box-line me-2 text-primary"></i>Quick Stats
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                    <div>
+                        <small class="text-muted">Pending Reports</small>
+                        <h5 class="mb-0 text-warning">@Model.PendingReports</h5>
+                    </div>
+                    <div class="icon-box bg-warning-subtle text-warning">
+                        <i class="ri-file-list-line fs-4"></i>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                    <div>
+                        <small class="text-muted">Tests This Month</small>
+                        <h5 class="mb-0 text-info">@Model.TestsThisMonth</h5>
+                    </div>
+                    <div class="icon-box bg-info-subtle text-info">
+                        <i class="ri-line-chart-line fs-4"></i>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Monthly Revenue</small>
+                        <h5 class="mb-0 text-success">$@(Model.MonthlyRevenue / 1000)K</h5>
+                    </div>
+                    <div class="icon-box bg-success-subtle text-success">
+                        <i class="ri-money-dollar-circle-line fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Specialized Services -->
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">
+                    <i class="ri-service-line me-2 text-primary"></i>Specialized Services
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    @foreach (var service in Model.SpecializedServices)
+                    {
+                        <span class="badge bg-primary-subtle text-primary py-2 px-3">
+                            <i class="ri-check-line me-1"></i>@service
+                        </span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Certifications & Accreditations -->
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">
+                    <i class="ri-award-line me-2 text-primary"></i>Certifications
+                </h5>
+            </div>
+            <div class="card-body">
+                @foreach (var cert in Model.Certifications)
+                {
+                    <div class="mb-3 pb-3 @(cert != Model.Certifications.Last() ? "border-bottom" : "")">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="mb-0">@cert.Name</h6>
+                            <span class="badge bg-success-subtle text-success">@cert.Status</span>
+                        </div>
+                        <small class="text-muted d-block">
+                            <i class="ri-building-line me-1"></i>@cert.IssuedBy
+                        </small>
+                        <small class="text-muted">
+                            <i class="ri-calendar-line me-1"></i>Valid until: @cert.ValidUntil
+                        </small>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">
+                    <i class="ri-flashlight-line me-2 text-primary"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary">
+                        <i class="ri-file-download-line me-2"></i>Download Profile PDF
+                    </button>
+                    <button class="btn btn-outline-success">
+                        <i class="ri-settings-3-line me-2"></i>Lab Settings
+                    </button>
+                    <button class="btn btn-outline-info">
+                        <i class="ri-file-list-3-line me-2"></i>View Activity Log
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-@section PageActions {
-    <button type="button" class="btn btn-success">Add Service</button>
-    <button type="button" class="btn btn-primary">Save Changes</button>
+@section Scripts {
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const editBtn = document.getElementById('editProfileBtn');
+        const saveBtn = document.getElementById('saveProfileBtn');
+        const cancelBtn = document.getElementById('cancelEditBtn');
+        const formInputs = document.querySelectorAll('#profileForm input, #profileForm textarea');
+
+        // Edit mode toggle
+        editBtn.addEventListener('click', function() {
+            formInputs.forEach(input => input.removeAttribute('readonly'));
+            editBtn.classList.add('d-none');
+            saveBtn.classList.remove('d-none');
+            cancelBtn.classList.remove('d-none');
+        });
+
+        // Cancel edit
+        cancelBtn.addEventListener('click', function() {
+            formInputs.forEach(input => input.setAttribute('readonly', true));
+            saveBtn.classList.add('d-none');
+            cancelBtn.classList.add('d-none');
+            editBtn.classList.remove('d-none');
+        });
+
+        // Save changes
+        saveBtn.addEventListener('click', function() {
+            // Here you would normally send data to server
+            alert('Profile changes saved successfully!');
+            formInputs.forEach(input => input.setAttribute('readonly', true));
+            saveBtn.classList.add('d-none');
+            cancelBtn.classList.add('d-none');
+            editBtn.classList.remove('d-none');
+        });
+    });
+</script>
 }
