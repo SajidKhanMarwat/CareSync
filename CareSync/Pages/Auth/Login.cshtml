@@ -43,15 +43,15 @@
                     <form method="post">
                         <div class="mb-3">
                             <label class="form-label fw-semibold" for="email">
-                                Email Address <span class="text-danger">*</span>
+                                Email Address/Username <span class="text-danger">*</span>
                             </label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0">
                                     <i class="ri-mail-line text-muted"></i>
                                 </span>
-                                <input type="email" asp-for="LoginRequest.Email" id="email" 
+                                <input type="text" asp-for="LoginRequest.Email" id="email" 
                                        class="form-control border-start-0 ps-0" 
-                                       placeholder="Enter your email address" autocomplete="email">
+                                       placeholder="Enter your email or username" autocomplete="email">
                             </div>
                             <span asp-validation-for="LoginRequest.Email" class="text-danger small"></span>
                         </div>
