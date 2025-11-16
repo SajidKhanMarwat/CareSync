@@ -1,0 +1,414 @@
+@page "/Lab/Services"
+@model CareSync.Pages.Lab.ServicesModel
+@{
+    ViewData["Title"] = "Lab Services";
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <a href="~/Lab/AddService" class="btn btn-success">
+            <i class="ri-add-line me-1"></i>Add New Service
+        </a>
+        <a href="~/Lab/ManageServices" class="btn btn-primary">
+            <i class="ri-settings-3-line me-1"></i>Manage Services
+        </a>
+        <button type="button" class="btn btn-outline-info">
+            <i class="ri-filter-line me-1"></i>Filter Services
+        </button>
+    </div>
+}
+
+<!-- Service Statistics -->
+<div class="row gx-3 mb-3">
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-primary-subtle rounded-5 me-3">
+                        <i class="ri-service-line fs-4 text-primary"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-primary mb-1">59</h4>
+                        <small class="text-muted">Total Services</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-success-subtle rounded-5 me-3">
+                        <i class="ri-check-line fs-4 text-success"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-success mb-1">52</h4>
+                        <small class="text-muted">Active Services</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-warning-subtle rounded-5 me-3">
+                        <i class="ri-hourglass-line fs-4 text-warning"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-warning mb-1">7</h4>
+                        <small class="text-muted">Pending Review</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-info-subtle rounded-5 me-3">
+                        <i class="ri-money-dollar-circle-line fs-4 text-info"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-info mb-1">$45K</h4>
+                        <small class="text-muted">Monthly Revenue</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Service Categories -->
+<div class="row gx-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-folder-line me-2"></i>Service Categories
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <input type="search" class="form-control form-control-sm" placeholder="Search services..." style="width: 250px;">
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>All Categories</option>
+                            <option>Hematology</option>
+                            <option>Clinical Chemistry</option>
+                            <option>Microbiology</option>
+                            <option>Immunology</option>
+                            <option>Molecular Biology</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Hematology Services -->
+                <div class="service-category mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0">
+                            <i class="ri-drop-line text-primary me-2"></i>Hematology
+                            <span class="badge bg-primary-subtle text-primary ms-2">12 Tests</span>
+                        </h6>
+                        <button class="btn btn-sm btn-outline-primary">
+                            <i class="ri-arrow-down-s-line"></i>
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Service Name</th>
+                                    <th>Sample Type</th>
+                                    <th>Price</th>
+                                    <th>Est. Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <h6 class="mb-0">Complete Blood Count (CBC)</h6>
+                                            <small class="text-muted">Full blood analysis with differential</small>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-danger-subtle text-danger">Blood</span></td>
+                                    <td>$45.00</td>
+                                    <td>2-4 hours</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="~/Lab/ViewService/1" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="ri-eye-line"></i>
+                                            </a>
+                                            <a href="~/Lab/EditService/1" class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i class="ri-edit-line"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                                <i class="ri-delete-bin-line"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <h6 class="mb-0">Hemoglobin (Hb)</h6>
+                                            <small class="text-muted">Measure of oxygen-carrying capacity</small>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-danger-subtle text-danger">Blood</span></td>
+                                    <td>$20.00</td>
+                                    <td>1-2 hours</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="~/Lab/ViewService/2" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="ri-eye-line"></i>
+                                            </a>
+                                            <a href="~/Lab/EditService/2" class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i class="ri-edit-line"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                                <i class="ri-delete-bin-line"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <h6 class="mb-0">Blood Typing (ABO & Rh)</h6>
+                                            <small class="text-muted">Determine blood group and Rh factor</small>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-danger-subtle text-danger">Blood</span></td>
+                                    <td>$35.00</td>
+                                    <td>1-2 hours</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="~/Lab/ViewService/3" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="ri-eye-line"></i>
+                                            </a>
+                                            <a href="~/Lab/EditService/3" class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i class="ri-edit-line"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                                <i class="ri-delete-bin-line"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Clinical Chemistry Services -->
+                <div class="service-category mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0">
+                            <i class="ri-flask-line text-success me-2"></i>Clinical Chemistry
+                            <span class="badge bg-success-subtle text-success ms-2">24 Tests</span>
+                        </h6>
+                        <button class="btn btn-sm btn-outline-success">
+                            <i class="ri-arrow-down-s-line"></i>
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Service Name</th>
+                                    <th>Sample Type</th>
+                                    <th>Price</th>
+                                    <th>Est. Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <h6 class="mb-0">Basic Metabolic Panel (BMP)</h6>
+                                            <small class="text-muted">Glucose, electrolytes, kidney function</small>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-warning-subtle text-warning">Serum</span></td>
+                                    <td>$55.00</td>
+                                    <td>2-4 hours</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="~/Lab/ViewService/4" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="ri-eye-line"></i>
+                                            </a>
+                                            <a href="~/Lab/EditService/4" class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i class="ri-edit-line"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                                <i class="ri-delete-bin-line"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <h6 class="mb-0">Lipid Profile</h6>
+                                            <small class="text-muted">Cholesterol, triglycerides, HDL, LDL</small>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-warning-subtle text-warning">Serum</span></td>
+                                    <td>$65.00</td>
+                                    <td>3-5 hours</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="~/Lab/ViewService/5" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="ri-eye-line"></i>
+                                            </a>
+                                            <a href="~/Lab/EditService/5" class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i class="ri-edit-line"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                                <i class="ri-delete-bin-line"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <h6 class="mb-0">Liver Function Tests (LFT)</h6>
+                                            <small class="text-muted">ALT, AST, bilirubin, alkaline phosphatase</small>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-warning-subtle text-warning">Serum</span></td>
+                                    <td>$75.00</td>
+                                    <td>3-5 hours</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="~/Lab/ViewService/6" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="ri-eye-line"></i>
+                                            </a>
+                                            <a href="~/Lab/EditService/6" class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i class="ri-edit-line"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                                <i class="ri-delete-bin-line"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Microbiology Services -->
+                <div class="service-category mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0">
+                            <i class="ri-microscope-line text-warning me-2"></i>Microbiology
+                            <span class="badge bg-warning-subtle text-warning ms-2">8 Tests</span>
+                        </h6>
+                        <button class="btn btn-sm btn-outline-warning">
+                            <i class="ri-arrow-down-s-line"></i>
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Service Name</th>
+                                    <th>Sample Type</th>
+                                    <th>Price</th>
+                                    <th>Est. Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <h6 class="mb-0">Blood Culture</h6>
+                                            <small class="text-muted">Bacterial and fungal detection</small>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-danger-subtle text-danger">Blood</span></td>
+                                    <td>$85.00</td>
+                                    <td>24-48 hours</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="~/Lab/ViewService/7" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="ri-eye-line"></i>
+                                            </a>
+                                            <a href="~/Lab/EditService/7" class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i class="ri-edit-line"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                                <i class="ri-delete-bin-line"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <h6 class="mb-0">Urine Culture</h6>
+                                            <small class="text-muted">UTI detection and sensitivity</small>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-info-subtle text-info">Urine</span></td>
+                                    <td>$65.00</td>
+                                    <td>24-48 hours</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="~/Lab/ViewService/8" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="ri-eye-line"></i>
+                                            </a>
+                                            <a href="~/Lab/EditService/8" class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i class="ri-edit-line"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                                <i class="ri-delete-bin-line"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Category collapse functionality
+            document.querySelectorAll('.service-category button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const table = this.closest('.service-category').querySelector('.table-responsive');
+                    table.style.display = table.style.display === 'none' ? 'block' : 'none';
+                    const icon = this.querySelector('i');
+                    icon.classList.toggle('ri-arrow-down-s-line');
+                    icon.classList.toggle('ri-arrow-up-s-line');
+                });
+            });
+        });
+    </script>
+}

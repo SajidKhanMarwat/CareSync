@@ -36,7 +36,7 @@
                                 <td><span class="badge bg-danger">Urgent</span></td>
                                 <td>
                                     <button class="btn btn-sm btn-outline-success">Accept</button>
-                                    <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                    <a href="~/Lab/RequestDetails/LR001" class="btn btn-sm btn-outline-primary">View Details</a>
                                 </td>
                             </tr>
                             <tr>
@@ -49,7 +49,7 @@
                                 <td><span class="badge bg-info">Normal</span></td>
                                 <td>
                                     <button class="btn btn-sm btn-outline-success">Accept</button>
-                                    <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                    <a href="~/Lab/RequestDetails/LR002" class="btn btn-sm btn-outline-primary">View Details</a>
                                 </td>
                             </tr>
                             <tr>
@@ -62,7 +62,7 @@
                                 <td><span class="badge bg-info">Normal</span></td>
                                 <td>
                                     <button class="btn btn-sm btn-outline-success">Accept</button>
-                                    <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                    <a href="~/Lab/RequestDetails/LR003" class="btn btn-sm btn-outline-primary">View Details</a>
                                 </td>
                             </tr>
                         </tbody>
@@ -106,7 +106,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <button class="btn btn-sm btn-outline-primary">Update Status</button>
+                                    <a href="~/Lab/ResultEntry?requestId=LR004" class="btn btn-sm btn-outline-primary">Update Status</a>
                                     <button class="btn btn-sm btn-outline-success">Complete</button>
                                 </td>
                             </tr>
@@ -122,7 +122,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <button class="btn btn-sm btn-outline-primary">Update Status</button>
+                                    <a href="~/Lab/ResultEntry?requestId=LR005" class="btn btn-sm btn-outline-primary">Update Status</a>
                                     <button class="btn btn-sm btn-outline-success">Complete</button>
                                 </td>
                             </tr>
@@ -161,7 +161,7 @@
                                 <td>8:45 AM</td>
                                 <td><span class="badge bg-success">Report Generated</span></td>
                                 <td>
-                                    <button class="btn btn-sm btn-outline-primary">View Report</button>
+                                    <a href="~/Lab/Reports?requestId=LR006" class="btn btn-sm btn-outline-primary">View Report</a>
                                     <button class="btn btn-sm btn-outline-info">Send to Doctor</button>
                                 </td>
                             </tr>
@@ -172,7 +172,7 @@
                                 <td>7:30 AM</td>
                                 <td><span class="badge bg-success">Report Generated</span></td>
                                 <td>
-                                    <button class="btn btn-sm btn-outline-primary">View Report</button>
+                                    <a href="~/Lab/Reports?requestId=LR007" class="btn btn-sm btn-outline-primary">View Report</a>
                                     <button class="btn btn-sm btn-outline-info">Send to Doctor</button>
                                 </td>
                             </tr>
@@ -185,6 +185,15 @@
 </div>
 
 @section PageActions {
-    <button type="button" class="btn btn-primary">Refresh Requests</button>
-    <button type="button" class="btn btn-outline-secondary">Export Report</button>
+    <div class="d-flex gap-2">
+        <a href="~/Lab/TestRequests" class="btn btn-primary">
+            <i class="ri-file-list-line me-1"></i>Test Requests
+        </a>
+        <button type="button" class="btn btn-outline-success">
+            <i class="ri-refresh-line me-1"></i>Refresh
+        </button>
+        <button type="button" class="btn btn-outline-secondary">
+            <i class="ri-download-line me-1"></i>Export
+        </button>
+    </div>
 }

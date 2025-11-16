@@ -264,34 +264,64 @@
         </li>
         
         <!-- Lab Requests -->
-        <li class="treeview @(currentPath.Contains("/Lab/Requests") ? "active" : "")">
+        <li class="treeview @(currentPath.Contains("/Lab/Requests") || currentPath.Contains("/Lab/TestRequests") ? "active" : "")">
           <a href="#!">
             <i class="ri-file-list-3-line"></i>
             <span class="menu-text">Lab Requests</span>
           </a>
           <ul class="treeview-menu">
-            <li><a href="~/Lab/Requests">All Requests</a></li>
-            <li><a href="~/Lab/Requests/Pending">Pending Tests</a></li>
-            <li><a href="~/Lab/Requests/InProgress">In Progress</a></li>
-            <li><a href="~/Lab/Requests/Completed">Completed</a></li>
+            <li class="@(currentPath == "/Lab/Requests" ? "active" : "")">
+              <a href="~/Lab/Requests">All Requests</a>
+            </li>
+            <li class="@(currentPath.Contains("/Lab/TestRequests") ? "active" : "")">
+              <a href="~/Lab/TestRequests">Test Requests</a>
+            </li>
+            <li class="@(currentPath.Contains("/Lab/RequestDetails") ? "active" : "")">
+              <a href="~/Lab/RequestDetails">Request Details</a>
+            </li>
+          </ul>
+        </li>
+        
+        <!-- Lab Services -->
+        <li class="treeview @(currentPath.Contains("/Lab/Services") ? "active" : "")">
+          <a href="#!">
+            <i class="ri-service-line"></i>
+            <span class="menu-text">Lab Services</span>
+          </a>
+          <ul class="treeview-menu">
+            <li class="@(currentPath == "/Lab/Services" ? "active" : "")">
+              <a href="~/Lab/Services">All Services</a>
+            </li>
+            <li class="@(currentPath.Contains("/Lab/AddService") ? "active" : "")">
+              <a href="~/Lab/AddService">Add New Service</a>
+            </li>
+            <li class="@(currentPath.Contains("/Lab/ManageServices") ? "active" : "")">
+              <a href="~/Lab/ManageServices">Manage Services</a>
+            </li>
           </ul>
         </li>
         
         <!-- Lab Reports -->
-        <li class="treeview @(currentPath.Contains("/Lab/Reports") ? "active" : "")">
+        <li class="treeview @(currentPath.Contains("/Lab/Reports") || currentPath.Contains("/Lab/ResultEntry") ? "active" : "")">
           <a href="#!">
             <i class="ri-file-chart-line"></i>
             <span class="menu-text">Lab Reports</span>
           </a>
           <ul class="treeview-menu">
-            <li><a href="~/Lab/Reports">All Reports</a></li>
-            <li><a href="~/Lab/Reports/Create">Create Report</a></li>
-            <li><a href="~/Lab/Reports/Templates">Report Templates</a></li>
+            <li class="@(currentPath == "/Lab/Reports" ? "active" : "")">
+              <a href="~/Lab/Reports">All Reports</a>
+            </li>
+            <li class="@(currentPath.Contains("/Lab/ResultEntry") ? "active" : "")">
+              <a href="~/Lab/ResultEntry">Result Entry</a>
+            </li>
+            <li class="@(currentPath.Contains("/Lab/ReportsManagement") ? "active" : "")">
+              <a href="~/Lab/ReportsManagement">Reports Management</a>
+            </li>
           </ul>
         </li>
         
         <!-- Lab Profile -->
-        <li class="@(currentPath.Contains("/Lab/Profile") ? "active current-page" : "")">
+        <li class="@(currentPath.Contains("/Lab/Profile") || currentPath.Contains("/Lab/TechnicianProfile") ? "active current-page" : "")">
           <a href="~/Lab/Profile">
             <i class="ri-user-line"></i>
             <span class="menu-text">Lab Profile</span>
