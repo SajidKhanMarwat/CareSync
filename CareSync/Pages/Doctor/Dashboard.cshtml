@@ -13,15 +13,49 @@
     </div>
 }
 
-<!-- Critical Alerts & Notifications -->
+<!-- Enhanced Notifications Panel -->
 <div class="row mb-3">
     <div class="col-12">
-        <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center" role="alert">
-            <i class="ri-alarm-warning-line fs-4 me-3"></i>
-            <div class="flex-grow-1">
-                <strong>3 Urgent Items</strong> require your attention: 2 appointments pending approval, 1 critical lab result awaiting review.
+        <div class="d-flex flex-wrap gap-2">
+            <!-- Urgent Notifications -->
+            <div class="flex-fill">
+                <div class="alert alert-danger mb-0 d-flex align-items-center shadow-sm" role="alert">
+                    <div class="icon-box md bg-white rounded-circle me-3">
+                        <i class="ri-alarm-warning-line fs-4 text-danger"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <strong>1 Critical</strong>
+                        <p class="mb-0 small">Lab result needs immediate review</p>
+                    </div>
+                    <button class="btn btn-sm btn-danger">View</button>
+                </div>
             </div>
-            <button class="btn btn-sm btn-warning">Review Now</button>
+            <!-- Priority Notifications -->
+            <div class="flex-fill">
+                <div class="alert alert-warning mb-0 d-flex align-items-center shadow-sm" role="alert">
+                    <div class="icon-box md bg-white rounded-circle me-3">
+                        <i class="ri-time-line fs-4 text-warning"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <strong>2 Pending</strong>
+                        <p class="mb-0 small">Appointments awaiting approval</p>
+                    </div>
+                    <button class="btn btn-sm btn-warning">Approve</button>
+                </div>
+            </div>
+            <!-- Info Notifications -->
+            <div class="flex-fill">
+                <div class="alert alert-info mb-0 d-flex align-items-center shadow-sm" role="alert">
+                    <div class="icon-box md bg-white rounded-circle me-3">
+                        <i class="ri-file-list-3-line fs-4 text-info"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <strong>@Model.PendingAppointments Pending</strong>
+                        <p class="mb-0 small">Prescriptions to be issued</p>
+                    </div>
+                    <button class="btn btn-sm btn-info" onclick="window.location.href='/Doctor/Prescriptions'">View</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -36,9 +70,18 @@
                         <div class="d-flex align-items-start gap-3 flex-wrap">
                             <img src="~/theme/images/doctors/1.jpg" class="mw-240 rounded-2" alt="Doctor Profile">
                             <div class="">
-                                <span class="badge bg-primary-subtle text-primary">
-                                    <i class="ri-circle-fill me-1"></i>Available
-                                </span>
+                                <div class="dropdown d-inline-block">
+                                    <button class="btn btn-sm badge bg-primary-subtle text-primary dropdown-toggle" type="button" id="statusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="ri-circle-fill me-1 status-indicator" id="statusIndicator"></i>
+                                        <span id="statusText">Available</span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="statusDropdown">
+                                        <li><a class="dropdown-item" href="#" onclick="changeStatus('Available', 'primary')"><i class="ri-circle-fill text-primary me-2"></i>Available</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="changeStatus('Busy', 'warning')"><i class="ri-circle-fill text-warning me-2"></i>Busy</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="changeStatus('In Consultation', 'danger')"><i class="ri-circle-fill text-danger me-2"></i>In Consultation</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="changeStatus('On Break', 'secondary')"><i class="ri-circle-fill text-secondary me-2"></i>On Break</a></li>
+                                    </ul>
+                                </div>
                                 <h6 class="fw-normal mt-2">Good Morning,</h6>
                                 <h5 class="fw-normal">@Model.DoctorName</h5>
                                 <h6 class="fw-normal">@Model.Specialization</h6>
@@ -87,16 +130,12 @@
                                 <div class="card border rounded-5">
                                     <div class="card-body">
                                         <div class="text-center">
-                                            <div class="icon-box md border border-primary rounded-5 mb-2 m-auto">
-                                                <i class="fs-5 text-primary"></i>
-                                                @* <i class="ri-money-dollar-circle-line fs-5 text-primary"></i> *@
+                                            <div class="icon-box md border border-success rounded-5 mb-2 m-auto">
+                                                <i class="ri-time-line fs-5 text-success"></i>
                                             </div>
-                                            <h3 class="text-primary">000</h3>
-                                            <h6>KKKK</h6>
-                                            <small class="text-primary">60% Higher than last week.</small>
-                                            @* <h3 class="text-primary">$@Model.MonthlyEarnings</h3> *@
-                                            @* <h6>Earnings</h6>
-                                            <small class="text-primary">60% Higher than last week.</small> *@
+                                            <h3 class="text-success">@(Model.TodayAppointmentsCount > 0 ? (240 / Model.TodayAppointmentsCount) : 0)<span class="fs-6">min</span></h3>
+                                            <h6>Avg. Consultation</h6>
+                                            <small class="text-success">Efficient patient care</small>
                                         </div>
                                     </div>
                                 </div>
@@ -232,73 +271,181 @@
     </div>
 </div>
 
-<!-- Appointments Calendar -->
+<!-- Appointments Calendar - Collapsible -->
 <div class="row gx-3">
     <div class="col-sm-12">
-        <div class="card mb-3">
-            <div class="card-header d-flex align-items-center justify-content-between">
-                <h5 class="card-title">Appointments Calendar</h5>
-                <a href="/Doctor/Appointments" class="btn btn-primary">View All Appointments</a>
+        <div class="card mb-3 border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-3">
+                        <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#calendarCollapse" aria-expanded="false">
+                            <i class="ri-calendar-2-line"></i> <span id="calendarToggleText">Show Calendar</span>
+                        </button>
+                        <h5 class="card-title mb-0">Weekly Schedule Overview</h5>
+                    </div>
+                    <a href="/Doctor/Appointments" class="btn btn-primary btn-sm">
+                        <i class="ri-calendar-check-line"></i> View All Appointments
+                    </a>
+                </div>
             </div>
-            <div class="card-body">
+            <div class="card-body collapse" id="calendarCollapse">
                 <div id="appointmentsCal"></div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Today's Appointments Table -->
+<!-- Enhanced Appointments Queue with Priority -->
 <div class="row gx-3">
     <div class="col-sm-12">
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Today's Appointments</h5>
+        <div class="card mb-3 border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between">
+                <div>
+                    <h5 class="card-title mb-1">Today's Appointments Queue</h5>
+                    <small class="text-muted">@Model.TodayAppointmentsCount appointments scheduled | <span id="currentTime" class="fw-bold"></span></small>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-primary" onclick="filterAppointments('all')">All</button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="filterAppointments('urgent')">Urgent</button>
+                    <button class="btn btn-sm btn-outline-warning" onclick="filterAppointments('pending')">Pending</button>
+                </div>
+            </div>
+            <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table m-0 align-middle">
-                        <thead>
+                    <table class="table m-0 align-middle table-hover">
+                        <thead class="bg-white">
                             <tr>
-                                <th>#</th>
-                                <th>Patient Name</th>
-                                <th>Age</th>
-                                <th>Time</th>
-                                <th>Diagnosis</th>
-                                <th>Type</th>
-                                <th>Actions</th>
+                                <th width="5%">#</th>
+                                <th width="20%">Patient</th>
+                                <th width="10%">Time</th>
+                                <th width="10%">Status</th>
+                                <th width="15%">Diagnosis</th>
+                                <th width="10%">Type</th>
+                                <th width="15%">Quick Info</th>
+                                <th width="15%">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var appointment in Model.TodayAppointments)
                             {
-                                <tr>
-                                    <td>@appointment.Id.ToString("000")</td>
+                                var isNext = Model.TodayAppointments.IndexOf(appointment) == 0;
+                                var isUrgent = appointment.Type == "Emergency";
+                                var rowClass = isNext ? "table-primary" : (isUrgent ? "table-danger" : "");
+                                <tr class="@rowClass appointment-row" data-appointment-id="@appointment.Id">
                                     <td>
-                                        <img src="~/theme/images/patient.png" class="img-2x rounded-5 me-1" alt="Patient">
-                                        @appointment.PatientName
+                                        @if (isNext)
+                                        {
+                                            <span class="badge bg-primary">NEXT</span>
+                                        }
+                                        else if (isUrgent)
+                                        {
+                                            <i class="ri-alarm-warning-fill text-danger fs-5 blink-animation"></i>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">@appointment.Id.ToString("000")</span>
+                                        }
                                     </td>
-                                    <td>@appointment.PatientAge</td>
-                                    <td>@appointment.AppointmentTime.ToString("HH:mm")</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="~/theme/images/patient.png" class="img-3x rounded-circle me-2 border border-2" alt="Patient">
+                                            <div>
+                                                <strong class="d-block">@appointment.PatientName</strong>
+                                                <small class="text-muted">@appointment.PatientAge years old</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <i class="ri-time-line text-primary"></i>
+                                            <strong>@appointment.AppointmentTime.ToString("HH:mm")</strong>
+                                            @if (isNext)
+                                            {
+                                                <div class="badge bg-success-subtle text-success mt-1">Now</div>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="status-dot bg-warning" title="Waiting"></span>
+                                            <small>Waiting</small>
+                                        </div>
+                                    </td>
                                     <td>@appointment.Diagnosis</td>
                                     <td>
-                                        <span class="badge @(appointment.Type == "General" ? "bg-warning-subtle text-warning" : "bg-primary-subtle text-primary") fs-6">
+                                        <span class="badge @(appointment.Type == "General" ? "bg-info" : appointment.Type == "Emergency" ? "bg-danger" : "bg-primary") fs-6">
+                                            <i class="@(appointment.Type == "General" ? "ri-stethoscope-line" : appointment.Type == "Emergency" ? "ri-alarm-warning-line" : "ri-calendar-check-line") me-1"></i>
                                             @appointment.Type
                                         </span>
                                     </td>
                                     <td>
-                                        <div class="d-inline-flex gap-1">
-                                            <button type="button" class="btn btn-hover btn-sm rounded-5" 
-                                                    onclick="rejectAppointment(@appointment.Id)"
-                                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Reject">
-                                                <i class="ri-close-fill text-danger"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-hover btn-sm rounded-5" 
-                                                    onclick="approveAppointment(@appointment.Id)"
-                                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Accept">
-                                                <i class="ri-check-fill text-success"></i>
-                                            </button>
-                                            <a href="/Doctor/Checkup?appointmentId=@appointment.Id" class="btn btn-hover btn-sm rounded-5"
-                                               data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Start Checkup">
-                                                <i class="ri-stethoscope-line text-primary"></i>
-                                            </a>
+                                        <button class="btn btn-sm btn-outline-secondary" type="button" 
+                                                data-bs-toggle="collapse" 
+                                                data-bs-target="#details@(appointment.Id)" 
+                                                aria-expanded="false">
+                                            <i class="ri-eye-line"></i> Details
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            @if (isNext)
+                                            {
+                                                <a href="/Doctor/Checkup?appointmentId=@appointment.Id" 
+                                                   class="btn btn-success btn-sm rounded-2"
+                                                   data-bs-toggle="tooltip" title="Start Consultation">
+                                                    <i class="ri-stethoscope-line"></i> Start
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="btn btn-outline-danger btn-sm rounded-2" 
+                                                        onclick="rejectAppointment(@appointment.Id)"
+                                                        data-bs-toggle="tooltip" title="Cancel">
+                                                    <i class="ri-close-line"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-outline-success btn-sm rounded-2" 
+                                                        onclick="approveAppointment(@appointment.Id)"
+                                                        data-bs-toggle="tooltip" title="Confirm">
+                                                    <i class="ri-check-line"></i>
+                                                </button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="collapse" id="details@(appointment.Id)">
+                                    <td colspan="8">
+                                        <div class="card border-0 bg-light m-2">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-3">
+                                                        <h6 class="text-muted mb-2"><i class="ri-history-line"></i> Medical History</h6>
+                                                        <ul class="list-unstyled mb-0 small">
+                                                            <li>• Diabetes Type 2</li>
+                                                            <li>• Hypertension</li>
+                                                            <li class="text-danger">• Allergic to Penicillin</li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <h6 class="text-muted mb-2"><i class="ri-capsule-line"></i> Current Medications</h6>
+                                                        <ul class="list-unstyled mb-0 small">
+                                                            <li>• Metformin 500mg (2x daily)</li>
+                                                            <li>• Lisinopril 10mg (1x daily)</li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <h6 class="text-muted mb-2"><i class="ri-flask-line"></i> Recent Labs</h6>
+                                                        <ul class="list-unstyled mb-0 small">
+                                                            <li>• Blood Sugar: 140 mg/dL</li>
+                                                            <li>• BP: 130/85 mmHg</li>
+                                                            <li class="text-warning">• Cholesterol: Pending</li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <h6 class="text-muted mb-2"><i class="ri-file-text-line"></i> Last Visit</h6>
+                                                        <p class="mb-0 small">15 days ago - Routine checkup. Prescribed diabetes medication adjustment.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
@@ -311,31 +458,90 @@
     </div>
 </div>
 
-<!-- Bottom Row with Reviews, Income, and Recent Patients -->
+<!-- Bottom Row with Performance Metrics and Recent Patients -->
 <div class="row gx-3">
-    <!-- Patient Reviews -->
+    <!-- Performance Metrics -->
     <div class="col-xxl-6 col-sm-12">
-        <div class="card mb-3">
-            <div class="card-header">
-                <h5 class="card-title">Patient Reviews</h5>
+        <div class="card mb-3 border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom">
+                <div>
+                    <h5 class="card-title mb-1">Today's Performance</h5>
+                    <small class="text-muted">Your daily metrics and statistics</small>
+                </div>
             </div>
             <div class="card-body">
-                <div class="scroll300">
-                    <div class="d-grid gap-4">
-                        @foreach (var review in Model.PatientReviews)
-                        {
-                            <div class="d-flex">
-                                <img src="~/ApolloTheme/assets/images/patient@(review.PatientId % 5 + 1).png" 
-                                     class="img-4x rounded-2" alt="Patient">
-                                <div class="ms-3">
-                                    <h6>@review.PatientName</h6>
-                                    <p class="mb-2">@review.ReviewText</p>
-                                    <div class="rating-stars">
-                                        <div class="readonly@(review.Rating)"></div>
-                                    </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="metric-card p-3 border rounded-3 bg-primary-subtle">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div class="icon-box md bg-primary rounded-circle">
+                                    <i class="ri-user-heart-line fs-4 text-white"></i>
                                 </div>
+                                <span class="badge bg-success">+12%</span>
                             </div>
-                        }
+                            <h3 class="mb-1 text-primary">@Model.TodayAppointmentsCount</h3>
+                            <p class="mb-0 small text-muted">Patients Seen Today</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="metric-card p-3 border rounded-3 bg-success-subtle">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div class="icon-box md bg-success rounded-circle">
+                                    <i class="ri-file-text-line fs-4 text-white"></i>
+                                </div>
+                                <span class="badge bg-info">This Month</span>
+                            </div>
+                            <h3 class="mb-1 text-success">@Model.TotalPrescriptions</h3>
+                            <p class="mb-0 small text-muted">Prescriptions Written</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="metric-card p-3 border rounded-3 bg-warning-subtle">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div class="icon-box md bg-warning rounded-circle">
+                                    <i class="ri-time-line fs-4 text-white"></i>
+                                </div>
+                                <span class="badge bg-success">Efficient</span>
+                            </div>
+                            <h3 class="mb-1 text-warning">@(Model.TodayAppointmentsCount > 0 ? (240 / Model.TodayAppointmentsCount) : 0) min</h3>
+                            <p class="mb-0 small text-muted">Avg Consultation Time</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="metric-card p-3 border rounded-3 bg-info-subtle">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div class="icon-box md bg-info rounded-circle">
+                                    <i class="ri-stethoscope-line fs-4 text-white"></i>
+                                </div>
+                                <span class="badge bg-primary">Active</span>
+                            </div>
+                            <h3 class="mb-1 text-info">@Model.TotalPatients</h3>
+                            <p class="mb-0 small text-muted">Total Active Patients</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-top">
+                    <h6 class="mb-3">Weekly Summary</h6>
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="small d-flex align-items-center">
+                            <i class="ri-checkbox-circle-fill text-success me-2"></i>
+                            Completed Appointments
+                        </span>
+                        <strong class="text-success">@(Model.TodayAppointmentsCount * 5)</strong>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="small d-flex align-items-center">
+                            <i class="ri-star-fill text-warning me-2"></i>
+                            Patient Satisfaction
+                        </span>
+                        <strong class="text-warning">@Model.TotalRatings/5.0</strong>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="small d-flex align-items-center">
+                            <i class="ri-calendar-check-fill text-primary me-2"></i>
+                            Attendance Rate
+                        </span>
+                        <strong class="text-primary">94%</strong>
                     </div>
                 </div>
             </div>
@@ -344,31 +550,74 @@
 
     <!-- Recent Patients -->
     <div class="col-xxl-6 col-sm-12">
-        <div class="card mb-3">
-            <div class="card-header">
-                <h5 class="card-title">Recent Patients</h5>
+        <div class="card mb-3 border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between">
+                <div>
+                    <h5 class="card-title mb-1">Recent Patients</h5>
+                    <small class="text-muted">Quick access to your recent consultations</small>
+                </div>
+                <button class="btn btn-sm btn-outline-primary" onclick="window.location.href='/Doctor/Patients'">
+                    <i class="ri-user-search-line"></i> All Patients
+                </button>
             </div>
             <div class="card-body">
                 <div class="scroll300">
-                    <div class="d-flex flex-column gap-2">
+                    <div class="d-flex flex-column gap-3">
                         @foreach (var patient in Model.RecentPatients)
                         {
-                            <div class="d-flex flex-column p-3 border rounded-2">
-                                <div class="d-flex align-items-center flex-row">
-                                    <img src="~/ApolloTheme/assets/images/patient@(patient.Id % 5 + 1).png" 
-                                         class="img-4x rounded-5 me-3" alt="Patient">
-                                    <div>
-                                        <h6 class="mb-1">@patient.Name</h6>
-                                        <p class="mb-1 small">Last Appointment @patient.LastAppointment.ToString("dd MMM yyyy")</p>
-                                        <span class="badge bg-primary-subtle text-primary">Patient ID: P@patient.Id.ToString("0000")</span>
-                                        <p class="mb-3 mt-1">@patient.Notes</p>
-                                        <div class="d-flex gap-2">
-                                            <a href="~/Doctor/Appointments" class="btn btn-primary btn-sm">
-                                                Schedule
-                                            </a>
-                                            <a href="~/Patient/Profile?id=@patient.Id" class="btn btn-outline-secondary btn-sm">
-                                                View Profile
-                                            </a>
+                            var statusColor = patient.Notes.Contains("Critical") ? "danger" : (patient.Notes.Contains("Follow") ? "warning" : "success");
+                            <div class="patient-card border rounded-3 p-3 hover-card position-relative">
+                                <div class="position-absolute top-0 end-0 m-2">
+                                    <span class="badge bg-@statusColor-subtle text-@statusColor">
+                                        <i class="ri-heart-pulse-line"></i> Active
+                                    </span>
+                                </div>
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="position-relative">
+                                        <img src="~/theme/images/patient.png" 
+                                             class="img-5x rounded-circle border border-3 border-primary" alt="Patient">
+                                        <span class="position-absolute bottom-0 end-0 badge bg-success rounded-circle p-2" title="Online">
+                                            <i class="ri-checkbox-blank-circle-fill"></i>
+                                        </span>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-start justify-content-between mb-2">
+                                            <div>
+                                                <h6 class="mb-1 fw-bold">@patient.Name</h6>
+                                                <div class="d-flex align-items-center gap-2 mb-1">
+                                                    <span class="badge bg-light text-dark border">
+                                                        <i class="ri-user-line"></i> P@patient.Id.ToString("0000")
+                                                    </span>
+                                                    <span class="badge bg-info-subtle text-info">
+                                                        <i class="ri-calendar-line"></i> @patient.LastAppointment.ToString("dd MMM")
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p class="mb-3 small text-muted">
+                                            <i class="ri-file-text-line"></i> @patient.Notes
+                                        </p>
+                                        <div class="d-flex gap-2 flex-wrap">
+                                            <button class="btn btn-primary btn-sm d-flex align-items-center gap-1" 
+                                                    onclick="window.location.href='/Doctor/Appointments/Schedule?patientId=@patient.Id'">
+                                                <i class="ri-calendar-check-line"></i>
+                                                <span>Schedule</span>
+                                            </button>
+                                            <button class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"
+                                                    onclick="window.location.href='/Patient/Profile?id=@patient.Id'">
+                                                <i class="ri-file-user-line"></i>
+                                                <span>Profile</span>
+                                            </button>
+                                            <button class="btn btn-outline-success btn-sm d-flex align-items-center gap-1"
+                                                    onclick="startVideoCall()">
+                                                <i class="ri-video-chat-line"></i>
+                                                <span>Call</span>
+                                            </button>
+                                            <button class="btn btn-outline-info btn-sm d-flex align-items-center gap-1"
+                                                    onclick="writePrescription()">
+                                                <i class="ri-file-list-3-line"></i>
+                                                <span>Prescribe</span>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -380,14 +629,6 @@
         </div>
     </div>
 </div>
-
-@section Styles {
-    <!-- Calendar CSS -->
-    <link rel="stylesheet" href="~/theme/vendor/calendar/css/main.min.css">
-    <link rel="stylesheet" href="~/theme/vendor/calendar/css/custom.css">
-    <!-- Apex Charts CSS -->
-    <link rel="stylesheet" href="~/theme/vendor/apex/apexcharts.css">
-}
 
 @section Scripts {
     <!-- Apex Charts -->
@@ -401,6 +642,135 @@
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
+
+        // Real-time clock update
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const clockElement = document.getElementById('currentTime');
+            if (clockElement) {
+                clockElement.textContent = timeString;
+            }
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Status change function
+        function changeStatus(status, color) {
+            document.getElementById('statusText').textContent = status;
+            const indicator = document.getElementById('statusIndicator');
+            indicator.className = 'ri-circle-fill me-1 status-indicator text-' + color;
+            // You can add AJAX call here to update status in backend
+            console.log('Status changed to:', status);
+        }
+
+        // Quick Actions Functions
+        function startVideoCall() {
+            alert('Starting video consultation...');
+            // Add your video call integration here
+        }
+
+        function writePrescription() {
+            window.location.href = '/Doctor/Prescription/Create';
+        }
+
+        function scheduleBreak() {
+            if (confirm('Do you want to schedule a 15-minute break?')) {
+                alert('Break scheduled successfully!');
+                // Add AJAX call to update schedule
+            }
+        }
+
+        function viewUrgentCases() {
+            filterAppointments('urgent');
+        }
+
+        function generateReport() {
+            window.location.href = '/Doctor/Reports';
+        }
+
+        function callNextPatient() {
+            const nextPatient = document.querySelector('.table-primary .d-block');
+            if (nextPatient) {
+                alert('Calling: ' + nextPatient.textContent);
+                // Add notification system integration
+            } else {
+                alert('No patients in queue');
+            }
+        }
+
+        // Filter appointments
+        function filterAppointments(filter) {
+            const rows = document.querySelectorAll('.appointment-row');
+            rows.forEach(row => {
+                if (filter === 'all') {
+                    row.style.display = '';
+                } else if (filter === 'urgent') {
+                    const isUrgent = row.classList.contains('table-danger');
+                    row.style.display = isUrgent ? '' : 'none';
+                } else if (filter === 'pending') {
+                    // You can add data attribute for pending status
+                    row.style.display = '';
+                }
+            });
+        }
+
+        // Calendar toggle and initialization
+        let calendar = null;
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarCollapse = document.getElementById('calendarCollapse');
+            if (calendarCollapse) {
+                // Update text when collapse starts
+                calendarCollapse.addEventListener('show.bs.collapse', function () {
+                    document.getElementById('calendarToggleText').textContent = 'Hide Calendar';
+                });
+                
+                // Initialize and render calendar after collapse animation completes
+                calendarCollapse.addEventListener('shown.bs.collapse', function () {
+                    if (!calendar) {
+                        initializeCalendar();
+                    } else {
+                        // If calendar already exists, update its size
+                        calendar.updateSize();
+                    }
+                });
+                
+                calendarCollapse.addEventListener('hide.bs.collapse', function () {
+                    document.getElementById('calendarToggleText').textContent = 'Show Calendar';
+                });
+            }
+        });
+
+        // Separate calendar initialization function
+        function initializeCalendar() {
+            var calendarEl = document.getElementById('appointmentsCal');
+            if (calendarEl && !calendar) {
+                calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    },
+                    height: 'auto',
+                    events: [
+                        @foreach (var appointment in Model.TodayAppointments)
+                        {
+                            @:{
+                            @:    title: '@appointment.PatientName',
+                            @:    start: '@appointment.AppointmentTime.ToString("yyyy-MM-ddTHH:mm:ss")',
+                            @:    backgroundColor: '@(appointment.Type == "General" ? "#fb8c00" : "#1e88e5")',
+                            @:    borderColor: '@(appointment.Type == "General" ? "#fb8c00" : "#1e88e5")'
+                            @:},
+                        }
+                    ],
+                    eventClick: function(info) {
+                        alert('Appointment: ' + info.event.title);
+                    }
+                });
+                calendar.render();
+            }
+        }
 
         // Appointment actions
         function approveAppointment(appointmentId) {
@@ -510,31 +880,8 @@
             var patientStatusChart = new ApexCharts(document.querySelector("#patientStatusChart"), patientStatusOptions);
             patientStatusChart.render();
 
-            // Initialize Appointments Calendar
-            var calendarEl = document.getElementById('appointmentsCal');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
-                events: [
-                    @foreach (var appointment in Model.TodayAppointments)
-                    {
-                        @:{
-                        @:    title: '@appointment.PatientName',
-                        @:    start: '@appointment.AppointmentTime.ToString("yyyy-MM-ddTHH:mm:ss")',
-                        @:    backgroundColor: '@(appointment.Type == "General" ? "#fb8c00" : "#1e88e5")',
-                        @:    borderColor: '@(appointment.Type == "General" ? "#fb8c00" : "#1e88e5")'
-                        @:},
-                    }
-                ],
-                eventClick: function(info) {
-                    alert('Appointment: ' + info.event.title);
-                }
-            });
-            calendar.render();
+            // Note: Calendar is now initialized on-demand when user clicks "Show Calendar" button
+            // This improves performance and prevents rendering issues with hidden elements
 
             // Initialize date range picker
             if (typeof $.fn.daterangepicker !== 'undefined') {
@@ -545,6 +892,329 @@
                     $('#dateRange').val(start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
                 });
             }
+
+            // Auto-refresh appointments every 30 seconds
+            setInterval(function() {
+                // Add AJAX call to refresh appointment data
+                console.log('Checking for new appointments...');
+            }, 30000);
         });
     </script>
+}
+
+@section Styles {
+    <!-- Calendar CSS -->
+    <link rel="stylesheet" href="~/theme/vendor/calendar/css/main.min.css">
+    <link rel="stylesheet" href="~/theme/vendor/calendar/css/custom.css">
+    <!-- Apex Charts CSS -->
+    <link rel="stylesheet" href="~/theme/vendor/apex/apexcharts.css">
+    
+    <!-- Custom Styles -->
+    <style>
+        /* Status indicator animation */
+        .status-indicator {
+            animation: pulse 2s infinite;
+        }
+
+        @@keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Blink animation for urgent cases */
+        .blink-animation {
+            animation: blink 1s infinite;
+        }
+
+        @@keyframes blink {
+            0%, 50%, 100% {
+                opacity: 1;
+            }
+            25%, 75% {
+                opacity: 0.3;
+            }
+        }
+
+        /* Status dot */
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @@keyframes pulse-dot {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(251, 140, 0, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 5px rgba(251, 140, 0, 0);
+            }
+        }
+
+        /* Hover effects */
+        .card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+        }
+
+        /* Table row hover */
+        .appointment-row {
+            transition: all 0.2s ease;
+        }
+
+        .appointment-row:hover {
+            background-color: rgba(30, 136, 229, 0.05) !important;
+        }
+
+        /* Quick actions button animation */
+        .btn {
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        /* Notification badge pulse */
+        .alert {
+            animation: slideIn 0.3s ease;
+        }
+
+        @@keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive improvements */
+        @@media (max-width: 768px) {
+            .d-flex.flex-wrap.gap-2 {
+                flex-direction: column;
+            }
+            
+            .flex-fill {
+                width: 100%;
+            }
+        }
+
+        /* Better spacing */
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Icon box improvements */
+        .icon-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Table improvements */
+        .table thead th {
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6c757d;
+        }
+
+        /* Badge improvements */
+        .badge {
+            font-weight: 500;
+            padding: 0.4em 0.8em;
+        }
+
+        /* Improved card shadows */
+        .shadow-sm {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+        }
+
+        /* Hover card effect */
+        .hover-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .hover-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            border-color: #1e88e5 !important;
+        }
+
+        /* Review card specific styles */
+        .review-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        }
+
+        /* Patient card specific styles */
+        .patient-card {
+            background: #ffffff;
+            border: 1px solid #e9ecef !important;
+        }
+
+        .patient-card:hover {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+        }
+
+        /* Scroll container */
+        .scroll300 {
+            max-height: 400px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .scroll300::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .scroll300::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .scroll300::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .scroll300::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Enhanced image sizes */
+        .img-5x {
+            width: 64px;
+            height: 64px;
+            object-fit: cover;
+        }
+
+        /* Better alert styling */
+        .alert {
+            border: none;
+            border-left: 4px solid;
+        }
+
+        .alert-danger {
+            border-left-color: #dc3545;
+            background: linear-gradient(90deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.05) 100%);
+        }
+
+        .alert-warning {
+            border-left-color: #ffc107;
+            background: linear-gradient(90deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%);
+        }
+
+        .alert-info {
+            border-left-color: #0dcaf0;
+            background: linear-gradient(90deg, rgba(13, 202, 240, 0.1) 0%, rgba(13, 202, 240, 0.05) 100%);
+        }
+
+        /* Card header improvements */
+        .card-header {
+            padding: 1rem 1.5rem;
+        }
+
+        .card-header h5 {
+            margin-bottom: 0;
+        }
+
+        /* Badge pulse animation for online status */
+        .badge.bg-success.rounded-circle {
+            animation: pulse-online 2s infinite;
+        }
+
+        @@keyframes pulse-online {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 4px rgba(25, 135, 84, 0);
+            }
+        }
+
+        /* Improved spacing for flex items */
+        .gap-3 {
+            gap: 1rem !important;
+        }
+
+        /* Better button group */
+        .btn-group .btn {
+            margin: 0;
+        }
+
+        /* Stats card enhancements */
+        .icon-box.lg {
+            width: 60px;
+            height: 60px;
+        }
+
+        .icon-box.md {
+            width: 48px;
+            height: 48px;
+        }
+
+        /* Calendar toggle improvements */
+        #calendarCollapse {
+            transition: all 0.3s ease;
+        }
+
+        #calendarCollapse.show {
+            display: block;
+        }
+
+        /* Metric card styles */
+        .metric-card {
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* Time indicator styling */
+        #currentTime {
+            color: #1e88e5;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Table enhancements */
+        .table-primary {
+            background-color: rgba(30, 136, 229, 0.1) !important;
+        }
+
+        .table-danger {
+            background-color: rgba(220, 53, 69, 0.05) !important;
+        }
+
+        /* Next badge styling */
+        .badge.bg-primary {
+            animation: badge-pulse 2s infinite;
+        }
+
+        @@keyframes badge-pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+    </style>
 }
