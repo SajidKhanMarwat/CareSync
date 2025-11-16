@@ -1,11 +1,10 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace CareSync.Pages.Lab
 {
-    public class ReportsModel : PageModel
+    public class RequestDetailsModel : PageModel
     {
-        public void OnGet()
+        public void OnGet(string id)
         {
         }
     }

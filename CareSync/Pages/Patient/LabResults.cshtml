@@ -4,19 +4,29 @@
     ViewData["Title"] = "Lab Results";
 }
 
-@section PageActions {
-    <div class="d-flex gap-2">
-        <button type="button" class="btn btn-success">
-            <i class="ri-add-line me-1"></i>Request New Test
-        </button>
-        <button type="button" class="btn btn-primary">
-            <i class="ri-download-line me-1"></i>Download All Reports
-        </button>
-        <button type="button" class="btn btn-outline-info">
-            <i class="ri-share-line me-1"></i>Share with Doctor
-        </button>
+<!-- Page Header -->
+<div class="row gx-3 mb-4">
+    <div class="col-12">
+        <div class="card border-start border-info border-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-1"><i class="ri-test-tube-line me-2 text-info"></i>Lab Reports & Results</h4>
+                        <p class="text-muted mb-0">View your lab test results and request new tests</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="/Patient/MedicalHistory" class="btn btn-outline-primary">
+                            <i class="ri-history-line me-1"></i>Medical History
+                        </a>
+                        <a href="/Patient/RequestLabTest" class="btn btn-success">
+                            <i class="ri-add-line me-1"></i>Request New Test
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-}
+</div>
 
 <!-- Lab Results Overview Cards -->
 <div class="row gx-3 mb-3">
@@ -28,7 +38,7 @@
                         <i class="ri-check-double-line fs-4 text-success"></i>
                     </div>
                     <div>
-                        <h4 class="text-success mb-1">12</h4>
+                        <h4 class="text-success mb-1">@Model.CompletedTests</h4>
                         <small class="text-muted">Completed Tests</small>
                     </div>
                 </div>
@@ -43,7 +53,7 @@
                         <i class="ri-time-line fs-4 text-warning"></i>
                     </div>
                     <div>
-                        <h4 class="text-warning mb-1">2</h4>
+                        <h4 class="text-warning mb-1">@Model.PendingResults</h4>
                         <small class="text-muted">Pending Results</small>
                     </div>
                 </div>
@@ -58,7 +68,7 @@
                         <i class="ri-alert-line fs-4 text-danger"></i>
                     </div>
                     <div>
-                        <h4 class="text-danger mb-1">1</h4>
+                        <h4 class="text-danger mb-1">@Model.AbnormalResults</h4>
                         <small class="text-muted">Abnormal Results</small>
                     </div>
                 </div>
@@ -73,7 +83,7 @@
                         <i class="ri-calendar-line fs-4 text-info"></i>
                     </div>
                     <div>
-                        <h4 class="text-info mb-1">3</h4>
+                        <h4 class="text-info mb-1">@Model.ThisMonth</h4>
                         <small class="text-muted">This Month</small>
                     </div>
                 </div>
@@ -167,15 +177,15 @@
                                 <small><i class="ri-alert-line me-1"></i>LDL Cholesterol slightly elevated (145 mg/dL). Normal: <130 mg/dL</small>
                             </div>
                             <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-outline-primary">
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#viewReportModal">
                                     <i class="ri-eye-line me-1"></i>View Report
                                 </button>
-                                <button class="btn btn-sm btn-outline-info">
+                                <a href="/Patient/Documents?category=lab-reports" class="btn btn-sm btn-outline-info">
                                     <i class="ri-download-line me-1"></i>Download PDF
-                                </button>
-                                <button class="btn btn-sm btn-outline-warning">
+                                </a>
+                                <a href="/Patient/Appointments?action=book" class="btn btn-sm btn-outline-warning">
                                     <i class="ri-message-line me-1"></i>Discuss with Doctor
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -359,7 +369,7 @@
             </div>
         </div>
         
-        <!-- Critical Values Alert -->
+        @* <!-- Critical Values Alert -->
         <div class="card mb-3">
             <div class="card-header bg-danger-subtle">
                 <h5 class="card-title text-danger mb-0">
@@ -384,8 +394,8 @@
                 </div>
             </div>
         </div>
-        
-        <!-- Lab Centers -->
+         *@
+        @* <!-- Lab Centers -->
         <div class="card mb-3">
             <div class="card-header">
                 <h5 class="card-title">
@@ -432,7 +442,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> *@
         
         <!-- Quick Actions -->
         <div class="card">
@@ -443,16 +453,16 @@
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
-                    <button class="btn btn-outline-success">
+                    <a href="/Patient/RequestLabTest" class="btn btn-outline-success">
                         <i class="ri-add-line me-2"></i>Request New Test
-                    </button>
-                    <button class="btn btn-outline-primary">
+                    </a>
+                    <a href="/Patient/RequestLabTest" class="btn btn-outline-primary">
                         <i class="ri-calendar-line me-2"></i>Schedule Test
-                    </button>
-                    <button class="btn btn-outline-info">
+                    </a>
+                    <a href="/Patient/MedicalHistory" class="btn btn-outline-info">
                         <i class="ri-history-line me-2"></i>View Test History
-                    </button>
-                    <button class="btn btn-outline-warning">
+                    </a>
+                    <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#reminderModal">
                         <i class="ri-notification-line me-2"></i>Set Reminders
                     </button>
                 </div>

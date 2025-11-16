@@ -1,0 +1,508 @@
+@page "/Lab/Services"
+@model CareSync.Pages.Lab.ServicesModel
+@{
+    ViewData["Title"] = "Lab Services";
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <a href="~/Lab/AddService" class="btn btn-success">
+            <i class="ri-add-line me-1"></i>Add New Service
+        </a>
+        <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#filterModal">
+            <i class="ri-filter-line me-1"></i>Advanced Filters
+        </button>
+    </div>
+}
+
+<!-- Service Statistics -->
+<div class="row gx-3 mb-3">
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-primary-subtle rounded-5 me-3">
+                        <i class="ri-service-line fs-4 text-primary"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-primary mb-1">@Model.TotalServices</h4>
+                        <small class="text-muted">Total Services</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-success-subtle rounded-5 me-3">
+                        <i class="ri-check-line fs-4 text-success"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-success mb-1">@Model.ActiveServices</h4>
+                        <small class="text-muted">Active Services</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-warning-subtle rounded-5 me-3">
+                        <i class="ri-hourglass-line fs-4 text-warning"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-warning mb-1">@Model.PendingReview</h4>
+                        <small class="text-muted">Pending Review</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-info-subtle rounded-5 me-3">
+                        <i class="ri-money-dollar-circle-line fs-4 text-info"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-info mb-1">$@(Model.MonthlyRevenue / 1000)K</h4>
+                        <small class="text-muted">Monthly Revenue</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- All Lab Services - Single Grid -->
+<div class="row gx-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-light">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-flask-fill me-2 text-primary"></i>All Lab Services
+                        <span class="badge bg-primary ms-2">@Model.Services.Count Services</span>
+                    </h5>
+                    
+                    <!-- Quick Filters -->
+                    <div class="d-flex gap-2 flex-wrap">
+                        <input type="search" 
+                               id="searchInput" 
+                               class="form-control form-control-sm" 
+                               placeholder="Search by name or description..." 
+                               style="min-width: 250px;">
+                        
+                        <select id="categoryFilter" class="form-select form-select-sm" style="width: auto;">
+                            <option value="">All Categories</option>
+                            <option value="Hematology">Hematology</option>
+                            <option value="Clinical Chemistry">Clinical Chemistry</option>
+                            <option value="Microbiology">Microbiology</option>
+                            <option value="Immunology">Immunology</option>
+                            <option value="Molecular Biology">Molecular Biology</option>
+                        </select>
+                        
+                        <select id="sampleTypeFilter" class="form-select form-select-sm" style="width: auto;">
+                            <option value="">All Sample Types</option>
+                            <option value="Blood">Blood</option>
+                            <option value="Serum">Serum</option>
+                            <option value="Urine">Urine</option>
+                            <option value="Nasopharyngeal Swab">Swab</option>
+                        </select>
+                        
+                        <select id="statusFilter" class="form-select form-select-sm" style="width: auto;">
+                            <option value="">All Status</option>
+                            <option value="Active">Active</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                        
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="resetFilters()">
+                            <i class="ri-refresh-line"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="servicesTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 40%;">
+                                    <div class="d-flex align-items-center">
+                                        Service Name
+                                        <button class="btn btn-link btn-sm p-0 ms-2" onclick="sortTable('name')">
+                                            <i class="ri-arrow-up-down-line"></i>
+                                        </button>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="d-flex align-items-center">
+                                        Category
+                                        <button class="btn btn-link btn-sm p-0 ms-2" onclick="sortTable('category')">
+                                            <i class="ri-arrow-up-down-line"></i>
+                                        </button>
+                                    </div>
+                                </th>
+                                <th>Sample Type</th>
+                                <th>
+                                    <div class="d-flex align-items-center">
+                                        Price
+                                        <button class="btn btn-link btn-sm p-0 ms-2" onclick="sortTable('price')">
+                                            <i class="ri-arrow-up-down-line"></i>
+                                        </button>
+                                    </div>
+                                </th>
+                                <th>Est. Time</th>
+                                <th>Status</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Services.Any())
+                            {
+                                @foreach (var service in Model.Services)
+                                {
+                                    <tr data-category="@service.Category" 
+                                        data-sampletype="@service.SampleType" 
+                                        data-status="@service.Status"
+                                        data-price="@service.Price">
+                                        <td>
+                                            <div>
+                                                <h6 class="mb-0 fw-semibold">@service.Name</h6>
+                                                <small class="text-muted">@service.Description</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @{
+                                                var categoryIcon = service.Category switch
+                                                {
+                                                    "Hematology" => "ri-drop-line text-danger",
+                                                    "Clinical Chemistry" => "ri-flask-line text-success",
+                                                    "Microbiology" => "ri-microscope-line text-warning",
+                                                    "Immunology" => "ri-shield-line text-info",
+                                                    "Molecular Biology" => "ri-dna-line text-primary",
+                                                    _ => "ri-test-tube-line text-secondary"
+                                                };
+                                            }
+                                            <span class="badge bg-light text-dark border">
+                                                <i class="@categoryIcon me-1"></i>@service.Category
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @{
+                                                var sampleColor = service.SampleType switch
+                                                {
+                                                    "Blood" => "danger",
+                                                    "Serum" => "warning",
+                                                    "Urine" => "info",
+                                                    "Nasopharyngeal Swab" => "secondary",
+                                                    _ => "primary"
+                                                };
+                                            }
+                                            <span class="badge bg-@sampleColor-subtle text-@sampleColor">
+                                                @service.SampleType
+                                            </span>
+                                        </td>
+                                        <td class="fw-semibold text-success">$@service.Price.ToString("0.00")</td>
+                                        <td>
+                                            <small class="text-muted">
+                                                <i class="ri-time-line me-1"></i>@service.EstimatedTime
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-@service.StatusColor">@service.Status</span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="~/Lab/ViewService/@service.Id" 
+                                                   class="btn btn-sm btn-outline-primary" 
+                                                   data-bs-toggle="tooltip"
+                                                   title="View Details">
+                                                    <i class="ri-eye-line"></i>
+                                                </a>
+                                                <a href="~/Lab/EditService/@service.Id" 
+                                                   class="btn btn-sm btn-outline-warning"
+                                                   data-bs-toggle="tooltip"
+                                                   title="Edit Service">
+                                                    <i class="ri-edit-line"></i>
+                                                </a>
+                                                <button class="btn btn-sm btn-outline-danger"
+                                                        onclick="deleteService(@service.Id)"
+                                                        data-bs-toggle="tooltip"
+                                                        title="Delete Service">
+                                                    <i class="ri-delete-bin-line"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="7" class="text-center py-5">
+                                        <div class="text-muted">
+                                            <i class="ri-flask-line fs-1 d-block mb-3"></i>
+                                            <p>No lab services found</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="card-footer bg-light">
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        Showing <span id="displayedCount">@Model.Services.Count</span> of @Model.Services.Count services
+                    </small>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary" onclick="exportToCSV()">
+                            <i class="ri-file-excel-line me-1"></i>Export to CSV
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">
+                            <i class="ri-printer-line me-1"></i>Print
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Advanced Filter Modal -->
+<div class="modal fade" id="filterModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="ri-filter-3-line me-2"></i>Advanced Service Filters
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Price Range</label>
+                        <div class="d-flex gap-2 align-items-center">
+                            <input type="number" id="minPrice" class="form-control" placeholder="Min" min="0" step="10">
+                            <span>to</span>
+                            <input type="number" id="maxPrice" class="form-control" placeholder="Max" min="0" step="10">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label">Estimated Time</label>
+                        <select id="timeFilter" class="form-select">
+                            <option value="">Any Duration</option>
+                            <option value="fast">Fast (< 3 hours)</option>
+                            <option value="medium">Medium (3-6 hours)</option>
+                            <option value="slow">Slow (> 6 hours)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label">Multiple Categories</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="Hematology" id="cat1">
+                            <label class="form-check-label" for="cat1">Hematology</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="Clinical Chemistry" id="cat2">
+                            <label class="form-check-label" for="cat2">Clinical Chemistry</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="Microbiology" id="cat3">
+                            <label class="form-check-label" for="cat3">Microbiology</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="Immunology" id="cat4">
+                            <label class="form-check-label" for="cat4">Immunology</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="Molecular Biology" id="cat5">
+                            <label class="form-check-label" for="cat5">Molecular Biology</label>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label">Multiple Sample Types</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="Blood" id="sample1">
+                            <label class="form-check-label" for="sample1">Blood</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="Serum" id="sample2">
+                            <label class="form-check-label" for="sample2">Serum</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="Urine" id="sample3">
+                            <label class="form-check-label" for="sample3">Urine</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="Nasopharyngeal Swab" id="sample4">
+                            <label class="form-check-label" for="sample4">Nasopharyngeal Swab</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="clearAdvancedFilters()">Clear All</button>
+                <button type="button" class="btn btn-primary" onclick="applyAdvancedFilters()" data-bs-dismiss="modal">
+                    Apply Filters
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Real-time search
+        document.getElementById('searchInput').addEventListener('input', filterTable);
+        document.getElementById('categoryFilter').addEventListener('change', filterTable);
+        document.getElementById('sampleTypeFilter').addEventListener('change', filterTable);
+        document.getElementById('statusFilter').addEventListener('change', filterTable);
+
+        console.log('Lab Services page loaded - @Model.Services.Count services');
+    });
+
+    // Filter table function
+    function filterTable() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const categoryFilter = document.getElementById('categoryFilter').value;
+        const sampleTypeFilter = document.getElementById('sampleTypeFilter').value;
+        const statusFilter = document.getElementById('statusFilter').value;
+        
+        const rows = document.querySelectorAll('#servicesTable tbody tr');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            if (!row.dataset.category) return; // Skip empty state row
+            
+            const name = row.querySelector('h6').textContent.toLowerCase();
+            const description = row.querySelector('small').textContent.toLowerCase();
+            const category = row.dataset.category;
+            const sampleType = row.dataset.sampletype;
+            const status = row.dataset.status;
+
+            const matchesSearch = name.includes(searchTerm) || description.includes(searchTerm);
+            const matchesCategory = !categoryFilter || category === categoryFilter;
+            const matchesSampleType = !sampleTypeFilter || sampleType === sampleTypeFilter;
+            const matchesStatus = !statusFilter || status === statusFilter;
+
+            if (matchesSearch && matchesCategory && matchesSampleType && matchesStatus) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        document.getElementById('displayedCount').textContent = visibleCount;
+    }
+
+    // Sort table function
+    let sortDirection = {};
+    function sortTable(column) {
+        const tbody = document.querySelector('#servicesTable tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.dataset.category);
+        
+        sortDirection[column] = !sortDirection[column];
+        const isAsc = sortDirection[column];
+
+        rows.sort((a, b) => {
+            let aValue, bValue;
+            
+            if (column === 'name') {
+                aValue = a.querySelector('h6').textContent.trim();
+                bValue = b.querySelector('h6').textContent.trim();
+            } else if (column === 'category') {
+                aValue = a.dataset.category;
+                bValue = b.dataset.category;
+            } else if (column === 'price') {
+                aValue = parseFloat(a.dataset.price);
+                bValue = parseFloat(b.dataset.price);
+            }
+
+            if (aValue < bValue) return isAsc ? -1 : 1;
+            if (aValue > bValue) return isAsc ? 1 : -1;
+            return 0;
+        });
+
+        rows.forEach(row => tbody.appendChild(row));
+    }
+
+    // Reset filters
+    function resetFilters() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('categoryFilter').value = '';
+        document.getElementById('sampleTypeFilter').value = '';
+        document.getElementById('statusFilter').value = '';
+        filterTable();
+    }
+
+    // Advanced filters
+    function applyAdvancedFilters() {
+        const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
+        const maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity;
+        
+        const rows = document.querySelectorAll('#servicesTable tbody tr');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            if (!row.dataset.price) return;
+            
+            const price = parseFloat(row.dataset.price);
+            const inPriceRange = price >= minPrice && price <= maxPrice;
+
+            if (inPriceRange) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        document.getElementById('displayedCount').textContent = visibleCount;
+        filterTable(); // Combine with basic filters
+    }
+
+    function clearAdvancedFilters() {
+        document.getElementById('minPrice').value = '';
+        document.getElementById('maxPrice').value = '';
+        document.getElementById('timeFilter').value = '';
+        document.querySelectorAll('#filterModal .form-check-input').forEach(cb => cb.checked = false);
+    }
+
+    // Delete service
+    function deleteService(id) {
+        if (confirm('Are you sure you want to delete this service?')) {
+            alert('Service ' + id + ' will be deleted. (API integration needed)');
+            console.log('Delete service:', id);
+        }
+    }
+
+    // Export to CSV
+    function exportToCSV() {
+        alert('CSV export functionality will be implemented');
+        console.log('Export to CSV');
+    }
+</script>
+}

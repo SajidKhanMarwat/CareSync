@@ -1,0 +1,791 @@
+@page "/Doctor/MedicalHistory"
+@model CareSync.Pages.Doctor.MedicalHistoryModel
+@{
+    ViewData["Title"] = "Patient Medical History";
+}
+
+@section Breadcrumb {
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="~/Doctor/Dashboard">
+                <i class="ri-home-3-line"></i>
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="~/Doctor/Patients">Patients</a>
+        </li>
+        <li class="breadcrumb-item text-primary" aria-current="page">
+            Medical History
+        </li>
+    </ol>
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <button class="btn btn-success" onclick="window.location.href='/Doctor/Checkup?patientId=@Model.PatientId'">
+            <i class="ri-stethoscope-line me-2"></i>Start Checkup
+        </button>
+        <button class="btn btn-outline-secondary" onclick="printHistory()">
+            <i class="ri-printer-line me-2"></i>Print History
+        </button>
+        <button class="btn btn-outline-primary" onclick="exportHistory()">
+            <i class="ri-download-line me-2"></i>Export PDF
+        </button>
+    </div>
+}
+
+<!-- Patient Profile Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center">
+                            <img src="~/theme/images/patient.png" class="rounded-circle me-4" width="100" height="100" alt="Patient">
+                            <div>
+                                <h3 class="mb-2">@Model.Patient.Name</h3>
+                                <div class="row g-3">
+                                    <div class="col-auto">
+                                        <small class="text-muted">Patient ID:</small>
+                                        <p class="fw-bold mb-0">P@Model.Patient.PatientID.ToString("000")</p>
+                                    </div>
+                                    <div class="col-auto">
+                                        <small class="text-muted">Age:</small>
+                                        <p class="fw-bold mb-0">@Model.Patient.Age years</p>
+                                    </div>
+                                    <div class="col-auto">
+                                        <small class="text-muted">Gender:</small>
+                                        <p class="fw-bold mb-0">@Model.Patient.Gender</p>
+                                    </div>
+                                    <div class="col-auto">
+                                        <small class="text-muted">Blood Group:</small>
+                                        <p class="fw-bold mb-0"><span class="badge bg-danger">@Model.Patient.BloodGroup</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="mb-2">
+                            <i class="ri-phone-line text-primary me-2"></i>
+                            <span>@Model.Patient.Phone</span>
+                        </div>
+                        <div class="mb-2">
+                            <i class="ri-mail-line text-primary me-2"></i>
+                            <span>@Model.Patient.Email</span>
+                        </div>
+                        <div>
+                            <i class="ri-map-pin-line text-primary me-2"></i>
+                            <span>@Model.Patient.Address</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="row gx-3 mb-4">
+    <div class="col-xl-2 col-md-4 col-sm-6">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="icon-box md bg-primary-lighten rounded-circle mx-auto mb-2">
+                    <i class="ri-calendar-check-line text-primary"></i>
+                </div>
+                <h5 class="mb-0">@Model.TotalVisits</h5>
+                <small class="text-muted">Total Visits</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-sm-6">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="icon-box md bg-success-lighten rounded-circle mx-auto mb-2">
+                    <i class="ri-medicine-bottle-line text-success"></i>
+                </div>
+                <h5 class="mb-0">@Model.TotalPrescriptions</h5>
+                <small class="text-muted">Prescriptions</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-sm-6">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="icon-box md bg-warning-lighten rounded-circle mx-auto mb-2">
+                    <i class="ri-flask-line text-warning"></i>
+                </div>
+                <h5 class="mb-0">@Model.TotalLabTests</h5>
+                <small class="text-muted">Lab Tests</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-sm-6">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="icon-box md bg-info-lighten rounded-circle mx-auto mb-2">
+                    <i class="ri-file-text-line text-info"></i>
+                </div>
+                <h5 class="mb-0">@Model.TotalReports</h5>
+                <small class="text-muted">Reports</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-sm-6">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="icon-box md bg-danger-lighten rounded-circle mx-auto mb-2">
+                    <i class="ri-heart-pulse-line text-danger"></i>
+                </div>
+                <h5 class="mb-0">@Model.ChronicDiseases.Count</h5>
+                <small class="text-muted">Chronic Conditions</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-sm-6">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="icon-box md bg-secondary-lighten rounded-circle mx-auto mb-2">
+                    <i class="ri-shield-line text-secondary"></i>
+                </div>
+                <h5 class="mb-0">@Model.Allergies.Count</h5>
+                <small class="text-muted">Allergies</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="row">
+    <!-- Left Column -->
+    <div class="col-xl-8">
+        
+        <!-- Visit History Timeline -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-time-line me-2"></i>Visit History Timeline
+                </h5>
+            </div>
+            <div class="card-body">
+                @foreach (var visit in Model.VisitHistory)
+                {
+                    <div class="timeline-item mb-4 pb-4 border-bottom">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h6 class="mb-1">@visit.VisitDate.ToString("MMMM dd, yyyy")</h6>
+                                <small class="text-muted">@visit.VisitDate.ToString("hh:mm tt")</small>
+                            </div>
+                            <span class="badge @GetVisitTypeBadge(visit.VisitType)">@visit.VisitType</span>
+                        </div>
+                        <div class="ms-3">
+                            <p class="mb-2"><strong>Chief Complaint:</strong> @visit.ChiefComplaint</p>
+                            <p class="mb-2"><strong>Diagnosis:</strong> @visit.Diagnosis</p>
+                            <p class="mb-2"><strong>Treatment:</strong> @visit.Treatment</p>
+                            @if (!string.IsNullOrEmpty(visit.Notes))
+                            {
+                                <p class="mb-2"><strong>Notes:</strong> @visit.Notes</p>
+                            }
+                            <div class="mt-2">
+                                <a href="#" class="btn btn-sm btn-outline-primary me-2">
+                                    <i class="ri-eye-line me-1"></i>View Full Record
+                                </a>
+                                <a href="#" class="btn btn-sm btn-outline-secondary">
+                                    <i class="ri-download-line me-1"></i>Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+                
+                @if (!Model.VisitHistory.Any())
+                {
+                    <div class="text-center py-5">
+                        <i class="ri-calendar-line fs-1 text-muted mb-3"></i>
+                        <p class="text-muted">No visit history available</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Prescriptions History -->
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ri-medicine-bottle-line me-2"></i>Prescription History
+                </h5>
+                <button class="btn btn-sm btn-primary" onclick="window.location.href='/Doctor/Checkup?patientId=@Model.PatientId'">
+                    <i class="ri-add-line me-1"></i>New Prescription
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Medications</th>
+                                <th>Diagnosis</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var prescription in Model.Prescriptions)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="fw-semibold">@prescription.PrescriptionDate.ToString("MMM dd, yyyy")</span>
+                                    </td>
+                                    <td>
+                                        @foreach (var med in prescription.Medications.Take(2))
+                                        {
+                                            <span class="badge bg-primary-subtle text-primary me-1">@med</span>
+                                        }
+                                        @if (prescription.Medications.Count > 2)
+                                        {
+                                            <span class="badge bg-secondary">+@(prescription.Medications.Count - 2) more</span>
+                                        }
+                                    </td>
+                                    <td>@prescription.Diagnosis</td>
+                                    <td>
+                                        <span class="badge @(prescription.IsActive ? "bg-success" : "bg-secondary")">
+                                            @(prescription.IsActive ? "Active" : "Completed")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="viewPrescription(@prescription.PrescriptionID)">
+                                            <i class="ri-eye-line"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lab Results -->
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ri-test-tube-line me-2"></i>Lab Test Results
+                </h5>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#quickLabRequestModal">
+                        <i class="ri-add-line me-1"></i>Quick Request
+                    </button>
+                    <a href="/Doctor/LabRequest?patientId=@Model.PatientId" class="btn btn-sm btn-outline-primary">
+                        <i class="ri-file-add-line me-1"></i>Detailed Request
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Test Type</th>
+                                <th>Status</th>
+                                <th>Result</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var test in Model.LabTests)
+                            {
+                                <tr>
+                                    <td>@test.TestDate.ToString("MMM dd, yyyy")</td>
+                                    <td>
+                                        <span class="badge @GetTestTypeBadge(test.TestType)">
+                                            @test.TestType
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge @GetStatusBadge(test.Status)">
+                                            @test.Status
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (test.Status == "Completed")
+                                        {
+                                            @if (test.IsAbnormal)
+                                            {
+                                                <span class="badge bg-danger">Abnormal</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-success">Normal</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (test.Status == "Completed")
+                                        {
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewLabResult(@test.TestID)">
+                                                <i class="ri-eye-line"></i>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Pending</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-xl-4">
+
+        <!-- Current Vitals -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-heart-pulse-line me-2"></i>Current Vitals
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (Model.CurrentVitals != null)
+                {
+                    <div class="mb-3 pb-3 border-bottom">
+                        <small class="text-muted">Blood Pressure</small>
+                        <h5 class="mb-0">@Model.CurrentVitals.BloodPressure <small class="text-muted">mmHg</small></h5>
+                    </div>
+                    <div class="mb-3 pb-3 border-bottom">
+                        <small class="text-muted">Heart Rate</small>
+                        <h5 class="mb-0">@Model.CurrentVitals.HeartRate <small class="text-muted">bpm</small></h5>
+                    </div>
+                    <div class="mb-3 pb-3 border-bottom">
+                        <small class="text-muted">Temperature</small>
+                        <h5 class="mb-0">@Model.CurrentVitals.Temperature <small class="text-muted">°F</small></h5>
+                    </div>
+                    <div class="mb-3 pb-3 border-bottom">
+                        <small class="text-muted">Weight</small>
+                        <h5 class="mb-0">@Model.CurrentVitals.Weight <small class="text-muted">kg</small></h5>
+                    </div>
+                    <div class="mb-3 pb-3 border-bottom">
+                        <small class="text-muted">Height</small>
+                        <h5 class="mb-0">@Model.CurrentVitals.Height <small class="text-muted">cm</small></h5>
+                    </div>
+                    <div>
+                        <small class="text-muted">BMI</small>
+                        <h5 class="mb-0">@Model.CurrentVitals.BMI</h5>
+                    </div>
+                    <div class="mt-3">
+                        <small class="text-muted">Last Updated: @Model.CurrentVitals.LastUpdated.ToString("MMM dd, yyyy")</small>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="ri-heart-line fs-1 text-muted mb-2"></i>
+                        <p class="text-muted">No vitals recorded yet</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Chronic Diseases -->
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ri-health-book-line me-2"></i>Chronic Conditions
+                </h5>
+                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addDiseaseModal">
+                    <i class="ri-add-line"></i>
+                </button>
+            </div>
+            <div class="card-body">
+                @if (Model.ChronicDiseases.Any())
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var disease in Model.ChronicDiseases)
+                        {
+                            <li class="mb-2 pb-2 border-bottom">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <i class="ri-arrow-right-s-line text-danger"></i>
+                                        <strong>@disease.DiseaseName</strong>
+                                        <br>
+                                        <small class="text-muted ms-3">Since: @disease.DiagnosedDate.ToString("MMM yyyy")</small>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="ri-heart-add-line fs-1 text-muted mb-2"></i>
+                        <p class="text-muted">No chronic conditions recorded</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Allergies -->
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ri-alert-line me-2"></i>Allergies
+                </h5>
+                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addAllergyModal">
+                    <i class="ri-add-line"></i>
+                </button>
+            </div>
+            <div class="card-body">
+                @if (Model.Allergies.Any())
+                {
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach (var allergy in Model.Allergies)
+                        {
+                            <span class="badge bg-warning-subtle text-warning">
+                                <i class="ri-alert-line me-1"></i>@allergy.AllergyName
+                            </span>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="ri-shield-check-line fs-1 text-muted mb-2"></i>
+                        <p class="text-muted">No known allergies</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Family History -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-parent-line me-2"></i>Family History
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (!string.IsNullOrEmpty(Model.FamilyHistory))
+                {
+                    <p class="mb-0">@Model.FamilyHistory</p>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="ri-group-line fs-1 text-muted mb-2"></i>
+                        <p class="text-muted">No family history recorded</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-sticky-note-line me-2"></i>Doctor's Notes
+                </h5>
+            </div>
+            <div class="card-body">
+                <textarea class="form-control" rows="5" placeholder="Add notes about this patient...">@Model.DoctorNotes</textarea>
+                <button class="btn btn-sm btn-primary mt-2 w-100">
+                    <i class="ri-save-line me-1"></i>Save Notes
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Add Disease Modal -->
+<div class="modal fade" id="addDiseaseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Chronic Condition</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Condition Name</label>
+                        <input type="text" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Diagnosed Date</label>
+                        <input type="date" class="form-control" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Add Condition</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Allergy Modal -->
+<div class="modal fade" id="addAllergyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Allergy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Allergy Name</label>
+                        <input type="text" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Severity</label>
+                        <select class="form-select" required>
+                            <option value="">Select Severity</option>
+                            <option value="mild">Mild</option>
+                            <option value="moderate">Moderate</option>
+                            <option value="severe">Severe</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Add Allergy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Lab Request Modal -->
+<div class="modal fade" id="quickLabRequestModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="ri-test-tube-line me-2"></i>Quick Lab Test Request</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" asp-page-handler="QuickLabRequest">
+                <input type="hidden" name="patientId" value="@Model.PatientId" />
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="ri-information-line me-2"></i>
+                        <strong>Patient:</strong> @Model.Patient.Name (P@Model.Patient.PatientID.ToString("000"))
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Select Laboratory <span class="text-danger">*</span></label>
+                        <select class="form-select" name="labId" required>
+                            <option value="">Choose a laboratory...</option>
+                            <option value="1">City Central Laboratory - Downtown</option>
+                            <option value="2">HealthFirst Diagnostics - Medical District</option>
+                            <option value="3">Advanced Medical Lab - Science Park (24/7)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Common Lab Tests <span class="text-danger">*</span></label>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <div class="form-check border rounded p-3">
+                                    <input class="form-check-input" type="checkbox" name="selectedTests" value="1" id="test1">
+                                    <label class="form-check-label w-100" for="test1">
+                                        <strong>Complete Blood Count (CBC)</strong>
+                                        <br><small class="text-muted">Blood Test - $45.00</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check border rounded p-3">
+                                    <input class="form-check-input" type="checkbox" name="selectedTests" value="2" id="test2">
+                                    <label class="form-check-label w-100" for="test2">
+                                        <strong>Lipid Profile</strong>
+                                        <br><small class="text-muted">Blood Test - $55.00</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check border rounded p-3">
+                                    <input class="form-check-input" type="checkbox" name="selectedTests" value="3" id="test3">
+                                    <label class="form-check-label w-100" for="test3">
+                                        <strong>Blood Glucose (Fasting)</strong>
+                                        <br><small class="text-muted">Blood Test - $25.00</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check border rounded p-3">
+                                    <input class="form-check-input" type="checkbox" name="selectedTests" value="4" id="test4">
+                                    <label class="form-check-label w-100" for="test4">
+                                        <strong>HbA1c</strong>
+                                        <br><small class="text-muted">Blood Test - $40.00</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check border rounded p-3">
+                                    <input class="form-check-input" type="checkbox" name="selectedTests" value="8" id="test8">
+                                    <label class="form-check-label w-100" for="test8">
+                                        <strong>Urinalysis</strong>
+                                        <br><small class="text-muted">Urine Test - $30.00</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check border rounded p-3">
+                                    <input class="form-check-input" type="checkbox" name="selectedTests" value="10" id="test10">
+                                    <label class="form-check-label w-100" for="test10">
+                                        <strong>Chest X-Ray</strong>
+                                        <br><small class="text-muted">Imaging - $85.00</small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Priority <span class="text-danger">*</span></label>
+                        <select class="form-select" name="priority" required>
+                            <option value="Routine">Routine</option>
+                            <option value="Urgent">Urgent</option>
+                            <option value="STAT">STAT (Immediate)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Clinical Notes <span class="text-danger">*</span></label>
+                        <textarea class="form-control" name="clinicalNotes" rows="3" placeholder="Enter reason for test..." required></textarea>
+                    </div>
+
+                    <div class="text-muted">
+                        <small><i class="ri-information-line me-1"></i>For more test options, use the "Detailed Request" button</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ri-send-plane-line me-1"></i>Submit Request
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function printHistory() {
+            window.print();
+        }
+
+        function exportHistory() {
+            alert('Exporting medical history as PDF...');
+            // TODO: Implement PDF export
+        }
+
+        function viewPrescription(prescriptionId) {
+            alert('Viewing prescription #' + prescriptionId);
+            // TODO: Implement view prescription
+        }
+
+        function viewLabResult(testId) {
+            alert('Viewing lab result #' + testId);
+            // TODO: Implement view lab result
+        }
+    </script>
+
+    <style>
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon-box.md {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .bg-primary-lighten {
+            background-color: rgba(13, 110, 253, 0.1) !important;
+        }
+        
+        .bg-success-lighten {
+            background-color: rgba(25, 135, 84, 0.1) !important;
+        }
+        
+        .bg-warning-lighten {
+            background-color: rgba(255, 193, 7, 0.1) !important;
+        }
+        
+        .bg-info-lighten {
+            background-color: rgba(13, 202, 240, 0.1) !important;
+        }
+        
+        .bg-danger-lighten {
+            background-color: rgba(220, 53, 69, 0.1) !important;
+        }
+        
+        .bg-secondary-lighten {
+            background-color: rgba(108, 117, 125, 0.1) !important;
+        }
+        
+        .timeline-item:last-child {
+            border-bottom: none !important;
+        }
+    </style>
+}
+
+@functions {
+    private string GetVisitTypeBadge(string type)
+    {
+        return type.ToLower() switch
+        {
+            "regular checkup" => "bg-primary",
+            "follow-up" => "bg-success",
+            "emergency" => "bg-danger",
+            "consultation" => "bg-info",
+            _ => "bg-secondary"
+        };
+    }
+
+    private string GetTestTypeBadge(string type)
+    {
+        return type.ToLower() switch
+        {
+            "blood test" => "bg-danger-subtle text-danger",
+            "urine test" => "bg-warning-subtle text-warning",
+            "x-ray" => "bg-info-subtle text-info",
+            "mri" => "bg-primary-subtle text-primary",
+            "ct scan" => "bg-success-subtle text-success",
+            _ => "bg-secondary-subtle text-secondary"
+        };
+    }
+
+    private string GetStatusBadge(string status)
+    {
+        return status.ToLower() switch
+        {
+            "completed" => "bg-success",
+            "pending" => "bg-warning",
+            "in progress" => "bg-info",
+            _ => "bg-secondary"
+        };
+    }
+}
