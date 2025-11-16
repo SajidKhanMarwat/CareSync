@@ -203,27 +203,32 @@
         </li>
         
         <!-- My Appointments -->
-        <li class="treeview @(currentPath.Contains("/Patient/Appointments") ? "active" : "")">
-          <a href="#!">
+        <li class="@(currentPath.Contains("/Patient/Appointments") ? "active current-page" : "")">
+          <a href="~/Patient/Appointments">
             <i class="ri-calendar-2-line"></i>
             <span class="menu-text">My Appointments</span>
           </a>
-          <ul class="treeview-menu">
-            <li><a href="~/Patient/Appointments">All Appointments</a></li>
-          </ul>
         </li>
         
         <!-- Medical Records -->
-        <li class="treeview @(currentPath.Contains("/Patient/Medical") ? "active" : "")">
+        <li class="treeview @(currentPath.Contains("/Patient/Medical") || currentPath.Contains("/Patient/Prescriptions") || currentPath.Contains("/Patient/LabResults") || currentPath.Contains("/Patient/Documents") ? "active" : "")">
           <a href="#!">
             <i class="ri-file-text-line"></i>
             <span class="menu-text">Medical Records</span>
           </a>
           <ul class="treeview-menu">
-            <li><a href="~/Patient/MedicalHistory">Medical History</a></li>
-            <li><a href="~/Patient/Prescriptions">My Prescriptions</a></li>
-            <li><a href="~/Patient/LabReports">Lab Reports</a></li>
-            <li><a href="~/Patient/Documents">Medical Documents</a></li>
+            <li class="@(currentPath.Contains("/Patient/MedicalHistory") ? "active" : "")">
+              <a href="~/Patient/MedicalHistory">Medical History</a>
+            </li>
+            <li class="@(currentPath.Contains("/Patient/Prescriptions") ? "active" : "")">
+              <a href="~/Patient/Prescriptions">My Prescriptions</a>
+            </li>
+            <li class="@(currentPath.Contains("/Patient/LabResults") ? "active" : "")">
+              <a href="~/Patient/LabResults">Lab Reports</a>
+            </li>
+            <li class="@(currentPath.Contains("/Patient/Documents") ? "active" : "")">
+              <a href="~/Patient/Documents">Medical Documents</a>
+            </li>
           </ul>
         </li>
         

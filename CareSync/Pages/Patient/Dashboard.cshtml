@@ -114,309 +114,536 @@
 <!-- Quick Stats Overview -->
 <div class="row gx-3 mb-3">
     <div class="col-xxl-3 col-sm-6">
-        <div class="card border rounded-5 hover-lift">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="icon-box lg bg-primary-subtle rounded-5 me-3">
-                        <i class="ri-calendar-event-line fs-3 text-primary"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <h3 class="text-primary mb-1">@Model.UpcomingAppointments</h3>
-                        <small class="text-muted">Upcoming Appointments</small>
+        <a href="/Patient/Appointments" class="text-decoration-none">
+            <div class="card border rounded-5 hover-lift shadow-sm" style="transition: all 0.3s ease;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box lg bg-primary-subtle rounded-5 me-3">
+                            <i class="ri-calendar-event-line fs-3 text-primary"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h3 class="text-primary mb-1">@Model.UpcomingAppointments</h3>
+                            <small class="text-muted">Upcoming Appointments</small>
+                            <div class="mt-1"><small class="text-primary">Click to view <i class="ri-arrow-right-line"></i></small></div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
     <div class="col-xxl-3 col-sm-6">
-        <div class="card border rounded-5 hover-lift">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="icon-box lg bg-success-subtle rounded-5 me-3">
-                        <i class="ri-medicine-bottle-line fs-3 text-success"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <h3 class="text-success mb-1">@Model.ActivePrescriptions</h3>
-                        <small class="text-muted">Active Prescriptions</small>
+        <a href="/Patient/Prescriptions" class="text-decoration-none">
+            <div class="card border rounded-5 hover-lift shadow-sm" style="transition: all 0.3s ease;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box lg bg-success-subtle rounded-5 me-3">
+                            <i class="ri-medicine-bottle-line fs-3 text-success"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h3 class="text-success mb-1">@Model.ActivePrescriptions</h3>
+                            <small class="text-muted">Active Prescriptions</small>
+                            <div class="mt-1"><small class="text-success">Click to view <i class="ri-arrow-right-line"></i></small></div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
     <div class="col-xxl-3 col-sm-6">
-        <div class="card border rounded-5 hover-lift">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="icon-box lg bg-warning-subtle rounded-5 me-3">
-                        <i class="ri-test-tube-line fs-3 text-warning"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <h3 class="text-warning mb-1">@Model.PendingLabTests</h3>
-                        <small class="text-muted">Pending Lab Tests</small>
+        <a href="/Patient/RequestLabTest" class="text-decoration-none">
+            <div class="card border rounded-5 hover-lift shadow-sm" style="transition: all 0.3s ease;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box lg bg-warning-subtle rounded-5 me-3">
+                            <i class="ri-test-tube-line fs-3 text-warning"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h3 class="text-warning mb-1">@Model.PendingLabTests</h3>
+                            <small class="text-muted">Pending Lab Tests</small>
+                            <div class="mt-1"><small class="text-warning">Click to view <i class="ri-arrow-right-line"></i></small></div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
     <div class="col-xxl-3 col-sm-6">
-        <div class="card border rounded-5 hover-lift">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="icon-box lg bg-info-subtle rounded-5 me-3">
-                        <i class="ri-file-text-line fs-3 text-info"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <h3 class="text-info mb-1">@Model.NewReports</h3>
-                        <small class="text-muted">New Lab Reports</small>
+        <a href="/Patient/LabResults" class="text-decoration-none">
+            <div class="card border rounded-5 hover-lift shadow-sm" style="transition: all 0.3s ease;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box lg bg-info-subtle rounded-5 me-3">
+                            <i class="ri-file-text-line fs-3 text-info"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h3 class="text-info mb-1">@Model.NewReports</h3>
+                            <small class="text-muted">New Lab Reports</small>
+                            <div class="mt-1"><small class="text-info">Click to view <i class="ri-arrow-right-line"></i></small></div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 </div>
 
-  <!-- Row starts -->
+  <!-- Doctor Visits & Reports Section -->
   <div class="row gx-3">
-    <div class="col-sm-12">
+    <div class="col-xl-6 col-sm-12">
       <div class="card mb-3">
-        <div class="card-header">
-          <h5 class="card-title">Visits</h5>
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">
+            <i class="ri-stethoscope-line text-primary me-2"></i>Recent Doctor Visits
+          </h5>
+          <a href="/Patient/MedicalHistory" class="btn btn-sm btn-outline-primary">
+            <i class="ri-history-line me-1"></i>View All
+          </a>
         </div>
-        <div class="card-body pt-0">
+        <div class="card-body">
           <div class="table-outer">
             <div class="table-responsive">
               <table class="table align-middle truncate m-0">
                 <thead>
                   <tr>
-                    <th>Consulting Doctor</th>
+                    <th>Doctor</th>
                     <th>Visit Date</th>
                     <th>Department</th>
-                    <th>Fee Paid</th>
-                    <th>Lab Reports</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>
-                      <img src="~/ApolloTheme/assets/images/doctor1.png" class="img-3x rounded-2" alt="Medical Dashboard">
-                      Dr. Hector
-                    </td>
-                    <td>20/05/2024</td>
-                    <td>Orthopaedics</td>
-                    <td>$200</td>
-                    <td>
-                      <div class="d-inline-flex gap-1">
-                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                          data-bs-target="#viewReportsModal1">
-                          View Reports
-                        </button>
-                        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip"
-                          data-bs-placement="top" data-bs-title="Download Report">
-                          <i class="ri-file-download-line"></i>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td colspan="5">
-                      <h6>Prescription</h6>
-                      <p class="text-wrap m-0">The prescriptions featured in the dataset exhibit illegible
-                        handwriting, commonly encountered in medical practices. These images serve as
-                        invaluable resources for developing and evaluating algorithms aimed at enhancing
-                        handwriting recognition technologies within the medical domain.
-                      </p>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td colspan="5">
-                      <h6>Reports</h6>
-                      <ul class="list-unstyled d-flex m-0">
-                        <li class="pe-2 border-end">Weight: 48lbs</li>
-                        <li class="px-2 border-end">Blood Pressure: 120</li>
-                        <li class="px-2 border-end">Sugar Levels Before: 90</li>
-                        <li class="px-2 border-end">Sugar Levels After: 180</li>
-                      </ul>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td colspan="5">
-                      <h6>Medicines</h6>
-                      <p>For 10 Days</p>
-                      <div class="d-flex gap-3">
-                        <ul class="d-flex gap-5 m-0">
-                          <li>
-                            <div>
-                              <h6>Aricep Tablet</h6>
-                              <ul class="list-unstyled d-flex mb-3">
-                                <li class="pe-2 border-end">Morning: 1</li>
-                                <li class="px-2 border-end">Afternoon: 0</li>
-                                <li class="px-2">Night: 1</li>
-                              </ul>
-                            </div>
-                          </li>
-                          <li>
-                            <div>
-                              <h6>Cresemba Capsule</h6>
-                              <ul class="list-unstyled d-flex mb-3">
-                                <li class="pe-2 border-end">Morning: 0</li>
-                                <li class="px-2 border-end">Afternoon: 1</li>
-                                <li class="px-2">Night: 1</li>
-                              </ul>
-                            </div>
-                          </li>
-                          <li>
-                            <div>
-                              <h6>Justoza Tablet</h6>
-                              <ul class="list-unstyled d-flex mb-3">
-                                <li class="pe-2 border-end">Morning: 1</li>
-                                <li class="px-2 border-end">Afternoon: 1</li>
-                                <li class="px-2">Night: 0</li>
-                              </ul>
-                            </div>
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
+                  @foreach (var visit in Model.DoctorVisits)
+                  {
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <img src="@visit.DoctorImage" class="img-3x rounded-circle me-2" alt="Doctor">
+                          <div>
+                            <div class="fw-semibold">@visit.DoctorName</div>
+                            <small class="text-muted">@visit.Specialization</small>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <span class="badge bg-light text-dark">
+                          <i class="ri-calendar-line me-1"></i>@visit.VisitDate
+                        </span>
+                      </td>
+                      <td>
+                        <span class="badge bg-primary-subtle text-primary">@visit.Department</span>
+                      </td>
+                      <td>
+                        <div class="d-inline-flex gap-1">
+                          <a href="/Patient/AppointmentDetails?id=@visit.Id" class="btn btn-primary btn-sm" 
+                             data-bs-toggle="tooltip" data-bs-placement="top" title="View Visit Details">
+                            <i class="ri-eye-line me-1"></i>Details
+                          </a>
+                          <a href="/Patient/Prescriptions" class="btn btn-outline-primary btn-sm"
+                             data-bs-toggle="tooltip" data-bs-placement="top" title="View Prescriptions">
+                            <i class="ri-prescription-line"></i>
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                  }
                 </tbody>
               </table>
             </div>
           </div>
+          @if (!Model.DoctorVisits.Any())
+          {
+            <div class="text-center py-4">
+              <i class="ri-stethoscope-line fs-1 text-muted mb-3 d-block"></i>
+              <p class="text-muted">No doctor visits recorded yet</p>
+              <a href="/Patient/BookAppointment" class="btn btn-primary btn-sm">
+                <i class="ri-calendar-event-line me-1"></i>Book Appointment
+              </a>
+            </div>
+          }
         </div>
       </div>
     </div>
-  </div>
-  <!-- Row ends -->
 
-  <!-- Row starts -->
-  <div class="row gx-3">
-    <div class="col-xxl-3 col-sm-6 col-12">
+    <div class="col-xl-6 col-sm-12">
       <div class="card mb-3">
-        <div class="card-body">
-          <div class="text-center">
-            <div class="mb-3">
-              <i class="ri-capsule-line fs-1 text-primary"></i>
-            </div>
-            <div class="mb-4">
-              <h5>BP Levels</h5>
-              <p class="m-0 opacity-50">Recent five visits</p>
-            </div>
-          </div>
-          <div class="overflow-hidden">
-            <div id="bpLevels" class="mb-3"></div>
-          </div>
-          <ul class="list-group">
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <div>24/04/2024</div>
-              <div>140</div>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <div>16/04/2024</div>
-              <div>190</div>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <div>10/04/2024</div>
-              <div>230</div>
-            </li>
-          </ul>
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">
+            <i class="ri-file-text-line text-success me-2"></i>Medical Reports
+          </h5>
+          <a href="/Patient/LabResults" class="btn btn-sm btn-outline-success">
+            <i class="ri-folder-open-line me-1"></i>View All
+          </a>
         </div>
-      </div>
-    </div>
-    <div class="col-xxl-3 col-sm-6 col-12">
-      <div class="card mb-3">
         <div class="card-body">
-          <div class="text-center">
-            <div class="mb-3">
-              <i class="ri-contrast-drop-2-line fs-1 text-primary"></i>
-            </div>
-            <div class="mb-4">
-              <h5>Sugar Levels</h5>
-              <p class="m-0 opacity-50">Recent five visits</p>
-            </div>
-          </div>
-          <div class="overflow-hidden">
-            <div id="sugarLevels" class="mb-3"></div>
-          </div>
-          <ul class="list-group">
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <div>24/04/2024</div>
-              <div>140</div>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <div>16/04/2024</div>
-              <div>190</div>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <div>10/04/2024</div>
-              <div>230</div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    <div class="col-xxl-3 col-sm-6 col-12">
-      <div class="card mb-3">
-        <div class="card-body">
-          <div class="text-center">
-            <div class="mb-3">
-              <i class="ri-heart-pulse-line fs-1 text-primary"></i>
-            </div>
-            <div class="mb-4">
-              <h5>Heart Rate</h5>
-              <p class="m-0 opacity-50">Recent five visits</p>
-            </div>
-          </div>
-          <div class="overflow-hidden">
-            <div id="heartRate" class="mb-3"></div>
-          </div>
-          <ul class="list-group">
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <div>24/04/2024</div>
-              <div>110</div>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <div>16/04/2024</div>
-              <div>120</div>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <div>10/04/2024</div>
-              <div>100</div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    <div class="col-xxl-3 col-sm-6 col-12">
-      <div class="card mb-3">
-        <div class="card-body">
-          <div class="text-center">
-            <div class="mb-3">
-              <i class="ri-flask-line fs-1 text-primary"></i>
-            </div>
-            <div class="mb-4">
-              <h5>Cholesterol</h5>
-              <p class="m-0 opacity-50">Recent five visits</p>
+          <div class="table-outer">
+            <div class="table-responsive">
+              <table class="table align-middle truncate m-0">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Report Name</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @foreach (var report in Model.MedicalReports)
+                  {
+                    <tr>
+                      <td>
+                        <div class="icon-box md bg-success-subtle rounded-2">
+                          <i class="ri-file-text-line text-success fs-5"></i>
+                        </div>
+                      </td>
+                      <td>
+                        <div>
+                          <div class="fw-semibold">@report.ReportTitle</div>
+                          <small class="text-muted">@report.ReportType</small>
+                        </div>
+                      </td>
+                      <td>
+                        <span class="badge bg-light text-dark">
+                          <i class="ri-calendar-line me-1"></i>@report.ReportDate
+                        </span>
+                      </td>
+                      <td>
+                        <div class="d-inline-flex gap-1">
+                          <a href="/Patient/LabResults?reportId=@report.Id" class="btn btn-success btn-sm"
+                             data-bs-toggle="tooltip" data-bs-placement="top" title="View Report">
+                            <i class="ri-eye-line"></i>
+                          </a>
+                          <button type="button" class="btn btn-outline-success btn-sm" 
+                                  data-bs-toggle="tooltip" data-bs-placement="top" title="Download Report"
+                                  onclick="alert('Download feature coming soon!')">
+                            <i class="ri-download-line"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
             </div>
           </div>
-          <div class="overflow-hidden">
-            <div id="clolesterolLevels" class="mb-3"></div>
-          </div>
-          <ul class="list-group">
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <div>24/04/2024</div>
-              <div>180</div>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <div>16/04/2024</div>
-              <div>220</div>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <div>10/04/2024</div>
-              <div>230</div>
-            </li>
-          </ul>
+          @if (!Model.MedicalReports.Any())
+          {
+            <div class="text-center py-4">
+              <i class="ri-file-text-line fs-1 text-muted mb-3 d-block"></i>
+              <p class="text-muted">No medical reports available</p>
+              <a href="/Patient/RequestLabTest" class="btn btn-success btn-sm">
+                <i class="ri-test-tube-line me-1"></i>Request Lab Test
+              </a>
+            </div>
+          }
         </div>
       </div>
     </div>
   </div>
-  <!-- Row ends -->
+  <!-- Doctor Visits & Reports Section ends -->
+
+  <!-- Health Vitals Section -->
+  <div class="row gx-3">
+    <div class="col-12 mb-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="ri-heart-pulse-line text-danger me-2"></i>Health Vitals Tracking</h5>
+        <a href="/Patient/Vitals" class="btn btn-sm btn-outline-danger">
+          <i class="ri-line-chart-line me-1"></i>View Complete History
+        </a>
+      </div>
+    </div>
+    <div class="col-xxl-3 col-sm-6 col-12">
+      <a href="/Patient/Vitals?type=bp" class="text-decoration-none">
+        <div class="card mb-3 hover-lift" style="transition: all 0.3s ease; cursor: pointer;">
+          <div class="card-body">
+            <div class="text-center">
+              <div class="mb-3">
+                <i class="ri-capsule-line fs-1 text-primary"></i>
+              </div>
+              <div class="mb-4">
+                <h5>BP Levels</h5>
+                <p class="m-0 opacity-50">Recent five visits</p>
+              </div>
+            </div>
+            <div class="overflow-hidden">
+              <div id="bpLevels" class="mb-3"></div>
+            </div>
+            <ul class="list-group">
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>24/04/2024</div>
+                <div><span class="badge bg-success">140</span></div>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>16/04/2024</div>
+                <div><span class="badge bg-warning">190</span></div>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>10/04/2024</div>
+                <div><span class="badge bg-danger">230</span></div>
+              </li>
+            </ul>
+            <div class="text-center mt-2">
+              <small class="text-primary">Click for details <i class="ri-arrow-right-line"></i></small>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-xxl-3 col-sm-6 col-12">
+      <a href="/Patient/Vitals?type=sugar" class="text-decoration-none">
+        <div class="card mb-3 hover-lift" style="transition: all 0.3s ease; cursor: pointer;">
+          <div class="card-body">
+            <div class="text-center">
+              <div class="mb-3">
+                <i class="ri-contrast-drop-2-line fs-1 text-primary"></i>
+              </div>
+              <div class="mb-4">
+                <h5>Sugar Levels</h5>
+                <p class="m-0 opacity-50">Recent five visits</p>
+              </div>
+            </div>
+            <div class="overflow-hidden">
+              <div id="sugarLevels" class="mb-3"></div>
+            </div>
+            <ul class="list-group">
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>24/04/2024</div>
+                <div><span class="badge bg-success">140</span></div>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>16/04/2024</div>
+                <div><span class="badge bg-warning">190</span></div>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>10/04/2024</div>
+                <div><span class="badge bg-danger">230</span></div>
+              </li>
+            </ul>
+            <div class="text-center mt-2">
+              <small class="text-primary">Click for details <i class="ri-arrow-right-line"></i></small>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-xxl-3 col-sm-6 col-12">
+      <a href="/Patient/Vitals?type=heartrate" class="text-decoration-none">
+        <div class="card mb-3 hover-lift" style="transition: all 0.3s ease; cursor: pointer;">
+          <div class="card-body">
+            <div class="text-center">
+              <div class="mb-3">
+                <i class="ri-heart-pulse-line fs-1 text-primary"></i>
+              </div>
+              <div class="mb-4">
+                <h5>Heart Rate</h5>
+                <p class="m-0 opacity-50">Recent five visits</p>
+              </div>
+            </div>
+            <div class="overflow-hidden">
+              <div id="heartRate" class="mb-3"></div>
+            </div>
+            <ul class="list-group">
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>24/04/2024</div>
+                <div><span class="badge bg-success">110</span></div>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>16/04/2024</div>
+                <div><span class="badge bg-success">120</span></div>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>10/04/2024</div>
+                <div><span class="badge bg-success">100</span></div>
+              </li>
+            </ul>
+            <div class="text-center mt-2">
+              <small class="text-primary">Click for details <i class="ri-arrow-right-line"></i></small>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-xxl-3 col-sm-6 col-12">
+      <a href="/Patient/Vitals?type=cholesterol" class="text-decoration-none">
+        <div class="card mb-3 hover-lift" style="transition: all 0.3s ease; cursor: pointer;">
+          <div class="card-body">
+            <div class="text-center">
+              <div class="mb-3">
+                <i class="ri-flask-line fs-1 text-primary"></i>
+              </div>
+              <div class="mb-4">
+                <h5>Cholesterol</h5>
+                <p class="m-0 opacity-50">Recent five visits</p>
+              </div>
+            </div>
+            <div class="overflow-hidden">
+              <div id="clolesterolLevels" class="mb-3"></div>
+            </div>
+            <ul class="list-group">
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>24/04/2024</div>
+                <div><span class="badge bg-success">180</span></div>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>16/04/2024</div>
+                <div><span class="badge bg-warning">220</span></div>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>10/04/2024</div>
+                <div><span class="badge bg-danger">230</span></div>
+              </li>
+            </ul>
+            <div class="text-center mt-2">
+              <small class="text-primary">Click for details <i class="ri-arrow-right-line"></i></small>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+  <!-- Health Vitals Section ends -->
+
+@section Styles {
+<style>
+    /* Enhanced hover effects for cards */
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* Smooth transitions for all cards */
+    .card {
+        transition: all 0.3s ease;
+    }
+
+    /* Better link styling */
+    a.text-decoration-none:hover .card {
+        border-color: var(--bs-primary) !important;
+    }
+
+    /* Icon box hover effect */
+    .icon-box:hover {
+        transform: scale(1.1);
+        transition: all 0.3s ease;
+    }
+
+    /* Badge styling improvements */
+    .badge {
+        font-weight: 500;
+        padding: 0.35em 0.65em;
+    }
+
+    /* Table row hover effect */
+    .table tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+        transition: background-color 0.3s ease;
+    }
+
+    /* Button group hover improvements */
+    .btn-sm {
+        transition: all 0.2s ease;
+    }
+
+    .btn-sm:hover {
+        transform: scale(1.05);
+    }
+
+    /* Quick stats card hover */
+    .card.shadow-sm:hover {
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2) !important;
+        border-color: var(--bs-primary) !important;
+    }
+
+    /* Empty state styling */
+    .text-center .ri-stethoscope-line,
+    .text-center .ri-file-text-line {
+        opacity: 0.3;
+    }
+
+    /* Card header improvements */
+    .card-header {
+        background-color: rgba(13, 110, 253, 0.03);
+        border-bottom: 2px solid rgba(13, 110, 253, 0.1);
+    }
+
+    /* Responsive text adjustments */
+    @@media (max-width: 768px) {
+        .card-title {
+            font-size: 1rem;
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+    }
+
+    /* Loading animation for future use */
+    @@keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.5;
+        }
+    }
+
+    .loading {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+</style>
+}
+
+@section Scripts {
+<script>
+    // Initialize tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Add smooth scroll behavior
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Add animation on card appearance
+        const cards = document.querySelectorAll('.card');
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '0';
+                    entry.target.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        entry.target.style.transition = 'all 0.5s ease';
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, 100);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        cards.forEach(card => {
+            observer.observe(card);
+        });
+
+        // Console log for patient dashboard
+        console.log('🏥 Patient Dashboard Loaded Successfully');
+        console.log('📊 Features: Doctor Visits, Medical Reports, Health Vitals');
+    });
+</script>
+}

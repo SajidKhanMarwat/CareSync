@@ -4,81 +4,137 @@
     ViewData["Title"] = "Medical History";
 }
 
-@section PageActions {
-    <div class="d-flex gap-2">
-        <button type="button" class="btn btn-success">
-            <i class="ri-add-line me-1"></i>Add Medical Record
-        </button>
-        <button type="button" class="btn btn-primary">
-            <i class="ri-save-line me-1"></i>Save Changes
-        </button>
-        <button type="button" class="btn btn-outline-info">
-            <i class="ri-download-line me-1"></i>Export History
-        </button>
+<!-- Patient Info Header -->
+<div class="row gx-3 mb-4">
+    <div class="col-12">
+        <div class="card border-start border-primary border-4">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center flex-wrap gap-4">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box lg bg-primary-subtle rounded-5 me-2">
+                                    <i class="ri-account-circle-line fs-3 text-primary"></i>
+                                </div>
+                                <div>
+                                    <h4 class="mb-1">@Model.PatientName</h4>
+                                    <p class="m-0 text-muted">MRN: @Model.MRN</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box md bg-info-subtle rounded-5 me-2">
+                                    <i class="ri-user-line fs-5 text-info"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">@Model.Gender</h6>
+                                    <small class="text-muted">Gender</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box md bg-warning-subtle rounded-5 me-2">
+                                    <i class="ri-calendar-line fs-5 text-warning"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">@Model.Age yrs</h6>
+                                    <small class="text-muted">Age</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box md bg-danger-subtle rounded-5 me-2">
+                                    <i class="ri-contrast-drop-2-line fs-5 text-danger"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">@Model.BloodGroup</h6>
+                                    <small class="text-muted">Blood Type</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex gap-2 justify-content-md-end">
+                            <button type="button" class="btn btn-outline-info">
+                                <i class="ri-download-line me-1"></i>Export History
+                            </button>
+                            <button type="button" class="btn btn-primary">
+                                <i class="ri-printer-line me-1"></i>Print
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-}
+</div>
 
-<!-- Medical History Overview Cards -->
-<div class="row gx-3 mb-3">
+<!-- Medical Records Quick Access Cards -->
+<div class="row gx-3 mb-4">
     <div class="col-xl-3 col-sm-6">
-        <div class="card border rounded-5">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="icon-box lg bg-danger-subtle rounded-5 me-3">
-                        <i class="ri-heart-pulse-line fs-4 text-danger"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-danger mb-1">2</h4>
-                        <small class="text-muted">Chronic Conditions</small>
+        <a href="/Patient/Appointments" class="text-decoration-none">
+            <div class="card border rounded-5 hover-lift" style="transition: all 0.3s ease;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box lg bg-primary-subtle rounded-5 me-3">
+                            <i class="ri-calendar-check-line fs-3 text-primary"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h3 class="text-primary mb-1">@Model.TotalAppointments</h3>
+                            <small class="text-muted">Total Visits</small>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
     <div class="col-xl-3 col-sm-6">
-        <div class="card border rounded-5">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="icon-box lg bg-warning-subtle rounded-5 me-3">
-                        <i class="ri-alert-line fs-4 text-warning"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-warning mb-1">3</h4>
-                        <small class="text-muted">Allergies</small>
+        <a href="/Patient/Prescriptions" class="text-decoration-none">
+            <div class="card border rounded-5 hover-lift" style="transition: all 0.3s ease;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box lg bg-success-subtle rounded-5 me-3">
+                            <i class="ri-medicine-bottle-line fs-3 text-success"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h3 class="text-success mb-1">@Model.TotalPrescriptions</h3>
+                            <small class="text-muted">Prescriptions</small>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
     <div class="col-xl-3 col-sm-6">
-        <div class="card border rounded-5">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="icon-box lg bg-info-subtle rounded-5 me-3">
-                        <i class="ri-surgical-mask-line fs-4 text-info"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-info mb-1">1</h4>
-                        <small class="text-muted">Surgeries</small>
+        <a href="/Patient/LabResults" class="text-decoration-none">
+            <div class="card border rounded-5 hover-lift" style="transition: all 0.3s ease;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box lg bg-info-subtle rounded-5 me-3">
+                            <i class="ri-file-list-3-line fs-3 text-info"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h3 class="text-info mb-1">@Model.TotalLabReports</h3>
+                            <small class="text-muted">Lab Reports</small>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
     <div class="col-xl-3 col-sm-6">
-        <div class="card border rounded-5">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="icon-box lg bg-success-subtle rounded-5 me-3">
-                        <i class="ri-medicine-bottle-line fs-4 text-success"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-success mb-1">5</h4>
-                        <small class="text-muted">Current Medications</small>
+        <a href="/Patient/Documents" class="text-decoration-none">
+            <div class="card border rounded-5 hover-lift" style="transition: all 0.3s ease;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box lg bg-warning-subtle rounded-5 me-3">
+                            <i class="ri-folder-line fs-3 text-warning"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h3 class="text-warning mb-1">@Model.TotalDocuments</h3>
+                            <small class="text-muted">Documents</small>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 </div>
 

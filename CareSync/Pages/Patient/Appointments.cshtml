@@ -4,46 +4,55 @@
     ViewData["Title"] = "My Appointments";
 }
 
-@section PageActions {
-    <div class="d-flex gap-2">
-        <button type="button" class="btn btn-success">
-            <i class="ri-add-line me-1"></i>Book New Appointment
-        </button>
-        <button type="button" class="btn btn-primary">
-            <i class="ri-calendar-event-line me-1"></i>Calendar View
-        </button>
-        <button type="button" class="btn btn-outline-info">
-            <i class="ri-history-line me-1"></i>Appointment History
-        </button>
+<!-- Hero Section with Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3 class="text-white mb-2">
+                            <i class="ri-calendar-check-line me-2"></i>Manage Your Appointments
+                        </h3>
+                        <p class="mb-0 opacity-75">Book, view, and manage all your medical appointments in one place</p>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <a href="/Patient/BookAppointment" class="btn btn-light btn-lg">
+                            <i class="ri-add-circle-line me-2"></i>Book New Appointment
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-}
+</div>
 
 <!-- Appointment Statistics Cards -->
-<div class="row gx-3 mb-3">
+<div class="row gx-3 mb-4">
     <div class="col-xl-3 col-sm-6">
-        <div class="card border rounded-5">
+        <div class="card border rounded-5 hover-lift" style="transition: all 0.3s ease;">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="icon-box lg bg-primary-subtle rounded-5 me-3">
-                        <i class="ri-calendar-check-line fs-4 text-primary"></i>
+                        <i class="ri-calendar-check-line fs-3 text-primary"></i>
                     </div>
-                    <div>
-                        <h4 class="text-primary mb-1">3</h4>
-                        <small class="text-muted">Upcoming</small>
+                    <div class="flex-grow-1">
+                        <h3 class="text-primary mb-1">@Model.TotalUpcoming</h3>
+                        <small class="text-muted">Upcoming Appointments</small>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-xl-3 col-sm-6">
-        <div class="card border rounded-5">
+        <div class="card border rounded-5 hover-lift" style="transition: all 0.3s ease;">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="icon-box lg bg-success-subtle rounded-5 me-3">
-                        <i class="ri-check-double-line fs-4 text-success"></i>
+                        <i class="ri-check-double-line fs-3 text-success"></i>
                     </div>
-                    <div>
-                        <h4 class="text-success mb-1">24</h4>
+                    <div class="flex-grow-1">
+                        <h3 class="text-success mb-1">@Model.TotalCompleted</h3>
                         <small class="text-muted">Completed</small>
                     </div>
                 </div>
@@ -51,29 +60,29 @@
         </div>
     </div>
     <div class="col-xl-3 col-sm-6">
-        <div class="card border rounded-5">
+        <div class="card border rounded-5 hover-lift" style="transition: all 0.3s ease;">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="icon-box lg bg-warning-subtle rounded-5 me-3">
-                        <i class="ri-time-line fs-4 text-warning"></i>
+                        <i class="ri-time-line fs-3 text-warning"></i>
                     </div>
-                    <div>
-                        <h4 class="text-warning mb-1">1</h4>
-                        <small class="text-muted">Pending</small>
+                    <div class="flex-grow-1">
+                        <h3 class="text-warning mb-1">@Model.TotalPending</h3>
+                        <small class="text-muted">Pending Confirmation</small>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-xl-3 col-sm-6">
-        <div class="card border rounded-5">
+        <div class="card border rounded-5 hover-lift" style="transition: all 0.3s ease;">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="icon-box lg bg-danger-subtle rounded-5 me-3">
-                        <i class="ri-close-circle-line fs-4 text-danger"></i>
+                        <i class="ri-close-circle-line fs-3 text-danger"></i>
                     </div>
-                    <div>
-                        <h4 class="text-danger mb-1">2</h4>
+                    <div class="flex-grow-1">
+                        <h3 class="text-danger mb-1">@Model.TotalCancelled</h3>
                         <small class="text-muted">Cancelled</small>
                     </div>
                 </div>
@@ -82,319 +91,354 @@
     </div>
 </div>
 
-<!-- Main Content -->
-<div class="row gx-3">
-    <div class="col-xl-8">
-        <!-- Upcoming Appointments -->
-        <div class="card mb-3">
-            <div class="card-header">
+<!-- Current Appointments (Today) -->
+<div class="row gx-3 mb-4">
+    <div class="col-12">
+        <div class="card border-start border-danger border-4">
+            <div class="card-header bg-danger-subtle">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">
-                        <i class="ri-calendar-2-line me-2"></i>Upcoming Appointments
+                    <h5 class="card-title mb-0 text-danger">
+                        <i class="ri-calendar-event-fill me-2"></i>Today's Appointments
                     </h5>
-                    <span class="badge bg-primary-subtle text-primary">Next 30 Days</span>
+                    <span class="badge bg-danger">@Model.CurrentAppointments.Count Active Today</span>
                 </div>
             </div>
             <div class="card-body">
-                <div class="appointment-list">
-                    <!-- Appointment 1 -->
-                    <div class="appointment-item border rounded-4 p-3 mb-3">
-                        <div class="row align-items-center">
-                            <div class="col-auto">
-                                <div class="icon-box md bg-primary-subtle rounded-circle">
-                                    <i class="ri-calendar-event-line text-primary"></i>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <div>
-                                        <h6 class="mb-1">Dr. Sarah Johnson</h6>
-                                        <p class="text-muted mb-1">Cardiology Consultation</p>
-                                        <small class="text-muted">
-                                            <i class="ri-calendar-line me-1"></i>November 15, 2024 at 10:00 AM
-                                        </small>
-                                    </div>
-                                    <span class="badge bg-success">Confirmed</span>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-outline-primary">
-                                        <i class="ri-eye-line me-1"></i>View Details
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-warning">
-                                        <i class="ri-calendar-line me-1"></i>Reschedule
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-danger">
-                                        <i class="ri-close-line me-1"></i>Cancel
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Appointment 2 -->
-                    <div class="appointment-item border rounded-4 p-3 mb-3">
-                        <div class="row align-items-center">
-                            <div class="col-auto">
-                                <div class="icon-box md bg-warning-subtle rounded-circle">
-                                    <i class="ri-calendar-todo-line text-warning"></i>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <div>
-                                        <h6 class="mb-1">Dr. Michael Brown</h6>
-                                        <p class="text-muted mb-1">Follow-up Appointment</p>
-                                        <small class="text-muted">
-                                            <i class="ri-calendar-line me-1"></i>November 20, 2024 at 2:30 PM
-                                        </small>
-                                    </div>
-                                    <span class="badge bg-warning">Pending Confirmation</span>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-outline-primary">
-                                        <i class="ri-eye-line me-1"></i>View Details
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-success">
-                                        <i class="ri-check-line me-1"></i>Confirm
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-danger">
-                                        <i class="ri-close-line me-1"></i>Cancel
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Appointment 3 -->
-                    <div class="appointment-item border rounded-4 p-3">
-                        <div class="row align-items-center">
-                            <div class="col-auto">
-                                <div class="icon-box md bg-info-subtle rounded-circle">
-                                    <i class="ri-calendar-check-line text-info"></i>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <div>
-                                        <h6 class="mb-1">Dr. Lisa Anderson</h6>
-                                        <p class="text-muted mb-1">Lab Results Review</p>
-                                        <small class="text-muted">
-                                            <i class="ri-calendar-line me-1"></i>November 25, 2024 at 11:00 AM
-                                        </small>
-                                    </div>
-                                    <span class="badge bg-info">Scheduled</span>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-outline-primary">
-                                        <i class="ri-eye-line me-1"></i>View Details
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-warning">
-                                        <i class="ri-calendar-line me-1"></i>Reschedule
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-info">
-                                        <i class="ri-message-line me-1"></i>Message Doctor
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Recent Appointments -->
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">
-                    <i class="ri-history-line me-2"></i>Recent Appointments
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead class="table-light">
-                            <tr>
-                                <th><i class="ri-calendar-line me-1"></i>Date</th>
-                                <th><i class="ri-user-line me-1"></i>Doctor</th>
-                                <th><i class="ri-file-text-line me-1"></i>Type</th>
-                                <th><i class="ri-flag-line me-1"></i>Status</th>
-                                <th><i class="ri-settings-line me-1"></i>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <span class="fw-semibold">Nov 10, 2024</span>
-                                    <small class="text-muted d-block">10:00 AM</small>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="~/theme/images/doctor1.png" class="img-2x rounded-circle me-2" alt="Doctor">
-                                        <div>
-                                            <span class="fw-semibold">Dr. Sarah Johnson</span>
-                                            <small class="text-muted d-block">Cardiology</small>
+                @if (Model.CurrentAppointments.Any())
+                {
+                    <div class="row gx-3">
+                        @foreach (var appointment in Model.CurrentAppointments)
+                        {
+                            <div class="col-lg-6 mb-3">
+                                <div class="card border rounded-4 shadow-sm hover-lift" style="transition: all 0.3s ease;">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-start mb-3">
+                                            <div class="me-3">
+                                                <img src="@appointment.DoctorImage" class="img-5x rounded-circle border border-3 border-@appointment.StatusColor" alt="@appointment.DoctorName">
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-1">@appointment.DoctorName</h6>
+                                                <p class="text-muted mb-1 small">
+                                                    <i class="ri-stethoscope-line me-1"></i>@appointment.Specialization
+                                                </p>
+                                                <span class="badge bg-@appointment.StatusColor-subtle text-@appointment.StatusColor">
+                                                    <i class="ri-building-2-line me-1"></i>@appointment.Department
+                                                </span>
+                                            </div>
+                                            <span class="badge bg-@appointment.StatusColor">@appointment.Status</span>
+                                        </div>
+                                        
+                                        <div class="row g-2 mb-3">
+                                            <div class="col-6">
+                                                <div class="d-flex align-items-center text-muted small">
+                                                    <i class="ri-time-line me-2 text-primary"></i>
+                                                    <div>
+                                                        <div class="fw-semibold">@appointment.AppointmentTime</div>
+                                                        <div class="small">Time</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="d-flex align-items-center text-muted small">
+                                                    <i class="ri-door-open-line me-2 text-info"></i>
+                                                    <div>
+                                                        <div class="fw-semibold">@appointment.RoomNumber</div>
+                                                        <div class="small">Location</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="border-top pt-3">
+                                            <div class="row g-2">
+                                                <div class="col-12">
+                                                    <a href="/Patient/AppointmentDetails?id=@appointment.Id" class="btn btn-primary btn-sm w-100">
+                                                        <i class="ri-eye-line me-1"></i>View Full Details
+                                                    </a>
+                                                </div>
+                                                <div class="col-6">
+                                                    @if (appointment.HasPrescription)
+                                                    {
+                                                        <a href="/Patient/Prescriptions?appointmentId=@appointment.Id" class="btn btn-success btn-sm w-100">
+                                                            <i class="ri-medicine-bottle-line me-1"></i>Prescription
+                                                        </a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button class="btn btn-outline-secondary btn-sm w-100" disabled>
+                                                            <i class="ri-medicine-bottle-line me-1"></i>No Prescription
+                                                        </button>
+                                                    }
+                                                </div>
+                                                <div class="col-6">
+                                                    @if (appointment.HasLabReports)
+                                                    {
+                                                        <a href="/Patient/LabResults?appointmentId=@appointment.Id" class="btn btn-info btn-sm w-100">
+                                                            <i class="ri-file-list-3-line me-1"></i>Lab Reports
+                                                        </a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button class="btn btn-outline-secondary btn-sm w-100" disabled>
+                                                            <i class="ri-file-list-3-line me-1"></i>No Reports
+                                                        </button>
+                                                    }
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </td>
-                                <td><span class="badge bg-info-subtle text-info">Consultation</span></td>
-                                <td><span class="badge bg-success">Completed</span></td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <button class="btn btn-sm btn-outline-primary" title="View Report">
-                                            <i class="ri-file-text-line"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-success" title="Book Follow-up">
-                                            <i class="ri-calendar-event-line"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <span class="fw-semibold">Nov 5, 2024</span>
-                                    <small class="text-muted d-block">2:30 PM</small>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="~/theme/images/doctor2.png" class="img-2x rounded-circle me-2" alt="Doctor">
-                                        <div>
-                                            <span class="fw-semibold">Dr. Michael Brown</span>
-                                            <small class="text-muted d-block">General Medicine</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td><span class="badge bg-warning-subtle text-warning">Follow-up</span></td>
-                                <td><span class="badge bg-success">Completed</span></td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <button class="btn btn-sm btn-outline-primary" title="View Report">
-                                            <i class="ri-file-text-line"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-info" title="View Prescription">
-                                            <i class="ri-medicine-bottle-line"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="ri-calendar-check-line fs-1 text-muted mb-3 d-block"></i>
+                        <h5 class="text-muted">No appointments scheduled for today</h5>
+                        <p class="text-muted">Book a new appointment to see a doctor</p>
+                        <a href="/Patient/BookAppointment" class="btn btn-primary">
+                            <i class="ri-add-circle-line me-1"></i>Book Appointment
+                        </a>
+                    </div>
+                }
             </div>
         </div>
     </div>
-    
-    <div class="col-xl-4">
-        <!-- Book New Appointment -->
-        <div class="card mb-3">
-            <div class="card-header">
-                <h5 class="card-title">
-                    <i class="ri-calendar-event-line me-2"></i>Book New Appointment
-                </h5>
-            </div>
-            <div class="card-body">
-                <form>
-                    <div class="mb-3">
-                        <label class="form-label">
-                            <i class="ri-user-line me-1"></i>Select Doctor
-                        </label>
-                        <select class="form-select">
-                            <option value="">Choose a doctor...</option>
-                            <option value="1">Dr. Sarah Johnson - Cardiology</option>
-                            <option value="2">Dr. Michael Brown - General Medicine</option>
-                            <option value="3">Dr. Lisa Anderson - Dermatology</option>
-                            <option value="4">Dr. James Wilson - Orthopedics</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">
-                            <i class="ri-calendar-line me-1"></i>Appointment Date
-                        </label>
-                        <input type="date" class="form-control" min="2024-11-13" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">
-                            <i class="ri-time-line me-1"></i>Preferred Time
-                        </label>
-                        <select class="form-select">
-                            <option value="">Select time...</option>
-                            <option value="09:00">9:00 AM</option>
-                            <option value="10:00">10:00 AM</option>
-                            <option value="11:00">11:00 AM</option>
-                            <option value="14:00">2:00 PM</option>
-                            <option value="15:00">3:00 PM</option>
-                            <option value="16:00">4:00 PM</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">
-                            <i class="ri-chat-3-line me-1"></i>Reason for Visit
-                        </label>
-                        <textarea class="form-control" rows="3" placeholder="Describe your symptoms or reason for the appointment..."></textarea>
-                    </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-success">
-                            <i class="ri-calendar-event-line me-1"></i>Book Appointment
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
-        <!-- Quick Actions -->
-        <div class="card mb-3">
-            <div class="card-header">
-                <h5 class="card-title">
-                    <i class="ri-dashboard-line me-2"></i>Quick Actions
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="d-grid gap-2">
-                    <button class="btn btn-outline-primary">
-                        <i class="ri-search-line me-2"></i>Find a Doctor
-                    </button>
-                    <button class="btn btn-outline-danger">
-                        <i class="ri-alarm-warning-line me-2"></i>Emergency Appointment
-                    </button>
-                    <button class="btn btn-outline-info">
-                        <i class="ri-video-line me-2"></i>Telemedicine
-                    </button>
-                    <button class="btn btn-outline-success">
-                        <i class="ri-calendar-check-line me-2"></i>Available Slots
-                    </button>
+</div>
+
+<!-- Next/Upcoming Appointments -->
+<div class="row gx-3 mb-4">
+    <div class="col-12">
+        <div class="card border-start border-primary border-4">
+            <div class="card-header bg-primary-subtle">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0 text-primary">
+                        <i class="ri-calendar-2-line me-2"></i>Next Appointments
+                    </h5>
+                    <span class="badge bg-primary">@Model.NextAppointments.Count Scheduled</span>
                 </div>
             </div>
+            <div class="card-body">
+                @if (Model.NextAppointments.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th><i class="ri-user-line me-1"></i>Doctor</th>
+                                    <th><i class="ri-calendar-line me-1"></i>Date & Time</th>
+                                    <th><i class="ri-stethoscope-line me-1"></i>Type</th>
+                                    <th><i class="ri-flag-line me-1"></i>Status</th>
+                                    <th class="text-center"><i class="ri-settings-3-line me-1"></i>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var appointment in Model.NextAppointments)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="@appointment.DoctorImage" class="img-3x rounded-circle me-2" alt="@appointment.DoctorName">
+                                                <div>
+                                                    <div class="fw-semibold">@appointment.DoctorName</div>
+                                                    <small class="text-muted">@appointment.Specialization</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="fw-semibold">@appointment.AppointmentDate</div>
+                                            <small class="text-muted">
+                                                <i class="ri-time-line me-1"></i>@appointment.AppointmentTime
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info-subtle text-info">@appointment.AppointmentType</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-@appointment.StatusColor">@appointment.Status</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-1 justify-content-center">
+                                                <a href="/Patient/AppointmentDetails?id=@appointment.Id" 
+                                                   class="btn btn-primary btn-sm" 
+                                                   data-bs-toggle="tooltip" 
+                                                   title="View Full Details">
+                                                    <i class="ri-eye-line"></i>
+                                                </a>
+                                                @if (appointment.HasPrescription)
+                                                {
+                                                    <a href="/Patient/Prescriptions?appointmentId=@appointment.Id" 
+                                                       class="btn btn-success btn-sm"
+                                                       data-bs-toggle="tooltip"
+                                                       title="View Prescription">
+                                                        <i class="ri-medicine-bottle-line"></i>
+                                                    </a>
+                                                }
+                                                @if (appointment.HasLabReports)
+                                                {
+                                                    <a href="/Patient/LabResults?appointmentId=@appointment.Id" 
+                                                       class="btn btn-info btn-sm"
+                                                       data-bs-toggle="tooltip"
+                                                       title="View Lab Reports">
+                                                        <i class="ri-file-list-3-line"></i>
+                                                    </a>
+                                                }
+                                                <button class="btn btn-outline-warning btn-sm"
+                                                        data-bs-toggle="tooltip"
+                                                        title="Reschedule"
+                                                        onclick="alert('Reschedule feature coming soon!')">
+                                                    <i class="ri-calendar-line"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="ri-calendar-line fs-1 text-muted mb-3 d-block"></i>
+                        <h5 class="text-muted">No upcoming appointments</h5>
+                        <p class="text-muted">Schedule your next visit with a doctor</p>
+                        <a href="/Patient/BookAppointment" class="btn btn-primary">
+                            <i class="ri-add-circle-line me-1"></i>Book Appointment
+                        </a>
+                    </div>
+                }
+            </div>
         </div>
-        
-        <!-- Notifications -->
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">
-                    <i class="ri-notification-line me-2"></i>Reminders
-                </h5>
+    </div>
+</div>
+
+<!-- Recent/Past Appointments -->
+<div class="row gx-3 mb-4">
+    <div class="col-12">
+        <div class="card border-start border-success border-4">
+            <div class="card-header bg-success-subtle">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0 text-success">
+                        <i class="ri-history-line me-2"></i>Recent Appointments
+                    </h5>
+                    <a href="/Patient/MedicalHistory" class="btn btn-sm btn-outline-success">
+                        <i class="ri-file-list-line me-1"></i>View All History
+                    </a>
+                </div>
             </div>
             <div class="card-body">
-                <div class="list-group list-group-flush">
-                    <div class="list-group-item border-0 px-0">
-                        <div class="d-flex align-items-start">
-                            <div class="icon-box sm bg-primary-subtle rounded-circle me-2">
-                                <i class="ri-calendar-line text-primary"></i>
+                @if (Model.RecentAppointments.Any())
+                {
+                    <div class="row gx-3">
+                        @foreach (var appointment in Model.RecentAppointments)
+                        {
+                            <div class="col-lg-6 mb-3">
+                                <div class="card border rounded-4 shadow-sm hover-lift" style="transition: all 0.3s ease;">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-start mb-3">
+                                            <div class="me-3">
+                                                <img src="@appointment.DoctorImage" class="img-4x rounded-circle" alt="@appointment.DoctorName">
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-1">@appointment.DoctorName</h6>
+                                                <p class="text-muted mb-1 small">@appointment.Specialization</p>
+                                                <span class="badge bg-success-subtle text-success">
+                                                    <i class="ri-check-line me-1"></i>@appointment.Status
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <div class="d-flex justify-content-between text-muted small">
+                                                <span>
+                                                    <i class="ri-calendar-line me-1"></i>@appointment.AppointmentDate
+                                                </span>
+                                                <span>
+                                                    <i class="ri-time-line me-1"></i>@appointment.AppointmentTime
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="border-top pt-3">
+                                            <div class="row g-2">
+                                                <div class="col-4">
+                                                    <a href="/Patient/AppointmentDetails?id=@appointment.Id" class="btn btn-outline-primary btn-sm w-100">
+                                                        <i class="ri-eye-line me-1"></i>Details
+                                                    </a>
+                                                </div>
+                                                <div class="col-4">
+                                                    @if (appointment.HasPrescription)
+                                                    {
+                                                        <a href="/Patient/Prescriptions?appointmentId=@appointment.Id" class="btn btn-success btn-sm w-100">
+                                                            <i class="ri-medicine-bottle-line"></i>
+                                                        </a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button class="btn btn-outline-secondary btn-sm w-100" disabled>
+                                                            <i class="ri-medicine-bottle-line"></i>
+                                                        </button>
+                                                    }
+                                                </div>
+                                                <div class="col-4">
+                                                    @if (appointment.HasLabReports)
+                                                    {
+                                                        <a href="/Patient/LabResults?appointmentId=@appointment.Id" class="btn btn-info btn-sm w-100">
+                                                            <i class="ri-file-list-3-line"></i>
+                                                        </a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button class="btn btn-outline-secondary btn-sm w-100" disabled>
+                                                            <i class="ri-file-list-3-line"></i>
+                                                        </button>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <small class="fw-semibold">Upcoming Appointment</small>
-                                <small class="text-muted d-block">Dr. Sarah Johnson tomorrow at 10:00 AM</small>
-                                <small class="text-muted">Don't forget to bring your medical records</small>
-                            </div>
-                        </div>
+                        }
                     </div>
-                    <div class="list-group-item border-0 px-0">
-                        <div class="d-flex align-items-start">
-                            <div class="icon-box sm bg-warning-subtle rounded-circle me-2">
-                                <i class="ri-medicine-bottle-line text-warning"></i>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="ri-history-line fs-1 text-muted mb-3 d-block"></i>
+                        <h5 class="text-muted">No recent appointments</h5>
+                        <p class="text-muted">Your appointment history will appear here</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Action Bar -->
+<div class="row gx-3">
+    <div class="col-12">
+        <div class="card bg-light border-0">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <h5 class="mb-1"><i class="ri-question-line me-2 text-primary"></i>Need Help?</h5>
+                        <p class="text-muted mb-0 small">Contact our support team for assistance with your appointments</p>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row g-2">
+                            <div class="col-sm-6">
+                                <a href="/Patient/BookAppointment" class="btn btn-primary w-100">
+                                    <i class="ri-calendar-event-line me-1"></i>Book New Appointment
+                                </a>
                             </div>
-                            <div>
-                                <small class="fw-semibold">Medication Reminder</small>
-                                <small class="text-muted d-block">Take your blood pressure medication</small>
-                                <small class="text-muted">Daily at 8:00 AM</small>
+                            <div class="col-sm-6">
+                                <button class="btn btn-outline-primary w-100" onclick="alert('Support: +1-800-CARE-123')">
+                                    <i class="ri-phone-line me-1"></i>Contact Support
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -403,63 +447,117 @@
         </div>
     </div>
 </div>
+
+@section Styles {
+<style>
+    /* Card hover effects */
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* Smooth transitions */
+    .card {
+        transition: all 0.3s ease;
+    }
+
+    /* Table row hover */
+    .table-hover tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+
+    /* Button hover effects */
+    .btn {
+        transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+    }
+
+    /* Image styling */
+    .img-3x, .img-4x, .img-5x {
+        object-fit: cover;
+    }
+
+    /* Badge improvements */
+    .badge {
+        font-weight: 500;
+        padding: 0.4em 0.7em;
+    }
+
+    /* Status colors */
+    .border-success {
+        border-color: var(--bs-success) !important;
+    }
+
+    .border-primary {
+        border-color: var(--bs-primary) !important;
+    }
+
+    .border-danger {
+        border-color: var(--bs-danger) !important;
+    }
+
+    /* Empty state */
+    .text-center i.fs-1 {
+        opacity: 0.3;
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .table {
+            font-size: 0.875rem;
+        }
+    }
+</style>
+}
+
 @section Scripts {
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set minimum date to today
-            const dateInput = document.querySelector('input[type="date"]');
-            if (dateInput) {
-                const today = new Date().toISOString().split('T')[0];
-                dateInput.min = today;
-            }
-            
-            // Form validation for booking appointment
-            const bookingForm = document.querySelector('form');
-            if (bookingForm) {
-                bookingForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    const doctor = this.querySelector('select').value;
-                    const date = this.querySelector('input[type="date"]').value;
-                    const time = this.querySelectorAll('select')[1].value;
-                    const reason = this.querySelector('textarea').value;
-                    
-                    if (!doctor || !date || !time || !reason.trim()) {
-                        alert('Please fill in all required fields.');
-                        return;
-                    }
-                    
-                    // Show success message
-                    alert('Appointment request submitted successfully! You will receive a confirmation shortly.');
-                    
-                    // Reset form
-                    this.reset();
-                });
-            }
-            
-            // Add tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-            
-            // Appointment action handlers
-            document.querySelectorAll('.appointment-item button').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const action = this.textContent.trim();
-                    console.log('Appointment action:', action);
-                    
-                    if (action.includes('Cancel')) {
-                        if (confirm('Are you sure you want to cancel this appointment?')) {
-                            alert('Appointment cancelled successfully.');
-                        }
-                    } else if (action.includes('Reschedule')) {
-                        alert('Redirecting to reschedule page...');
-                    } else if (action.includes('Confirm')) {
-                        alert('Appointment confirmed successfully.');
-                    }
-                });
-            });
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
         });
-    </script>
+
+        // Add smooth animations on scroll
+        const cards = document.querySelectorAll('.card');
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '0';
+                    entry.target.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        entry.target.style.transition = 'all 0.5s ease';
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, 100);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        cards.forEach(card => {
+            observer.observe(card);
+        });
+
+        // Console log for debugging
+        console.log('🏥 Appointments Page Loaded');
+        console.log('📅 Current Appointments:', @Model.CurrentAppointments.Count);
+        console.log('📆 Next Appointments:', @Model.NextAppointments.Count);
+        console.log('📋 Recent Appointments:', @Model.RecentAppointments.Count);
+    });
+</script>
 }
