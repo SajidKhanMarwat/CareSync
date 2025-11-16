@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace CareSync.Pages.Admin
+namespace CareSync.Pages.Admin.Patients
 {
-    public class LabReportsModel : PageModel
+    public class SearchModel : PageModel
     {
         public void OnGet()
         {

@@ -5,6 +5,8 @@ using CareSync.Shared.Models;
 using CareSync.Shared.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Text.Json;
+using System.Net;
 
 namespace CareSync.Pages.Auth;
 
@@ -32,6 +34,12 @@ public class RegisterModel : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
+        // Calculate age from date of birth before validation
+        if (RegisterRequest.DateOfBirth.HasValue)
+        {
+            RegisterRequest.CalculateAge();
+        }
+
         if (!ModelState.IsValid)
         {
             return Page();
@@ -63,17 +71,68 @@ public class RegisterModel : PageModel
 
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<Result<GeneralResponse>>();
-                
-                if (result?.IsSuccess == true && result.Data?.Success == true)
+                try
                 {
-                    SuccessMessage = result.Data.Message ?? "Registration successful! You can now login.";
-                    TempData["SuccessMessage"] = SuccessMessage;
-                    return RedirectToPage("/Auth/Login");
+                    // Read the raw response content for debugging
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    _logger.LogInformation("Registration API Response: {Content}", responseContent);
+                    
+                    // Parse the response directly based on the actual JSON structure
+                    Result<GeneralResponse>? result = null;
+                    if (!string.IsNullOrEmpty(responseContent))
+                    {
+                        // First try to parse as a simple response structure
+                        var jsonDoc = JsonDocument.Parse(responseContent);
+                        var root = jsonDoc.RootElement;
+                        
+                        if (root.TryGetProperty("isSuccess", out var isSuccessElement) &&
+                            root.TryGetProperty("data", out var dataElement))
+                        {
+                            var isSuccess = isSuccessElement.GetBoolean();
+                            var data = new GeneralResponse();
+                            
+                            if (dataElement.TryGetProperty("success", out var successElement))
+                                data.Success = successElement.GetBoolean();
+                            
+                            if (dataElement.TryGetProperty("message", out var messageElement))
+                                data.Message = messageElement.GetString() ?? string.Empty;
+                            
+                            // Create a result object manually
+                            result = new Result<GeneralResponse>();
+                            result.IsSuccess = isSuccess;
+                            result.Data = data;
+                            
+                            if (root.TryGetProperty("statusCode", out var statusCodeElement))
+                                result.StatusCode = (HttpStatusCode)statusCodeElement.GetInt32();
+                        }
+                    }
+                    
+                    if (result?.IsSuccess == true && result.Data?.Success == true)
+                    {
+                        SuccessMessage = result.Data.Message ?? "Registration successful! You can now login.";
+                        TempData["SuccessMessage"] = SuccessMessage;
+                        return RedirectToPage("/Auth/Login");
+                    }
+                    else
+                    {
+                        ErrorMessage = result?.Data?.Message ?? result?.GetError() ?? "Registration failed. Please try again.";
+                        _logger.LogWarning("Registration failed with result: {@Result}", result);
+                    }
                 }
-                else
+                catch (JsonException jsonEx)
                 {
-                    ErrorMessage = result?.Data?.Message ?? result?.GetError() ?? "Registration failed. Please try again.";
+                    _logger.LogError(jsonEx, "Failed to deserialize registration response");
+                    
+                    // Try to read the raw content again for error display
+                    var rawContent = await response.Content.ReadAsStringAsync();
+                    _logger.LogError("Raw response content: {Content}", rawContent);
+                    
+                    ErrorMessage = "Registration response format error. Please try again.";
+                }
+                catch (Exception deserializationEx)
+                {
+                    _logger.LogError(deserializationEx, "Error processing registration response");
+                    ErrorMessage = "Error processing registration response. Please try again.";
                 }
             }
             else

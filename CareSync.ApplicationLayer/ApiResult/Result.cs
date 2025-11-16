@@ -1,19 +1,19 @@
-﻿using System.Net;
+using System.Net;
 using System.Text.Json.Serialization;
 
 namespace CareSync.ApplicationLayer.ApiResult;
 
 public class Result<T>
 {
-    public HttpStatusCode StatusCode { get; }
-    public bool IsSuccess { get; }
+    public HttpStatusCode StatusCode { get; set; }
+    public bool IsSuccess { get; set; }
     public bool IsFailure => _exception != null || !IsSuccess;
 
-    public T? Data { get; }
-    private readonly string? _error;
+    public T? Data { get; set; }
+    private string? _error;
 
     [JsonIgnore]
-    private readonly Exception? _exception;
+    private Exception? _exception;
 
     public object? Error =>
         _exception == null ? null : new
@@ -23,6 +23,11 @@ public class Result<T>
             StackTrace = _exception.StackTrace,
             InnerMessage = _exception.InnerException?.Message
         };
+
+    // Parameterless constructor for JSON deserialization
+    public Result()
+    {
+    }
 
     private Result(bool isSuccess, T? value, string? error, Exception? exception, HttpStatusCode statusCode)
     {

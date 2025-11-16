@@ -71,6 +71,57 @@
           </a>
         </li>
         
+        <!-- Appointments Management -->
+        <li class="@(currentPath.Contains("/Admin/Appointments") ? "active current-page" : "")">
+          <a href="~/Admin/Appointments">
+            <i class="ri-calendar-line"></i>
+            <span class="menu-text">Appointments</span>
+          </a>
+        </li>
+        
+        <!-- Doctors Management -->
+        <li class="treeview @(currentPath.Contains("/Admin/Doctors") || currentPath.Contains("/Admin/CreateDoctor") ? "active" : "")">
+          <a href="#!">
+            <i class="ri-stethoscope-line"></i>
+            <span class="menu-text">Doctors</span>
+          </a>
+          <ul class="treeview-menu">
+            <li class="@(currentPath.Contains("/Admin/Doctors") ? "active" : "")">
+              <a href="~/Admin/Doctors">All Doctors</a>
+            </li>
+            <li class="@(currentPath.Contains("/Admin/CreateDoctor") ? "active" : "")">
+              <a href="~/Admin/CreateDoctor">Add Doctor</a>
+            </li>
+          </ul>
+        </li>
+        
+        <!-- Patients Management -->
+        <li class="treeview @(currentPath.Contains("/Admin/Patients") || currentPath.Contains("/Patients/Create") || currentPath.Contains("/Admin/Patients/Search") ? "active" : "")">
+          <a href="#!">
+            <i class="ri-user-heart-line"></i>
+            <span class="menu-text">Patients</span>
+          </a>
+          <ul class="treeview-menu">
+            <li class="@(currentPath.Contains("/Admin/Patients") ? "active" : "")">
+              <a href="~/Admin/Patients">All Patients</a>
+            </li>
+            <li class="@(currentPath.Contains("/Patients/Create") ? "active" : "")">
+              <a href="~/Patients/Create">Add Patient</a>
+            </li>
+            <li class="@(currentPath.Contains("/Admin/Patients/Search") ? "active" : "")">
+              <a href="~/Admin/Patients/Search">Search Patients</a>
+            </li>
+          </ul>
+        </li>
+        
+        <!-- Staff Management -->
+        <li class="@(currentPath.Contains("/Admin/CreateLaboratory") ? "active current-page" : "")">
+          <a href="~/Admin/CreateLaboratory">
+            <i class="ri-test-tube-line"></i>
+            <span class="menu-text">Add Lab Staff</span>
+          </a>
+        </li>
+        
         <!-- User Management -->
         <li class="treeview @(currentPath.Contains("/Admin/Users") || currentPath.Contains("/Admin/Roles") ? "active" : "")">
           <a href="#!">
@@ -90,49 +141,16 @@
           </ul>
         </li>
         
-        <!-- Medical Staff Management -->
-        <li class="treeview">
-          <a href="#!">
-            <i class="ri-stethoscope-line"></i>
-            <span class="menu-text">Medical Staff</span>
-          </a>
-          <ul class="treeview-menu">
-            <li><a href="~/Admin/Doctors">Doctors</a></li>
-            <li><a href="~/Admin/Nurses">Nurses</a></li>
-            <li><a href="~/Admin/Staff">Support Staff</a></li>
-          </ul>
-        </li>
-        
-        <!-- Departments -->
-        <li class="treeview">
-          <a href="#!">
-            <i class="ri-building-2-line"></i>
-            <span class="menu-text">Departments</span>
-          </a>
-          <ul class="treeview-menu">
-            <li><a href="~/Admin/Departments">All Departments</a></li>
-            <li><a href="~/Admin/Departments/Add">Add Department</a></li>
-          </ul>
-        </li>
-        
-        <!-- System Management -->
-        <li class="@(currentPath.Contains("/Admin/SystemOverview") ? "active current-page" : "")">
-          <a href="~/Admin/SystemOverview">
-            <i class="ri-bar-chart-line"></i>
-            <span class="menu-text">System Overview</span>
-          </a>
-        </li>
-        
-        <!-- Reports -->
-        <li class="treeview">
+        <!-- Reports & Analytics -->
+        <li class="treeview @(currentPath.Contains("/Admin/UserReports") ? "active" : "")">
           <a href="#!">
             <i class="ri-file-chart-line"></i>
-            <span class="menu-text">Reports</span>
+            <span class="menu-text">Reports & Analytics</span>
           </a>
           <ul class="treeview-menu">
-            <li><a href="~/Admin/Reports/Users">User Reports</a></li>
-            <li><a href="~/Admin/Reports/Appointments">Appointment Reports</a></li>
-            <li><a href="~/Admin/Reports/Financial">Financial Reports</a></li>
+            <li class="@(currentPath.Contains("/Admin/UserReports") ? "active" : "")">
+              <a href="~/Admin/UserReports">User Reports</a>
+            </li>
           </ul>
         </li>
       }
@@ -305,14 +323,6 @@
         </li>
       }
       
-      <!-- Settings (Common for all roles) -->
-      <li class="@(currentPath.Contains("/Settings") ? "active current-page" : "")">
-        <a href="~/Settings">
-          <i class="ri-settings-5-line"></i>
-          <span class="menu-text">Settings</span>
-        </a>
-      </li>
-      
       <!-- Logout (Common for all roles) -->
       <li class="mt-4">
         <a href="~/Auth/Logout" class="text-danger">
@@ -324,13 +334,13 @@
   </div>
   <!-- Sidebar menu ends -->
 
-  <!-- Sidebar contact starts -->
+  @* <!-- Sidebar contact starts -->
   <div class="sidebar-contact">
     <p class="fw-light mb-1 text-nowrap text-truncate">Emergency Contact</p>
     <h5 class="m-0 lh-1 text-nowrap text-truncate">0987654321</h5>
     <i class="ri-phone-line"></i>
   </div>
-  <!-- Sidebar contact ends -->
+  <!-- Sidebar contact ends --> *@
 
 </nav>
 <!-- Sidebar wrapper ends -->

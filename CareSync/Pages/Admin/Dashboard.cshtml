@@ -4,11 +4,11 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
-@section PageActions {
+@* @section PageActions {
     <button class="btn btn-primary">
         <i class="ri-add-line me-2"></i>Quick Action
     </button>
-}
+} *@
 
 <!-- Welcome Section -->
 <div class="row mb-4">
@@ -46,53 +46,86 @@
     </div>
 </div>
 
-<!-- Statistics Cards -->
-<div class="row mb-4">
-    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <div class="mb-3">
-                    <i class="ri-user-heart-line text-primary" style="font-size: 2rem;"></i>
+<!-- Statistics Cards - Theme Design -->
+<div class="row gx-3 mb-4">
+    <div class="col-sm-4 col-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="p-2 border border-primary rounded-circle me-3">
+                        <div class="icon-box md bg-primary-lighten rounded-5">
+                            <i class="ri-calendar-check-line fs-4 text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <h1 class="lh-1">260</h1>
+                        <p class="m-0">Appointments</p>
+                    </div>
                 </div>
-                <h3 class="card-title">1,247</h3>
-                <p class="card-text text-muted">Total Patients</p>
-                <small class="text-success">+12% <i class="ri-arrow-up-line"></i></small>
+                <div class="d-flex align-items-end justify-content-between mt-1">
+                    <a class="text-primary" href="~/Admin/Appointments">
+                        <span>View All</span>
+                        <i class="ri-arrow-right-line text-primary ms-1"></i>
+                    </a>
+                    <div class="text-end">
+                        <p class="mb-0 text-primary">+30%</p>
+                        <span class="badge bg-primary-light text-primary small">this month</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <div class="mb-3">
-                    <i class="ri-calendar-check-line text-success" style="font-size: 2rem;"></i>
+    <div class="col-sm-4 col-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="p-2 border border-primary rounded-circle me-3">
+                        <div class="icon-box md bg-primary-lighten rounded-5">
+                            <i class="ri-stethoscope-line fs-4 text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <h1 class="lh-1">24</h1>
+                        <p class="m-0">Doctors</p>
+                    </div>
                 </div>
-                <h3 class="card-title">23</h3>
-                <p class="card-text text-muted">Today's Appointments</p>
-                <small class="text-success">+5 <i class="ri-arrow-up-line"></i></small>
+                <div class="d-flex align-items-end justify-content-between mt-1">
+                    <a class="text-primary" href="~/Admin/Doctors">
+                        <span>View All</span>
+                        <i class="ri-arrow-right-line ms-1"></i>
+                    </a>
+                    <div class="text-end">
+                        <p class="mb-0 text-primary">+2</p>
+                        <span class="badge bg-primary-light text-primary small">this month</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <div class="mb-3">
-                    <i class="ri-test-tube-line text-info" style="font-size: 2rem;"></i>
+    <div class="col-sm-4 col-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="p-2 border border-primary rounded-circle me-3">
+                        <div class="icon-box md bg-primary-lighten rounded-5">
+                            <i class="ri-user-heart-line fs-4 text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <h1 class="lh-1">980</h1>
+                        <p class="m-0">Patients</p>
+                    </div>
                 </div>
-                <h3 class="card-title">8</h3>
-                <p class="card-text text-muted">Pending Lab Results</p>
-                <small class="text-danger">-3 <i class="ri-arrow-down-line"></i></small>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <div class="mb-3">
-                    <i class="ri-medicine-bottle-line text-warning" style="font-size: 2rem;"></i>
+                <div class="d-flex align-items-end justify-content-between mt-1">
+                    <a class="text-primary" href="~/Admin/Patients">
+                        <span>View All</span>
+                        <i class="ri-arrow-right-line text-primary ms-1"></i>
+                    </a>
+                    <div class="text-end">
+                        <p class="mb-0 text-primary">+40%</p>
+                        <span class="badge bg-primary-light text-primary small">this month</span>
+                    </div>
                 </div>
-                <h3 class="card-title">156</h3>
-                <p class="card-text text-muted">Active Prescriptions</p>
-                <small class="text-success">+8% <i class="ri-arrow-up-line"></i></small>
             </div>
         </div>
     </div>
@@ -197,6 +230,129 @@
                                 <small class="text-success">+12% <i class="ri-arrow-up-line"></i></small>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <!-- Patient Registration Trends -->
+    <div class="col-xl-8 col-lg-7 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-line-chart-line me-2"></i>Patient Registration Trends
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-height">
+                    <div id="patientTrends"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Department Performance -->
+    <div class="col-xl-4 col-lg-5 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-pie-chart-line me-2"></i>Department Performance
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-height">
+                    <div id="departmentPerformance"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Second Charts Row -->
+<div class="row mb-4">
+    <!-- Appointment Status Overview -->
+    <div class="col-xl-6 col-lg-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-calendar-check-line me-2"></i>Appointment Status
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-height">
+                    <div id="appointmentStatus"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Revenue Trends -->
+    <div class="col-xl-6 col-lg-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-money-dollar-circle-line me-2"></i>Monthly Revenue
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-height">
+                    <div id="revenueTrends"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions Row -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-flashlight-line me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-2">
+                        <a href="~/Patients/Create" class="btn btn-outline-primary w-100 d-flex flex-column align-items-center py-3">
+                            <i class="ri-user-add-line mb-2" style="font-size: 1.5rem;"></i>
+                            <span>Add Patient</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="~/Admin/CreateDoctor" class="btn btn-outline-success w-100 d-flex flex-column align-items-center py-3">
+                            <i class="ri-user-star-line mb-2" style="font-size: 1.5rem;"></i>
+                            <span>Add Doctor</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="~/Admin/CreateLaboratory" class="btn btn-outline-info w-100 d-flex flex-column align-items-center py-3">
+                            <i class="ri-test-tube-line mb-2" style="font-size: 1.5rem;"></i>
+                            <span>Add Lab Staff</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="~/Admin/UserReports" class="btn btn-outline-warning w-100 d-flex flex-column align-items-center py-3">
+                            <i class="ri-file-chart-line mb-2" style="font-size: 1.5rem;"></i>
+                            <span>View Reports</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="~/Admin/MedicalStaff" class="btn btn-outline-secondary w-100 d-flex flex-column align-items-center py-3">
+                            <i class="ri-team-line mb-2" style="font-size: 1.5rem;"></i>
+                            <span>Manage Staff</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="~/Admin/Patients/Search" class="btn btn-outline-dark w-100 d-flex flex-column align-items-center py-3">
+                            <i class="ri-search-line mb-2" style="font-size: 1.5rem;"></i>
+                            <span>Search Patients</span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -406,9 +562,280 @@
 </div>
 
 @section Styles {
-    <!-- Custom styles can be added here later if needed -->
+    <style>
+        .chart-height {
+            height: 300px;
+        }
+        
+        .chart-height-sm {
+            height: 250px;
+        }
+        
+        .auto-align-graph {
+            margin: 0 auto;
+        }
+        
+        .apexcharts-canvas {
+            margin: 0 auto;
+        }
+        
+        /* Theme-based card styling */
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon-box.md {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .bg-primary-lighten {
+            background-color: rgba(13, 110, 253, 0.1) !important;
+        }
+        
+        .bg-primary-light {
+            background-color: rgba(13, 110, 253, 0.1) !important;
+        }
+        
+        .card .card-body h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .badge.bg-primary-light {
+            color: #0d6efd !important;
+            background-color: rgba(13, 110, 253, 0.1) !important;
+        }
+    </style>
 }
 
 @section Scripts {
-    <!-- Custom scripts can be added here later if needed -->
+    <!-- ApexCharts JS -->
+    <script src="~/theme/vendor/apex/apexcharts.min.js"></script>
+    
+    <script>
+        // Patient Registration Trends Chart
+        var patientTrendsOptions = {
+            chart: {
+                height: 300,
+                type: "line",
+                toolbar: {
+                    show: false,
+                },
+            },
+            dataLabels: {
+                enabled: false,
+            },
+            fill: {
+                type: 'solid',
+                opacity: [0.1, 1],
+            },
+            stroke: {
+                curve: "smooth",
+                width: [0, 5]
+            },
+            series: [{
+                name: 'New Patients',
+                type: 'area',
+                data: [89, 95, 102, 87, 93, 98, 105, 112, 89, 95, 102, 108]
+            }, {
+                name: 'Return Patients',
+                type: 'line',
+                data: [156, 162, 148, 171, 165, 159, 174, 168, 156, 162, 148, 171]
+            }],
+            grid: {
+                borderColor: "#d8dee6",
+                strokeDashArray: 5,
+                xaxis: {
+                    lines: {
+                        show: true,
+                    },
+                },
+                yaxis: {
+                    lines: {
+                        show: false,
+                    },
+                },
+                padding: {
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 0,
+                },
+            },
+            xaxis: {
+                categories: [
+                    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+                ],
+            },
+            yaxis: {
+                labels: {
+                    show: true,
+                },
+            },
+            legend: {
+                position: 'top',
+                horizontalAlign: 'right',
+            },
+            colors: ["#0d6efd", "#198754"],
+            markers: {
+                size: 0,
+                opacity: 0.3,
+                colors: ["#0d6efd", "#198754"],
+                strokeColor: "#ffffff",
+                strokeWidth: 1,
+                hover: {
+                    size: 7,
+                },
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val + " patients";
+                    },
+                },
+            },
+        };
+
+        var patientTrendsChart = new ApexCharts(document.querySelector("#patientTrends"), patientTrendsOptions);
+        patientTrendsChart.render();
+
+        // Department Performance Chart (Donut)
+        var departmentOptions = {
+            chart: {
+                height: 300,
+                type: 'donut',
+            },
+            series: [24, 18, 12, 8, 6],
+            labels: ['Cardiology', 'Neurology', 'Orthopedics', 'Pediatrics', 'Emergency'],
+            colors: ['#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1'],
+            legend: {
+                position: 'bottom',
+                horizontalAlign: 'center',
+            },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '70%'
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val) {
+                    return Math.round(val) + "%"
+                }
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val + " staff members"
+                    }
+                }
+            }
+        };
+
+        var departmentChart = new ApexCharts(document.querySelector("#departmentPerformance"), departmentOptions);
+        departmentChart.render();
+
+        // Appointment Status Chart (Bar)
+        var appointmentStatusOptions = {
+            chart: {
+                height: 300,
+                type: 'bar',
+                toolbar: {
+                    show: false,
+                },
+            },
+            series: [{
+                name: 'Appointments',
+                data: [156, 89, 23, 12, 8]
+            }],
+            xaxis: {
+                categories: ['Confirmed', 'Pending', 'Completed', 'Cancelled', 'Rescheduled'],
+            },
+            colors: ['#198754', '#ffc107', '#0d6efd', '#dc3545', '#6c757d'],
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '55%',
+                    endingShape: 'rounded'
+                },
+            },
+            dataLabels: {
+                enabled: false
+            },
+            grid: {
+                borderColor: "#d8dee6",
+                strokeDashArray: 5,
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val + " appointments"
+                    }
+                }
+            }
+        };
+
+        var appointmentStatusChart = new ApexCharts(document.querySelector("#appointmentStatus"), appointmentStatusOptions);
+        appointmentStatusChart.render();
+
+        // Revenue Trends Chart (Area)
+        var revenueOptions = {
+            chart: {
+                height: 300,
+                type: 'area',
+                toolbar: {
+                    show: false,
+                },
+            },
+            series: [{
+                name: 'Revenue',
+                data: [45000, 52000, 48000, 61000, 55000, 67000, 73000, 69000, 78000, 82000, 75000, 89000]
+            }],
+            xaxis: {
+                categories: [
+                    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+                ],
+            },
+            colors: ['#198754'],
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.7,
+                    opacityTo: 0.1,
+                }
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 3
+            },
+            grid: {
+                borderColor: "#d8dee6",
+                strokeDashArray: 5,
+            },
+            dataLabels: {
+                enabled: false
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return "$" + val.toLocaleString()
+                    }
+                }
+            }
+        };
+
+        var revenueChart = new ApexCharts(document.querySelector("#revenueTrends"), revenueOptions);
+        revenueChart.render();
+    </script>
 }

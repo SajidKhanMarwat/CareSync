@@ -1,0 +1,551 @@
+@page "/Admin/Doctors"
+@model CareSync.Pages.Admin.DoctorsModel
+@{
+    ViewData["Title"] = "Doctors Management";
+}
+
+@section Breadcrumb {
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="~/Admin/Dashboard">
+                <i class="ri-home-3-line"></i>
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="~/Admin/Doctors">Doctors</a>
+        </li>
+        <li class="breadcrumb-item text-primary" aria-current="page">
+            All Doctors
+        </li>
+    </ol>
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <a href="~/Admin/CreateDoctor" class="btn btn-primary">
+            <i class="ri-user-add-line me-2"></i>Add Doctor
+        </a>
+        <button class="btn btn-outline-secondary" onclick="exportDoctors()">
+            <i class="ri-download-line me-2"></i>Export
+        </button>
+        <div class="dropdown">
+            <button class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="ri-filter-line me-2"></i>Department
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="filterByDepartment('all')">All Departments</a></li>
+                <li><a class="dropdown-item" href="#" onclick="filterByDepartment('cardiology')">Cardiology</a></li>
+                <li><a class="dropdown-item" href="#" onclick="filterByDepartment('neurology')">Neurology</a></li>
+                <li><a class="dropdown-item" href="#" onclick="filterByDepartment('orthopedics')">Orthopedics</a></li>
+                <li><a class="dropdown-item" href="#" onclick="filterByDepartment('pediatrics')">Pediatrics</a></li>
+            </ul>
+        </div>
+    </div>
+}
+
+<!-- Statistics Cards -->
+<div class="row gx-3 mb-4">
+    <div class="col-sm-3 col-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="p-2 border border-primary rounded-circle me-3">
+                        <div class="icon-box md bg-primary-lighten rounded-5">
+                            <i class="ri-stethoscope-line fs-4 text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <h1 class="lh-1">24</h1>
+                        <p class="m-0">Total Doctors</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3 col-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="p-2 border border-success rounded-circle me-3">
+                        <div class="icon-box md bg-success-lighten rounded-5">
+                            <i class="ri-user-star-line fs-4 text-success"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <h1 class="lh-1">22</h1>
+                        <p class="m-0">Active</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3 col-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="p-2 border border-info rounded-circle me-3">
+                        <div class="icon-box md bg-info-lighten rounded-5">
+                            <i class="ri-calendar-check-line fs-4 text-info"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <h1 class="lh-1">156</h1>
+                        <p class="m-0">Appointments Today</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3 col-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="p-2 border border-warning rounded-circle me-3">
+                        <div class="icon-box md bg-warning-lighten rounded-5">
+                            <i class="ri-award-line fs-4 text-warning"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <h1 class="lh-1">12.5</h1>
+                        <p class="m-0">Avg Experience</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts and Specialties Row -->
+<div class="row mb-4">
+    <!-- Doctor Performance Chart -->
+    <div class="col-xl-8 col-lg-7 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-bar-chart-line me-2"></i>Doctor Performance
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-height">
+                    <div id="doctorPerformance"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Specialties Distribution -->
+    <div class="col-xl-4 col-lg-5 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-pie-chart-line me-2"></i>Specialties
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-height-sm">
+                    <div id="specialtiesChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Specialties Cards -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-hospital-line me-2"></i>Medical Specialties
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-sm col-6">
+                        <div class="card border rounded-5">
+                            <div class="card-body">
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="icon-box lg bg-primary-lighten rounded-circle mb-3">
+                                        <i class="ri-heart-pulse-line fs-2 text-primary"></i>
+                                    </div>
+                                    <h6>Cardiology</h6>
+                                    <h2 class="text-primary m-0">6</h2>
+                                    <small class="text-muted">Doctors</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm col-6">
+                        <div class="card border rounded-5">
+                            <div class="card-body">
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="icon-box lg bg-success-lighten rounded-circle mb-3">
+                                        <i class="ri-brain-line fs-2 text-success"></i>
+                                    </div>
+                                    <h6>Neurology</h6>
+                                    <h2 class="text-success m-0">4</h2>
+                                    <small class="text-muted">Doctors</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm col-6">
+                        <div class="card border rounded-5">
+                            <div class="card-body">
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="icon-box lg bg-warning-lighten rounded-circle mb-3">
+                                        <i class="ri-wheelchair-line fs-2 text-warning"></i>
+                                    </div>
+                                    <h6>Orthopedics</h6>
+                                    <h2 class="text-warning m-0">5</h2>
+                                    <small class="text-muted">Doctors</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm col-6">
+                        <div class="card border rounded-5">
+                            <div class="card-body">
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="icon-box lg bg-info-lighten rounded-circle mb-3">
+                                        <i class="ri-parent-line fs-2 text-info"></i>
+                                    </div>
+                                    <h6>Pediatrics</h6>
+                                    <h2 class="text-info m-0">3</h2>
+                                    <small class="text-muted">Doctors</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm col-6">
+                        <div class="card border rounded-5">
+                            <div class="card-body">
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="icon-box lg bg-danger-lighten rounded-circle mb-3">
+                                        <i class="ri-emergency-line fs-2 text-danger"></i>
+                                    </div>
+                                    <h6>Emergency</h6>
+                                    <h2 class="text-danger m-0">6</h2>
+                                    <small class="text-muted">Doctors</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Doctors Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ri-team-line me-2"></i>All Doctors
+                </h5>
+                <div class="d-flex gap-2">
+                    <div class="input-group" style="width: 250px;">
+                        <input type="text" class="form-control" placeholder="Search doctors..." id="searchInput">
+                        <button class="btn btn-outline-secondary" type="button">
+                            <i class="ri-search-line"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="doctorsTable">
+                        <thead>
+                            <tr>
+                                <th>Doctor</th>
+                                <th>Specialization</th>
+                                <th>Department</th>
+                                <th>Experience</th>
+                                <th>Patients</th>
+                                <th>Rating</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/doctor1.png" class="rounded-circle me-3" width="40" height="40" alt="Doctor">
+                                        <div>
+                                            <h6 class="mb-0">Dr. Sarah Wilson</h6>
+                                            <small class="text-muted">MBBS, MD Cardiology</small>
+                                            <br><small class="text-primary">License: MD12345</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-primary-light text-primary">Cardiology</span></td>
+                                <td>Cardiology Dept.</td>
+                                <td>
+                                    <span class="fw-bold">12 years</span><br>
+                                    <small class="text-muted">Since 2012</small>
+                                </td>
+                                <td>
+                                    <span class="fw-bold">156</span><br>
+                                    <small class="text-success">+12 this month</small>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <span class="fw-bold me-1">4.8</span>
+                                        <div class="text-warning">
+                                            <i class="ri-star-fill"></i>
+                                            <i class="ri-star-fill"></i>
+                                            <i class="ri-star-fill"></i>
+                                            <i class="ri-star-fill"></i>
+                                            <i class="ri-star-fill"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                            <i class="ri-more-2-line"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#"><i class="ri-eye-line me-2"></i>View Profile</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-edit-line me-2"></i>Edit Doctor</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-calendar-line me-2"></i>View Schedule</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-user-heart-line me-2"></i>View Patients</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-warning" href="#"><i class="ri-user-unfollow-line me-2"></i>Suspend</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/doctor2.png" class="rounded-circle me-3" width="40" height="40" alt="Doctor">
+                                        <div>
+                                            <h6 class="mb-0">Dr. James Chen</h6>
+                                            <small class="text-muted">MBBS, MS Neurology</small>
+                                            <br><small class="text-primary">License: MD12346</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-success-light text-success">Neurology</span></td>
+                                <td>Neurology Dept.</td>
+                                <td>
+                                    <span class="fw-bold">8 years</span><br>
+                                    <small class="text-muted">Since 2016</small>
+                                </td>
+                                <td>
+                                    <span class="fw-bold">89</span><br>
+                                    <small class="text-success">+8 this month</small>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <span class="fw-bold me-1">4.6</span>
+                                        <div class="text-warning">
+                                            <i class="ri-star-fill"></i>
+                                            <i class="ri-star-fill"></i>
+                                            <i class="ri-star-fill"></i>
+                                            <i class="ri-star-fill"></i>
+                                            <i class="ri-star-line"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                            <i class="ri-more-2-line"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#"><i class="ri-eye-line me-2"></i>View Profile</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-edit-line me-2"></i>Edit Doctor</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-calendar-line me-2"></i>View Schedule</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-user-heart-line me-2"></i>View Patients</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-warning" href="#"><i class="ri-user-unfollow-line me-2"></i>Suspend</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div>
+                        <span class="text-muted">Showing 1 to 2 of 24 doctors</span>
+                    </div>
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#"><i class="ri-arrow-left-s-line"></i></a>
+                            </li>
+                            <li class="page-item active">
+                                <a class="page-link" href="#">1</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">2</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">3</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#"><i class="ri-arrow-right-s-line"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- ApexCharts JS -->
+    <script src="~/theme/vendor/apex/apexcharts.min.js"></script>
+    
+    <script>
+        // Doctor Performance Chart
+        var performanceOptions = {
+            chart: {
+                height: 300,
+                type: 'bar',
+                toolbar: {
+                    show: false,
+                },
+            },
+            series: [{
+                name: 'Patients Treated',
+                data: [156, 89, 134, 67, 98, 145]
+            }],
+            xaxis: {
+                categories: ['Dr. Wilson', 'Dr. Chen', 'Dr. Smith', 'Dr. Brown', 'Dr. Davis', 'Dr. Johnson'],
+            },
+            colors: ['#0d6efd'],
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '55%',
+                    endingShape: 'rounded'
+                },
+            },
+            dataLabels: {
+                enabled: false
+            },
+            grid: {
+                borderColor: "#d8dee6",
+                strokeDashArray: 5,
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val + " patients"
+                    }
+                }
+            }
+        };
+
+        var performanceChart = new ApexCharts(document.querySelector("#doctorPerformance"), performanceOptions);
+        performanceChart.render();
+
+        // Specialties Chart
+        var specialtiesOptions = {
+            chart: {
+                height: 250,
+                type: 'donut',
+            },
+            series: [6, 4, 5, 3, 6],
+            labels: ['Cardiology', 'Neurology', 'Orthopedics', 'Pediatrics', 'Emergency'],
+            colors: ['#0d6efd', '#198754', '#ffc107', '#0dcaf0', '#dc3545'],
+            legend: {
+                position: 'bottom',
+                horizontalAlign: 'center',
+            },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '70%'
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val) {
+                    return Math.round(val) + "%"
+                }
+            }
+        };
+
+        var specialtiesChart = new ApexCharts(document.querySelector("#specialtiesChart"), specialtiesOptions);
+        specialtiesChart.render();
+
+        // Filter functions
+        function filterByDepartment(department) {
+            console.log('Filtering by department:', department);
+        }
+
+        function exportDoctors() {
+            alert('Exporting doctors data...');
+        }
+    </script>
+
+    <style>
+        .chart-height {
+            height: 300px;
+        }
+        
+        .chart-height-sm {
+            height: 250px;
+        }
+        
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon-box.md {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .icon-box.lg {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .bg-primary-lighten {
+            background-color: rgba(13, 110, 253, 0.1) !important;
+        }
+        
+        .bg-success-lighten {
+            background-color: rgba(25, 135, 84, 0.1) !important;
+        }
+        
+        .bg-warning-lighten {
+            background-color: rgba(255, 193, 7, 0.1) !important;
+        }
+        
+        .bg-info-lighten {
+            background-color: rgba(13, 202, 240, 0.1) !important;
+        }
+        
+        .bg-danger-lighten {
+            background-color: rgba(220, 53, 69, 0.1) !important;
+        }
+        
+        .bg-primary-light {
+            background-color: rgba(13, 110, 253, 0.1) !important;
+        }
+        
+        .bg-success-light {
+            background-color: rgba(25, 135, 84, 0.1) !important;
+        }
+    </style>
+}
