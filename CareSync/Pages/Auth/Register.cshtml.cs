@@ -26,6 +26,7 @@ public class RegisterModel : PageModel
 
     public string? ErrorMessage { get; set; }
     public string? SuccessMessage { get; set; }
+    public bool ShowOnboardingWizard { get; set; }
 
     public void OnGet()
     {
@@ -34,12 +35,6 @@ public class RegisterModel : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        // Calculate age from date of birth before validation
-        if (RegisterRequest.DateOfBirth.HasValue)
-        {
-            RegisterRequest.CalculateAge();
-        }
-
         if (!ModelState.IsValid)
         {
             return Page();
@@ -109,9 +104,9 @@ public class RegisterModel : PageModel
                     
                     if (result?.IsSuccess == true && result.Data?.Success == true)
                     {
-                        SuccessMessage = result.Data.Message ?? "Registration successful! You can now login.";
-                        TempData["SuccessMessage"] = SuccessMessage;
-                        return RedirectToPage("/Auth/Login");
+                        SuccessMessage = result.Data.Message ?? "Registration successful!";
+                        ShowOnboardingWizard = true;
+                        return Page();
                     }
                     else
                     {
