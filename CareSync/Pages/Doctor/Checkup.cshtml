@@ -1,0 +1,458 @@
+@page
+@model CareSync.Pages.Doctor.CheckupModel
+@{
+    ViewData["Title"] = "Patient Checkup";
+}
+
+<!-- Breadcrumb -->
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h4 class="mb-0">Patient Checkup</h4>
+            <a href="/Doctor/Dashboard" class="btn btn-outline-secondary">
+                <i class="ri-arrow-left-line"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Patient Information Card -->
+<div class="row gx-3">
+    <div class="col-sm-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <img src="~/theme/images/patient.png" class="img-fluid rounded-2" alt="Patient">
+                    </div>
+                    <div class="col-lg-9">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="mb-3">@Model.PatientName</h5>
+                                <div class="mb-2">
+                                    <strong>Patient ID:</strong> P@Model.PatientId.ToString("0000")
+                                </div>
+                                <div class="mb-2">
+                                    <strong>Age:</strong> @Model.PatientAge years
+                                </div>
+                                <div class="mb-2">
+                                    <strong>Gender:</strong> @Model.Gender
+                                </div>
+                                <div class="mb-2">
+                                    <strong>Blood Group:</strong> @Model.BloodGroup
+                                </div>
+                                <div class="mb-2">
+                                    <strong>Marital Status:</strong> @Model.MaritalStatus
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <strong>Appointment Date:</strong> @Model.AppointmentDate.ToString("dd MMM yyyy, hh:mm tt")
+                                </div>
+                                <div class="mb-2">
+                                    <strong>Appointment Type:</strong> 
+                                    <span class="badge bg-primary-subtle text-primary">@Model.AppointmentType</span>
+                                </div>
+                                <div class="mb-2">
+                                    <strong>Reason:</strong> @Model.Reason
+                                </div>
+                                <div class="mb-2">
+                                    <strong>Emergency Contact:</strong> @Model.EmergencyContactName (@Model.EmergencyContactNumber)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabs for Checkup Sections -->
+<div class="row gx-3">
+    <div class="col-sm-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <ul class="nav nav-tabs" id="checkupTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="vitals-tab" data-bs-toggle="tab" data-bs-target="#vitals" type="button" role="tab">
+                            <i class="ri-heart-pulse-line"></i> Vitals & Health
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab">
+                            <i class="ri-file-list-3-line"></i> Medical History
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="prescription-tab" data-bs-toggle="tab" data-bs-target="#prescription" type="button" role="tab">
+                            <i class="ri-capsule-line"></i> Prescription
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content mt-3" id="checkupTabContent">
+                    <!-- Vitals & Health Tab -->
+                    <div class="tab-pane fade show active" id="vitals" role="tabpanel">
+                        <form method="post" asp-page-handler="UpdateVitals">
+                            <input type="hidden" name="appointmentId" value="@Model.AppointmentId" />
+                            <input type="hidden" name="patientId" value="@Model.PatientId" />
+                            
+                            <h6 class="mb-3">Update Patient Vitals</h6>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Height (cm)</label>
+                                    <input type="number" step="0.1" class="form-control" name="height" value="@Model.Height" placeholder="Enter height">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Weight (kg)</label>
+                                    <input type="number" step="0.1" class="form-control" name="weight" value="@Model.Weight" placeholder="Enter weight">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Pulse Rate (bpm)</label>
+                                    <input type="number" class="form-control" name="pulseRate" value="@Model.PulseRate" placeholder="Enter pulse rate">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Blood Pressure</label>
+                                    <input type="text" class="form-control" name="bloodPressure" value="@Model.BloodPressure" placeholder="e.g., 120/80">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Is Diabetic?</label>
+                                    <select class="form-select" name="isDiabetic">
+                                        <option value="false" selected="@(!Model.IsDiabetic)">No</option>
+                                        <option value="true" selected="@Model.IsDiabetic">Yes</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Diabetic Readings</label>
+                                    <input type="text" class="form-control" name="diabeticReadings" value="@Model.DiabeticReadings" placeholder="e.g., Fasting: 110 mg/dL">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Has High Blood Pressure?</label>
+                                    <select class="form-select" name="hasHighBloodPressure">
+                                        <option value="false" selected="@(!Model.HasHighBloodPressure)">No</option>
+                                        <option value="true" selected="@Model.HasHighBloodPressure">Yes</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-8">
+                                    <label class="form-label">Blood Pressure Readings History</label>
+                                    <textarea class="form-control" name="bloodPressureReadings" rows="2" placeholder="Previous BP readings">@Model.BloodPressureReadings</textarea>
+                                </div>
+                            </div>
+                            
+                            <hr class="my-4">
+                            
+                            <h6 class="mb-3">Chronic Diseases</h6>
+                            <div id="chronicDiseasesContainer">
+                                @for (int i = 0; i < Model.ChronicDiseases.Count; i++)
+                                {
+                                    <div class="row g-3 mb-3 chronic-disease-row">
+                                        <div class="col-md-4">
+                                            <label class="form-label">Disease Name</label>
+                                            <input type="text" class="form-control" name="chronicDiseases[@i].DiseaseName" value="@Model.ChronicDiseases[i].DiseaseName" placeholder="e.g., Hypertension">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Diagnosed Date</label>
+                                            <input type="date" class="form-control" name="chronicDiseases[@i].DiagnosedDate" value="@Model.ChronicDiseases[i].DiagnosedDate?.ToString("yyyy-MM-dd")">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Current Status</label>
+                                            <select class="form-select" name="chronicDiseases[@i].CurrentStatus">
+                                                <option value="Controlled" selected="@(Model.ChronicDiseases[i].CurrentStatus == "Controlled")">Controlled</option>
+                                                <option value="Uncontrolled" selected="@(Model.ChronicDiseases[i].CurrentStatus == "Uncontrolled")">Uncontrolled</option>
+                                                <option value="In Remission" selected="@(Model.ChronicDiseases[i].CurrentStatus == "In Remission")">In Remission</option>
+                                                <option value="Progressive" selected="@(Model.ChronicDiseases[i].CurrentStatus == "Progressive")">Progressive</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">&nbsp;</label>
+                                            <button type="button" class="btn btn-danger w-100" onclick="removeChronicDisease(this)">
+                                                <i class="ri-delete-bin-line"></i> Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <button type="button" class="btn btn-outline-primary mb-3" onclick="addChronicDisease()">
+                                <i class="ri-add-line"></i> Add Chronic Disease
+                            </button>
+                            
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="ri-save-line"></i> Save Vitals & Health Info
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Medical History Tab -->
+                    <div class="tab-pane fade" id="history" role="tabpanel">
+                        <h6 class="mb-3">Previous Medical Records</h6>
+                        
+                        @if (Model.PreviousPrescriptions.Any())
+                        {
+                            <div class="accordion" id="prescriptionAccordion">
+                                @foreach (var prescription in Model.PreviousPrescriptions)
+                                {
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#prescription@(prescription.PrescriptionID)">
+                                                Prescription #@prescription.PrescriptionID - @prescription.CreatedOn.ToString("dd MMM yyyy")
+                                            </button>
+                                        </h2>
+                                        <div id="prescription@(prescription.PrescriptionID)" class="accordion-collapse collapse" data-bs-parent="#prescriptionAccordion">
+                                            <div class="accordion-body">
+                                                <p><strong>Doctor:</strong> @prescription.DoctorName</p>
+                                                <p><strong>Notes:</strong> @prescription.Notes</p>
+                                                <p><strong>Medications:</strong> @prescription.Medications</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info">No previous prescriptions found for this patient.</div>
+                        }
+                        
+                        <hr class="my-4">
+                        
+                        <h6 class="mb-3">Previous Vitals Records</h6>
+                        @if (Model.PreviousVitals.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Height</th>
+                                            <th>Weight</th>
+                                            <th>BP</th>
+                                            <th>Pulse</th>
+                                            <th>Diabetic</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var vital in Model.PreviousVitals)
+                                        {
+                                            <tr>
+                                                <td>@vital.RecordedDate.ToString("dd MMM yyyy")</td>
+                                                <td>@vital.Height cm</td>
+                                                <td>@vital.Weight kg</td>
+                                                <td>@vital.BloodPressure</td>
+                                                <td>@vital.PulseRate bpm</td>
+                                                <td>@(vital.IsDiabetic ? "Yes" : "No")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info">No previous vitals records found for this patient.</div>
+                        }
+                    </div>
+
+                    <!-- Prescription Tab -->
+                    <div class="tab-pane fade" id="prescription" role="tabpanel">
+                        <form method="post" asp-page-handler="CreatePrescription">
+                            <input type="hidden" name="appointmentId" value="@Model.AppointmentId" />
+                            <input type="hidden" name="patientId" value="@Model.PatientId" />
+                            
+                            <h6 class="mb-3">Write Prescription</h6>
+                            
+                            <div id="medicationsContainer">
+                                <div class="card mb-3 medication-item">
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Medication Name</label>
+                                                <input type="text" class="form-control" name="medications[0].MedicineName" placeholder="e.g., Paracetamol" required>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Dosage</label>
+                                                <input type="text" class="form-control" name="medications[0].Dosage" placeholder="e.g., 500mg" required>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Frequency</label>
+                                                <select class="form-select" name="medications[0].Frequency" required>
+                                                    <option value="">Select...</option>
+                                                    <option value="Once Daily">Once Daily</option>
+                                                    <option value="Twice Daily">Twice Daily</option>
+                                                    <option value="Three Times Daily">Three Times Daily</option>
+                                                    <option value="Four Times Daily">Four Times Daily</option>
+                                                    <option value="As Needed">As Needed</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Duration (days)</label>
+                                                <input type="number" class="form-control" name="medications[0].DurationDays" placeholder="7" required>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">&nbsp;</label>
+                                                <button type="button" class="btn btn-danger w-100" onclick="removeMedication(this)">
+                                                    <i class="ri-delete-bin-line"></i>
+                                                </button>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label class="form-label">Instructions</label>
+                                                <input type="text" class="form-control" name="medications[0].Instructions" placeholder="e.g., Take after meals">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="button" class="btn btn-outline-primary mb-3" onclick="addMedication()">
+                                <i class="ri-add-line"></i> Add Medication
+                            </button>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">General Notes & Instructions</label>
+                                <textarea class="form-control" name="prescriptionNotes" rows="3" placeholder="Enter any general instructions or notes for the patient"></textarea>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="ri-file-add-line"></i> Create Prescription
+                                </button>
+                                <a href="/Doctor/LabRequest?patientId=@Model.PatientId&appointmentId=@Model.AppointmentId" class="btn btn-warning">
+                                    <i class="ri-test-tube-line"></i> Request Lab Tests
+                                </a>
+                                <button type="button" class="btn btn-success" onclick="completeCheckup()">
+                                    <i class="ri-check-double-line"></i> Complete Checkup
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let medicationIndex = 1;
+        let chronicDiseaseIndex = @Model.ChronicDiseases.Count;
+        
+        function addMedication() {
+            const container = document.getElementById('medicationsContainer');
+            const newMedication = `
+                <div class="card mb-3 medication-item">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Medication Name</label>
+                                <input type="text" class="form-control" name="medications[${medicationIndex}].MedicineName" placeholder="e.g., Paracetamol" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Dosage</label>
+                                <input type="text" class="form-control" name="medications[${medicationIndex}].Dosage" placeholder="e.g., 500mg" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Frequency</label>
+                                <select class="form-select" name="medications[${medicationIndex}].Frequency" required>
+                                    <option value="">Select...</option>
+                                    <option value="Once Daily">Once Daily</option>
+                                    <option value="Twice Daily">Twice Daily</option>
+                                    <option value="Three Times Daily">Three Times Daily</option>
+                                    <option value="Four Times Daily">Four Times Daily</option>
+                                    <option value="As Needed">As Needed</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Duration (days)</label>
+                                <input type="number" class="form-control" name="medications[${medicationIndex}].DurationDays" placeholder="7" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="button" class="btn btn-danger w-100" onclick="removeMedication(this)">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Instructions</label>
+                                <input type="text" class="form-control" name="medications[${medicationIndex}].Instructions" placeholder="e.g., Take after meals">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', newMedication);
+            medicationIndex++;
+        }
+        
+        function removeMedication(button) {
+            const medicationItem = button.closest('.medication-item');
+            if (document.querySelectorAll('.medication-item').length > 1) {
+                medicationItem.remove();
+            } else {
+                alert('At least one medication is required');
+            }
+        }
+        
+        function addChronicDisease() {
+            const container = document.getElementById('chronicDiseasesContainer');
+            const newDisease = `
+                <div class="row g-3 mb-3 chronic-disease-row">
+                    <div class="col-md-4">
+                        <label class="form-label">Disease Name</label>
+                        <input type="text" class="form-control" name="chronicDiseases[${chronicDiseaseIndex}].DiseaseName" placeholder="e.g., Hypertension">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Diagnosed Date</label>
+                        <input type="date" class="form-control" name="chronicDiseases[${chronicDiseaseIndex}].DiagnosedDate">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Current Status</label>
+                        <select class="form-select" name="chronicDiseases[${chronicDiseaseIndex}].CurrentStatus">
+                            <option value="Controlled">Controlled</option>
+                            <option value="Uncontrolled">Uncontrolled</option>
+                            <option value="In Remission">In Remission</option>
+                            <option value="Progressive">Progressive</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="button" class="btn btn-danger w-100" onclick="removeChronicDisease(this)">
+                            <i class="ri-delete-bin-line"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', newDisease);
+            chronicDiseaseIndex++;
+        }
+        
+        function removeChronicDisease(button) {
+            button.closest('.chronic-disease-row').remove();
+        }
+        
+        function completeCheckup() {
+            if (confirm('Are you sure you want to complete this checkup? This will mark the appointment as completed.')) {
+                fetch('/api/appointments/@Model.AppointmentId/complete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Checkup completed successfully!');
+                        window.location.href = '/Doctor/Dashboard';
+                    } else {
+                        alert('Failed to complete checkup');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
+            }
+        }
+    </script>
+}

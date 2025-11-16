@@ -6,7 +6,7 @@
 
 @section PageActions {
     <div class="d-flex gap-2">
-        <button type="button" class="btn btn-success">
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addQualificationModal">
             <i class="ri-add-line me-1"></i>Add Qualification
         </button>
         <button type="button" class="btn btn-primary">
@@ -383,10 +383,10 @@
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <button class="btn btn-sm btn-outline-primary">
+                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editQualificationModal" onclick="editQualification(1, 'MBBS', 'Harvard Medical School', 2010, 'cert1.pdf')">
                                             <i class="ri-edit-line"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-outline-danger">
+                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteQualification(1, 'MBBS')">
                                             <i class="ri-delete-bin-line"></i>
                                         </button>
                                     </div>
@@ -410,10 +410,10 @@
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <button class="btn btn-sm btn-outline-primary">
+                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editQualificationModal" onclick="editQualification(2, 'MD Cardiology', 'Johns Hopkins University', 2013, 'cert2.pdf')">
                                             <i class="ri-edit-line"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-outline-danger">
+                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteQualification(2, 'MD Cardiology')">
                                             <i class="ri-delete-bin-line"></i>
                                         </button>
                                     </div>
@@ -437,10 +437,10 @@
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <button class="btn btn-sm btn-outline-primary">
+                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editQualificationModal" onclick="editQualification(3, 'Board Certification', 'American Board of Cardiology', 2014, 'cert3.pdf')">
                                             <i class="ri-edit-line"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-outline-danger">
+                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteQualification(3, 'Board Certification')">
                                             <i class="ri-delete-bin-line"></i>
                                         </button>
                                     </div>
@@ -453,3 +453,278 @@
         </div>
     </div>
 </div>
+
+<!-- Add Qualification Modal -->
+<div class="modal fade" id="addQualificationModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="ri-graduation-cap-line me-2"></i>Add New Qualification
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" asp-page-handler="AddQualification" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                Qualification Type <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" name="qualificationType" required>
+                                <option value="">Select Type...</option>
+                                <option value="Degree">Degree</option>
+                                <option value="Diploma">Diploma</option>
+                                <option value="Certificate">Certificate</option>
+                                <option value="Fellowship">Fellowship</option>
+                                <option value="Board Certification">Board Certification</option>
+                                <option value="Specialization">Specialization</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                Degree/Title <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" name="degree" placeholder="e.g., MBBS, MD, PhD" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Institution/University <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control" name="institution" placeholder="Name of institution or university" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">
+                                Year of Completion <span class="text-danger">*</span>
+                            </label>
+                            <input type="number" class="form-control" name="yearOfCompletion" min="1950" max="@DateTime.Now.Year" placeholder="e.g., 2020" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">
+                                Duration (Years)
+                            </label>
+                            <input type="number" class="form-control" name="duration" min="0" max="20" step="0.5" placeholder="e.g., 4">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">
+                                Grade/Score
+                            </label>
+                            <input type="text" class="form-control" name="grade" placeholder="e.g., 3.8 GPA, Distinction">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                Country
+                            </label>
+                            <input type="text" class="form-control" name="country" placeholder="Country">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                Field of Study
+                            </label>
+                            <input type="text" class="form-control" name="fieldOfStudy" placeholder="e.g., Medicine, Cardiology">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Description/Details
+                        </label>
+                        <textarea class="form-control" name="description" rows="3" placeholder="Additional details about this qualification..."></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="ri-attachment-line me-1"></i>Certificate Document
+                        </label>
+                        <input type="file" class="form-control" name="certificateFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                        <small class="text-muted">Upload certificate (PDF, Image, or Word document - Max 5MB)</small>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="isVerified" id="isVerified">
+                        <label class="form-check-label" for="isVerified">
+                            <i class="ri-checkbox-circle-line me-1"></i>Verified Qualification
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-1"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="ri-add-line me-1"></i>Add Qualification
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Qualification Modal -->
+<div class="modal fade" id="editQualificationModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="ri-edit-line me-2"></i>Edit Qualification
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" asp-page-handler="UpdateQualification" enctype="multipart/form-data">
+                <input type="hidden" name="qualificationId" id="edit_qualificationId">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                Qualification Type <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" name="qualificationType" id="edit_qualificationType" required>
+                                <option value="">Select Type...</option>
+                                <option value="Degree">Degree</option>
+                                <option value="Diploma">Diploma</option>
+                                <option value="Certificate">Certificate</option>
+                                <option value="Fellowship">Fellowship</option>
+                                <option value="Board Certification">Board Certification</option>
+                                <option value="Specialization">Specialization</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                Degree/Title <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" name="degree" id="edit_degree" placeholder="e.g., MBBS, MD, PhD" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Institution/University <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control" name="institution" id="edit_institution" placeholder="Name of institution or university" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">
+                                Year of Completion <span class="text-danger">*</span>
+                            </label>
+                            <input type="number" class="form-control" name="yearOfCompletion" id="edit_year" min="1950" max="@DateTime.Now.Year" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">
+                                Duration (Years)
+                            </label>
+                            <input type="number" class="form-control" name="duration" id="edit_duration" min="0" max="20" step="0.5">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">
+                                Grade/Score
+                            </label>
+                            <input type="text" class="form-control" name="grade" id="edit_grade">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                Country
+                            </label>
+                            <input type="text" class="form-control" name="country" id="edit_country">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                Field of Study
+                            </label>
+                            <input type="text" class="form-control" name="fieldOfStudy" id="edit_fieldOfStudy">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Description/Details
+                        </label>
+                        <textarea class="form-control" name="description" id="edit_description" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="ri-attachment-line me-1"></i>Update Certificate Document
+                        </label>
+                        <input type="file" class="form-control" name="certificateFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                        <small class="text-muted">Upload new certificate to replace existing one (Optional)</small>
+                        <div id="existingCertificate" class="mt-2"></div>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="isVerified" id="edit_isVerified">
+                        <label class="form-check-label" for="edit_isVerified">
+                            <i class="ri-checkbox-circle-line me-1"></i>Verified Qualification
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-1"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ri-save-line me-1"></i>Update Qualification
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function editQualification(id, degree, institution, year, certificate) {
+            // Populate edit modal fields
+            $('#edit_qualificationId').val(id);
+            $('#edit_degree').val(degree);
+            $('#edit_institution').val(institution);
+            $('#edit_year').val(year);
+            
+            // Show existing certificate
+            if (certificate) {
+                $('#existingCertificate').html('<div class="alert alert-info"><i class="ri-file-line me-2"></i>Current certificate: <strong>' + certificate + '</strong></div>');
+            } else {
+                $('#existingCertificate').html('');
+            }
+        }
+
+        function deleteQualification(id, degree) {
+            if (confirm('Are you sure you want to delete the qualification "' + degree + '"? This action cannot be undone.')) {
+                // TODO: Implement delete functionality
+                // You can use a form post or AJAX call here
+                $.post('/Doctor/Profile?handler=DeleteQualification', { qualificationId: id })
+                    .done(function() {
+                        alert('Qualification deleted successfully!');
+                        location.reload();
+                    })
+                    .fail(function() {
+                        alert('Failed to delete qualification. Please try again.');
+                    });
+            }
+        }
+
+        // File upload validation
+        $('input[type="file"]').change(function() {
+            const file = this.files[0];
+            if (file) {
+                const maxSize = 5 * 1024 * 1024; // 5MB
+                if (file.size > maxSize) {
+                    alert('File size exceeds 5MB. Please choose a smaller file.');
+                    $(this).val('');
+                    return false;
+                }
+            }
+        });
+    </script>
+}
