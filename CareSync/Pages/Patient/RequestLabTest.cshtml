@@ -1,0 +1,369 @@
+@page "/Patient/RequestLabTest"
+@model CareSync.Pages.Patient.RequestLabTestModel
+@{
+    ViewData["Title"] = "Request Lab Test";
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-outline-secondary" onclick="window.history.back()">
+            <i class="ri-arrow-left-line me-1"></i>Back
+        </button>
+    </div>
+}
+
+<div class="row gx-3">
+    <div class="col-xl-8 mx-auto">
+        <!-- Request Form Card -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-test-tube-line me-2"></i>Request New Lab Test
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <!-- Test Category -->
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">
+                            Test Category <span class="text-danger">*</span>
+                        </label>
+                        <div class="col-sm-9">
+                            <select class="form-select" id="testCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="blood">Blood Tests</option>
+                                <option value="urine">Urine Tests</option>
+                                <option value="imaging">Imaging & Radiology</option>
+                                <option value="cardiac">Cardiac Tests</option>
+                                <option value="hormone">Hormone Tests</option>
+                                <option value="other">Other Tests</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Specific Test -->
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">
+                            Specific Test <span class="text-danger">*</span>
+                        </label>
+                        <div class="col-sm-9">
+                            <select class="form-select" id="specificTest" required>
+                                <option value="">Select Test</option>
+                                <optgroup label="Blood Tests" class="blood-tests" style="display:none;">
+                                    <option value="cbc">Complete Blood Count (CBC)</option>
+                                    <option value="lipid">Lipid Profile</option>
+                                    <option value="glucose">Fasting Blood Sugar</option>
+                                    <option value="hba1c">HbA1c (Diabetes Monitoring)</option>
+                                    <option value="thyroid">Thyroid Function Test (TSH, T3, T4)</option>
+                                    <option value="liver">Liver Function Test (LFT)</option>
+                                    <option value="kidney">Kidney Function Test (KFT)</option>
+                                    <option value="vitamin_d">Vitamin D Level</option>
+                                    <option value="vitamin_b12">Vitamin B12</option>
+                                    <option value="iron">Iron Studies</option>
+                                </optgroup>
+                                <optgroup label="Urine Tests" class="urine-tests" style="display:none;">
+                                    <option value="urinalysis">Complete Urinalysis</option>
+                                    <option value="urine_culture">Urine Culture & Sensitivity</option>
+                                    <option value="microalbumin">Microalbumin Urine</option>
+                                </optgroup>
+                                <optgroup label="Imaging" class="imaging-tests" style="display:none;">
+                                    <option value="xray">X-Ray</option>
+                                    <option value="ultrasound">Ultrasound</option>
+                                    <option value="ct">CT Scan</option>
+                                    <option value="mri">MRI</option>
+                                </optgroup>
+                                <optgroup label="Cardiac" class="cardiac-tests" style="display:none;">
+                                    <option value="ecg">ECG/EKG</option>
+                                    <option value="echo">Echocardiogram</option>
+                                    <option value="stress">Stress Test</option>
+                                    <option value="holter">Holter Monitor</option>
+                                </optgroup>
+                                <optgroup label="Hormone Tests" class="hormone-tests" style="display:none;">
+                                    <option value="testosterone">Testosterone</option>
+                                    <option value="cortisol">Cortisol</option>
+                                    <option value="insulin">Insulin Level</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Reason for Request -->
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">
+                            Reason for Request <span class="text-danger">*</span>
+                        </label>
+                        <div class="col-sm-9">
+                            <textarea class="form-control" rows="3" placeholder="Please describe why you need this test..." required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Symptoms (Optional) -->
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">
+                            Symptoms (Optional)
+                        </label>
+                        <div class="col-sm-9">
+                            <textarea class="form-control" rows="2" placeholder="Describe any symptoms you're experiencing..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Requested By -->
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">
+                            Requested By
+                        </label>
+                        <div class="col-sm-9">
+                            <select class="form-select">
+                                <option value="self" selected>Self (Patient)</option>
+                                <option value="doctor">My Doctor</option>
+                            </select>
+                            <small class="text-muted">If requested by doctor, please select below</small>
+                        </div>
+                    </div>
+
+                    <!-- Select Doctor (if requested by doctor) -->
+                    <div class="row mb-3" id="doctorSelection" style="display:none;">
+                        <label class="col-sm-3 col-form-label">
+                            Select Doctor
+                        </label>
+                        <div class="col-sm-9">
+                            <select class="form-select">
+                                <option value="">Select Doctor</option>
+                                <option value="1">Dr. Sarah Johnson - Cardiology</option>
+                                <option value="2">Dr. Michael Brown - General Medicine</option>
+                                <option value="3">Dr. Lisa Anderson - Dermatology</option>
+                                <option value="4">Dr. James Wilson - Orthopedics</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Preferred Lab Center -->
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">
+                            Preferred Lab Center
+                        </label>
+                        <div class="col-sm-9">
+                            <select class="form-select">
+                                <option value="">Any Available</option>
+                                <option value="1">City Lab Center - Downtown</option>
+                                <option value="2">Metro Diagnostics - Medical District</option>
+                                <option value="3">HealthFirst Labs - North Branch</option>
+                                <option value="4">CareSync Lab - Main Hospital</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Preferred Date -->
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">
+                            Preferred Date
+                        </label>
+                        <div class="col-sm-9">
+                            <input type="date" class="form-control" min="">
+                        </div>
+                    </div>
+
+                    <!-- Preferred Time -->
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">
+                            Preferred Time
+                        </label>
+                        <div class="col-sm-9">
+                            <select class="form-select">
+                                <option value="">Any Time</option>
+                                <option value="morning">Morning (8 AM - 12 PM)</option>
+                                <option value="afternoon">Afternoon (12 PM - 4 PM)</option>
+                                <option value="evening">Evening (4 PM - 8 PM)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Fasting Required -->
+                    <div class="row mb-3">
+                        <div class="col-sm-9 offset-sm-3">
+                            <div class="alert alert-info" id="fastingAlert" style="display:none;">
+                                <i class="ri-information-line me-1"></i>
+                                <strong>Note:</strong> This test may require fasting. Please confirm with the lab center.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Special Instructions -->
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">
+                            Special Instructions
+                        </label>
+                        <div class="col-sm-9">
+                            <textarea class="form-control" rows="2" placeholder="Any special requirements or notes..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="row">
+                        <div class="col-sm-9 offset-sm-3">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="ri-send-plane-line me-1"></i>Submit Request
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="window.history.back()">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Popular Tests -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="card-title">
+                    <i class="ri-star-line me-2"></i>Popular Lab Tests
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-outline-primary w-100 quick-test" data-test="cbc">
+                            Complete Blood Count
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-outline-primary w-100 quick-test" data-test="lipid">
+                            Lipid Profile
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-outline-primary w-100 quick-test" data-test="hba1c">
+                            HbA1c Test
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-outline-primary w-100 quick-test" data-test="thyroid">
+                            Thyroid Function
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-outline-primary w-100 quick-test" data-test="vitamin_d">
+                            Vitamin D Level
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-outline-primary w-100 quick-test" data-test="urinalysis">
+                            Urinalysis
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set minimum date to today
+            const dateInput = document.querySelector('input[type="date"]');
+            if (dateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.min = today;
+            }
+
+            // Category change handler
+            document.getElementById('testCategory').addEventListener('change', function() {
+                const category = this.value;
+                const specificTest = document.getElementById('specificTest');
+                const optgroups = specificTest.querySelectorAll('optgroup');
+                
+                // Hide all optgroups
+                optgroups.forEach(group => {
+                    group.style.display = 'none';
+                });
+                
+                // Show selected category
+                if (category) {
+                    const selectedGroup = specificTest.querySelector('.' + category + '-tests');
+                    if (selectedGroup) {
+                        selectedGroup.style.display = 'block';
+                    }
+                }
+                
+                // Reset specific test selection
+                specificTest.value = '';
+            });
+
+            // Specific test change handler - show fasting alert for certain tests
+            document.getElementById('specificTest').addEventListener('change', function() {
+                const fastingTests = ['glucose', 'lipid', 'hba1c'];
+                const fastingAlert = document.getElementById('fastingAlert');
+                
+                if (fastingTests.includes(this.value)) {
+                    fastingAlert.style.display = 'block';
+                } else {
+                    fastingAlert.style.display = 'none';
+                }
+            });
+
+            // Requested by change handler
+            document.querySelector('select[class="form-select"]').addEventListener('change', function() {
+                const doctorSelection = document.getElementById('doctorSelection');
+                if (this.value === 'doctor') {
+                    doctorSelection.style.display = 'flex';
+                } else {
+                    doctorSelection.style.display = 'none';
+                }
+            });
+
+            // Quick test buttons
+            document.querySelectorAll('.quick-test').forEach(button => {
+                button.addEventListener('click', function() {
+                    const testValue = this.dataset.test;
+                    
+                    // Set appropriate category first
+                    let category = 'blood';
+                    if (['urinalysis', 'urine_culture', 'microalbumin'].includes(testValue)) {
+                        category = 'urine';
+                    } else if (['xray', 'ultrasound', 'ct', 'mri'].includes(testValue)) {
+                        category = 'imaging';
+                    } else if (['ecg', 'echo', 'stress', 'holter'].includes(testValue)) {
+                        category = 'cardiac';
+                    }
+                    
+                    // Trigger category change
+                    const categorySelect = document.getElementById('testCategory');
+                    categorySelect.value = category;
+                    categorySelect.dispatchEvent(new Event('change'));
+                    
+                    // Set specific test
+                    setTimeout(() => {
+                        const specificTest = document.getElementById('specificTest');
+                        specificTest.value = testValue;
+                        specificTest.dispatchEvent(new Event('change'));
+                        
+                        // Scroll to form
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 100);
+                });
+            });
+
+            // Form submission
+            document.querySelector('form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validate form
+                if (!this.checkValidity()) {
+                    e.stopPropagation();
+                    this.classList.add('was-validated');
+                    return;
+                }
+                
+                // Show success message
+                alert('Lab test request submitted successfully! We will contact you soon to confirm your appointment.');
+                
+                // Redirect to lab results page
+                window.location.href = '/Patient/LabResults';
+            });
+        });
+    </script>
+}
