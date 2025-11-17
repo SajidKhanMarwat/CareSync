@@ -27,6 +27,3 @@
 *.pdb
 *.cache
 *.log
-
-## EF Migrations (if you want to ignore)
-**/Migrations/
