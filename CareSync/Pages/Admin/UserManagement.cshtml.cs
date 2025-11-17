@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace CareSync.Pages.Admin
+namespace CareSync.Pages.Admin;
+
+public class UserManagementModel : PageModel
 {
-    public class UserManagementModel : PageModel
+    public void OnGet()
     {
-        public void OnGet()
-        {
-        }
     }
 }

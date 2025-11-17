@@ -2,21 +2,20 @@
 
 #nullable disable
 
-namespace CareSync.DataLayer.Migrations
+namespace CareSync.DataLayer.Migrations;
+
+/// <inheritdoc />
+public partial class modifieddbcontext : Migration
 {
     /// <inheritdoc />
-    public partial class modifieddbcontext : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
 
-        }
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
 
-        }
     }
 }

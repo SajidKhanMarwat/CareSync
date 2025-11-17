@@ -1,15 +1,14 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace CareSync.Pages.Admin
-{
-    public class PatientsModel : PageModel
-    {
-        public void OnGet()
-        {
-        }
+namespace CareSync.Pages.Admin;
 
-        public void OnPost()
-        {
-        }
+public class PatientsModel : PageModel
+{
+    public void OnGet()
+    {
+    }
+
+    public void OnPost()
+    {
     }
 }

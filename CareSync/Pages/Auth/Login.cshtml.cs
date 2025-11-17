@@ -1,4 +1,3 @@
-using CareSync.ApplicationLayer.ApiResult;
 using CareSync.Result;
 using CareSync.Shared.Models;
 using CareSync.Shared.ViewModels.Login;
@@ -43,7 +42,7 @@ public class LoginModel : PageModel
                     HttpContext.Session.SetString("UserRole", result.Data.Role ?? "Patient");
                     HttpContext.Session.SetString("UserToken", result.Data.Token ?? "");
                     HttpContext.Session.SetString("RefreshToken", result.Data.RefreshToken ?? "");
-                    
+
                     // Store role rights as JSON
                     if (result.Data.RoleRights != null && result.Data.RoleRights.Any())
                     {
@@ -58,7 +57,7 @@ public class LoginModel : PageModel
                         "doctor" => RedirectToPage("/Doctor/Dashboard"),
                         "patient" => RedirectToPage("/Patient/Dashboard"),
                         "lab" => RedirectToPage("/Lab/Dashboard"),
-                        _ => RedirectToPage("/Dashboard/Index")
+                        _ => RedirectToPage("/auth/login")
                     };
                 }
                 else
