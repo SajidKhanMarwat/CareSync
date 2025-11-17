@@ -99,8 +99,7 @@ public class UserService(UserManager<T_Users> userManager, SignInManager<T_Users
         if (isEmail)
             user = await query.FirstOrDefaultAsync(u => u.Email == Email);
         else
-            user = await query.FirstOrDefaultAsync(u => u.UserName == Email);
-
+            user = await query.FirstOrDefaultAsync(u => u.UserName == Email || u.LoginID.ToString() == Email);
         return user;
     }
 

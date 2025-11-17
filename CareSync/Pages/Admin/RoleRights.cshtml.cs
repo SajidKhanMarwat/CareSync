@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace CareSync.Pages.Admin
+namespace CareSync.Pages.Admin;
+
+public class RoleRightsModel : PageModel
 {
-    public class RoleRightsModel : PageModel
+    public void OnGet()
     {
-        public void OnGet()
-        {
-        }
     }
 }

@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace CareSync.Pages.Lab
+namespace CareSync.Pages.Lab;
+
+public class TestRequestsModel : PageModel
 {
-    public class TestRequestsModel : PageModel
+    public void OnGet()
     {
-        public void OnGet()
-        {
-        }
     }
 }
