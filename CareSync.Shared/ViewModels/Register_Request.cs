@@ -1,4 +1,4 @@
-using System;
+using CareSync.Shared.Enums;
 using System.ComponentModel.DataAnnotations;
 
 public class Register_Request : IValidatableObject
@@ -32,7 +32,7 @@ public class Register_Request : IValidatableObject
 
     [Required(ErrorMessage = "Gender is required")]
     [Display(Name = "Gender")]
-    public int Gender { get; set; } // 1 = Male, 2 = Female, 3 = Other
+    public Gender_Enum Gender { get; set; }
 
     [Display(Name = "Date of Birth")]
     [DataType(DataType.Date)]
@@ -69,17 +69,17 @@ public class Register_Request : IValidatableObject
         {
             var today = DateTime.Today;
             var birthDate = DateOfBirth.Value.Date;
-            
+
             if (birthDate <= today)
             {
                 var age = today.Year - birthDate.Year;
-                
+
                 // Check if birthday hasn't occurred this year yet
                 if (birthDate.Date > today.AddYears(-age))
                 {
                     age--;
                 }
-                
+
                 Age = age;
             }
             else
@@ -124,7 +124,7 @@ public class Register_Request : IValidatableObject
             {
                 // Calculate and validate age
                 CalculateAge();
-                
+
                 if (Age.HasValue)
                 {
                     // Business rule: Minimum age for registration (e.g., 13 years)
@@ -160,12 +160,12 @@ public class Register_Request : IValidatableObject
     {
         var today = DateTime.Today;
         var age = today.Year - birthDate.Year;
-        
+
         if (birthDate.Date > today.AddYears(-age))
         {
             age--;
         }
-        
+
         return age;
     }
 }

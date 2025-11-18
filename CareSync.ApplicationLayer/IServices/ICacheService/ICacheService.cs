@@ -1,8 +1,8 @@
 ﻿namespace CareSync.ApplicationLayer.IServices.ICacheService;
 
-public interface ICacheService
+internal interface ICacheService
 {
-    Task<T?> GetAsync<T>(string key);
-    Task SetAsync<T>(string key, T value, TimeSpan duration);
-    Task RemoveAsync(string key);
+    T? GetFromCacheAsync<T>(string key);
+    void SetCacheAsync<T>(string key, T value, TimeSpan duration);
+    void RemoveFromCacheAsync(string key);
 }

@@ -1,7 +1,7 @@
 using AutoMapper;
 using CareSync.ApplicationLayer.Contracts.UsersDTOs;
+using CareSync.Shared.Enums;
 using CareSync.DataLayer.Entities;
-using CareSync.DataLayer.DataEnums;
 
 namespace CareSync.ApplicationLayer.Mappings;
 
@@ -20,14 +20,14 @@ public class UserMappingProfile : Profile
             .ForMember(dest => dest.LoginID, opt => opt.MapFrom(src => 0)) // Default value
             .ForMember(dest => dest.RoleID, opt => opt.Ignore()) // Will be set by service
             .ForMember(dest => dest.RoleType, opt => opt.MapFrom(src => RoleType.Patient)) // Default to Patient
-            .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => Gender.Other)) // Default value
+            .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => Gender_Enum.Male)) // Default value
             .ForMember(dest => dest.DateOfBirth, opt => opt.Ignore()) // Not provided in registration
             .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => true))
             .ForMember(dest => dest.Address, opt => opt.Ignore())
             .ForMember(dest => dest.Age, opt => opt.Ignore())
             .ForMember(dest => dest.ProfileImage, opt => opt.Ignore())
             .ForMember(dest => dest.LastLogin, opt => opt.Ignore())
-            .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => "System")) // Default for registration
+            .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => string.Empty))
             .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(src => DateTime.UtcNow))
             .ForMember(dest => dest.UpdatedBy, opt => opt.Ignore())
             .ForMember(dest => dest.UpdatedOn, opt => opt.Ignore())

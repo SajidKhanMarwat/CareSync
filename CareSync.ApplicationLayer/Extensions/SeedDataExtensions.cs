@@ -27,10 +27,6 @@ public static class SeedDataExtensions
             var roleSeedService = services.GetRequiredService<RoleSeedService>();
             await roleSeedService.SeedRolesAsync();
 
-            // Seed admin user
-            var adminSeedService = services.GetRequiredService<AdminSeedService>();
-            await adminSeedService.SeedAdminUserAsync();
-
             logger.LogInformation("Database seeding completed successfully.");
         }
         catch (Exception ex)
@@ -50,7 +46,6 @@ public static class SeedDataExtensions
     public static IServiceCollection AddSeedDataServices(this IServiceCollection services)
     {
         services.AddScoped<RoleSeedService>();
-        services.AddScoped<AdminSeedService>();
         return services;
     }
 }

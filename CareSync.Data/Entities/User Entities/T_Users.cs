@@ -1,4 +1,4 @@
-using CareSync.DataLayer.DataEnums;
+using CareSync.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
 
 namespace CareSync.DataLayer.Entities;
@@ -58,7 +58,7 @@ public class T_Users : IdentityUser<string>
     /// Used for medical records, statistical analysis, and personalized care.
     /// Nullable to respect privacy preferences and handle incomplete profiles.
     /// </summary>
-    public required Gender Gender { get; set; }
+    public required Gender_Enum Gender { get; set; }
 
     /// <summary>
     /// The user's date of birth.

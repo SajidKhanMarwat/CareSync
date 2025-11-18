@@ -1,4 +1,4 @@
-﻿namespace CareSync.DataLayer.DataEnums.Appointment;
+﻿namespace CareSync.Shared.Enums.Appointment;
 
 public enum AppointmentStatus_Enum
 {
