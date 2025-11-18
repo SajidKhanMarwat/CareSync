@@ -1,9 +1,7 @@
-using CareSync.ApplicationLayer;
 using CareSync.ApplicationLayer.Extensions;
 using CareSync.ApplicationLayer.IServices.EntitiesServices;
 using CareSync.DataLayer;
 using CareSync.DataLayer.Entities;
-using CareSync.InfrastructureLayer.Services.CookieServices;
 using CareSync.InfrastructureLayer.Services.EntitiesServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

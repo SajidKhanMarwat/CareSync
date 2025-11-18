@@ -26,4 +26,8 @@
     <Folder Include="DTOs\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CareSync.Shared\CareSync.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

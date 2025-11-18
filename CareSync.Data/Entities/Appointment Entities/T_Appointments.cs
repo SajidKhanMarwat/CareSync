@@ -1,4 +1,5 @@
-using CareSync.DataLayer.DataEnums.Appointment;
+
+using CareSync.Shared.Enums.Appointment;
 
 namespace CareSync.DataLayer.Entities;
 

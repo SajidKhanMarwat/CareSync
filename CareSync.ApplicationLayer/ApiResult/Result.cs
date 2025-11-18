@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace CareSync.ApplicationLayer.ApiResult;
 
-public class Result<T>
+public sealed class Result<T>
 {
     public HttpStatusCode StatusCode { get; set; }
     public bool IsSuccess { get; set; }

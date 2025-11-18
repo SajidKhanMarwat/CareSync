@@ -3,23 +3,21 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace CareSync.InfrastructureLayer.Services.CacheService;
 
-public class MemoryCacheService(IMemoryCache memoryCache) : ICacheService
+public sealed class MemoryCacheService(IMemoryCache memoryCache) : ICacheService
 {
-    public Task<T?> GetAsync<T>(string key)
+    public T? GetFromCacheAsync<T>(string key)
     {
         memoryCache.TryGetValue(key, out T? value);
-        return Task.FromResult(value);
+        return value;
     }
 
-    public Task SetAsync<T>(string key, T value, TimeSpan duration)
+    public void SetCacheAsync<T>(string key, T value, TimeSpan duration)
     {
         memoryCache.Set(key, value, duration);
-        return Task.CompletedTask;
     }
 
-    public Task RemoveAsync(string key)
+    public void RemoveFromCacheAsync(string key)
     {
         memoryCache.Remove(key);
-        return Task.CompletedTask;
     }
 }

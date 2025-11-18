@@ -1,8 +1,6 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿namespace CareSync.ApplicationLayer.Contracts.UsersDTOs;
 
-namespace CareSync.ApplicationLayer.Contracts.UsersDTOs;
-
+using CareSync.Shared.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -38,7 +36,7 @@ public record UserRegisteration_DTO
     public required string ConfirmPassword { get; set; }
 
     [Required(ErrorMessage = "Gender is required")]
-    public int Gender { get; set; } // 1 = Male, 2 = Female, 3 = Other
+    public Gender_Enum Gender { get; set; } // 1 = Male, 2 = Female, 3 = Other
 
     [DataType(DataType.Date)]
     public DateTime? DateOfBirth { get; set; }

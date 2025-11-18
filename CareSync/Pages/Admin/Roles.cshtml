@@ -144,59 +144,10 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">Create New Role</h5>
-            </div>
-            <div class="card-body">
-                <form>
-                    <div class="mb-3">
-                        <label class="form-label">Role Name</label>
-                        <input type="text" class="form-control" name="RoleName" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Arabic Name</label>
-                        <input type="text" class="form-control" name="RoleArabicName" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        <textarea class="form-control" name="Description" rows="3"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Permissions</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="Permissions" value="CanViewUsers" id="canViewUsers">
-                            <label class="form-check-label" for="canViewUsers">Can View Users</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="Permissions" value="CanManageUsers" id="canManageUsers">
-                            <label class="form-check-label" for="canManageUsers">Can Manage Users</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="Permissions" value="CanViewPatients" id="canViewPatients">
-                            <label class="form-check-label" for="canViewPatients">Can View Patients</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="Permissions" value="CanManagePatients" id="canManagePatients">
-                            <label class="form-check-label" for="canManagePatients">Can Manage Patients</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="Permissions" value="CanCreatePrescriptions" id="canCreatePrescriptions">
-                            <label class="form-check-label" for="canCreatePrescriptions">Can Create Prescriptions</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="Permissions" value="CanManageLabTests" id="canManageLabTests">
-                            <label class="form-check-label" for="canManageLabTests">Can Manage Lab Tests</label>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
+    <div class="col-md-4">        
         <div class="card mt-3">
             <div class="card-header">
-                <h5 class="card-title">Add Role Claim</h5>
+                <h5 class="card-title">Add Permission</h5>
             </div>
             <div class="card-body">
                 <form>
@@ -218,6 +169,9 @@
                         <label class="form-label">Claim Value</label>
                         <input type="text" class="form-control" name="ClaimValue" placeholder="e.g., CanViewReports" />
                     </div>
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-success">Add Permission</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -225,7 +179,5 @@
 </div>
 
 @section PageActions {
-    <button type="button" class="btn btn-primary">Create Role</button>
-    <button type="button" class="btn btn-success">Add Claim</button>
-    <button type="button" class="btn btn-outline-secondary">Export Roles</button>
+    <button type="button" class="btn btn-outline-secondary">Export Roles & Permissions</button>
 }

@@ -1,9 +1,9 @@
-using CareSync.ApplicationLayer.Extensions;
+using CareSync.ApplicationLayer.Services.SeedData;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
-namespace CareSync.ApplicationLayer;
+namespace CareSync.ApplicationLayer.Extensions;
 
 public static class ApplicationLayerDependencies
 {
@@ -11,7 +11,9 @@ public static class ApplicationLayerDependencies
     {
         services.AddAutoMapper(typeof(ApplicationLayerDependencies).Assembly);
         services.AddSeedDataServices();
-        
+
+        services.AddScoped<RoleSeedService>();
+
         //#region Serilog
         //Log.Logger = new LoggerConfiguration()
         //    .MinimumLevel.Information()

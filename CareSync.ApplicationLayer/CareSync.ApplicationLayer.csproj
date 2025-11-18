@@ -14,9 +14,6 @@
 
   <ItemGroup>
     <Folder Include="Automapper\" />
-    <Folder Include="Repos\Doctor Repository\" />
-    <Folder Include="Repos\Patient Repository\" />
-    <Folder Include="Repos\Users Repository\" />
     <Folder Include="Services\Email Service\" />
   </ItemGroup>
 

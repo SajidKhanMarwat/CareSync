@@ -1,4 +1,4 @@
-namespace CareSync.DataLayer.DataEnums;
+namespace CareSync.Shared.Enums;
 
 public enum RoleType
 {

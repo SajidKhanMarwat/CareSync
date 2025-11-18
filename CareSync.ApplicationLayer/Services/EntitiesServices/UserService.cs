@@ -15,7 +15,7 @@ using CareSync.ApplicationLayer.ApiResult;
 
 namespace CareSync.InfrastructureLayer.Services.EntitiesServices;
 
-public class UserService(UserManager<T_Users> userManager, SignInManager<T_Users> signInManager, RoleManager<T_Roles> roleManager, IMapper mapper, ILogger<UserService> logger) : IUserService
+public sealed class UserService(UserManager<T_Users> userManager, SignInManager<T_Users> signInManager, RoleManager<T_Roles> roleManager, IMapper mapper, ILogger<UserService> logger) : IUserService
 {
     public async Task<Result<LoginResponse>> GenerateRefreshTokenAsync()
     {
