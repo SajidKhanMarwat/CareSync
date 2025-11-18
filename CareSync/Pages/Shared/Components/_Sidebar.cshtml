@@ -86,10 +86,10 @@
             <span class="menu-text">Doctors</span>
           </a>
           <ul class="treeview-menu">
-            <li class="@(currentPath.Contains("/Admin/Doctors") ? "active" : "")">
+            <li class="@(currentPath.Contains("/Admin/Doctors") && !currentPath.Contains("/CreateDoctor") ? "active current-page" : "")">
               <a href="~/Admin/Doctors">All Doctors</a>
             </li>
-            <li class="@(currentPath.Contains("/Admin/CreateDoctor") ? "active" : "")">
+            <li class="@(currentPath.Contains("/Admin/CreateDoctor") ? "active current-page" : "")">
               <a href="~/Admin/CreateDoctor">Add Doctor</a>
             </li>
           </ul>
@@ -102,13 +102,13 @@
             <span class="menu-text">Patients</span>
           </a>
           <ul class="treeview-menu">
-            <li class="@(currentPath.Contains("/Admin/Patients") ? "active" : "")">
+            <li class="@(currentPath.Equals("/Admin/Patients", StringComparison.OrdinalIgnoreCase) ? "active current-page" : "")">
               <a href="~/Admin/Patients">All Patients</a>
             </li>
-            <li class="@(currentPath.Contains("/Patients/Create") ? "active" : "")">
+            <li class="@(currentPath.Contains("/Patients/Create") ? "active current-page" : "")">
               <a href="~/Patients/Create">Add Patient</a>
             </li>
-            <li class="@(currentPath.Contains("/Admin/Patients/Search") ? "active" : "")">
+            <li class="@(currentPath.Contains("/Admin/Patients/Search") ? "active current-page" : "")">
               <a href="~/Admin/Patients/Search">Search Patients</a>
             </li>
           </ul>
@@ -129,13 +129,13 @@
             <span class="menu-text">User Management</span>
           </a>
           <ul class="treeview-menu">
-            <li class="@(currentPath.Contains("/Admin/Users") ? "active" : "")">
+            <li class="@(currentPath.Contains("/Admin/Users") && !currentPath.Contains("/Roles") ? "active current-page" : "")">
               <a href="~/Admin/Users">All Users</a>
             </li>
-            <li class="@(currentPath.Contains("/Admin/Roles") ? "active" : "")">
+            <li class="@(currentPath.Contains("/Admin/Roles") && !currentPath.Contains("/RoleRights") ? "active current-page" : "")">
               <a href="~/Admin/Roles">Roles & Permissions</a>
             </li>
-            <li class="@(currentPath.Contains("/Admin/RoleRights") ? "active" : "")">
+            <li class="@(currentPath.Contains("/Admin/RoleRights") ? "active current-page" : "")">
               <a href="~/Admin/RoleRights">Role Rights Mapping</a>
             </li>
           </ul>
@@ -148,7 +148,7 @@
             <span class="menu-text">Reports & Analytics</span>
           </a>
           <ul class="treeview-menu">
-            <li class="@(currentPath.Contains("/Admin/UserReports") ? "active" : "")">
+            <li class="@(currentPath.Contains("/Admin/UserReports") ? "active current-page" : "")">
               <a href="~/Admin/UserReports">User Reports</a>
             </li>
           </ul>
@@ -179,8 +179,12 @@
             <span class="menu-text">My Patients</span>
           </a>
           <ul class="treeview-menu">
-            <li><a href="~/Doctor/Patients">All Patients</a></li>
-            <li><a href="~/Doctor/Patients/Search">Search Patients</a></li>
+            <li class="@(currentPath.Equals("/Doctor/Patients", StringComparison.OrdinalIgnoreCase) ? "active current-page" : "")">
+              <a href="~/Doctor/Patients">All Patients</a>
+            </li>
+            <li class="@(currentPath.Contains("/Doctor/Patients/Search") ? "active current-page" : "")">
+              <a href="~/Doctor/Patients/Search">Search Patients</a>
+            </li>
           </ul>
         </li>
         
@@ -217,19 +221,19 @@
             <span class="menu-text">Medical Records</span>
           </a>
           <ul class="treeview-menu">
-            <li class="@(currentPath.Contains("/Patient/MedicalHistory") ? "active" : "")">
+            <li class="@(currentPath.Contains("/Patient/MedicalHistory") ? "active current-page" : "")">
               <a href="~/Patient/MedicalHistory">Medical History</a>
             </li>
-            <li class="@(currentPath.Contains("/Patient/Medications") ? "active" : "")">
+            <li class="@(currentPath.Contains("/Patient/Medications") ? "active current-page" : "")">
               <a href="~/Patient/Medications">My Medications</a>
             </li>
-            <li class="@(currentPath.Contains("/Patient/Prescriptions") ? "active" : "")">
+            <li class="@(currentPath.Contains("/Patient/Prescriptions") ? "active current-page" : "")">
               <a href="~/Patient/Prescriptions">Prescriptions History</a>
             </li>
-            <li class="@(currentPath.Contains("/Patient/LabResults") ? "active" : "")">
+            <li class="@(currentPath.Contains("/Patient/LabResults") ? "active current-page" : "")">
               <a href="~/Patient/LabResults">Lab Reports</a>
             </li>
-            <li class="@(currentPath.Contains("/Patient/Documents") ? "active" : "")">
+            <li class="@(currentPath.Contains("/Patient/Documents") ? "active current-page" : "")">
               <a href="~/Patient/Documents">Medical Documents</a>
             </li>
           </ul>

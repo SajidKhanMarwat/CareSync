@@ -160,20 +160,6 @@
                     <div class="step-content" data-step="3">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label">Consultation Fee <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <span class="input-group-text">$</span>
-                                    <input type="number" class="form-control" name="consultationFee" min="0" step="0.01" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Follow-up Fee</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">$</span>
-                                    <input type="number" class="form-control" name="followupFee" min="0" step="0.01">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
                                 <label class="form-label">Working Days <span class="text-danger">*</span></label>
                                 <div class="form-check-group">
                                     <div class="form-check form-check-inline">
@@ -206,15 +192,41 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Shift Timing <span class="text-danger">*</span></label>
-                                <select class="form-select" name="shiftTiming" required>
-                                    <option value="">Select Shift</option>
-                                    <option value="Morning">Morning (8 AM - 4 PM)</option>
-                                    <option value="Evening">Evening (4 PM - 12 AM)</option>
-                                    <option value="Night">Night (12 AM - 8 AM)</option>
-                                    <option value="Full Day">Full Day (8 AM - 8 PM)</option>
-                                </select>
+                            <div class="col-md-12">
+                                <label class="form-label">Doctor Sitting Time Range <span class="text-danger">*</span></label>
+                                
+                                <!-- Quick Presets -->
+                                <div class="mb-3">
+                                    <small class="text-muted d-block mb-2">Quick Presets:</small>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button type="button" class="btn btn-outline-primary" onclick="setTimeRange('08:00', '16:00')">
+                                            <i class="ri-sun-line me-1"></i>Morning (8 AM - 4 PM)
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary" onclick="setTimeRange('14:00', '22:00')">
+                                            <i class="ri-moon-line me-1"></i>Evening (2 PM - 10 PM)
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary" onclick="setTimeRange('09:00', '17:00')">
+                                            <i class="ri-time-line me-1"></i>Standard (9 AM - 5 PM)
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary" onclick="setTimeRange('08:00', '20:00')">
+                                            <i class="ri-hourglass-line me-1"></i>Extended (8 AM - 8 PM)
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">Start Time</label>
+                                        <input type="time" class="form-control" name="startTime" id="startTime" required>
+                                        <small class="text-muted">When doctor starts consulting</small>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">End Time</label>
+                                        <input type="time" class="form-control" name="endTime" id="endTime" required>
+                                        <small class="text-muted">When doctor finishes consulting</small>
+                                    </div>
+                                </div>
+                                <div class="mt-2" id="timeRangeDisplay"></div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Appointment Duration (minutes)</label>
@@ -334,12 +346,27 @@
                 }
             }
 
-            // Additional validation for step 3 (working days)
+            // Additional validation for step 3 (working days and time range)
             if (currentStep === 3) {
                 const workingDays = document.querySelectorAll('input[name="workingDays"]:checked');
                 if (workingDays.length === 0) {
                     alert('Please select at least one working day.');
                     return false;
+                }
+                
+                // Validate time range
+                const startTime = document.getElementById('startTime').value;
+                const endTime = document.getElementById('endTime').value;
+                
+                if (startTime && endTime) {
+                    const start = new Date('1970-01-01T' + startTime);
+                    const end = new Date('1970-01-01T' + endTime);
+                    
+                    if (end <= start) {
+                        alert('End time must be after start time!');
+                        document.getElementById('endTime').focus();
+                        return false;
+                    }
                 }
             }
 
@@ -354,10 +381,125 @@
         document.getElementById('doctorForm').addEventListener('submit', function(e) {
             e.preventDefault();
             if (validateCurrentStep()) {
-                alert('Doctor created successfully!');
-                // Implementation for form submission
+                const doctorData = collectFormData();
+                console.log('Doctor Data to Submit:', doctorData);
+                
+                // Display formatted summary
+                const summary = `
+Doctor Account Summary:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👤 Name: ${doctorData.firstName} ${doctorData.lastName}
+📧 Email: ${doctorData.email}
+🏥 Specialization: ${doctorData.specialization}
+📅 Working Days: ${doctorData.availableDays}
+⏰ Sitting Time: ${formatTime(doctorData.startTime)} - ${formatTime(doctorData.endTime)}
+💰 Consultation Fee: $${doctorData.consultationFee}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                `;
+                
+                console.log(summary);
+                alert('Doctor created successfully!\n\nCheck console for details.');
+                
+                // TODO: Send to backend API
+                // Example:
+                // fetch('/api/doctors/create', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify(doctorData)
+                // });
             }
         });
+
+        // Collect and convert form data for submission
+        function collectFormData() {
+            const form = document.getElementById('doctorForm');
+            const formData = new FormData(form);
+            
+            // Collect working days as comma-separated string
+            const workingDays = [];
+            document.querySelectorAll('input[name="workingDays"]:checked').forEach(checkbox => {
+                workingDays.push(checkbox.value);
+            });
+            
+            return {
+                // Personal Info
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                dateOfBirth: formData.get('dateOfBirth'),
+                gender: formData.get('gender'),
+                email: formData.get('email'),
+                phoneNumber: formData.get('phoneNumber'),
+                address: formData.get('address'),
+                
+                // Professional Details
+                licenseNumber: formData.get('licenseNumber'),
+                experienceYears: parseInt(formData.get('experience')),
+                specialization: formData.get('specialization'),
+                department: formData.get('department'),
+                qualifications: formData.get('qualifications'),
+                certifications: formData.get('certifications'),
+                
+                // Schedule & Fees (as strings to match entity)
+                consultationFee: formData.get('consultationFee'),
+                followupFee: formData.get('followupFee'),
+                availableDays: workingDays.join(', '),  // "Monday, Wednesday, Friday"
+                startTime: formData.get('startTime'),    // "09:00" format
+                endTime: formData.get('endTime'),        // "17:00" format
+                appointmentDuration: formData.get('appointmentDuration'),
+                maxPatients: parseInt(formData.get('maxPatients'))
+            };
+        }
+
+        // Time range validation and display
+        function validateTimeRange() {
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            const displayDiv = document.getElementById('timeRangeDisplay');
+            
+            if (startTime && endTime) {
+                const start = new Date('1970-01-01T' + startTime);
+                const end = new Date('1970-01-01T' + endTime);
+                
+                if (end <= start) {
+                    displayDiv.innerHTML = '<div class="alert alert-danger py-2"><i class="ri-error-warning-line me-2"></i>End time must be after start time!</div>';
+                    return false;
+                } else {
+                    const diffMs = end - start;
+                    const diffHrs = Math.floor(diffMs / 3600000);
+                    const diffMins = Math.round((diffMs % 3600000) / 60000);
+                    
+                    displayDiv.innerHTML = `
+                        <div class="alert alert-success py-2">
+                            <i class="ri-time-line me-2"></i>
+                            <strong>Sitting Duration:</strong> ${diffHrs} hour${diffHrs !== 1 ? 's' : ''} ${diffMins > 0 ? diffMins + ' minutes' : ''}
+                            <br>
+                            <small class="text-muted">Doctor will be available from ${formatTime(startTime)} to ${formatTime(endTime)}</small>
+                        </div>
+                    `;
+                    return true;
+                }
+            }
+            displayDiv.innerHTML = '';
+            return true;
+        }
+
+        function formatTime(time) {
+            const [hours, minutes] = time.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour % 12 || 12;
+            return `${displayHour}:${minutes} ${ampm}`;
+        }
+
+        document.getElementById('startTime').addEventListener('change', validateTimeRange);
+        document.getElementById('endTime').addEventListener('change', validateTimeRange);
+
+        // Quick preset time range setter
+        function setTimeRange(start, end) {
+            document.getElementById('startTime').value = start;
+            document.getElementById('endTime').value = end;
+            validateTimeRange();
+        }
 
         // File upload preview
         document.getElementById('profilePicture').addEventListener('change', function(e) {
@@ -479,6 +621,31 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
+        }
+        
+        /* Time Range Presets */
+        .btn-group-sm {
+            flex-wrap: wrap;
+        }
+        
+        .btn-group-sm .btn {
+            margin-bottom: 5px;
+        }
+        
+        @@media (max-width: 768px) {
+            .btn-group-sm {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .btn-group-sm .btn {
+                width: 100%;
+                border-radius: 0.25rem !important;
+            }
+        }
+        
+        #timeRangeDisplay .alert {
+            margin-bottom: 0;
         }
     </style>
 }

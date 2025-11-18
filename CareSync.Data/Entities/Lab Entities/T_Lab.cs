@@ -5,6 +5,9 @@ public class T_Lab : BaseEntity
     public int LabID { get; set; }
     public Guid? UserID { get; set; }
     public string? LabName { get; set; }
+    public string? ArabicLabName { get; set; }
+    public string? LabAddress { get; set; }
+    public string? ArabicLabAddress { get; set; }
     public string? Location { get; set; }
     public string? ContactNumber { get; set; }
     public string? Email { get; set; }
