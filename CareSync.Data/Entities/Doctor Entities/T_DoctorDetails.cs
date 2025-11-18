@@ -1,3 +1,5 @@
+using CareSync.Shared.Enums;
+
 namespace CareSync.DataLayer.Entities;
 
 /// <summary>
@@ -28,6 +30,9 @@ public class T_DoctorDetails : BaseEntity
     /// Nullable to handle cases where specialization is being updated or verified.
     /// </summary>
     public string? Specialization { get; set; }
+    public string? ArabicSpecialization { get; set; }
+    public string? ClinicAddress { get; set; }
+    public string? ArabicClinicAddress { get; set; }
 
     /// <summary>
     /// Number of years of medical practice experience.
@@ -58,32 +63,25 @@ public class T_DoctorDetails : BaseEntity
     public string? HospitalAffiliation { get; set; }
 
     /// <summary>
-    /// The doctor's consultation fee amount for appointments.
-    /// Essential for billing, payment processing, and patient cost transparency.
-    /// Nullable to handle cases where fees are determined by appointment type or insurance coverage.
-    /// </summary>
-    public decimal? ConsultationFee { get; set; }
-
-    /// <summary>
     /// Days of the week when the doctor is available for appointments (e.g., "Monday, Wednesday, Friday").
     /// Critical for appointment scheduling and patient booking system functionality.
     /// Nullable during initial setup but important for operational scheduling.
     /// </summary>
-    public string? AvailableDays { get; set; }
+    public string AvailableDays { get; set; } = null!;
 
     /// <summary>
     /// Daily start time for the doctor's availability window.
     /// Defines when the doctor begins accepting appointments each available day.
     /// Nullable but essential for accurate appointment scheduling and time slot management.
     /// </summary>
-    public TimeSpan? StartTime { get; set; }
+    public string? StartTime { get; set; }
 
     /// <summary>
     /// Daily end time for the doctor's availability window.
     /// Defines when the doctor stops accepting appointments each available day.
     /// Nullable but essential for accurate appointment scheduling and time slot management.
     /// </summary>
-    public TimeSpan? EndTime { get; set; }
+    public string? EndTime { get; set; }
 
     // Navigation properties
     /// <summary>

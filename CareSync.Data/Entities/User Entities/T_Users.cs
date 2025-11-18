@@ -46,6 +46,9 @@ public class T_Users : IdentityUser<string>
     /// </summary>
     public string? LastName { get; set; }
 
+    public required string ArabicFirstName { get; set; }
+    public string? ArabicLastName { get; set; }
+
     /// <summary>
     /// Path or URL to the user's profile image/avatar.
     /// Used for user identification in the UI and personalization.

@@ -6,13 +6,13 @@
     <title>@ViewData["Title"] - CareSync</title>
     
     <!-- Favicon -->
-    <link rel="shortcut icon" href="~/ApolloTheme/assets/images/favicon.svg">
+    <link rel="shortcut icon" href="~/theme/images/favicon.svg">
     
     <!-- Fonts -->
-    <link rel="stylesheet" href="~/ApolloTheme/assets/fonts/remix/remixicon.css">
+    <link rel="stylesheet" href="~/theme/fonts/remix/remixicon.css">
     
     <!-- Apollo Theme CSS -->
-    <link href="~/ApolloTheme/assets/css/main.min.css" rel="stylesheet" />
+    <link href="~/theme/css/main.css" rel="stylesheet" />
     
     <!-- Page Specific CSS -->
     @await RenderSectionAsync("Styles", required: false)
@@ -24,11 +24,16 @@
         @RenderBody()
     </main>
     
+    <!-- Footer -->
+    <footer class="text-center py-3">
+        <small class="text-muted">&copy; @DateTime.Now.Year CareSync. All rights reserved.</small>
+    </footer>
+    
     <!-- Apollo Theme JavaScript -->
-    <script src="~/ApolloTheme/assets/js/jquery.min.js"></script>
-    <script src="~/ApolloTheme/assets/js/bootstrap.bundle.min.js"></script>
-    <script src="~/ApolloTheme/assets/js/modernizr.js"></script>
-    <script src="~/ApolloTheme/assets/js/custom.js"></script>
+    <script src="~/theme/js/jquery.min.js"></script>
+    <script src="~/theme/js/bootstrap.bundle.min.js"></script>
+    <script src="~/theme/js/modernizr.js"></script>
+    <script src="~/theme/js/custom.js"></script>
     
     <!-- Page Specific JavaScript -->
     @await RenderSectionAsync("Scripts", required: false)

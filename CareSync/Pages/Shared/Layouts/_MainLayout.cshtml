@@ -162,6 +162,19 @@
     <script src="~/theme/vendor/daterange/daterange.js"></script>
     <script src="~/theme/js/custom.js"></script>
     
+    <!-- Active Page Sidebar Script -->
+    <script>
+        $(document).ready(function() {
+            // Expand treeview menus that have active sub-items
+            $('.sidebar-menu li.treeview.active').each(function() {
+                $(this).find('.treeview-menu').addClass('menu-open').slideDown(300);
+            });
+            
+            // Add active-sub class to active sub-menu items for better styling
+            $('.sidebar-menu .treeview-menu > li.active > a').addClass('active-sub');
+        });
+    </script>
+    
     <!-- Page Specific JavaScript -->
     @await RenderSectionAsync("Scripts", required: false)
     
