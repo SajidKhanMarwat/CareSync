@@ -4,40 +4,328 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
-@section PageActions {
+@* @section PageActions {
     <button class="btn btn-primary">
         <i class="ri-add-line me-2"></i>Quick Action
     </button>
-}
+} *@
+
+<!-- Critical Alerts & Notifications -->
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center" role="alert">
+            <i class="ri-alarm-warning-line fs-4 me-3"></i>
+            <div class="flex-grow-1">
+                <strong>3 Urgent Items</strong> require your attention: 2 appointments pending approval, 1 critical lab result awaiting review.
+            </div>
+            <button class="btn btn-sm btn-warning">Review Now</button>
+        </div>
+    </div>
+</div>
 
 <!-- Welcome Section -->
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card bg-primary text-white">
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h2 class="card-title">Welcome back, Dr. Admin!</h2>
-                        <p class="card-text">Here's what's happening at CareSync today.</p>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="text-center">
-                                    <h4>23</h4>
-                                    <small>Appointments Today</small>
-                                </div>
+        <div class="welcome-header mb-3">
+            <div class="d-flex align-items-center justify-content-between flex-wrap">
+                <div>
+                    <h3 class="mb-1 fw-bold">Welcome back, Dr. Admin! 👋</h3>
+                    <p class="text-muted mb-0">Here's what's happening at CareSync today.</p>
+                </div>
+                <div class="text-end">
+                    <small class="text-muted d-block">Last login</small>
+                    <span class="fw-semibold">Today at 9:42 AM</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards - Theme Design -->
+<div class="row g-4 mb-4">
+    <div class="col-sm-4 col-12">
+        <div class="card mb-3 shadow-sm border-0 h-100">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center">
+                    <div class="p-2 border border-primary rounded-circle me-3">
+                        <div class="icon-box md bg-primary-lighten rounded-5">
+                            <i class="ri-calendar-check-line fs-4 text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <h1 class="lh-1">260</h1>
+                        <p class="m-0">Appointments</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-end justify-content-between mt-3">
+                    <a class="text-primary" href="~/Admin/Appointments">
+                        <span>View All</span>
+                        <i class="ri-arrow-right-line text-primary ms-1"></i>
+                    </a>
+                    <div class="text-end">
+                        <p class="mb-0 text-primary">+30%</p>
+                        <span class="badge bg-primary-light text-primary small">this month</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4 col-12">
+        <div class="card mb-3 shadow-sm border-0 h-100">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center">
+                    <div class="p-2 border border-primary rounded-circle me-3">
+                        <div class="icon-box md bg-primary-lighten rounded-5">
+                            <i class="ri-stethoscope-line fs-4 text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <h1 class="lh-1">24</h1>
+                        <p class="m-0">Doctors</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-end justify-content-between mt-3">
+                    <a class="text-primary" href="~/Admin/Doctors">
+                        <span>View All</span>
+                        <i class="ri-arrow-right-line ms-1"></i>
+                    </a>
+                    <div class="text-end">
+                        <p class="mb-0 text-primary">+2</p>
+                        <span class="badge bg-primary-light text-primary small">this month</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4 col-12">
+        <div class="card mb-3 shadow-sm border-0 h-100">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center">
+                    <div class="p-2 border border-primary rounded-circle me-3">
+                        <div class="icon-box md bg-primary-lighten rounded-5">
+                            <i class="ri-user-heart-line fs-4 text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <h1 class="lh-1">980</h1>
+                        <p class="m-0">Patients</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-end justify-content-between mt-3">
+                    <a class="text-primary" href="~/Admin/Patients">
+                        <span>View All</span>
+                        <i class="ri-arrow-right-line text-primary ms-1"></i>
+                    </a>
+                    <div class="text-end">
+                        <p class="mb-0 text-primary">+40%</p>
+                        <span class="badge bg-primary-light text-primary small">this month</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions Row -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="card-title mb-0 fw-semibold">
+                    <i class="ri-flashlight-line me-2 text-primary"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-2">
+                        <a href="~/Patients/Create" class="btn btn-outline-primary w-100 d-flex flex-column align-items-center py-3 quick-action-btn">
+                            <i class="ri-user-add-line mb-2" style="font-size: 1.5rem;"></i>
+                            <span>Add Patient</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="~/Admin/CreateDoctor" class="btn btn-outline-success w-100 d-flex flex-column align-items-center py-3 quick-action-btn">
+                            <i class="ri-user-star-line mb-2" style="font-size: 1.5rem;"></i>
+                            <span>Add Doctor</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="~/Admin/CreateLaboratory" class="btn btn-outline-info w-100 d-flex flex-column align-items-center py-3 quick-action-btn">
+                            <i class="ri-test-tube-line mb-2" style="font-size: 1.5rem;"></i>
+                            <span>Add Lab Staff</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="~/Admin/UserReports" class="btn btn-outline-warning w-100 d-flex flex-column align-items-center py-3 quick-action-btn">
+                            <i class="ri-file-chart-line mb-2" style="font-size: 1.5rem;"></i>
+                            <span>View Reports</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="~/Admin/MedicalStaff" class="btn btn-outline-secondary w-100 d-flex flex-column align-items-center py-3 quick-action-btn">
+                            <i class="ri-team-line mb-2" style="font-size: 1.5rem;"></i>
+                            <span>Manage Staff</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="~/Admin/Patients/Search" class="btn btn-outline-dark w-100 d-flex flex-column align-items-center py-3 quick-action-btn">
+                            <i class="ri-search-line mb-2" style="font-size: 1.5rem;"></i>
+                            <span>Search Patients</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Doctor Availability & Performance Metrics -->
+<div class="row mb-4">
+    <div class="col-xl-4 col-lg-6 mb-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="card-title mb-0 fw-semibold">
+                    <i class="ri-user-star-line me-2 text-primary"></i>Doctor Availability
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="doctor-status-list">
+                    <div class="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
+                        <div class="d-flex align-items-center">
+                            <div class="status-indicator status-available me-2"></div>
+                            <div>
+                                <h6 class="mb-0">Dr. Sarah Smith</h6>
+                                <small class="text-muted">Cardiology</small>
                             </div>
-                            <div class="col-md-4">
-                                <div class="text-center">
-                                    <h4>8</h4>
-                                    <small>Pending Reviews</small>
-                                </div>
+                        </div>
+                        <span class="badge bg-success-subtle text-success">Available</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
+                        <div class="d-flex align-items-center">
+                            <div class="status-indicator status-busy me-2"></div>
+                            <div>
+                                <h6 class="mb-0">Dr. John Wilson</h6>
+                                <small class="text-muted">Neurology</small>
                             </div>
-                            <div class="col-md-4">
-                                <div class="text-center">
-                                    <h4>156</h4>
-                                    <small>Active Patients</small>
-                                </div>
+                        </div>
+                        <span class="badge bg-warning-subtle text-warning">In Session</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
+                        <div class="d-flex align-items-center">
+                            <div class="status-indicator status-available me-2"></div>
+                            <div>
+                                <h6 class="mb-0">Dr. Emily Davis</h6>
+                                <small class="text-muted">Pediatrics</small>
                             </div>
+                        </div>
+                        <span class="badge bg-success-subtle text-success">Available</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="status-indicator status-offline me-2"></div>
+                            <div>
+                                <h6 class="mb-0">Dr. Michael Brown</h6>
+                                <small class="text-muted">Orthopedics</small>
+                            </div>
+                        </div>
+                        <span class="badge bg-secondary-subtle text-secondary">Off Duty</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-4 col-lg-6 mb-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="card-title mb-0 fw-semibold">
+                    <i class="ri-line-chart-line me-2 text-primary"></i>Today's Performance
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="metric-item mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">Patient Check-ins</span>
+                        <span class="fw-bold text-primary">18 / 23</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 78%"></div>
+                    </div>
+                </div>
+                <div class="metric-item mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">Appointments Completed</span>
+                        <span class="fw-bold text-success">12 / 23</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 52%"></div>
+                    </div>
+                </div>
+                <div class="metric-item mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">Lab Reports Ready</span>
+                        <span class="fw-bold text-info">8 / 12</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: 67%"></div>
+                    </div>
+                </div>
+                <div class="metric-item">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">Revenue Today</span>
+                        <span class="fw-bold text-success">$12,450</span>
+                    </div>
+                    <small class="text-success">
+                        <i class="ri-arrow-up-line"></i> 15% above average
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-4 col-lg-12 mb-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="card-title mb-0 fw-semibold">
+                    <i class="ri-time-line me-2 text-primary"></i>Recent Activity
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="activity-timeline">
+                    <div class="activity-item">
+                        <div class="activity-icon bg-success-subtle">
+                            <i class="ri-user-add-line text-success"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p class="mb-0"><strong>New Patient</strong> registered</p>
+                            <small class="text-muted">Emma Thompson • 5 min ago</small>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon bg-primary-subtle">
+                            <i class="ri-calendar-check-line text-primary"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p class="mb-0"><strong>Appointment</strong> completed</p>
+                            <small class="text-muted">John Doe with Dr. Smith • 15 min ago</small>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon bg-info-subtle">
+                            <i class="ri-test-tube-line text-info"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p class="mb-0"><strong>Lab Report</strong> uploaded</p>
+                            <small class="text-muted">Blood Test - Sarah Johnson • 28 min ago</small>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon bg-warning-subtle">
+                            <i class="ri-file-edit-line text-warning"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p class="mb-0"><strong>Prescription</strong> issued</p>
+                            <small class="text-muted">Dr. Wilson for Michael Brown • 1 hr ago</small>
                         </div>
                     </div>
                 </div>
@@ -46,71 +334,19 @@
     </div>
 </div>
 
-<!-- Statistics Cards -->
-<div class="row mb-4">
-    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <div class="mb-3">
-                    <i class="ri-user-heart-line text-primary" style="font-size: 2rem;"></i>
-                </div>
-                <h3 class="card-title">1,247</h3>
-                <p class="card-text text-muted">Total Patients</p>
-                <small class="text-success">+12% <i class="ri-arrow-up-line"></i></small>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <div class="mb-3">
-                    <i class="ri-calendar-check-line text-success" style="font-size: 2rem;"></i>
-                </div>
-                <h3 class="card-title">23</h3>
-                <p class="card-text text-muted">Today's Appointments</p>
-                <small class="text-success">+5 <i class="ri-arrow-up-line"></i></small>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <div class="mb-3">
-                    <i class="ri-test-tube-line text-info" style="font-size: 2rem;"></i>
-                </div>
-                <h3 class="card-title">8</h3>
-                <p class="card-text text-muted">Pending Lab Results</p>
-                <small class="text-danger">-3 <i class="ri-arrow-down-line"></i></small>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <div class="mb-3">
-                    <i class="ri-medicine-bottle-line text-warning" style="font-size: 2rem;"></i>
-                </div>
-                <h3 class="card-title">156</h3>
-                <p class="card-text text-muted">Active Prescriptions</p>
-                <small class="text-success">+8% <i class="ri-arrow-up-line"></i></small>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- User Distribution & Monthly Statistics (Moved from System Overview) -->
+<!-- User Distribution & Monthly Statistics -->
 <div class="row mb-4">
     <div class="col-xl-6 col-lg-6 mb-3">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="ri-pie-chart-line me-2"></i>User Distribution
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="card-title mb-0 fw-semibold">
+                    <i class="ri-pie-chart-line me-2 text-primary"></i>User Distribution
                 </h5>
             </div>
-            <div class="card-body">
+            <div class="card-body p-4">
                 <div class="row g-3">
                     <div class="col-6">
-                        <div class="text-center p-3 border rounded">
+                        <div class="text-center p-3 border rounded-3 bg-light">
                             <div class="mb-2">
                                 <i class="ri-user-heart-line text-primary" style="font-size: 2rem;"></i>
                             </div>
@@ -120,7 +356,7 @@
                         </div>
                     </div>
                     <div class="col-6">
-                        <div class="text-center p-3 border rounded">
+                        <div class="text-center p-3 border rounded-3 bg-light">
                             <div class="mb-2">
                                 <i class="ri-user-star-line text-success" style="font-size: 2rem;"></i>
                             </div>
@@ -130,7 +366,7 @@
                         </div>
                     </div>
                     <div class="col-6">
-                        <div class="text-center p-3 border rounded">
+                        <div class="text-center p-3 border rounded-3 bg-light">
                             <div class="mb-2">
                                 <i class="ri-admin-line text-info" style="font-size: 2rem;"></i>
                             </div>
@@ -140,7 +376,7 @@
                         </div>
                     </div>
                     <div class="col-6">
-                        <div class="text-center p-3 border rounded">
+                        <div class="text-center p-3 border rounded-3 bg-light">
                             <div class="mb-2">
                                 <i class="ri-test-tube-line text-warning" style="font-size: 2rem;"></i>
                             </div>
@@ -154,16 +390,16 @@
         </div>
     </div>
     <div class="col-xl-6 col-lg-6 mb-3">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="ri-bar-chart-line me-2"></i>Monthly Statistics
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="card-title mb-0 fw-semibold">
+                    <i class="ri-bar-chart-line me-2 text-primary"></i>Monthly Statistics
                 </h5>
             </div>
-            <div class="card-body">
+            <div class="card-body p-4">
                 <div class="row g-3">
                     <div class="col-12">
-                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3">
                             <div>
                                 <h6 class="mb-1">New Registrations</h6>
                                 <small class="text-muted">This Month</small>
@@ -175,7 +411,7 @@
                         </div>
                     </div>
                     <div class="col-12">
-                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3">
                             <div>
                                 <h6 class="mb-1">Total Appointments</h6>
                                 <small class="text-muted">This Month</small>
@@ -187,7 +423,7 @@
                         </div>
                     </div>
                     <div class="col-12">
-                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3">
                             <div>
                                 <h6 class="mb-1">Lab Tests Completed</h6>
                                 <small class="text-muted">This Month</small>
@@ -204,81 +440,283 @@
     </div>
 </div>
 
-<!-- Main Content Row -->
-<div class="row">
-    <!-- Left Column -->
-    <div class="col-xl-8 col-lg-7">
-        
-        <!-- Recent Appointments -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <div class="d-flex align-items-center justify-content-between">
-                    <h5 class="card-title mb-0">
-                        <i class="ri-calendar-line me-2"></i>
-                        Today's Appointments
-                    </h5>
-                    <a href="/Appointments" class="btn btn-sm btn-outline-primary">View All</a>
-                </div>
+<!-- Charts Row -->
+<div class="row mb-4">
+    <!-- Patient Registration Trends -->
+    <div class="col-xl-8 col-lg-7 mb-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="card-title mb-0 fw-semibold">
+                    <i class="ri-line-chart-line me-2 text-primary"></i>Patient Registration Trends
+                </h5>
             </div>
             <div class="card-body">
-                <div class="list-group list-group-flush">
-                    <div class="list-group-item d-flex justify-content-between align-items-start">
-                        <div class="me-3">
-                            <div class="fw-bold">09:00 AM</div>
-                            <small class="text-muted">30 min</small>
+                <div class="chart-height">
+                    <div id="patientTrends"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Department Performance -->
+    <div class="col-xl-4 col-lg-5 mb-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="card-title mb-0 fw-semibold">
+                    <i class="ri-pie-chart-line me-2 text-primary"></i>Department Performance
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-height">
+                    <div id="departmentPerformance"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Second Charts Row -->
+<div class="row mb-4">
+    <!-- Appointment Status Overview -->
+    <div class="col-xl-6 col-lg-6 mb-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="card-title mb-0 fw-semibold">
+                    <i class="ri-calendar-check-line me-2 text-primary"></i>Appointment Status
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-height">
+                    <div id="appointmentStatus"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Revenue Trends -->
+    <div class="col-xl-6 col-lg-6 mb-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="card-title mb-0 fw-semibold">
+                    <i class="ri-money-dollar-circle-line me-2 text-primary"></i>Monthly Revenue
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-height">
+                    <div id="revenueTrends"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- System Status & Quick Stats -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="system-stat-item">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon bg-success-subtle me-3">
+                                        <i class="ri-shield-check-line text-success"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">System Status</h6>
+                                        <small class="text-muted">All systems operational</small>
+                                    </div>
+                                </div>
+                                <span class="badge bg-success">Online</span>
+                            </div>
                         </div>
-                        <div class="flex-grow-1">
-                            <h6 class="mb-1">John Doe</h6>
-                            <p class="text-muted mb-1">Regular Checkup</p>
-                            <small class="text-success">
-                                <i class="ri-user-star-line me-1"></i>Dr. Smith
-                            </small>
-                        </div>
-                        <span class="badge bg-success">Confirmed</span>
                     </div>
-                    
-                    <div class="list-group-item d-flex justify-content-between align-items-start">
-                        <div class="me-3">
-                            <div class="fw-bold">10:30 AM</div>
-                            <small class="text-muted">45 min</small>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="system-stat-item">
+                            <div class="d-flex align-items-center">
+                                <div class="stat-icon bg-primary-subtle me-3">
+                                    <i class="ri-user-line text-primary"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Active Users</h6>
+                                    <p class="mb-0 text-muted"><strong class="text-primary">47</strong> online now</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="flex-grow-1">
-                            <h6 class="mb-1">Sarah Johnson</h6>
-                            <p class="text-muted mb-1">Follow-up Consultation</p>
-                            <small class="text-success">
-                                <i class="ri-user-star-line me-1"></i>Dr. Wilson
-                            </small>
-                        </div>
-                        <span class="badge bg-warning">Pending</span>
                     </div>
-                    
-                    <div class="list-group-item d-flex justify-content-between align-items-start">
-                        <div class="me-3">
-                            <div class="fw-bold">02:00 PM</div>
-                            <small class="text-muted">60 min</small>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="system-stat-item">
+                            <div class="d-flex align-items-center">
+                                <div class="stat-icon bg-warning-subtle me-3">
+                                    <i class="ri-alarm-line text-warning"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Pending Tasks</h6>
+                                    <p class="mb-0 text-muted"><strong class="text-warning">8</strong> need review</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="flex-grow-1">
-                            <h6 class="mb-1">Michael Brown</h6>
-                            <p class="text-muted mb-1">Specialist Consultation</p>
-                            <small class="text-success">
-                                <i class="ri-user-star-line me-1"></i>Dr. Davis
-                            </small>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="system-stat-item">
+                            <div class="d-flex align-items-center">
+                                <div class="stat-icon bg-info-subtle me-3">
+                                    <i class="ri-time-line text-info"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Avg. Wait Time</h6>
+                                    <p class="mb-0 text-muted"><strong class="text-info">12 min</strong> today</p>
+                                </div>
+                            </div>
                         </div>
-                        <span class="badge bg-info">In Progress</span>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Recent Lab Results -->
-        <div class="card">
-            <div class="card-header">
+    </div>
+</div>
+
+<!-- Main Content Row -->
+<div class="row mb-4">
+    <!-- Today's Appointments -->
+    <div class="col-xl-6 col-lg-6 mb-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom py-3">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h5 class="card-title mb-0">
-                        <i class="ri-test-tube-line me-2"></i>
+                    <h5 class="card-title mb-0 fw-semibold">
+                        <i class="ri-calendar-line me-2 text-primary"></i>
+                        Today's Appointments
+                    </h5>
+                    <a href="/Appointments" class="btn btn-sm btn-primary px-3">View All</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item border-0 px-0 py-3">
+                        <div class="d-flex align-items-start">
+                            <div class="me-3">
+                                <div class="avatar-circle bg-primary-subtle">
+                                    <i class="ri-user-line text-primary"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">John Doe</h6>
+                                        <small class="text-muted">Patient ID: #PT-2401</small>
+                                    </div>
+                                    <span class="badge bg-success">Confirmed</span>
+                                </div>
+                                <div class="appointment-details">
+                                    <div class="d-flex flex-wrap gap-3 mb-2">
+                                        <div class="detail-item">
+                                            <i class="ri-calendar-line text-primary me-1"></i>
+                                            <span class="fw-semibold">09:00 AM</span>
+                                            <small class="text-muted ms-1">(30 min)</small>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="ri-stethoscope-line text-success me-1"></i>
+                                            <span>Dr. Smith</span>
+                                        </div>
+                                    </div>
+                                    <div class="appointment-type">
+                                        <i class="ri-heart-pulse-line text-danger me-1"></i>
+                                        <span class="text-muted">Regular Checkup</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="list-group-item border-0 px-0 py-3">
+                        <div class="d-flex align-items-start">
+                            <div class="me-3">
+                                <div class="avatar-circle bg-warning-subtle">
+                                    <i class="ri-user-line text-warning"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">Sarah Johnson</h6>
+                                        <small class="text-muted">Patient ID: #PT-2398</small>
+                                    </div>
+                                    <span class="badge bg-warning">Pending</span>
+                                </div>
+                                <div class="appointment-details">
+                                    <div class="d-flex flex-wrap gap-3 mb-2">
+                                        <div class="detail-item">
+                                            <i class="ri-calendar-line text-primary me-1"></i>
+                                            <span class="fw-semibold">10:30 AM</span>
+                                            <small class="text-muted ms-1">(45 min)</small>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="ri-stethoscope-line text-success me-1"></i>
+                                            <span>Dr. Wilson</span>
+                                        </div>
+                                    </div>
+                                    <div class="appointment-type">
+                                        <i class="ri-file-list-line text-info me-1"></i>
+                                        <span class="text-muted">Follow-up Consultation</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="list-group-item border-0 px-0 py-3">
+                        <div class="d-flex align-items-start">
+                            <div class="me-3">
+                                <div class="avatar-circle bg-info-subtle">
+                                    <i class="ri-user-line text-info"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">Michael Brown</h6>
+                                        <small class="text-muted">Patient ID: #PT-2405</small>
+                                    </div>
+                                    <span class="badge bg-info">In Progress</span>
+                                </div>
+                                <div class="appointment-details">
+                                    <div class="d-flex flex-wrap gap-3 mb-2">
+                                        <div class="detail-item">
+                                            <i class="ri-calendar-line text-primary me-1"></i>
+                                            <span class="fw-semibold">02:00 PM</span>
+                                            <small class="text-muted ms-1">(60 min)</small>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="ri-stethoscope-line text-success me-1"></i>
+                                            <span>Dr. Davis</span>
+                                        </div>
+                                    </div>
+                                    <div class="appointment-type">
+                                        <i class="ri-hospital-line text-warning me-1"></i>
+                                        <span class="text-muted">Specialist Consultation</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Lab Results -->
+    <div class="col-xl-6 col-lg-6 mb-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom py-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h5 class="card-title mb-0 fw-semibold">
+                        <i class="ri-test-tube-line me-2 text-primary"></i>
                         Recent Lab Results
                     </h5>
-                    <a href="/Lab/Reports" class="btn btn-sm btn-outline-primary">View All</a>
+                    <a href="/Lab/Reports" class="btn btn-sm btn-primary px-3">View All</a>
                 </div>
             </div>
             <div class="card-body">
@@ -309,106 +747,586 @@
                 </div>
             </div>
         </div>
-        
-    </div>
-    
-    <!-- Right Column -->
-    <div class="col-xl-4 col-lg-5">
-        
-        <!-- System Bulletins -->
-        <div class="mb-4">
-            <h5 class="mb-3">
-                <i class="ri-megaphone-line me-2"></i>
-                System Bulletins
-            </h5>
-            
-            <div class="card mb-3 border-warning">
-                <div class="card-body">
-                    <div class="d-flex align-items-start">
-                        <div class="me-3">
-                            <i class="ri-tools-line text-warning" style="font-size: 1.5rem;"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <h6 class="card-title">System Maintenance Scheduled</h6>
-                            <p class="card-text">Scheduled maintenance will occur tonight from 11:00 PM to 2:00 AM. Some services may be temporarily unavailable.</p>
-                            <small class="text-muted">System Administrator</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card mb-3 border-success">
-                <div class="card-body">
-                    <div class="d-flex align-items-start">
-                        <div class="me-3">
-                            <i class="ri-hospital-line text-success" style="font-size: 1.5rem;"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <h6 class="card-title">New Lab Equipment Available</h6>
-                            <p class="card-text">The new MRI machine is now operational and available for patient appointments. Contact the lab department for scheduling.</p>
-                            <small class="text-muted">Lab Department</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Quick Actions -->
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="ri-flashlight-line me-2"></i>
-                    Quick Actions
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="row g-2">
-                    <div class="col-6">
-                        <a href="/Patients/Create" class="btn btn-outline-primary w-100 text-center py-3">
-                            <div class="mb-2">
-                                <i class="ri-user-add-line" style="font-size: 1.5rem;"></i>
-                            </div>
-                            <small>Add Patient</small>
-                        </a>
-                    </div>
-                    
-                    <div class="col-6">
-                        <a href="/Appointments/Create" class="btn btn-outline-success w-100 text-center py-3">
-                            <div class="mb-2">
-                                <i class="ri-calendar-check-line" style="font-size: 1.5rem;"></i>
-                            </div>
-                            <small>Book Appointment</small>
-                        </a>
-                    </div>
-                    
-                    <div class="col-6">
-                        <a href="/Prescriptions/Create" class="btn btn-outline-info w-100 text-center py-3">
-                            <div class="mb-2">
-                                <i class="ri-medicine-bottle-line" style="font-size: 1.5rem;"></i>
-                            </div>
-                            <small>New Prescription</small>
-                        </a>
-                    </div>
-                    
-                    <div class="col-6">
-                        <a href="/Lab/Requests" class="btn btn-outline-warning w-100 text-center py-3">
-                            <div class="mb-2">
-                                <i class="ri-test-tube-line" style="font-size: 1.5rem;"></i>
-                            </div>
-                            <small>Lab Request</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
     </div>
 </div>
 
 @section Styles {
-    <!-- Custom styles can be added here later if needed -->
+    <style>
+        .chart-height {
+            height: 300px;
+        }
+        
+        .chart-height-sm {
+            height: 250px;
+        }
+        
+        .auto-align-graph {
+            margin: 0 auto;
+        }
+        
+        .apexcharts-canvas {
+            margin: 0 auto;
+        }
+        
+        /* Welcome Header */
+        .welcome-header {
+            padding: 1rem 0;
+        }
+        
+        /* Modern Card Styles */
+        .hover-card {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .icon-wrapper {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+        
+        /* Bootstrap subtle backgrounds */
+        .bg-primary-subtle {
+            background-color: rgba(13, 110, 253, 0.1) !important;
+        }
+        
+        .bg-success-subtle {
+            background-color: rgba(25, 135, 84, 0.1) !important;
+        }
+        
+        .bg-warning-subtle {
+            background-color: rgba(255, 193, 7, 0.1) !important;
+        }
+        
+        .bg-info-subtle {
+            background-color: rgba(13, 202, 240, 0.1) !important;
+        }
+        
+        .bg-danger-subtle {
+            background-color: rgba(220, 53, 69, 0.1) !important;
+        }
+        
+        /* Badge subtle variants */
+        .badge.bg-primary-subtle {
+            color: #0d6efd !important;
+        }
+        
+        .badge.bg-success-subtle {
+            color: #198754 !important;
+        }
+        
+        .badge.bg-warning-subtle {
+            color: #ffc107 !important;
+        }
+        
+        .badge.bg-info-subtle {
+            color: #0dcaf0 !important;
+        }
+        
+        .badge.bg-danger-subtle {
+            color: #dc3545 !important;
+        }
+        
+        /* Theme-based card styling */
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon-box.md {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .bg-primary-lighten {
+            background-color: rgba(13, 110, 253, 0.1) !important;
+        }
+        
+        .bg-primary-light {
+            background-color: rgba(13, 110, 253, 0.1) !important;
+        }
+        
+        .card .card-body h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .card .card-body h2 {
+            font-size: 2rem;
+            color: #1a1a1a;
+        }
+        
+        .badge.bg-primary-light {
+            color: #0d6efd !important;
+            background-color: rgba(13, 110, 253, 0.1) !important;
+        }
+        
+        /* Quick Action Button Enhancements */
+        .quick-action-btn {
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .quick-action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Card Improvements */
+        .card {
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        /* Statistics Card Improvements */
+        .card .card-body h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0;
+        }
+        
+        /* List Items */
+        .list-group-item {
+            border-left: none;
+            border-right: none;
+            padding: 1rem 0;
+        }
+        
+        .list-group-item:first-child {
+            border-top: none;
+        }
+        
+        .list-group-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* Badge Improvements */
+        .badge {
+            padding: 0.35em 0.85em;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+        
+        /* Rounded Improvements */
+        .rounded-3 {
+            border-radius: 0.5rem !important;
+        }
+        
+        /* Avatar Circle for Appointments */
+        .avatar-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+        
+        /* Appointment Details Styling */
+        .appointment-details {
+            font-size: 0.875rem;
+        }
+        
+        .detail-item {
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .appointment-type {
+            display: flex;
+            align-items: center;
+            padding: 0.375rem 0.75rem;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            display: inline-flex;
+        }
+        
+        /* Patient Info */
+        .list-group-item h6 {
+            font-size: 1rem;
+            color: #1a1a1a;
+        }
+        
+        /* Search Widget */
+        .search-widget .input-group {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .search-widget .form-control:focus {
+            box-shadow: none;
+            border-color: #dee2e6;
+        }
+        
+        .search-widget .input-group-text {
+            border: 1px solid #dee2e6;
+        }
+        
+        /* Doctor Status Indicators */
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        
+        .status-available {
+            background-color: #198754;
+            box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.2);
+        }
+        
+        .status-busy {
+            background-color: #ffc107;
+            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.2);
+        }
+        
+        .status-offline {
+            background-color: #6c757d;
+            box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.2);
+        }
+        
+        .doctor-status-list h6 {
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        /* Performance Metrics */
+        .metric-item .progress {
+            border-radius: 10px;
+        }
+        
+        .metric-item .progress-bar {
+            border-radius: 10px;
+        }
+        
+        /* Activity Timeline */
+        .activity-timeline {
+            position: relative;
+        }
+        
+        .activity-item {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+            position: relative;
+        }
+        
+        .activity-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .activity-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 16px;
+            top: 36px;
+            width: 2px;
+            height: calc(100% + 0.5rem);
+            background-color: #e9ecef;
+        }
+        
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .activity-content p {
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+        
+        .activity-content strong {
+            color: #1a1a1a;
+        }
+        
+        /* Alert Enhancements */
+        .alert {
+            border-radius: 10px;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+        }
+        
+        /* Badge Secondary Subtle */
+        .badge.bg-secondary-subtle {
+            background-color: rgba(108, 117, 125, 0.1) !important;
+            color: #6c757d !important;
+        }
+        
+        /* System Stats */
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+        
+        .system-stat-item h6 {
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+            color: #1a1a1a;
+        }
+        
+        .system-stat-item p {
+            font-size: 0.875rem;
+        }
+    </style>
 }
 
 @section Scripts {
-    <!-- Custom scripts can be added here later if needed -->
+    <!-- ApexCharts JS -->
+    <script src="~/theme/vendor/apex/apexcharts.min.js"></script>
+    
+    <script>
+        // Patient Registration Trends Chart
+        var patientTrendsOptions = {
+            chart: {
+                height: 300,
+                type: "line",
+                toolbar: {
+                    show: false,
+                },
+            },
+            dataLabels: {
+                enabled: false,
+            },
+            fill: {
+                type: 'solid',
+                opacity: [0.1, 1],
+            },
+            stroke: {
+                curve: "smooth",
+                width: [0, 5]
+            },
+            series: [{
+                name: 'New Patients',
+                type: 'area',
+                data: [89, 95, 102, 87, 93, 98, 105, 112, 89, 95, 102, 108]
+            }, {
+                name: 'Return Patients',
+                type: 'line',
+                data: [156, 162, 148, 171, 165, 159, 174, 168, 156, 162, 148, 171]
+            }],
+            grid: {
+                borderColor: "#d8dee6",
+                strokeDashArray: 5,
+                xaxis: {
+                    lines: {
+                        show: true,
+                    },
+                },
+                yaxis: {
+                    lines: {
+                        show: false,
+                    },
+                },
+                padding: {
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 0,
+                },
+            },
+            xaxis: {
+                categories: [
+                    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+                ],
+            },
+            yaxis: {
+                labels: {
+                    show: true,
+                },
+            },
+            legend: {
+                position: 'top',
+                horizontalAlign: 'right',
+            },
+            colors: ["#0d6efd", "#198754"],
+            markers: {
+                size: 0,
+                opacity: 0.3,
+                colors: ["#0d6efd", "#198754"],
+                strokeColor: "#ffffff",
+                strokeWidth: 1,
+                hover: {
+                    size: 7,
+                },
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val + " patients";
+                    },
+                },
+            },
+        };
+
+        var patientTrendsChart = new ApexCharts(document.querySelector("#patientTrends"), patientTrendsOptions);
+        patientTrendsChart.render();
+
+        // Department Performance Chart (Donut)
+        var departmentOptions = {
+            chart: {
+                height: 300,
+                type: 'donut',
+            },
+            series: [24, 18, 12, 8, 6],
+            labels: ['Cardiology', 'Neurology', 'Orthopedics', 'Pediatrics', 'Emergency'],
+            colors: ['#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1'],
+            legend: {
+                position: 'bottom',
+                horizontalAlign: 'center',
+            },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '70%'
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val) {
+                    return Math.round(val) + "%"
+                }
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val + " staff members"
+                    }
+                }
+            }
+        };
+
+        var departmentChart = new ApexCharts(document.querySelector("#departmentPerformance"), departmentOptions);
+        departmentChart.render();
+
+        // Appointment Status Chart (Bar)
+        var appointmentStatusOptions = {
+            chart: {
+                height: 300,
+                type: 'bar',
+                toolbar: {
+                    show: false,
+                },
+            },
+            series: [{
+                name: 'Appointments',
+                data: [156, 89, 23, 12, 8]
+            }],
+            xaxis: {
+                categories: ['Confirmed', 'Pending', 'Completed', 'Cancelled', 'Rescheduled'],
+            },
+            colors: ['#198754', '#ffc107', '#0d6efd', '#dc3545', '#6c757d'],
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '55%',
+                    endingShape: 'rounded'
+                },
+            },
+            dataLabels: {
+                enabled: false
+            },
+            grid: {
+                borderColor: "#d8dee6",
+                strokeDashArray: 5,
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val + " appointments"
+                    }
+                }
+            }
+        };
+
+        var appointmentStatusChart = new ApexCharts(document.querySelector("#appointmentStatus"), appointmentStatusOptions);
+        appointmentStatusChart.render();
+
+        // Revenue Trends Chart (Area)
+        var revenueOptions = {
+            chart: {
+                height: 300,
+                type: 'area',
+                toolbar: {
+                    show: false,
+                },
+            },
+            series: [{
+                name: 'Revenue',
+                data: [45000, 52000, 48000, 61000, 55000, 67000, 73000, 69000, 78000, 82000, 75000, 89000]
+            }],
+            xaxis: {
+                categories: [
+                    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+                ],
+            },
+            colors: ['#198754'],
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.7,
+                    opacityTo: 0.1,
+                }
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 3
+            },
+            grid: {
+                borderColor: "#d8dee6",
+                strokeDashArray: 5,
+            },
+            dataLabels: {
+                enabled: false
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return "$" + val.toLocaleString()
+                    }
+                }
+            }
+        };
+
+        var revenueChart = new ApexCharts(document.querySelector("#revenueTrends"), revenueOptions);
+        revenueChart.render();
+    </script>
 }

@@ -16,7 +16,7 @@
     
     <!-- CSS Files -->
     <link rel="stylesheet" href="~/theme/fonts/remix/remixicon.css">
-    <link rel="stylesheet" href="~/theme/css/main.min.css">
+    <link rel="stylesheet" href="~/theme/css/main.css">
     
     <!-- Vendor CSS Files -->
     <link rel="stylesheet" href="~/theme/vendor/overlay-scroll/OverlayScrollbars.min.css">
@@ -24,10 +24,43 @@
     
     <!-- Page Specific CSS -->
     @await RenderSectionAsync("Styles", required: false)
+    
 </head>
 <body>
     <!-- Loading starts -->
     <div id="loading-wrapper">
+        <div class="spin-wrapper">
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+        <div class="spin-wrapper">
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+        <div class="spin-wrapper">
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+        <div class="spin-wrapper">
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+        <div class="spin-wrapper">
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+        <div class="spin-wrapper">
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+        <div class="spin-wrapper">
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+        <div class="spin-wrapper">
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
         <div class="spin-wrapper">
             <div class="circle"></div>
             <div class="circle"></div>
@@ -73,7 +106,18 @@
                         <!-- Breadcrumb and Page Actions starts -->
                         <div class="row gx-3 mb-3">
                             <div class="col-md-8">
-                                @await Html.PartialAsync("Components/_Breadcrumb")
+                                @if (IsSectionDefined("Breadcrumb"))
+                                {
+                                    <div class="breadcrumb-wrapper">
+                                        <nav aria-label="breadcrumb">
+                                            @await RenderSectionAsync("Breadcrumb", required: false)
+                                        </nav>
+                                    </div>
+                                }
+                                else
+                                {
+                                    @await Html.PartialAsync("Components/_Breadcrumb")
+                                }
                             </div>
                             <div class="col-md-4 text-end">
                                 <div class="page-actions">
@@ -118,7 +162,21 @@
     <script src="~/theme/vendor/daterange/daterange.js"></script>
     <script src="~/theme/js/custom.js"></script>
     
+    <!-- Active Page Sidebar Script -->
+    <script>
+        $(document).ready(function() {
+            // Expand treeview menus that have active sub-items
+            $('.sidebar-menu li.treeview.active').each(function() {
+                $(this).find('.treeview-menu').addClass('menu-open').slideDown(300);
+            });
+            
+            // Add active-sub class to active sub-menu items for better styling
+            $('.sidebar-menu .treeview-menu > li.active > a').addClass('active-sub');
+        });
+    </script>
+    
     <!-- Page Specific JavaScript -->
     @await RenderSectionAsync("Scripts", required: false)
+    
 </body>
 </html>

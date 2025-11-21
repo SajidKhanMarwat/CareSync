@@ -1,0 +1,644 @@
+@page "/Patient/Medications"
+@model CareSync.Pages.Patient.MedicationsModel
+@{
+    ViewData["Title"] = "My Medications - Medical Records";
+}
+
+<!-- Hero Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-gradient-primary text-white border-0">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3 class="text-white mb-2">
+                            <i class="ri-medicine-bottle-line me-2"></i>My Medications
+                        </h3>
+                        <p class="mb-0 opacity-75">Track and manage all your medications in one place</p>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <button type="button" class="btn btn-light btn-lg" data-bs-toggle="modal" data-bs-target="#medicationReminderModal">
+                            <i class="ri-alarm-line me-2"></i>Set Reminder
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Medication Statistics Cards -->
+<div class="row gx-3 mb-4">
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5 hover-lift" style="transition: all 0.3s ease;">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-success-subtle rounded-5 me-3">
+                        <i class="ri-capsule-line fs-3 text-success"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h3 class="text-success mb-1">@Model.TotalActiveMedications</h3>
+                        <small class="text-muted">Active Medications</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5 hover-lift" style="transition: all 0.3s ease;">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-primary-subtle rounded-5 me-3">
+                        <i class="ri-time-line fs-3 text-primary"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h3 class="text-primary mb-1">@Model.DueTodayCount</h3>
+                        <small class="text-muted">Doses Today</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5 hover-lift" style="transition: all 0.3s ease;">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-warning-subtle rounded-5 me-3">
+                        <i class="ri-notification-badge-line fs-3 text-warning"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h3 class="text-warning mb-1">@Model.RefillsNeeded</h3>
+                        <small class="text-muted">Refills Needed</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5 hover-lift" style="transition: all 0.3s ease;">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-info-subtle rounded-5 me-3">
+                        <i class="ri-shield-check-line fs-3 text-info"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h3 class="text-info mb-1">@Model.AdherenceRate%</h3>
+                        <small class="text-muted">Adherence Rate</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Today's Medication Schedule -->
+<div class="row gx-3 mb-4">
+    <div class="col-12">
+        <div class="card border-start border-primary border-4">
+            <div class="card-header bg-primary-subtle">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0 text-primary">
+                        <i class="ri-calendar-event-fill me-2"></i>Today's Medication Schedule
+                    </h5>
+                    <span class="badge bg-primary">@Model.TodaySchedule.Count Doses</span>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (Model.TodaySchedule.Any())
+                {
+                    <div class="timeline-schedule">
+                        @foreach (var schedule in Model.TodaySchedule)
+                        {
+                            <div class="schedule-item d-flex align-items-center mb-3 pb-3 border-bottom">
+                                <div class="schedule-time me-4 text-center" style="min-width: 80px;">
+                                    <div class="fw-bold text-primary">@schedule.Time</div>
+                                    @if (!string.IsNullOrEmpty(schedule.TakenAt))
+                                    {
+                                        <small class="text-muted">Taken: @schedule.TakenAt</small>
+                                    }
+                                </div>
+                                <div class="schedule-medication flex-grow-1">
+                                    <div class="d-flex align-items-center">
+                                        <i class="ri-medicine-bottle-line fs-4 text-@schedule.StatusColor me-3"></i>
+                                        <div class="flex-grow-1">
+                                            <div class="fw-semibold">@schedule.Medication</div>
+                                            <span class="badge bg-@schedule.StatusColor-subtle text-@schedule.StatusColor">@schedule.Status</span>
+                                        </div>
+                                        @if (schedule.Status == "Due Soon" || schedule.Status == "Upcoming")
+                                        {
+                                            <button class="btn btn-sm btn-outline-primary" onclick="markAsTaken(@Model.TodaySchedule.IndexOf(schedule))">
+                                                <i class="ri-check-line me-1"></i>Mark as Taken
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="ri-calendar-check-line fs-1 text-muted mb-3 d-block"></i>
+                        <p class="text-muted">No medications scheduled for today</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Active Medications -->
+<div class="row gx-3 mb-4">
+    <div class="col-12">
+        <div class="card border-start border-success border-4">
+            <div class="card-header bg-success-subtle">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0 text-success">
+                        <i class="ri-heart-pulse-line me-2"></i>Current Active Medications
+                    </h5>
+                    <button class="btn btn-sm btn-outline-success" onclick="window.print()">
+                        <i class="ri-printer-line me-1"></i>Print List
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (Model.ActiveMedications.Any())
+                {
+                    <div class="row gx-3">
+                        @foreach (var medication in Model.ActiveMedications)
+                        {
+                            <div class="col-lg-6 mb-3">
+                                <div class="card medication-card border rounded-4 shadow-sm hover-lift" style="transition: all 0.3s ease;">
+                                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-0 text-primary">
+                                                <i class="ri-capsule-fill me-1"></i>@medication.MedicationName
+                                            </h6>
+                                            <small class="text-muted">@medication.Dosage</small>
+                                        </div>
+                                        <span class="badge bg-@medication.StatusColor">@medication.Status</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Medication Details Grid -->
+                                        <div class="row g-3 mb-3">
+                                            <div class="col-6">
+                                                <div class="medication-info">
+                                                    <small class="text-muted d-block"><i class="ri-time-line me-1"></i>Frequency</small>
+                                                    <span class="fw-semibold">@medication.Frequency</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="medication-info">
+                                                    <small class="text-muted d-block"><i class="ri-calendar-line me-1"></i>Duration</small>
+                                                    <span class="fw-semibold">@medication.Duration</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="medication-info">
+                                                    <small class="text-muted d-block"><i class="ri-stethoscope-line me-1"></i>Prescribed By</small>
+                                                    <span class="fw-semibold">@medication.PrescribedBy</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="medication-info">
+                                                    <small class="text-muted d-block"><i class="ri-calendar-check-line me-1"></i>Start Date</small>
+                                                    <span class="fw-semibold">@medication.StartDate</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Purpose -->
+                                        <div class="alert alert-info py-2 mb-3">
+                                            <small class="mb-0">
+                                                <i class="ri-information-line me-1"></i>
+                                                <strong>Purpose:</strong> @medication.Purpose
+                                            </small>
+                                        </div>
+
+                                        <!-- Instructions -->
+                                        <div class="mb-3">
+                                            <small class="text-muted d-block mb-1"><i class="ri-file-list-2-line me-1"></i>Instructions</small>
+                                            <p class="small mb-0 text-dark">@medication.Instructions</p>
+                                        </div>
+
+                                        <!-- Daily Schedule -->
+                                        @if (medication.TimesPerDay.Any())
+                                        {
+                                            <div class="mb-3">
+                                                <small class="text-muted d-block mb-2"><i class="ri-alarm-line me-1"></i>Daily Schedule</small>
+                                                <div class="d-flex flex-wrap gap-2">
+                                                    @foreach (var time in medication.TimesPerDay)
+                                                    {
+                                                        <span class="badge bg-primary-subtle text-primary px-3 py-2">@time</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+
+                                        <!-- Refill Information -->
+                                        <div class="refill-info bg-light rounded p-3">
+                                            <div class="row g-2">
+                                                <div class="col-6">
+                                                    <small class="text-muted d-block">Pills Remaining</small>
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="badge bg-@(medication.PillsRemaining < 30 ? "warning" : "success") me-2">@medication.PillsRemaining</span>
+                                                        @if (medication.PillsRemaining < 30)
+                                                        {
+                                                            <small class="text-warning">
+                                                                <i class="ri-alarm-warning-line"></i> Low stock
+                                                            </small>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <small class="text-muted d-block">Refill Date</small>
+                                                    <span class="fw-semibold text-primary">@medication.RefillDate</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Actions -->
+                                        <div class="border-top mt-3 pt-3">
+                                            <div class="row g-2">
+                                                <div class="col-6">
+                                                    <button class="btn btn-outline-primary btn-sm w-100" data-bs-toggle="collapse" data-bs-target="#sideEffects@(medication.Id)">
+                                                        <i class="ri-alert-line me-1"></i>Side Effects
+                                                    </button>
+                                                </div>
+                                                <div class="col-6">
+                                                    <button class="btn btn-outline-success btn-sm w-100" onclick="requestRefill(@medication.Id)">
+                                                        <i class="ri-refresh-line me-1"></i>Request Refill
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Side Effects Collapse -->
+                                            <div class="collapse mt-2" id="sideEffects@(medication.Id)">
+                                                <div class="alert alert-warning small mb-0 mt-2">
+                                                    <strong>Possible Side Effects:</strong> @medication.SideEffects
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="ri-medicine-bottle-line fs-1 text-muted mb-3 d-block"></i>
+                        <h5 class="text-muted">No active medications</h5>
+                        <p class="text-muted">Your current medication list is empty</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Past Prescriptions History -->
+<div class="row gx-3 mb-4">
+    <div class="col-12">
+        <div class="card border-start border-secondary border-4">
+            <div class="card-header bg-light">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0 text-secondary">
+                        <i class="ri-history-line me-2"></i>Prescription History
+                    </h5>
+                    <a href="/Patient/Prescriptions" class="btn btn-sm btn-outline-secondary">
+                        <i class="ri-file-list-line me-1"></i>View All
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (Model.PastPrescriptions.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th><i class="ri-calendar-line me-1"></i>Date</th>
+                                    <th><i class="ri-stethoscope-line me-1"></i>Doctor</th>
+                                    <th><i class="ri-medicine-bottle-line me-1"></i>Medications</th>
+                                    <th><i class="ri-flag-line me-1"></i>Status</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var prescription in Model.PastPrescriptions)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="fw-semibold">@prescription.PrescriptionDate</div>
+                                        </td>
+                                        <td>
+                                            <div class="fw-semibold">@prescription.DoctorName</div>
+                                            <small class="text-muted">@prescription.Specialization</small>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <span class="badge bg-primary me-2">@prescription.MedicationCount</span>
+                                                <button class="btn btn-link btn-sm p-0 text-decoration-none" 
+                                                        data-bs-toggle="collapse" 
+                                                        data-bs-target="#prescription@(prescription.Id)">
+                                                    View Details <i class="ri-arrow-down-s-line"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-@prescription.StatusColor">@prescription.Status</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="d-flex gap-1 justify-content-center">
+                                                <a href="/Patient/Prescriptions?id=@prescription.Id" 
+                                                   class="btn btn-outline-primary btn-sm"
+                                                   data-bs-toggle="tooltip"
+                                                   title="View Prescription">
+                                                    <i class="ri-eye-line"></i>
+                                                </a>
+                                                <button class="btn btn-outline-success btn-sm"
+                                                        onclick="downloadPrescription(@prescription.Id)"
+                                                        data-bs-toggle="tooltip"
+                                                        title="Download">
+                                                    <i class="ri-download-line"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="collapse" id="prescription@(prescription.Id)">
+                                        <td colspan="5">
+                                            <div class="alert alert-light mb-0">
+                                                <strong class="text-primary">Medications:</strong>
+                                                <ul class="mb-0 mt-2">
+                                                    @foreach (var med in prescription.Medications)
+                                                    {
+                                                        <li>@med</li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="ri-file-list-line fs-1 text-muted mb-3 d-block"></i>
+                        <p class="text-muted">No prescription history available</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Important Information Section -->
+<div class="row gx-3">
+    <div class="col-lg-6 mb-3">
+        <div class="card border-warning">
+            <div class="card-header bg-warning-subtle">
+                <h6 class="mb-0 text-warning">
+                    <i class="ri-error-warning-line me-2"></i>Medication Safety Tips
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0 small">
+                    <li class="mb-2">Always take medications as prescribed by your doctor</li>
+                    <li class="mb-2">Never skip doses or stop medication without consulting your doctor</li>
+                    <li class="mb-2">Keep medications in their original containers</li>
+                    <li class="mb-2">Store medications away from heat, light, and moisture</li>
+                    <li class="mb-2">Check expiration dates regularly</li>
+                    <li class="mb-2">Report any side effects to your healthcare provider</li>
+                    <li>Keep a list of all medications when visiting healthcare providers</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6 mb-3">
+        <div class="card border-info">
+            <div class="card-header bg-info-subtle">
+                <h6 class="mb-0 text-info">
+                    <i class="ri-question-line me-2"></i>Need Help?
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong class="d-block mb-2">Contact Your Healthcare Team:</strong>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="ri-phone-line text-primary me-2"></i>
+                        <span>Primary Care: <strong>(555) 123-4567</strong></span>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="ri-mail-line text-primary me-2"></i>
+                        <span>Email: <strong>care@caresync.com</strong></span>
+                    </div>
+                </div>
+                <div class="alert alert-danger small mb-0">
+                    <i class="ri-alarm-warning-line me-1"></i>
+                    <strong>Emergency:</strong> If you experience severe side effects or allergic reactions, call 911 immediately.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Medication Reminder Modal -->
+<div class="modal fade" id="medicationReminderModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="ri-alarm-line me-2"></i>Set Medication Reminder</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Select Medication</label>
+                        <select class="form-select">
+                            <option>Choose medication...</option>
+                            @foreach (var med in Model.ActiveMedications)
+                            {
+                                <option value="@med.Id">@med.MedicationName - @med.Dosage</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Reminder Time</label>
+                        <input type="time" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Repeat</label>
+                        <select class="form-select">
+                            <option>Daily</option>
+                            <option>Specific Days</option>
+                            <option>Every X Hours</option>
+                        </select>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="enableNotifications">
+                        <label class="form-check-label" for="enableNotifications">
+                            Enable push notifications
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveReminder()">Save Reminder</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+<style>
+    /* Gradient background */
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    /* Card hover effects */
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* Medication card styling */
+    .medication-card {
+        border-left: 4px solid #28a745 !important;
+    }
+
+    .medication-card:hover {
+        border-left-color: #20c997 !important;
+    }
+
+    .medication-info {
+        padding: 0.5rem;
+        background: #f8f9fa;
+        border-radius: 0.375rem;
+    }
+
+    /* Timeline schedule styling */
+    .timeline-schedule .schedule-item:last-child {
+        border-bottom: none !important;
+    }
+
+    /* Table styling */
+    .table-hover tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+
+    /* Refill info styling */
+    .refill-info {
+        border-left: 3px solid #0d6efd;
+    }
+
+    /* Badge improvements */
+    .badge {
+        font-weight: 500;
+        padding: 0.4em 0.7em;
+    }
+
+    /* Print styles */
+    @@media print {
+        .btn, .modal, .card-header {
+            display: none !important;
+        }
+        
+        .card {
+            border: 1px solid #dee2e6 !important;
+            page-break-inside: avoid;
+        }
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .schedule-time {
+            min-width: 70px !important;
+            font-size: 0.875rem;
+        }
+        
+        .medication-card .row {
+            font-size: 0.875rem;
+        }
+    }
+
+    /* Animation for cards */
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .card {
+        animation: fadeInUp 0.5s ease-out;
+    }
+</style>
+}
+
+@section Scripts {
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Console log for debugging
+        console.log('💊 Medications Page Loaded');
+        console.log('Active Medications:', @Model.TotalActiveMedications);
+        console.log('Today\'s Schedule:', @Model.DueTodayCount);
+    });
+
+    // Mark medication as taken
+    function markAsTaken(index) {
+        // In production, this would make an API call
+        alert('Medication marked as taken! This will be saved to your medication log.');
+        console.log('Marked as taken:', index);
+    }
+
+    // Request refill
+    function requestRefill(medicationId) {
+        // In production, this would make an API call to request refill
+        alert('Refill request submitted! Your pharmacy will be notified.');
+        console.log('Refill requested for medication ID:', medicationId);
+    }
+
+    // Download prescription
+    function downloadPrescription(prescriptionId) {
+        // In production, this would download the prescription PDF
+        alert('Prescription download will start shortly.');
+        console.log('Download prescription ID:', prescriptionId);
+    }
+
+    // Save reminder
+    function saveReminder() {
+        // In production, this would save the reminder
+        alert('Medication reminder saved successfully!');
+        var modal = bootstrap.Modal.getInstance(document.getElementById('medicationReminderModal'));
+        modal.hide();
+    }
+
+    // Check for upcoming medications every minute
+    setInterval(function() {
+        var now = new Date();
+        var currentTime = now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
+        
+        // In production, this would check against actual schedule and show notifications
+        console.log('Checking medication schedule:', currentTime);
+    }, 60000);
+</script>
+}

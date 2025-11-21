@@ -1,0 +1,435 @@
+@page "/Admin/UserReports"
+@model CareSync.Pages.Admin.UserReportsModel
+@{
+    ViewData["Title"] = "User Reports";
+}
+
+@section Breadcrumb {
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="~/Admin/Dashboard">
+                <i class="ri-home-3-line"></i>
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="~/Admin/Dashboard">Reports</a>
+        </li>
+        <li class="breadcrumb-item text-primary" aria-current="page">
+            User Reports
+        </li>
+    </ol>
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary" onclick="exportReport()">
+            <i class="ri-download-line me-2"></i>Export Report
+        </button>
+        <button class="btn btn-primary" onclick="generateReport()">
+            <i class="ri-file-chart-line me-2"></i>Generate Report
+        </button>
+    </div>
+}
+
+<!-- Report Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-filter-line me-2"></i>Report Filters
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Date Range</label>
+                        <select class="form-select" id="dateRange">
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month" selected>This Month</option>
+                            <option value="quarter">This Quarter</option>
+                            <option value="year">This Year</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">User Role</label>
+                        <select class="form-select" id="userRole">
+                            <option value="">All Roles</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Doctor">Doctor</option>
+                            <option value="Patient">Patient</option>
+                            <option value="Lab">Lab Technician</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="userStatus">
+                            <option value="">All Status</option>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Report Type</label>
+                        <select class="form-select" id="reportType">
+                            <option value="summary">Summary Report</option>
+                            <option value="detailed">Detailed Report</option>
+                            <option value="activity">Activity Report</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-primary text-white rounded-3 me-3">
+                        <i class="ri-user-line"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">1,279</h5>
+                        <p class="mb-0 text-muted">Total Users</p>
+                        <small class="text-success">+5.2% from last month</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-success text-white rounded-3 me-3">
+                        <i class="ri-user-add-line"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">89</h5>
+                        <p class="mb-0 text-muted">New Users</p>
+                        <small class="text-success">This month</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-info text-white rounded-3 me-3">
+                        <i class="ri-user-star-line"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">1,190</h5>
+                        <p class="mb-0 text-muted">Active Users</p>
+                        <small class="text-info">93% of total</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-warning text-white rounded-3 me-3">
+                        <i class="ri-user-unfollow-line"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">89</h5>
+                        <p class="mb-0 text-muted">Inactive Users</p>
+                        <small class="text-warning">7% of total</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <div class="col-xl-6 col-lg-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-pie-chart-line me-2"></i>User Distribution by Role
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="text-center p-3 border rounded">
+                            <div class="mb-2">
+                                <i class="ri-user-heart-line text-primary" style="font-size: 2rem;"></i>
+                            </div>
+                            <h4 class="text-primary">1,247</h4>
+                            <p class="mb-0 text-muted">Patients</p>
+                            <small class="text-success">97.5%</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center p-3 border rounded">
+                            <div class="mb-2">
+                                <i class="ri-user-star-line text-success" style="font-size: 2rem;"></i>
+                            </div>
+                            <h4 class="text-success">24</h4>
+                            <p class="mb-0 text-muted">Doctors</p>
+                            <small class="text-success">1.9%</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center p-3 border rounded">
+                            <div class="mb-2">
+                                <i class="ri-admin-line text-info" style="font-size: 2rem;"></i>
+                            </div>
+                            <h4 class="text-info">8</h4>
+                            <p class="mb-0 text-muted">Admin Staff</p>
+                            <small class="text-muted">0.6%</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center p-3 border rounded">
+                            <div class="mb-2">
+                                <i class="ri-test-tube-line text-warning" style="font-size: 2rem;"></i>
+                            </div>
+                            <h4 class="text-warning">12</h4>
+                            <p class="mb-0 text-muted">Lab Staff</p>
+                            <small class="text-success">0.9%</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-6 col-lg-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-line-chart-line me-2"></i>User Registration Trend
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                            <div>
+                                <h6 class="mb-1">January 2024</h6>
+                                <small class="text-muted">New Registrations</small>
+                            </div>
+                            <div class="text-end">
+                                <h4 class="text-primary mb-0">156</h4>
+                                <small class="text-success">+25% <i class="ri-arrow-up-line"></i></small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                            <div>
+                                <h6 class="mb-1">February 2024</h6>
+                                <small class="text-muted">New Registrations</small>
+                            </div>
+                            <div class="text-end">
+                                <h4 class="text-success mb-0">189</h4>
+                                <small class="text-success">+21% <i class="ri-arrow-up-line"></i></small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                            <div>
+                                <h6 class="mb-1">March 2024</h6>
+                                <small class="text-muted">New Registrations</small>
+                            </div>
+                            <div class="text-end">
+                                <h4 class="text-info mb-0">234</h4>
+                                <small class="text-success">+24% <i class="ri-arrow-up-line"></i></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed User Report Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ri-file-list-3-line me-2"></i>Detailed User Report
+                </h5>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary btn-sm" onclick="printReport()">
+                        <i class="ri-printer-line me-2"></i>Print
+                    </button>
+                    <button class="btn btn-outline-success btn-sm" onclick="exportToExcel()">
+                        <i class="ri-file-excel-2-line me-2"></i>Excel
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="userReportTable">
+                        <thead>
+                            <tr>
+                                <th>User ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Registration Date</th>
+                                <th>Last Login</th>
+                                <th>Status</th>
+                                <th>Activity Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="fw-bold text-primary">#U001</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/admin.png" class="rounded-circle me-2" width="32" height="32" alt="Admin">
+                                        <span>John Admin</span>
+                                    </div>
+                                </td>
+                                <td>john.admin@caresync.com</td>
+                                <td><span class="badge bg-danger">Admin</span></td>
+                                <td>Jan 15, 2024</td>
+                                <td>Nov 15, 2024</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar bg-success" style="width: 95%"></div>
+                                    </div>
+                                    <small class="text-muted">95%</small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="fw-bold text-primary">#U002</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/doctor1.png" class="rounded-circle me-2" width="32" height="32" alt="Doctor">
+                                        <span>Dr. Sarah Wilson</span>
+                                    </div>
+                                </td>
+                                <td>sarah.wilson@caresync.com</td>
+                                <td><span class="badge bg-primary">Doctor</span></td>
+                                <td>Feb 10, 2024</td>
+                                <td>Nov 14, 2024</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar bg-info" style="width: 88%"></div>
+                                    </div>
+                                    <small class="text-muted">88%</small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="fw-bold text-primary">#U003</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/patient1.png" class="rounded-circle me-2" width="32" height="32" alt="Patient">
+                                        <span>Emily Johnson</span>
+                                    </div>
+                                </td>
+                                <td>emily.johnson@email.com</td>
+                                <td><span class="badge bg-info">Patient</span></td>
+                                <td>Mar 05, 2024</td>
+                                <td>Nov 12, 2024</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar bg-warning" style="width: 72%"></div>
+                                    </div>
+                                    <small class="text-muted">72%</small>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div>
+                        <span class="text-muted">Showing 1 to 3 of 1,279 users</span>
+                    </div>
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#"><i class="ri-arrow-left-s-line"></i></a>
+                            </li>
+                            <li class="page-item active">
+                                <a class="page-link" href="#">1</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">2</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">3</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#"><i class="ri-arrow-right-s-line"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function generateReport() {
+            alert('Generating user report...');
+        }
+
+        function exportReport() {
+            alert('Exporting user report...');
+        }
+
+        function printReport() {
+            window.print();
+        }
+
+        function exportToExcel() {
+            alert('Exporting to Excel...');
+        }
+
+        // Filter change handlers
+        document.getElementById('dateRange').addEventListener('change', function() {
+            console.log('Date range changed:', this.value);
+        });
+
+        document.getElementById('userRole').addEventListener('change', function() {
+            console.log('User role filter changed:', this.value);
+        });
+
+        document.getElementById('userStatus').addEventListener('change', function() {
+            console.log('User status filter changed:', this.value);
+        });
+
+        document.getElementById('reportType').addEventListener('change', function() {
+            console.log('Report type changed:', this.value);
+        });
+    </script>
+
+    <style>
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+    </style>
+}

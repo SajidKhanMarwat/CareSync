@@ -1,0 +1,593 @@
+@page "/Admin/Patients"
+@model CareSync.Pages.Admin.PatientsModel
+@{
+    ViewData["Title"] = "Patients Management";
+}
+
+@section Breadcrumb {
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="~/Admin/Dashboard">
+                <i class="ri-home-3-line"></i>
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="~/Admin/Patients">Patients</a>
+        </li>
+        <li class="breadcrumb-item text-primary" aria-current="page">
+            All Patients
+        </li>
+    </ol>
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <a href="~/Patients/Create" class="btn btn-primary">
+            <i class="ri-user-add-line me-2"></i>Add Patient
+        </a>
+        <button class="btn btn-outline-secondary" onclick="exportPatients()">
+            <i class="ri-download-line me-2"></i>Export
+        </button>
+        <div class="dropdown">
+            <button class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="ri-filter-line me-2"></i>Filter
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="filterByStatus('all')">All Patients</a></li>
+                <li><a class="dropdown-item" href="#" onclick="filterByStatus('active')">Active</a></li>
+                <li><a class="dropdown-item" href="#" onclick="filterByStatus('inactive')">Inactive</a></li>
+                <li><a class="dropdown-item" href="#" onclick="filterByBloodGroup('all')">All Blood Groups</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#" onclick="filterByBloodGroup('O+')">O+</a></li>
+                <li><a class="dropdown-item" href="#" onclick="filterByBloodGroup('A+')">A+</a></li>
+                <li><a class="dropdown-item" href="#" onclick="filterByBloodGroup('B+')">B+</a></li>
+                <li><a class="dropdown-item" href="#" onclick="filterByBloodGroup('AB+')">AB+</a></li>
+            </ul>
+        </div>
+    </div>
+}
+
+<!-- Statistics Cards -->
+<div class="row gx-3 mb-4">
+    <div class="col-sm-3 col-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="p-2 border border-primary rounded-circle me-3">
+                        <div class="icon-box md bg-primary-lighten rounded-5">
+                            <i class="ri-user-heart-line fs-4 text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <h1 class="lh-1">980</h1>
+                        <p class="m-0">Total Patients</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3 col-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="p-2 border border-success rounded-circle me-3">
+                        <div class="icon-box md bg-success-lighten rounded-5">
+                            <i class="ri-user-smile-line fs-4 text-success"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <h1 class="lh-1">945</h1>
+                        <p class="m-0">Active</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3 col-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="p-2 border border-info rounded-circle me-3">
+                        <div class="icon-box md bg-info-lighten rounded-5">
+                            <i class="ri-user-add-line fs-4 text-info"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <h1 class="lh-1">89</h1>
+                        <p class="m-0">New This Month</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3 col-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="p-2 border border-warning rounded-circle me-3">
+                        <div class="icon-box md bg-warning-lighten rounded-5">
+                            <i class="ri-calendar-check-line fs-4 text-warning"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <h1 class="lh-1">156</h1>
+                        <p class="m-0">Appointments Today</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <!-- Patient Registration Trends -->
+    <div class="col-xl-8 col-lg-7 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-line-chart-line me-2"></i>Patient Registration Trends
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-height">
+                    <div id="patientTrends"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Age Distribution -->
+    <div class="col-xl-4 col-lg-5 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-pie-chart-line me-2"></i>Age Groups
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-height-sm">
+                    <div id="ageDistribution"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Blood Groups and Gender Distribution -->
+<div class="row mb-4">
+    <div class="col-xl-6 col-lg-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-drop-line me-2"></i>Blood Group Distribution
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-3">
+                        <div class="text-center p-3 border rounded">
+                            <div class="icon-box md bg-danger-lighten rounded-circle mx-auto mb-2">
+                                <i class="ri-drop-fill text-danger"></i>
+                            </div>
+                            <h4 class="text-danger">245</h4>
+                            <p class="mb-0">O+</p>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="text-center p-3 border rounded">
+                            <div class="icon-box md bg-primary-lighten rounded-circle mx-auto mb-2">
+                                <i class="ri-drop-fill text-primary"></i>
+                            </div>
+                            <h4 class="text-primary">189</h4>
+                            <p class="mb-0">A+</p>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="text-center p-3 border rounded">
+                            <div class="icon-box md bg-success-lighten rounded-circle mx-auto mb-2">
+                                <i class="ri-drop-fill text-success"></i>
+                            </div>
+                            <h4 class="text-success">156</h4>
+                            <p class="mb-0">B+</p>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="text-center p-3 border rounded">
+                            <div class="icon-box md bg-warning-lighten rounded-circle mx-auto mb-2">
+                                <i class="ri-drop-fill text-warning"></i>
+                            </div>
+                            <h4 class="text-warning">89</h4>
+                            <p class="mb-0">AB+</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-6 col-lg-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-bar-chart-line me-2"></i>Gender & Marital Status
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-height-sm">
+                    <div id="genderChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Patients Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ri-team-line me-2"></i>All Patients
+                </h5>
+                <div class="d-flex gap-2">
+                    <div class="input-group" style="width: 250px;">
+                        <input type="text" class="form-control" placeholder="Search patients..." id="searchInput">
+                        <button class="btn btn-outline-secondary" type="button">
+                            <i class="ri-search-line"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="patientsTable">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Contact Info</th>
+                                <th>Medical Info</th>
+                                <th>Last Visit</th>
+                                <th>Assigned Doctor</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/patient1.png" class="rounded-circle me-3" width="40" height="40" alt="Patient">
+                                        <div>
+                                            <h6 class="mb-0">Emily Johnson</h6>
+                                            <small class="text-muted">ID: P001</small>
+                                            <br><small class="text-primary">Age: 28, Female</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <span class="fw-bold">emily.johnson@email.com</span><br>
+                                        <small class="text-muted">+1 234 567 8903</small><br>
+                                        <small class="text-muted">123 Main St, City</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <span class="badge bg-danger-light text-danger mb-1">O+</span><br>
+                                        <small class="text-muted">Married</small><br>
+                                        <small class="text-info">Insurance: Active</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <span class="fw-bold">Nov 12, 2024</span><br>
+                                        <small class="text-muted">Cardiology</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/doctor1.png" class="rounded-circle me-2" width="24" height="24" alt="Doctor">
+                                        <div>
+                                            <small class="fw-bold">Dr. Sarah Wilson</small><br>
+                                            <small class="text-muted">Cardiologist</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                            <i class="ri-more-2-line"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#"><i class="ri-eye-line me-2"></i>View Profile</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-edit-line me-2"></i>Edit Patient</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-file-text-line me-2"></i>Medical Records</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-calendar-line me-2"></i>Appointments</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-warning" href="#"><i class="ri-user-unfollow-line me-2"></i>Deactivate</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/patient2.png" class="rounded-circle me-3" width="40" height="40" alt="Patient">
+                                        <div>
+                                            <h6 class="mb-0">Michael Brown</h6>
+                                            <small class="text-muted">ID: P002</small>
+                                            <br><small class="text-primary">Age: 45, Male</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <span class="fw-bold">michael.brown@email.com</span><br>
+                                        <small class="text-muted">+1 234 567 8904</small><br>
+                                        <small class="text-muted">456 Oak Ave, City</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <span class="badge bg-primary-light text-primary mb-1">A+</span><br>
+                                        <small class="text-muted">Single</small><br>
+                                        <small class="text-info">Insurance: Active</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <span class="fw-bold">Nov 10, 2024</span><br>
+                                        <small class="text-muted">Neurology</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/doctor2.png" class="rounded-circle me-2" width="24" height="24" alt="Doctor">
+                                        <div>
+                                            <small class="fw-bold">Dr. James Chen</small><br>
+                                            <small class="text-muted">Neurologist</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                            <i class="ri-more-2-line"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#"><i class="ri-eye-line me-2"></i>View Profile</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-edit-line me-2"></i>Edit Patient</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-file-text-line me-2"></i>Medical Records</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="ri-calendar-line me-2"></i>Appointments</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-warning" href="#"><i class="ri-user-unfollow-line me-2"></i>Deactivate</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div>
+                        <span class="text-muted">Showing 1 to 2 of 980 patients</span>
+                    </div>
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#"><i class="ri-arrow-left-s-line"></i></a>
+                            </li>
+                            <li class="page-item active">
+                                <a class="page-link" href="#">1</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">2</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">3</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#"><i class="ri-arrow-right-s-line"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- ApexCharts JS -->
+    <script src="~/theme/vendor/apex/apexcharts.min.js"></script>
+    
+    <script>
+        // Patient Registration Trends Chart
+        var patientTrendsOptions = {
+            chart: {
+                height: 300,
+                type: "line",
+                toolbar: {
+                    show: false,
+                },
+            },
+            dataLabels: {
+                enabled: false,
+            },
+            fill: {
+                type: 'solid',
+                opacity: [0.1, 1],
+            },
+            stroke: {
+                curve: "smooth",
+                width: [0, 5]
+            },
+            series: [{
+                name: 'New Patients',
+                type: 'area',
+                data: [89, 95, 102, 87, 93, 98, 105, 112, 89, 95, 102, 108]
+            }, {
+                name: 'Return Patients',
+                type: 'line',
+                data: [156, 162, 148, 171, 165, 159, 174, 168, 156, 162, 148, 171]
+            }],
+            grid: {
+                borderColor: "#d8dee6",
+                strokeDashArray: 5,
+            },
+            xaxis: {
+                categories: [
+                    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+                ],
+            },
+            colors: ["#0d6efd", "#198754"],
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val + " patients";
+                    },
+                },
+            },
+        };
+
+        var patientTrendsChart = new ApexCharts(document.querySelector("#patientTrends"), patientTrendsOptions);
+        patientTrendsChart.render();
+
+        // Age Distribution Chart
+        var ageOptions = {
+            chart: {
+                height: 250,
+                type: 'donut',
+            },
+            series: [25, 35, 20, 15, 5],
+            labels: ['0-18', '19-35', '36-50', '51-65', '65+'],
+            colors: ['#0d6efd', '#198754', '#ffc107', '#fd7e14', '#dc3545'],
+            legend: {
+                position: 'bottom',
+                horizontalAlign: 'center',
+            },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '70%'
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val) {
+                    return Math.round(val) + "%"
+                }
+            }
+        };
+
+        var ageChart = new ApexCharts(document.querySelector("#ageDistribution"), ageOptions);
+        ageChart.render();
+
+        // Gender Chart
+        var genderOptions = {
+            chart: {
+                height: 250,
+                type: 'bar',
+                toolbar: {
+                    show: false,
+                },
+            },
+            series: [{
+                name: 'Count',
+                data: [520, 460, 345, 289, 156, 89]
+            }],
+            xaxis: {
+                categories: ['Female', 'Male', 'Married', 'Single', 'Divorced', 'Widowed'],
+            },
+            colors: ['#0d6efd'],
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '55%',
+                    endingShape: 'rounded'
+                },
+            },
+            dataLabels: {
+                enabled: false
+            },
+            grid: {
+                borderColor: "#d8dee6",
+                strokeDashArray: 5,
+            }
+        };
+
+        var genderChart = new ApexCharts(document.querySelector("#genderChart"), genderOptions);
+        genderChart.render();
+
+        // Filter functions
+        function filterByStatus(status) {
+            console.log('Filtering by status:', status);
+        }
+
+        function filterByBloodGroup(bloodGroup) {
+            console.log('Filtering by blood group:', bloodGroup);
+        }
+
+        function exportPatients() {
+            alert('Exporting patients data...');
+        }
+    </script>
+
+    <style>
+        .chart-height {
+            height: 300px;
+        }
+        
+        .chart-height-sm {
+            height: 250px;
+        }
+        
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon-box.md {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .bg-primary-lighten {
+            background-color: rgba(13, 110, 253, 0.1) !important;
+        }
+        
+        .bg-success-lighten {
+            background-color: rgba(25, 135, 84, 0.1) !important;
+        }
+        
+        .bg-warning-lighten {
+            background-color: rgba(255, 193, 7, 0.1) !important;
+        }
+        
+        .bg-info-lighten {
+            background-color: rgba(13, 202, 240, 0.1) !important;
+        }
+        
+        .bg-danger-lighten {
+            background-color: rgba(220, 53, 69, 0.1) !important;
+        }
+        
+        .bg-primary-light {
+            background-color: rgba(13, 110, 253, 0.1) !important;
+        }
+        
+        .bg-danger-light {
+            background-color: rgba(220, 53, 69, 0.1) !important;
+        }
+    </style>
+}

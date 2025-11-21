@@ -6,10 +6,10 @@
 
 @section PageActions {
     <div class="d-flex gap-2">
-        <button type="button" class="btn btn-primary">
+        <button type="button" class="btn btn-primary" onclick="location.href='/Patient/Appointments'">
             <i class="ri-calendar-event-line me-1"></i>My Appointments
         </button>
-        <button type="button" class="btn btn-outline-info">
+        <button type="button" class="btn btn-outline-info" id="showHistoryBtn">
             <i class="ri-history-line me-1"></i>Appointment History
         </button>
     </div>
@@ -57,37 +57,41 @@
                 <div class="card-body">
                     <!-- Search and Filter -->
                     <div class="row mb-4">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Search doctors by name or specialization...">
-                                <button class="btn btn-outline-secondary">
+                                <input type="text" class="form-control" id="searchDoctor" placeholder="Search doctors by name or specialization...">
+                                <button class="btn btn-outline-secondary" onclick="filterDoctors()">
                                     <i class="ri-search-line"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <select class="form-select">
-                                <option>All Specializations</option>
-                                <option>Cardiology</option>
-                                <option>General Medicine</option>
-                                <option>Dermatology</option>
-                                <option>Orthopedics</option>
+                            <select class="form-select" id="specializationFilter" onchange="filterDoctors()">
+                                <option value="">All Specializations</option>
+                                <option value="Cardiology">Cardiology</option>
+                                <option value="General Medicine">General Medicine</option>
+                                <option value="Dermatology">Dermatology</option>
+                                <option value="Orthopedics">Orthopedics</option>
                             </select>
                         </div>
-                        <div class="col-md-3">
-                            <select class="form-select">
-                                <option>All Availability</option>
-                                <option>Available Today</option>
-                                <option>Available This Week</option>
-                                <option>Available Next Week</option>
-                            </select>
+                        <div class="col-md-5">
+                            <div class="input-group">
+                                <span class="input-group-text bg-primary-lighten">
+                                    <i class="ri-calendar-line text-primary"></i>
+                                </span>
+                                <input type="datetime-local" class="form-control" id="availabilityFilter" onchange="filterDoctorsByDateTime()">
+                                <button class="btn btn-outline-secondary" onclick="clearDateFilter()" title="Clear Filter">
+                                    <i class="ri-close-line"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted">Filter doctors by availability date & time</small>
                         </div>
                     </div>
 
                     <!-- Doctors List -->
                     <div class="doctors-list">
                         <!-- Doctor 1 -->
-                        <div class="doctor-card border rounded-4 p-3 mb-3 selectable-card" data-doctor-id="1">
+                        <div class="doctor-card border rounded-4 p-3 mb-3 selectable-card" data-doctor-id="1" data-specialty="Cardiology" data-name="Dr. Sarah Johnson">
                             <div class="row align-items-center">
                                 <div class="col-auto">
                                     <img src="~/theme/images/doctor1.png" class="img-4x rounded-circle" alt="Doctor">
@@ -111,6 +115,23 @@
                                             <i class="ri-money-dollar-circle-line ms-3 me-1"></i>$150 consultation
                                         </small>
                                     </div>
+                                    <div class="mt-2">
+                                        <small class="fw-semibold text-primary d-block mb-1">Available Days:</small>
+                                        <div class="d-flex gap-1 flex-wrap">
+                                            <span class="badge bg-primary-subtle text-primary">Mon</span>
+                                            <span class="badge bg-primary-subtle text-primary">Tue</span>
+                                            <span class="badge bg-primary-subtle text-primary">Wed</span>
+                                            <span class="badge bg-primary-subtle text-primary">Thu</span>
+                                            <span class="badge bg-primary-subtle text-primary">Fri</span>
+                                        </div>
+                                        <small class="fw-semibold text-success d-block mt-2 mb-1">Available Times:</small>
+                                        <div class="d-flex gap-1 flex-wrap">
+                                            <span class="badge bg-success-subtle text-success">9:00 AM</span>
+                                            <span class="badge bg-success-subtle text-success">10:00 AM</span>
+                                            <span class="badge bg-success-subtle text-success">2:00 PM</span>
+                                            <span class="badge bg-success-subtle text-success">3:00 PM</span>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-auto">
                                     <div class="text-center">
@@ -124,7 +145,7 @@
                         </div>
 
                         <!-- Doctor 2 -->
-                        <div class="doctor-card border rounded-4 p-3 mb-3 selectable-card" data-doctor-id="2">
+                        <div class="doctor-card border rounded-4 p-3 mb-3 selectable-card" data-doctor-id="2" data-specialty="General Medicine" data-name="Dr. Michael Brown">
                             <div class="row align-items-center">
                                 <div class="col-auto">
                                     <img src="~/theme/images/doctor2.png" class="img-4x rounded-circle" alt="Doctor">
@@ -148,6 +169,22 @@
                                             <i class="ri-money-dollar-circle-line ms-3 me-1"></i>$120 consultation
                                         </small>
                                     </div>
+                                    <div class="mt-2">
+                                        <small class="fw-semibold text-primary d-block mb-1">Available Days:</small>
+                                        <div class="d-flex gap-1 flex-wrap">
+                                            <span class="badge bg-primary-subtle text-primary">Mon</span>
+                                            <span class="badge bg-primary-subtle text-primary">Wed</span>
+                                            <span class="badge bg-primary-subtle text-primary">Fri</span>
+                                            <span class="badge bg-primary-subtle text-primary">Sat</span>
+                                        </div>
+                                        <small class="fw-semibold text-success d-block mt-2 mb-1">Available Times:</small>
+                                        <div class="d-flex gap-1 flex-wrap">
+                                            <span class="badge bg-success-subtle text-success">8:00 AM</span>
+                                            <span class="badge bg-success-subtle text-success">11:00 AM</span>
+                                            <span class="badge bg-success-subtle text-success">1:00 PM</span>
+                                            <span class="badge bg-success-subtle text-success">4:00 PM</span>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-auto">
                                     <div class="text-center">
@@ -161,7 +198,7 @@
                         </div>
 
                         <!-- Doctor 3 -->
-                        <div class="doctor-card border rounded-4 p-3 mb-3 selectable-card" data-doctor-id="3">
+                        <div class="doctor-card border rounded-4 p-3 mb-3 selectable-card" data-doctor-id="3" data-specialty="Dermatology" data-name="Dr. Lisa Anderson">
                             <div class="row align-items-center">
                                 <div class="col-auto">
                                     <img src="~/theme/images/doctor3.png" class="img-4x rounded-circle" alt="Doctor">
@@ -184,6 +221,22 @@
                                             <i class="ri-map-pin-line me-1"></i>Skin Care Clinic
                                             <i class="ri-money-dollar-circle-line ms-3 me-1"></i>$180 consultation
                                         </small>
+                                    </div>
+                                    <div class="mt-2">
+                                        <small class="fw-semibold text-primary d-block mb-1">Available Days:</small>
+                                        <div class="d-flex gap-1 flex-wrap">
+                                            <span class="badge bg-primary-subtle text-primary">Tue</span>
+                                            <span class="badge bg-primary-subtle text-primary">Thu</span>
+                                            <span class="badge bg-primary-subtle text-primary">Fri</span>
+                                            <span class="badge bg-primary-subtle text-primary">Sat</span>
+                                        </div>
+                                        <small class="fw-semibold text-success d-block mt-2 mb-1">Available Times:</small>
+                                        <div class="d-flex gap-1 flex-wrap">
+                                            <span class="badge bg-success-subtle text-success">10:00 AM</span>
+                                            <span class="badge bg-success-subtle text-success">12:00 PM</span>
+                                            <span class="badge bg-success-subtle text-success">3:00 PM</span>
+                                            <span class="badge bg-success-subtle text-success">5:00 PM</span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-auto">
@@ -451,6 +504,22 @@
             let selectedDate = null;
             let selectedTime = null;
             
+            // Doctor availability data (in real app, this would come from backend)
+            const doctorAvailability = {
+                '1': { // Dr. Sarah Johnson
+                    days: [1, 2, 3, 4, 5], // Mon-Fri (0=Sun, 1=Mon, etc.)
+                    times: ['09:00', '10:00', '14:00', '15:00']
+                },
+                '2': { // Dr. Michael Brown
+                    days: [1, 3, 5, 6], // Mon, Wed, Fri, Sat
+                    times: ['08:00', '11:00', '13:00', '16:00']
+                },
+                '3': { // Dr. Lisa Anderson
+                    days: [2, 4, 5, 6], // Tue, Thu, Fri, Sat
+                    times: ['10:00', '12:00', '15:00', '17:00']
+                }
+            };
+            
             // Step navigation
             function showStep(step) {
                 // Hide all steps
@@ -469,27 +538,221 @@
                 currentStep = step;
             }
             
-            // Doctor selection
-            document.querySelectorAll('.doctor-card').forEach(card => {
-                card.addEventListener('click', function() {
-                    document.querySelectorAll('.doctor-card').forEach(c => c.classList.remove('selected'));
-                    this.classList.add('selected');
+            // Filter doctors by search and specialization
+            window.filterDoctors = function() {
+                const searchTerm = document.getElementById('searchDoctor').value.toLowerCase();
+                const specialty = document.getElementById('specializationFilter').value;
+                
+                let visibleCount = 0;
+                
+                document.querySelectorAll('.doctor-card').forEach(card => {
+                    const doctorName = card.dataset.name.toLowerCase();
+                    const doctorSpecialty = card.dataset.specialty;
                     
-                    selectedDoctor = {
-                        id: this.dataset.doctorId,
-                        name: this.querySelector('h5').textContent,
-                        specialty: this.querySelector('p').textContent.split('|')[0].trim(),
-                        experience: this.querySelector('p').textContent.split('|')[1].trim(),
-                        fee: this.querySelector('.doctor-info').textContent.match(/\\$\\d+/)[0]
-                    };
+                    const matchesSearch = searchTerm === '' || doctorName.includes(searchTerm) || doctorSpecialty.toLowerCase().includes(searchTerm);
+                    const matchesSpecialty = specialty === '' || doctorSpecialty === specialty;
                     
-                    // Update selected doctor card
-                    document.getElementById('selectedDoctorCard').style.display = 'block';
-                    document.getElementById('selectedDoctorName').textContent = selectedDoctor.name;
-                    document.getElementById('selectedDoctorSpecialty').textContent = selectedDoctor.specialty;
-                    document.getElementById('selectedDoctorFee').textContent = selectedDoctor.fee;
+                    if (matchesSearch && matchesSpecialty) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                console.log(`${visibleCount} doctors visible after filtering`);
+            };
+            
+            // Filter doctors by datetime availability
+            window.filterDoctorsByDateTime = function() {
+                const selectedDateTime = document.getElementById('availabilityFilter').value;
+                
+                if (!selectedDateTime) {
+                    // If no date selected, show all doctors
+                    document.querySelectorAll('.doctor-card').forEach(card => {
+                        card.style.display = 'block';
+                    });
+                    return;
+                }
+                
+                const selectedDate = new Date(selectedDateTime);
+                const selectedDay = selectedDate.getDay();
+                const selectedTime = selectedDateTime.split('T')[1]; // Get time part (HH:MM)
+                
+                document.querySelectorAll('.doctor-card').forEach(card => {
+                    const doctorId = card.dataset.doctorId;
+                    const availability = doctorAvailability[doctorId];
+                    
+                    if (!availability) {
+                        card.style.display = 'none';
+                        return;
+                    }
+                    
+                    // Check if doctor is available on selected day
+                    const isDayAvailable = availability.days.includes(selectedDay);
+                    
+                    // Check if doctor is available at selected time
+                    const isTimeAvailable = availability.times.some(time => {
+                        return selectedTime >= time && selectedTime < addHour(time);
+                    });
+                    
+                    if (isDayAvailable && isTimeAvailable) {
+                        card.style.display = 'block';
+                        // Highlight matching availability
+                        card.style.border = '2px solid #28a745';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            };
+            
+            // Helper function to add an hour to time
+            function addHour(time) {
+                const [hours, minutes] = time.split(':');
+                const newHours = (parseInt(hours) + 1).toString().padStart(2, '0');
+                return `${newHours}:${minutes}`;
+            }
+            
+            // Clear date filter
+            window.clearDateFilter = function() {
+                document.getElementById('availabilityFilter').value = '';
+                document.querySelectorAll('.doctor-card').forEach(card => {
+                    card.style.display = 'block';
+                    card.style.border = '';
+                });
+                filterDoctors(); // Re-apply other filters
+            };
+            
+            // Show appointment history modal
+            document.getElementById('showHistoryBtn').addEventListener('click', function() {
+                // Create and show history modal
+                const historyModal = `
+                    <div class="modal fade" id="historyModal" tabindex="-1">
+                        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">
+                                        <i class="ri-history-line me-2"></i>Appointment History
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Doctor</th>
+                                                    <th>Type</th>
+                                                    <th>Status</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Nov 10, 2024</td>
+                                                    <td>Dr. Sarah Johnson</td>
+                                                    <td>Consultation</td>
+                                                    <td><span class="badge bg-success">Completed</span></td>
+                                                    <td><a href="/Patient/AppointmentDetails?id=1" class="btn btn-sm btn-outline-primary">View</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Oct 25, 2024</td>
+                                                    <td>Dr. Michael Brown</td>
+                                                    <td>Follow-up</td>
+                                                    <td><span class="badge bg-success">Completed</span></td>
+                                                    <td><a href="/Patient/AppointmentDetails?id=2" class="btn btn-sm btn-outline-primary">View</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Oct 15, 2024</td>
+                                                    <td>Dr. Lisa Anderson</td>
+                                                    <td>Checkup</td>
+                                                    <td><span class="badge bg-success">Completed</span></td>
+                                                    <td><a href="/Patient/AppointmentDetails?id=3" class="btn btn-sm btn-outline-primary">View</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Sep 20, 2024</td>
+                                                    <td>Dr. Sarah Johnson</td>
+                                                    <td>Consultation</td>
+                                                    <td><span class="badge bg-danger">Cancelled</span></td>
+                                                    <td><a href="/Patient/AppointmentDetails?id=4" class="btn btn-sm btn-outline-primary">View</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Aug 30, 2024</td>
+                                                    <td>Dr. Michael Brown</td>
+                                                    <td>Consultation</td>
+                                                    <td><span class="badge bg-success">Completed</span></td>
+                                                    <td><a href="/Patient/AppointmentDetails?id=5" class="btn btn-sm btn-outline-primary">View</a></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Remove existing modal if any
+                const existingModal = document.getElementById('historyModal');
+                if (existingModal) {
+                    existingModal.remove();
+                }
+                
+                // Add modal to body
+                document.body.insertAdjacentHTML('beforeend', historyModal);
+                
+                // Show modal
+                const modal = new bootstrap.Modal(document.getElementById('historyModal'));
+                modal.show();
+                
+                // Clean up when modal is hidden
+                document.getElementById('historyModal').addEventListener('hidden.bs.modal', function() {
+                    this.remove();
                 });
             });
+            
+            // Doctor selection
+            function attachDoctorClickHandlers() {
+                document.querySelectorAll('.doctor-card').forEach(card => {
+                    card.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        
+                        // Remove selection from all cards
+                        document.querySelectorAll('.doctor-card').forEach(c => c.classList.remove('selected'));
+                        
+                        // Add selection to clicked card
+                        this.classList.add('selected');
+                        
+                        // Extract doctor information
+                        const doctorNameEl = this.querySelector('h5');
+                        const doctorInfoEl = this.querySelector('p.text-muted');
+                        const doctorFeeEl = this.querySelector('.doctor-info');
+                        
+                        selectedDoctor = {
+                            id: this.dataset.doctorId,
+                            name: doctorNameEl ? doctorNameEl.textContent : '',
+                            specialty: doctorInfoEl ? doctorInfoEl.textContent.split('|')[0].trim() : '',
+                            experience: doctorInfoEl ? doctorInfoEl.textContent.split('|')[1].trim() : '',
+                            fee: doctorFeeEl ? doctorFeeEl.textContent.match(/\$\d+/)[0] : '$0'
+                        };
+                        
+                        console.log('Doctor selected:', selectedDoctor);
+                        
+                        // Update selected doctor card in sidebar
+                        document.getElementById('selectedDoctorCard').style.display = 'block';
+                        document.getElementById('selectedDoctorName').textContent = selectedDoctor.name;
+                        document.getElementById('selectedDoctorSpecialty').textContent = selectedDoctor.specialty;
+                        document.getElementById('selectedDoctorFee').textContent = selectedDoctor.fee;
+                    });
+                });
+            }
+            
+            // Attach handlers initially
+            attachDoctorClickHandlers();
             
             // Date selection
             document.getElementById('appointmentDate').addEventListener('change', function() {
@@ -522,14 +785,43 @@
             
             // Navigation buttons
             document.getElementById('nextBtn').addEventListener('click', function() {
-                if (currentStep === 1 && !selectedDoctor) {
-                    alert('Please select a doctor first.');
-                    return;
+                console.log('Next button clicked. Current step:', currentStep);
+                console.log('Selected doctor:', selectedDoctor);
+                
+                // Step 1: Validate doctor selection
+                if (currentStep === 1) {
+                    // Check both the variable and if any card has 'selected' class
+                    const hasSelectedCard = document.querySelector('.doctor-card.selected');
+                    
+                    if (!selectedDoctor && !hasSelectedCard) {
+                        alert('Please select a doctor by clicking on one of the doctor cards.');
+                        return;
+                    }
+                    
+                    // If a card is selected but variable is not set, try to set it
+                    if (!selectedDoctor && hasSelectedCard) {
+                        const doctorNameEl = hasSelectedCard.querySelector('h5');
+                        const doctorInfoEl = hasSelectedCard.querySelector('p.text-muted');
+                        const doctorFeeEl = hasSelectedCard.querySelector('.doctor-info');
+                        
+                        selectedDoctor = {
+                            id: hasSelectedCard.dataset.doctorId,
+                            name: doctorNameEl ? doctorNameEl.textContent : '',
+                            specialty: doctorInfoEl ? doctorInfoEl.textContent.split('|')[0].trim() : '',
+                            experience: doctorInfoEl ? doctorInfoEl.textContent.split('|')[1].trim() : '',
+                            fee: doctorFeeEl ? doctorFeeEl.textContent.match(/\$\d+/)[0] : '$0'
+                        };
+                        console.log('Doctor info extracted from selected card:', selectedDoctor);
+                    }
                 }
+                
+                // Step 2: Validate date and time
                 if (currentStep === 2 && (!selectedDate || !selectedTime)) {
-                    alert('Please select date and time.');
+                    alert('Please select both a date and a time slot.');
                     return;
                 }
+                
+                // Step 3: Validate form and update summary
                 if (currentStep === 3) {
                     const form = document.querySelector('#step3 form');
                     if (!form.checkValidity()) {
@@ -542,15 +834,20 @@
                     document.getElementById('summarySpecialization').textContent = selectedDoctor.specialty;
                     document.getElementById('summaryDate').textContent = new Date(selectedDate).toLocaleDateString();
                     document.getElementById('summaryTime').textContent = selectedTime;
-                    document.getElementById('summaryType').textContent = form.querySelector('select').value;
+                    document.getElementById('summaryType').textContent = form.querySelector('select').selectedOptions[0].text;
                     document.getElementById('summaryFee').textContent = selectedDoctor.fee + '.00';
                 }
                 
                 showStep(currentStep + 1);
+                
+                // Scroll to top of page smoothly when moving to next step
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             });
             
             document.getElementById('prevBtn').addEventListener('click', function() {
                 showStep(currentStep - 1);
+                // Scroll to top of page smoothly when moving to previous step
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             });
             
             // Confirm appointment
@@ -558,6 +855,23 @@
                 alert('Appointment booked successfully! You will receive a confirmation email shortly.');
                 window.location.href = '/Patient/Appointments';
             });
+            
+            // Handle pre-selected doctor from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const preselectedDoctorId = urlParams.get('doctorId');
+            
+            if (preselectedDoctorId) {
+                // Find and auto-select the doctor
+                const doctorCard = document.querySelector(`[data-doctor-id="${preselectedDoctorId}"]`);
+                if (doctorCard) {
+                    // Simulate click to select doctor
+                    setTimeout(() => {
+                        doctorCard.click();
+                        // Scroll to the selected doctor
+                        doctorCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 500);
+                }
+            }
             
             // Initialize
             showStep(1);

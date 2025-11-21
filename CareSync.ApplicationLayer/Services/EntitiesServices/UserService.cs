@@ -1,21 +1,34 @@
 using AutoMapper;
+using CareSync.ApplicationLayer.ApiResult;
+using CareSync.ApplicationLayer.Common;
+using CareSync.ApplicationLayer.Contracts.DoctorsDTOs;
+using CareSync.ApplicationLayer.Contracts.LabDTOs;
+using CareSync.ApplicationLayer.Contracts.PatientsDTOs;
+using CareSync.ApplicationLayer.Contracts.UsersDTOs;
+using CareSync.ApplicationLayer.IServices.EntitiesServices;
+using CareSync.ApplicationLayer.Repository;
+using CareSync.ApplicationLayer.UnitOfWork;
 using CareSync.DataLayer.Entities;
 using CareSync.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using CareSync.ApplicationLayer.Contracts.UsersDTOs;
 using System.Security.Claims;
 using static CareSync.InfrastructureLayer.Services.CookieServices.CookieService;
 using static CareSync.InfrastructureLayer.Services.Security.JwtTokenGenerator;
-using CareSync.ApplicationLayer.IServices.EntitiesServices;
-using CareSync.ApplicationLayer.Common;
-using CareSync.ApplicationLayer.ApiResult;
 
 namespace CareSync.InfrastructureLayer.Services.EntitiesServices;
 
-public class UserService(UserManager<T_Users> userManager, SignInManager<T_Users> signInManager, RoleManager<T_Roles> roleManager, IMapper mapper, ILogger<UserService> logger) : IUserService
+public sealed class UserService(
+    IUnitOfWork uow,
+    UserManager<T_Users> userManager, 
+    SignInManager<T_Users> signInManager, 
+    RoleManager<T_Roles> roleManager,
+    IPatientService patientService,
+    IDoctorService doctorService,
+    IMapper mapper, 
+    ILogger<UserService> logger) : IUserService
 {
     public async Task<Result<LoginResponse>> GenerateRefreshTokenAsync()
     {
@@ -39,7 +52,7 @@ public class UserService(UserManager<T_Users> userManager, SignInManager<T_Users
         (var newAccessToken, var newRefreshToken) =
             (await GenerateToken(user, userManager, roleManager), GenerateRefreshToken(userId));
 
-       // await Set_RefreshToken_Cookies(newRefreshToken, 1);
+        // await Set_RefreshToken_Cookies(newRefreshToken, 1);
 
         return Result<LoginResponse>.Success(new LoginResponse()
         {
@@ -61,7 +74,7 @@ public class UserService(UserManager<T_Users> userManager, SignInManager<T_Users
         });
     }
 
-    public async Task<Result<GeneralResponse>> CreatePassword(Request_ForgetPassword_DTO input)
+    public async Task<Result<GeneralResponse>> CreatePasswordAsync(Request_ForgetPassword_DTO input)
     {
         logger.LogInformation("Executing: CreatePassword");
         T_Users? user = await GetUserByEmailOrUsername(input.Email);
@@ -91,20 +104,18 @@ public class UserService(UserManager<T_Users> userManager, SignInManager<T_Users
 
     private async Task<T_Users?> GetUserByEmailOrUsername(string Email)
     {
-        bool isEmail = Email.Contains("@");
         var query = signInManager?.UserManager?.Users?
             .Include(u => u.UserRole)!
-            .ThenInclude(ur => ur.Role)!; 
+            .ThenInclude(ur => ur.Role)!;
         T_Users? user;
-        if (isEmail)
+        if (Email.Contains("@"))
             user = await query.FirstOrDefaultAsync(u => u.Email == Email);
         else
-            user = await query.FirstOrDefaultAsync(u => u.UserName == Email);
-
+            user = await query.FirstOrDefaultAsync(u => u.UserName == Email || u.LoginID.ToString() == Email);
         return user;
     }
 
-    public async Task<Result<LoginResponse>> GenerateLoginToken(LoginUser_DTO input)
+    public async Task<Result<LoginResponse>> GenerateLoginTokenAsync(LoginUser_DTO input)
     {
         logger.LogInformation("Executing: GenerateLoginToken");
         try
@@ -138,8 +149,7 @@ public class UserService(UserManager<T_Users> userManager, SignInManager<T_Users
                     : "failed to login, please try again with correct email & password.",
                 Token = response.Succeeded ? token : string.Empty,
                 RefreshToken = refreshToken,
-                Role=user?.Role?.RoleName!,
-
+                Role = user?.Role?.RoleName!,
             });
         }
         catch (DbUpdateException ex)
@@ -149,60 +159,94 @@ public class UserService(UserManager<T_Users> userManager, SignInManager<T_Users
         }
     }
 
-    public async Task<Result<GeneralResponse>> RegisterNewUser(UserRegisteration_DTO request)
+    public async Task<Result<GeneralResponse>> RegisterNewUserAsync(
+    UserRegisteration_DTO request, string roleName = "patient", string roleId = "")
     {
-        logger.LogInformation("Executing: RegisterNewUser");
+        logger.LogInformation("Executing: RegisterNewUserAsync");
         try
         {
+            await uow.BeginTransactionAsync();
             var userEntity = mapper.Map<T_Users>(request);
-            
-            // Set default role for new users (Patient)
-            var patientRole = await roleManager.FindByNameAsync("Patient");
-            if (patientRole != null)
-            {
-                userEntity.RoleID = patientRole.Id;
-            }
-            else
-            {
-                // If Patient role doesn't exist, create a default role ID
-                userEntity.RoleID = "default-patient-role";
-            }
-           
-            var response = await userManager.CreateAsync(userEntity, request.Password);
 
-            if (response.Succeeded)
-            {
-                // Assign the user to the Patient role
-                var roleAssignResult = await userManager.AddToRoleAsync(userEntity, "Patient");
-                if (!roleAssignResult.Succeeded)
-                {
-                    logger.LogWarning("Failed to assign Patient role to user {UserId}", userEntity.Id);
-                }
-                
-                return Result<GeneralResponse>.Success(new GeneralResponse()
-                {
-                    Success = true,
-                    Message = "account created successfully, check confirmation email.",
-                });
-            }
-            return Result<GeneralResponse>.Failure(new GeneralResponse()
-            {
-                Success = false,
-                Message = response.Errors.FirstOrDefault()!.Description,
-            });
-        }
-        catch (DbUpdateException dbEx)
-        {
-            logger.LogInformation(dbEx.Message);
-            var sqlException = dbEx.InnerException as SqlException ?? dbEx.InnerException?.InnerException as SqlException;
+            var role = await roleManager.FindByNameAsync(roleName);
+            userEntity.RoleID = role?.Id!;
 
-            if (sqlException != null && (sqlException.Number == 2601 || sqlException.Number == 2627))
+            var userManagerResponse = await userManager.CreateAsync(userEntity, request.Password);
+            if (!userManagerResponse.Succeeded)
                 return Result<GeneralResponse>.Failure(new GeneralResponse
                 {
                     Success = false,
-                    Message = "This email address is already registered.",
+                    Message = userManagerResponse.Errors.First().Description
                 });
+            await userManager.AddToRoleAsync(userEntity, roleName);
+
+            if( request.RegisterPatient != null ||
+                request.RegisterDoctor != null ||
+                request.RegisterLabAssistant != null )
+                return await CreateUserDetails(request, roleName);
+            else
+            {
+                await uow.SaveChangesAsync();
+                await uow.CommitAsync();
+                return Result<GeneralResponse>.Success(new GeneralResponse()
+                {
+                    Success = userManagerResponse.Succeeded,
+                    Message = "account created successfully, check confirmation email.",
+                });
+            }
+        }
+        catch (DbUpdateException dbEx)
+        {
+            await uow.RollbackAsync();
+            logger.LogInformation(dbEx.Message);
+            var sqlException =
+                dbEx.InnerException as SqlException ??
+                dbEx.InnerException?.InnerException as SqlException;
+
+            if (sqlException != null &&
+                (sqlException.Number == 2601 || sqlException.Number == 2627))
+            {
+                return Result<GeneralResponse>.Failure(new GeneralResponse
+                {
+                    Success = false,
+                    Message = "This Email/Username is already registered.",
+                });
+            }
+
             return Result<GeneralResponse>.Exception(dbEx);
         }
+    }
+
+    private async Task<Result<GeneralResponse>> CreateUserDetails(UserRegisteration_DTO request, string roleName)
+    {
+        logger.LogInformation("Executing: CreateUserDetails");
+        Result<GeneralResponse> detailsResult = new();
+        try
+        {
+            if (roleName.ToLower() == "patient")
+            {
+                var patientDto = mapper.Map<RegisterPatient_DTO>(request.RegisterPatient);
+                detailsResult = await patientService.AddPatientDetailsAsync(patientDto);
+            }
+            else if (roleName.ToLower() == "doctor")
+            {
+                var doctorDto = mapper.Map<RegisterDoctor_DTO>(request.RegisterDoctor);
+                //detailsResult = await doctorService.AddPatientAsync(doctorDto);
+            }
+            else if (roleName.ToLower() == "labassistant")
+            {
+                var labDto = mapper.Map<RegisterLabAssistant_DTO>(request.RegisterLabAssistant);
+                //detailsResult = await labService.AddPatientAsync(labDto);
+            }
+            await uow.SaveChangesAsync();
+            await uow.CommitAsync();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"Exception: {ex}");
+            Result<GeneralResponse>.Exception(ex);
+        }
+
+        return detailsResult;
     }
 }

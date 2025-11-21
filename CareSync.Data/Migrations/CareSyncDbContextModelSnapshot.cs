@@ -171,11 +171,18 @@ namespace CareSync.DataLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DoctorID"));
 
-                    b.Property<string>("AvailableDays")
+                    b.Property<string>("ArabicClinicAddress")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal?>("ConsultationFee")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<string>("ArabicSpecialization")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AvailableDays")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClinicAddress")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -184,8 +191,8 @@ namespace CareSync.DataLayer.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<TimeSpan?>("EndTime")
-                        .HasColumnType("time");
+                    b.Property<string>("EndTime")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ExperienceYears")
                         .HasColumnType("int");
@@ -205,8 +212,8 @@ namespace CareSync.DataLayer.Migrations
                     b.Property<string>("Specialization")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<TimeSpan?>("StartTime")
-                        .HasColumnType("time");
+                    b.Property<string>("StartTime")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -233,6 +240,12 @@ namespace CareSync.DataLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LabID"));
 
+                    b.Property<string>("ArabicLabAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ArabicLabName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<TimeSpan?>("ClosingTime")
                         .HasColumnType("time");
 
@@ -251,6 +264,9 @@ namespace CareSync.DataLayer.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<string>("LabAddress")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LabName")
                         .HasColumnType("nvarchar(max)");
@@ -1096,6 +1112,13 @@ namespace CareSync.DataLayer.Migrations
 
                     b.Property<int?>("Age")
                         .HasColumnType("int");
+
+                    b.Property<string>("ArabicFirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ArabicLastName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ArabicUserName")
                         .IsRequired()

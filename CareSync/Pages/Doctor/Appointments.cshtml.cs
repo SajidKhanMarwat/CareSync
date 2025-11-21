@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace CareSync.Pages.Doctor
+namespace CareSync.Pages.Doctor;
+
+public class AppointmentsModel : PageModel
 {
-    public class AppointmentsModel : PageModel
+    public void OnGet()
     {
-        public void OnGet()
-        {
-        }
     }
 }

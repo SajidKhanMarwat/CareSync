@@ -1,0 +1,472 @@
+@page "/Admin/Patients/Search"
+@model CareSync.Pages.Admin.Patients.SearchModel
+@{
+    ViewData["Title"] = "Search Patients";
+}
+
+@section Breadcrumb {
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="~/Admin/Dashboard">
+                <i class="ri-home-3-line"></i>
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="~/Admin/Patients">Patient Management</a>
+        </li>
+        <li class="breadcrumb-item text-primary" aria-current="page">
+            Search Patients
+        </li>
+    </ol>
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <a href="~/Admin/Patients" class="btn btn-outline-secondary">
+            <i class="ri-arrow-left-line me-2"></i>Back to All Patients
+        </a>
+        <a href="~/Patients/Create" class="btn btn-primary">
+            <i class="ri-user-add-line me-2"></i>Add New Patient
+        </a>
+    </div>
+}
+
+<!-- Advanced Search Form -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-search-2-line me-2"></i>Advanced Patient Search
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="searchForm">
+                    <div class="row g-3">
+                        <!-- Basic Information -->
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3">
+                                <i class="ri-user-line me-2"></i>Basic Information
+                            </h6>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Patient ID</label>
+                            <input type="text" class="form-control" name="patientId" placeholder="e.g., P001">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">First Name</label>
+                            <input type="text" class="form-control" name="firstName" placeholder="Enter first name">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" class="form-control" name="lastName" placeholder="Enter last name">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" placeholder="Enter email address">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" name="phone" placeholder="Enter phone number">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Gender</label>
+                            <select class="form-select" name="gender">
+                                <option value="">All Genders</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <!-- Medical Information -->
+                        <div class="col-12 mt-4">
+                            <h6 class="text-primary mb-3">
+                                <i class="ri-heart-pulse-line me-2"></i>Medical Information
+                            </h6>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Blood Group</label>
+                            <select class="form-select" name="bloodGroup">
+                                <option value="">All Blood Groups</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Age Range</label>
+                            <select class="form-select" name="ageRange">
+                                <option value="">All Ages</option>
+                                <option value="0-18">0-18 years</option>
+                                <option value="19-35">19-35 years</option>
+                                <option value="36-60">36-60 years</option>
+                                <option value="60+">60+ years</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Marital Status</label>
+                            <select class="form-select" name="maritalStatus">
+                                <option value="">All Status</option>
+                                <option value="Single">Single</option>
+                                <option value="Married">Married</option>
+                                <option value="Divorced">Divorced</option>
+                                <option value="Widowed">Widowed</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Patient Status</label>
+                            <select class="form-select" name="status">
+                                <option value="">All Status</option>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                                <option value="Critical">Critical</option>
+                            </select>
+                        </div>
+
+                        <!-- Date Filters -->
+                        <div class="col-12 mt-4">
+                            <h6 class="text-primary mb-3">
+                                <i class="ri-calendar-line me-2"></i>Date Filters
+                            </h6>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Registration From</label>
+                            <input type="date" class="form-control" name="registrationFrom">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Registration To</label>
+                            <input type="date" class="form-control" name="registrationTo">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Last Visit From</label>
+                            <input type="date" class="form-control" name="lastVisitFrom">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Last Visit To</label>
+                            <input type="date" class="form-control" name="lastVisitTo">
+                        </div>
+
+                        <!-- Search Actions -->
+                        <div class="col-12 mt-4">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="ri-search-line me-2"></i>Search Patients
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="clearSearchForm()">
+                                    <i class="ri-refresh-line me-2"></i>Clear All
+                                </button>
+                                <button type="button" class="btn btn-outline-info" onclick="saveSearch()">
+                                    <i class="ri-save-line me-2"></i>Save Search
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Search Options -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-flashlight-line me-2"></i>Quick Search Options
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-md-2">
+                        <button class="btn btn-outline-primary w-100" onclick="quickSearch('critical')">
+                            <i class="ri-alert-line me-2"></i>Critical Patients
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-outline-success w-100" onclick="quickSearch('new')">
+                            <i class="ri-user-add-line me-2"></i>New This Week
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-outline-info w-100" onclick="quickSearch('appointments')">
+                            <i class="ri-calendar-check-line me-2"></i>Has Appointments
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-outline-warning w-100" onclick="quickSearch('overdue')">
+                            <i class="ri-time-line me-2"></i>Overdue Visits
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-outline-secondary w-100" onclick="quickSearch('inactive')">
+                            <i class="ri-user-unfollow-line me-2"></i>Inactive
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-outline-dark w-100" onclick="quickSearch('all')">
+                            <i class="ri-group-line me-2"></i>All Patients
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search Results -->
+<div class="row" id="searchResults" style="display: none;">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ri-search-eye-line me-2"></i>Search Results
+                    <span class="badge bg-primary ms-2" id="resultCount">0</span>
+                </h5>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-success btn-sm" onclick="exportResults()">
+                        <i class="ri-download-line me-2"></i>Export Results
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th>Patient ID</th>
+                                <th>Name</th>
+                                <th>Age/Gender</th>
+                                <th>Contact</th>
+                                <th>Blood Group</th>
+                                <th>Last Visit</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsBody">
+                            <!-- Search results will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="text-center mt-3" id="noResults" style="display: none;">
+                    <i class="ri-search-line text-muted" style="font-size: 3rem;"></i>
+                    <h5 class="text-muted mt-2">No patients found</h5>
+                    <p class="text-muted">Try adjusting your search criteria</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Saved Searches -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-bookmark-line me-2"></i>Saved Searches
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-md-3">
+                        <div class="border rounded p-3 text-center">
+                            <i class="ri-heart-pulse-line text-danger mb-2" style="font-size: 1.5rem;"></i>
+                            <h6 class="mb-1">Critical Patients</h6>
+                            <small class="text-muted">Last used: 2 days ago</small>
+                            <div class="mt-2">
+                                <button class="btn btn-outline-primary btn-sm me-1" onclick="loadSavedSearch('critical')">
+                                    <i class="ri-play-line"></i>
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" onclick="deleteSavedSearch('critical')">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border rounded p-3 text-center">
+                            <i class="ri-user-add-line text-success mb-2" style="font-size: 1.5rem;"></i>
+                            <h6 class="mb-1">New Patients</h6>
+                            <small class="text-muted">Last used: 1 week ago</small>
+                            <div class="mt-2">
+                                <button class="btn btn-outline-primary btn-sm me-1" onclick="loadSavedSearch('new')">
+                                    <i class="ri-play-line"></i>
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" onclick="deleteSavedSearch('new')">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border rounded p-3 text-center">
+                            <i class="ri-calendar-check-line text-info mb-2" style="font-size: 1.5rem;"></i>
+                            <h6 class="mb-1">Upcoming Appointments</h6>
+                            <small class="text-muted">Last used: 3 days ago</small>
+                            <div class="mt-2">
+                                <button class="btn btn-outline-primary btn-sm me-1" onclick="loadSavedSearch('appointments')">
+                                    <i class="ri-play-line"></i>
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" onclick="deleteSavedSearch('appointments')">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border rounded p-3 text-center border-dashed">
+                            <i class="ri-add-line text-muted mb-2" style="font-size: 1.5rem;"></i>
+                            <h6 class="mb-1 text-muted">Save New Search</h6>
+                            <small class="text-muted">Create custom search</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Form submission
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            performSearch();
+        });
+
+        function performSearch() {
+            // Show loading state
+            document.getElementById('searchResults').style.display = 'block';
+            document.getElementById('resultCount').textContent = 'Searching...';
+            
+            // Simulate search delay
+            setTimeout(() => {
+                // Mock search results
+                const mockResults = [
+                    {
+                        id: 'P001',
+                        name: 'Sarah Johnson',
+                        age: '28',
+                        gender: 'Female',
+                        phone: '+1 234 567 8901',
+                        bloodGroup: 'O+',
+                        lastVisit: 'Nov 10, 2024',
+                        status: 'Active'
+                    },
+                    {
+                        id: 'P002',
+                        name: 'Michael Chen',
+                        age: '35',
+                        gender: 'Male',
+                        phone: '+1 234 567 8902',
+                        bloodGroup: 'A+',
+                        lastVisit: 'Nov 12, 2024',
+                        status: 'Critical'
+                    }
+                ];
+                
+                displayResults(mockResults);
+            }, 1000);
+        }
+
+        function displayResults(results) {
+            const tbody = document.getElementById('resultsBody');
+            const resultCount = document.getElementById('resultCount');
+            const noResults = document.getElementById('noResults');
+            
+            if (results.length === 0) {
+                tbody.innerHTML = '';
+                noResults.style.display = 'block';
+                resultCount.textContent = '0';
+                return;
+            }
+            
+            noResults.style.display = 'none';
+            resultCount.textContent = results.length;
+            
+            tbody.innerHTML = results.map(patient => `
+                <tr>
+                    <td><span class="fw-bold text-primary">#${patient.id}</span></td>
+                    <td>${patient.name}</td>
+                    <td>${patient.age} / ${patient.gender}</td>
+                    <td>${patient.phone}</td>
+                    <td><span class="badge bg-danger">${patient.bloodGroup}</span></td>
+                    <td>${patient.lastVisit}</td>
+                    <td><span class="badge bg-${patient.status === 'Active' ? 'success' : 'warning'}">${patient.status}</span></td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="ri-more-2-line"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#"><i class="ri-eye-line me-2"></i>View Profile</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="ri-edit-line me-2"></i>Edit Patient</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="ri-calendar-line me-2"></i>Book Appointment</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function clearSearchForm() {
+            document.getElementById('searchForm').reset();
+            document.getElementById('searchResults').style.display = 'none';
+        }
+
+        function quickSearch(type) {
+            clearSearchForm();
+            
+            // Set form values based on quick search type
+            const form = document.getElementById('searchForm');
+            switch(type) {
+                case 'critical':
+                    form.status.value = 'Critical';
+                    break;
+                case 'new':
+                    const weekAgo = new Date();
+                    weekAgo.setDate(weekAgo.getDate() - 7);
+                    form.registrationFrom.value = weekAgo.toISOString().split('T')[0];
+                    break;
+                case 'inactive':
+                    form.status.value = 'Inactive';
+                    break;
+            }
+            
+            performSearch();
+        }
+
+        function saveSearch() {
+            alert('Search saved successfully!');
+        }
+
+        function loadSavedSearch(searchType) {
+            quickSearch(searchType);
+        }
+
+        function deleteSavedSearch(searchType) {
+            if (confirm('Are you sure you want to delete this saved search?')) {
+                alert('Saved search deleted!');
+            }
+        }
+
+        function exportResults() {
+            alert('Exporting search results...');
+        }
+    </script>
+
+    <style>
+        .border-dashed {
+            border-style: dashed !important;
+        }
+    </style>
+}

@@ -21,16 +21,13 @@
     <!-- Page Specific CSS -->
     @await RenderSectionAsync("Styles", required: false)
 </head>
-<body class="login-bg">
-    <!-- Container starts -->
-    <div class="container">
-        <!-- Auth wrapper starts -->
-        <div class="auth-wrapper">
-            @RenderBody()
-        </div>
-        <!-- Auth wrapper ends -->
-    </div>
-    <!-- Container ends -->
+<body class="bg-light">
+    @RenderBody()
+    
+    <!-- Footer -->
+    <footer class="text-center py-3 mt-auto">
+        <small class="text-muted">&copy; @DateTime.Now.Year CareSync. All rights reserved.</small>
+    </footer>
     
     <!-- JavaScript Files -->
     <script src="~/theme/js/jquery.min.js"></script>

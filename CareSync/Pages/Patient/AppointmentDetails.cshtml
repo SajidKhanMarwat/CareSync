@@ -1,0 +1,582 @@
+@page "/Patient/AppointmentDetails"
+@model CareSync.Pages.Patient.AppointmentDetailsModel
+@{
+    ViewData["Title"] = "Appointment Details";
+}
+
+@section PageActions {
+    <div class="d-flex gap-2 flex-wrap">
+        <button type="button" class="btn btn-outline-secondary" onclick="window.history.back()">
+            <i class="ri-arrow-left-line me-1"></i>Back
+        </button>
+        <button type="button" class="btn btn-outline-primary" onclick="window.print()">
+            <i class="ri-printer-line me-1"></i>Print
+        </button>
+        <button type="button" class="btn btn-outline-success">
+            <i class="ri-download-line me-1"></i>Download PDF
+        </button>
+    </div>
+}
+
+<div class="row gx-3">
+    <div class="col-xl-8">
+        <!-- Appointment Information -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary-subtle">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-calendar-check-line me-2"></i>Appointment Information
+                    </h5>
+                    <span class="badge bg-success fs-6">Completed</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="info-item border-bottom pb-2">
+                            <small class="text-muted d-block">Appointment ID</small>
+                            <strong class="text-primary">#APT-2024-001</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-item border-bottom pb-2">
+                            <small class="text-muted d-block">Appointment Date & Time</small>
+                            <strong>November 10, 2024 - 10:00 AM</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-item border-bottom pb-2">
+                            <small class="text-muted d-block">Appointment Type</small>
+                            <strong>General Consultation</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-item border-bottom pb-2">
+                            <small class="text-muted d-block">Status</small>
+                            <span class="badge bg-success">Completed</span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="info-item">
+                            <small class="text-muted d-block mb-1">Reason for Visit</small>
+                            <p class="mb-0">Regular checkup and discussion about recent lab results. Patient experiencing mild headaches and fatigue.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doctor Information -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-stethoscope-line me-2"></i>Doctor Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex gap-3 align-items-start">
+                    <img src="~/theme/images/doctor1.png" class="img-5x rounded-circle" alt="Doctor">
+                    <div class="flex-grow-1">
+                        <h5 class="mb-1">Dr. Sarah Johnson</h5>
+                        <p class="text-muted mb-2">Cardiologist | 15 years experience</p>
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="rating me-2">
+                                <i class="ri-star-fill text-warning"></i>
+                                <i class="ri-star-fill text-warning"></i>
+                                <i class="ri-star-fill text-warning"></i>
+                                <i class="ri-star-fill text-warning"></i>
+                                <i class="ri-star-fill text-warning"></i>
+                            </div>
+                            <span class="text-muted">4.9 (127 reviews)</span>
+                        </div>
+                        <div class="doctor-contact">
+                            <small class="text-muted d-block">
+                                <i class="ri-map-pin-line me-1"></i>City Medical Center, Downtown
+                            </small>
+                            <small class="text-muted d-block">
+                                <i class="ri-phone-line me-1"></i>+1 (555) 123-4567
+                            </small>
+                            <small class="text-muted d-block">
+                                <i class="ri-mail-line me-1"></i>dr.sarah.johnson@caresync.com
+                            </small>
+                        </div>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary">
+                            <i class="ri-message-line me-1"></i>Message
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medical Notes & Diagnosis -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-file-text-line me-2"></i>Medical Notes & Diagnosis
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="text-primary mb-2">Chief Complaint</h6>
+                    <p class="text-muted">Patient reports mild persistent headaches over the past 2 weeks, accompanied by occasional fatigue. No fever or other symptoms.</p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="text-primary mb-2">Diagnosis</h6>
+                    <ul class="mb-0">
+                        <li>Tension-type headache (Primary)</li>
+                        <li>Mild stress-related symptoms</li>
+                        <li>Slightly elevated blood pressure (140/90 mmHg)</li>
+                    </ul>
+                </div>
+                <div class="mb-3">
+                    <h6 class="text-primary mb-2">Treatment Plan</h6>
+                    <p class="text-muted mb-0">Prescribed pain relief medication, stress management techniques, and follow-up blood pressure monitoring. Recommended lifestyle modifications including regular exercise and adequate sleep.</p>
+                </div>
+                <div>
+                    <h6 class="text-primary mb-2">Doctor's Notes</h6>
+                    <p class="text-muted mb-0">Patient appears generally healthy. Blood pressure slightly elevated but not concerning at this stage. Advised to monitor BP at home and return if symptoms persist or worsen. Scheduled follow-up in 2 weeks.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vitals Recorded -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-heart-pulse-line me-2"></i>Vitals Recorded
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="vital-card border rounded-3 p-3 text-center">
+                            <div class="icon-box md bg-danger-subtle mx-auto mb-2">
+                                <i class="ri-heart-pulse-line fs-4 text-danger"></i>
+                            </div>
+                            <h6 class="mb-1">Blood Pressure</h6>
+                            <h4 class="text-danger mb-0">140/90</h4>
+                            <small class="text-muted">mmHg</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="vital-card border rounded-3 p-3 text-center">
+                            <div class="icon-box md bg-success-subtle mx-auto mb-2">
+                                <i class="ri-heart-line fs-4 text-success"></i>
+                            </div>
+                            <h6 class="mb-1">Heart Rate</h6>
+                            <h4 class="text-success mb-0">72</h4>
+                            <small class="text-muted">bpm</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="vital-card border rounded-3 p-3 text-center">
+                            <div class="icon-box md bg-warning-subtle mx-auto mb-2">
+                                <i class="ri-temp-hot-line fs-4 text-warning"></i>
+                            </div>
+                            <h6 class="mb-1">Temperature</h6>
+                            <h4 class="text-warning mb-0">98.6</h4>
+                            <small class="text-muted">°F</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="vital-card border rounded-3 p-3 text-center">
+                            <div class="icon-box md bg-info-subtle mx-auto mb-2">
+                                <i class="ri-lungs-line fs-4 text-info"></i>
+                            </div>
+                            <h6 class="mb-1">Oxygen Level</h6>
+                            <h4 class="text-info mb-0">98</h4>
+                            <small class="text-muted">%</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prescriptions -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-medicine-bottle-line me-2"></i>Prescriptions
+                    </h5>
+                    <button class="btn btn-sm btn-outline-primary">
+                        <i class="ri-download-line me-1"></i>Download Prescription
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Prescription 1 -->
+                <div class="prescription-item border rounded-4 p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <h6 class="mb-1">Ibuprofen 400mg</h6>
+                            <p class="text-muted mb-0 small">Pain relief medication</p>
+                        </div>
+                        <span class="badge bg-success">Active</span>
+                    </div>
+                    <div class="row g-2 mt-2">
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Dosage</small>
+                            <strong>1 tablet</strong>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Frequency</small>
+                            <strong>3 times daily</strong>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Duration</small>
+                            <strong>7 days</strong>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Timing</small>
+                            <strong>After meals</strong>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-muted"><strong>Instructions:</strong> Take with food. Avoid alcohol while taking this medication.</small>
+                    </div>
+                </div>
+
+                <!-- Prescription 2 -->
+                <div class="prescription-item border rounded-4 p-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <h6 class="mb-1">Lisinopril 10mg</h6>
+                            <p class="text-muted mb-0 small">Blood pressure medication</p>
+                        </div>
+                        <span class="badge bg-success">Active</span>
+                    </div>
+                    <div class="row g-2 mt-2">
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Dosage</small>
+                            <strong>1 tablet</strong>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Frequency</small>
+                            <strong>Once daily</strong>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Duration</small>
+                            <strong>30 days</strong>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Timing</small>
+                            <strong>Morning</strong>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-muted"><strong>Instructions:</strong> Take at the same time each morning. Monitor blood pressure regularly.</small>
+                    </div>
+                </div>
+
+                <div class="alert alert-info mt-3 mb-0">
+                    <i class="ri-information-line me-1"></i>
+                    <strong>Prescription Issued:</strong> Nov 10, 2024 by Dr. Sarah Johnson
+                </div>
+            </div>
+        </div>
+
+        <!-- Lab Tests & Reports -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-test-tube-line me-2"></i>Lab Tests & Reports
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Lab Test 1 -->
+                <div class="lab-test-item border rounded-4 p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <h6 class="mb-1">Complete Blood Count (CBC)</h6>
+                            <small class="text-muted">Requested: Nov 10, 2024 | Completed: Nov 11, 2024</small>
+                        </div>
+                        <span class="badge bg-success">Results Available</span>
+                    </div>
+                    <div class="row g-2 mt-2">
+                        <div class="col-md-4">
+                            <small class="text-muted d-block">Lab Center</small>
+                            <strong>City Lab Center</strong>
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted d-block">Test ID</small>
+                            <strong>#LAB-2024-456</strong>
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted d-block">Status</small>
+                            <span class="badge bg-success-subtle text-success">Normal</span>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <h6 class="mb-2">Key Results:</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Value</th>
+                                        <th>Normal Range</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Hemoglobin</td>
+                                        <td>14.5 g/dL</td>
+                                        <td>13.5-17.5 g/dL</td>
+                                        <td><span class="badge bg-success-subtle text-success">Normal</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>WBC Count</td>
+                                        <td>7.2 K/uL</td>
+                                        <td>4.5-11.0 K/uL</td>
+                                        <td><span class="badge bg-success-subtle text-success">Normal</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Platelet Count</td>
+                                        <td>250 K/uL</td>
+                                        <td>150-400 K/uL</td>
+                                        <td><span class="badge bg-success-subtle text-success">Normal</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <button class="btn btn-sm btn-outline-primary me-2">
+                            <i class="ri-download-line me-1"></i>Download Report
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary">
+                            <i class="ri-share-line me-1"></i>Share
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lab Test 2 -->
+                <div class="lab-test-item border rounded-4 p-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <h6 class="mb-1">Lipid Profile</h6>
+                            <small class="text-muted">Requested: Nov 10, 2024</small>
+                        </div>
+                        <span class="badge bg-warning">Pending</span>
+                    </div>
+                    <div class="row g-2 mt-2">
+                        <div class="col-md-6">
+                            <small class="text-muted d-block">Lab Center</small>
+                            <strong>City Lab Center</strong>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block">Expected Date</small>
+                            <strong>Nov 15, 2024</strong>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <div class="progress" style="height: 4px;">
+                            <div class="progress-bar bg-warning" style="width: 60%"></div>
+                        </div>
+                        <small class="text-muted">Sample collected. Processing in progress...</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Follow-up & Next Steps -->
+        <div class="card mb-3">
+            <div class="card-header bg-info-subtle">
+                <h5 class="card-title mb-0">
+                    <i class="ri-calendar-todo-line me-2"></i>Follow-up & Next Steps
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="text-primary mb-2">Next Appointment</h6>
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box sm bg-primary-subtle me-2">
+                            <i class="ri-calendar-line text-primary"></i>
+                        </div>
+                        <div>
+                            <strong>November 24, 2024 at 10:30 AM</strong>
+                            <p class="text-muted mb-0 small">Follow-up consultation with Dr. Sarah Johnson</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h6 class="text-primary mb-2">Recommended Actions</h6>
+                    <ul class="mb-0">
+                        <li>Monitor blood pressure daily and maintain a log</li>
+                        <li>Continue prescribed medications as instructed</li>
+                        <li>Complete pending Lipid Profile test before next appointment</li>
+                        <li>Implement stress reduction techniques (meditation, exercise)</li>
+                        <li>Maintain adequate hydration and sleep schedule</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-xl-4">
+        <!-- Quick Actions -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="ri-dashboard-line me-2"></i>Quick Actions
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-success" onclick="location.href='/Patient/BookAppointment?doctorId=1'">
+                        <i class="ri-calendar-event-line me-2"></i>Book Follow-up
+                    </button>
+                    <button class="btn btn-outline-primary">
+                        <i class="ri-message-line me-2"></i>Message Doctor
+                    </button>
+                    <button class="btn btn-outline-info" onclick="location.href='/Patient/RequestLabTest'">
+                        <i class="ri-test-tube-line me-2"></i>Request Lab Test
+                    </button>
+                    <button class="btn btn-outline-warning">
+                        <i class="ri-file-text-line me-2"></i>View Medical Records
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="window.print()">
+                        <i class="ri-printer-line me-2"></i>Print Details
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointment Timeline -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="ri-time-line me-2"></i>Appointment Timeline
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-success"></div>
+                        <div class="timeline-content">
+                            <small class="text-muted">Nov 10, 2024 - 10:00 AM</small>
+                            <p class="mb-0 small"><strong>Appointment Started</strong></p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-info"></div>
+                        <div class="timeline-content">
+                            <small class="text-muted">Nov 10, 2024 - 10:15 AM</small>
+                            <p class="mb-0 small"><strong>Vitals Recorded</strong></p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-primary"></div>
+                        <div class="timeline-content">
+                            <small class="text-muted">Nov 10, 2024 - 10:30 AM</small>
+                            <p class="mb-0 small"><strong>Consultation Completed</strong></p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-warning"></div>
+                        <div class="timeline-content">
+                            <small class="text-muted">Nov 10, 2024 - 10:45 AM</small>
+                            <p class="mb-0 small"><strong>Prescription Issued</strong></p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-success"></div>
+                        <div class="timeline-content">
+                            <small class="text-muted">Nov 10, 2024 - 11:00 AM</small>
+                            <p class="mb-0 small"><strong>Appointment Completed</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+         
+
+        <!-- Need Help -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="ri-question-line me-2"></i>Need Help?
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-3">Have questions about this appointment or need assistance?</p>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-sm btn-outline-primary">
+                        <i class="ri-customer-service-line me-1"></i>Contact Support
+                    </button>
+                    <button class="btn btn-sm btn-outline-info">
+                        <i class="ri-feedback-line me-1"></i>Provide Feedback
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e9ecef;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .timeline-marker {
+            position: absolute;
+            left: -26px;
+            top: 2px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 0 0 2px #e9ecef;
+        }
+        
+        .timeline-content {
+            padding-left: 10px;
+        }
+        
+        .vital-card {
+            transition: all 0.3s;
+        }
+        
+        .vital-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        @@media print {
+            .card {
+                break-inside: avoid;
+            }
+            
+            button, .btn {
+                display: none !important;
+            }
+        }
+    </style>
+}

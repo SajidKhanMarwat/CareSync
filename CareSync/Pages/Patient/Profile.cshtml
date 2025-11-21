@@ -4,66 +4,101 @@
     ViewData["Title"] = "My Profile";
 }
 
-@section PageActions {
-    <div class="d-flex gap-2">
-        <button type="button" class="btn btn-primary">
-            <i class="ri-edit-line me-1"></i>Edit Profile
-        </button>
-        <button type="button" class="btn btn-success">
-            <i class="ri-save-line me-1"></i>Save Changes
-        </button>
-        <button type="button" class="btn btn-outline-info">
-            <i class="ri-download-line me-1"></i>Download Profile
-        </button>
+<!-- Success/Error Messages -->
+@if (!string.IsNullOrEmpty(Model.SuccessMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="ri-check-line me-2"></i>
+        <strong>Success!</strong> @Model.SuccessMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
 
-<!-- Patient Profile Header -->
-<div class="row gx-3 mb-3">
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="ri-error-warning-line me-2"></i>
+        <strong>Error!</strong> @Model.ErrorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Profile Header Card -->
+<div class="row gx-3 mb-4">
     <div class="col-12">
-        <div class="card border rounded-5">
+        <div class="card border-start border-primary border-4">
             <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-auto">
-                        <div class="position-relative">
-                            <img src="~/theme/images/patient-avatar.png" class="img-5x rounded-circle" alt="Patient Photo">
-                            <span class="position-absolute bottom-0 end-0 p-1 bg-success border border-light rounded-circle">
-                                <span class="visually-hidden">Online</span>
-                            </span>
-                        </div>
+                <div class="d-flex align-items-center flex-wrap gap-4">
+                    <!-- Profile Photo -->
+                    <div class="position-relative">
+                        <img src="@Model.ProfileImageUrl" class="img-7x rounded-circle border border-3 border-white shadow" alt="@Model.FullName">
+                        <span class="position-absolute bottom-0 end-0 p-2 bg-success border border-3 border-white rounded-circle">
+                            <span class="visually-hidden">Online</span>
+                        </span>
                     </div>
-                    <div class="col">
-                        <h4 class="mb-1">Emily Johnson</h4>
-                        <p class="text-muted mb-2">Patient ID: P12345 • Age: 32 • Female</p>
-                        <div class="d-flex gap-2 mb-2">
+                    
+                    <!-- Patient Info -->
+                    <div class="flex-grow-1">
+                        <h3 class="mb-2">@Model.FullName</h3>
+                        <div class="d-flex flex-wrap gap-3 mb-2">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box sm bg-primary-subtle rounded-circle me-2">
+                                    <i class="ri-user-line text-primary"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Patient ID</small>
+                                    <strong>@Model.PatientID</strong>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box sm bg-info-subtle rounded-circle me-2">
+                                    <i class="ri-user-heart-line text-info"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Gender</small>
+                                    <strong>@Model.Gender</strong>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box sm bg-warning-subtle rounded-circle me-2">
+                                    <i class="ri-calendar-line text-warning"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Age</small>
+                                    <strong>@Model.Age years</strong>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box sm bg-danger-subtle rounded-circle me-2">
+                                    <i class="ri-contrast-drop-2-line text-danger"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Blood Type</small>
+                                    <strong class="text-danger">@Model.BloodGroup</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
                             <span class="badge bg-success-subtle text-success">
-                                <i class="ri-shield-check-line me-1"></i>Active Patient
+                                <i class="ri-shield-check-line me-1"></i>@Model.AccountStatus
                             </span>
                             <span class="badge bg-info-subtle text-info">
-                                <i class="ri-calendar-check-line me-1"></i>Last Visit: Nov 10, 2024
+                                <i class="ri-calendar-check-line me-1"></i>Last Visit: @Model.LastVisitDate
+                            </span>
+                            <span class="badge bg-primary-subtle text-primary">
+                                <i class="ri-time-line me-1"></i>Member Since: @Model.MemberSince
                             </span>
                         </div>
-                        <div class="d-flex gap-3">
-                            <small class="text-muted">
-                                <i class="ri-phone-line me-1"></i>+1 (555) 123-4567
-                            </small>
-                            <small class="text-muted">
-                                <i class="ri-mail-line me-1"></i>emily.johnson@email.com
-                            </small>
-                            <small class="text-muted">
-                                <i class="ri-map-pin-line me-1"></i>New York, NY
-                            </small>
-                        </div>
                     </div>
-                    <div class="col-auto">
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-outline-primary btn-sm">
-                                <i class="ri-edit-line"></i>
-                            </button>
-                            <button class="btn btn-outline-success btn-sm">
-                                <i class="ri-camera-line"></i>
-                            </button>
-                        </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                            <i class="ri-edit-line me-1"></i>Edit Profile
+                        </button>
+                        <button class="btn btn-outline-info" onclick="window.print()">
+                            <i class="ri-printer-line me-1"></i>Print
+                        </button>
                     </div>
                 </div>
             </div>
@@ -71,71 +106,440 @@
     </div>
 </div>
 
-<!-- Main Profile Content -->
+<!-- Medical Records Statistics -->
+<div class="row gx-3 mb-4">
+    <div class="col-xxl-3 col-sm-6">
+        <a href="/Patient/Appointments" class="text-decoration-none">
+            <div class="card border rounded-5 hover-lift" style="transition: all 0.3s;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box lg bg-primary-subtle rounded-5 me-3">
+                            <i class="ri-calendar-check-line fs-3 text-primary"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h2 class="text-primary mb-0">@Model.TotalAppointments</h2>
+                            <small class="text-muted">Total Visits</small>
+                            @if (Model.UpcomingAppointments > 0)
+                            {
+                                <div class="mt-1">
+                                    <span class="badge bg-warning-subtle text-warning">@Model.UpcomingAppointments Upcoming</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-xxl-3 col-sm-6">
+        <a href="/Patient/Prescriptions" class="text-decoration-none">
+            <div class="card border rounded-5 hover-lift" style="transition: all 0.3s;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box lg bg-success-subtle rounded-5 me-3">
+                            <i class="ri-medicine-bottle-line fs-3 text-success"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h2 class="text-success mb-0">@Model.TotalPrescriptions</h2>
+                            <small class="text-muted">Prescriptions</small>
+                            @if (Model.ActivePrescriptions > 0)
+                            {
+                                <div class="mt-1">
+                                    <span class="badge bg-success-subtle text-success">@Model.ActivePrescriptions Active</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-xxl-3 col-sm-6">
+        <a href="/Patient/LabResults" class="text-decoration-none">
+            <div class="card border rounded-5 hover-lift" style="transition: all 0.3s;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box lg bg-info-subtle rounded-5 me-3">
+                            <i class="ri-test-tube-line fs-3 text-info"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h2 class="text-info mb-0">@Model.TotalLabReports</h2>
+                            <small class="text-muted">Lab Reports</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-xxl-3 col-sm-6">
+        <a href="/Patient/Documents" class="text-decoration-none">
+            <div class="card border rounded-5 hover-lift" style="transition: all 0.3s;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box lg bg-warning-subtle rounded-5 me-3">
+                            <i class="ri-folder-line fs-3 text-warning"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h2 class="text-warning mb-0">@Model.TotalDocuments</h2>
+                            <small class="text-muted">Documents</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- Main Content -->
 <div class="row gx-3">
+    <!-- Left Column -->
     <div class="col-xl-8">
         <!-- Personal Information -->
         <div class="card mb-3">
-            <div class="card-header">
-                <h5 class="card-title">
-                    <i class="ri-user-line me-2"></i>Personal Information
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ri-user-line me-2 text-primary"></i>Personal Information
                 </h5>
+                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editPersonalInfoModal">
+                    <i class="ri-edit-line me-1"></i>Edit
+                </button>
             </div>
             <div class="card-body">
-                <form>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">
-                                <i class="ri-user-line me-1"></i>First Name
-                            </label>
-                            <input type="text" class="form-control" name="FirstName" value="Emily" />
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">
-                                <i class="ri-user-line me-1"></i>Last Name
-                            </label>
-                            <input type="text" class="form-control" name="LastName" value="Johnson" />
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="info-item">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="ri-user-line me-2 text-muted"></i>
+                                <small class="text-muted text-uppercase">Full Name</small>
+                            </div>
+                            <h6 class="mb-0">@Model.FullName</h6>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">
-                                <i class="ri-mail-line me-1"></i>Email Address
-                            </label>
-                            <input type="email" class="form-control" name="Email" value="emily.johnson@email.com" />
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">
-                                <i class="ri-phone-line me-1"></i>Phone Number
-                            </label>
-                            <input type="tel" class="form-control" name="PhoneNumber" value="+1 (555) 123-4567" />
+                    <div class="col-md-6 mb-3">
+                        <div class="info-item">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="ri-mail-line me-2 text-muted"></i>
+                                <small class="text-muted text-uppercase">Email Address</small>
+                            </div>
+                            <h6 class="mb-0">@Model.Email</h6>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="info-item">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="ri-phone-line me-2 text-muted"></i>
+                                <small class="text-muted text-uppercase">Phone Number</small>
+                            </div>
+                            <h6 class="mb-0">@Model.PhoneNumber</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="info-item">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="ri-calendar-line me-2 text-muted"></i>
+                                <small class="text-muted text-uppercase">Date of Birth</small>
+                            </div>
+                            <h6 class="mb-0">@DateTime.Parse(Model.DateOfBirth).ToString("MMMM dd, yyyy") (@Model.Age years)</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="info-item">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="ri-briefcase-line me-2 text-muted"></i>
+                                <small class="text-muted text-uppercase">Occupation</small>
+                            </div>
+                            <h6 class="mb-0">@Model.Occupation</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="info-item">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="ri-heart-line me-2 text-muted"></i>
+                                <small class="text-muted text-uppercase">Marital Status</small>
+                            </div>
+                            <h6 class="mb-0">@Model.MaritalStatus</h6>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="info-item">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="ri-map-pin-line me-2 text-muted"></i>
+                                <small class="text-muted text-uppercase">Address</small>
+                            </div>
+                            <h6 class="mb-0">@Model.Address</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medical Information -->
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ri-heart-pulse-line me-2 text-danger"></i>Medical Information
+                </h5>
+                <a href="/Patient/MedicalHistory" class="btn btn-sm btn-outline-primary">
+                    <i class="ri-eye-line me-1"></i>View Full History
+                </a>
+            </div>
+            <div class="card-body">
+                <!-- Vitals & Stats -->
+                <div class="row mb-4">
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="text-center p-3 border rounded-4">
+                            <div class="icon-box md bg-danger-subtle rounded-circle mx-auto mb-2">
+                                <i class="ri-contrast-drop-2-line text-danger"></i>
+                            </div>
+                            <h4 class="text-danger mb-1">@Model.BloodGroup</h4>
+                            <small class="text-muted">Blood Type</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="text-center p-3 border rounded-4">
+                            <div class="icon-box md bg-info-subtle rounded-circle mx-auto mb-2">
+                                <i class="ri-ruler-line text-info"></i>
+                            </div>
+                            <h4 class="text-info mb-1">@Model.Height</h4>
+                            <small class="text-muted">Height (cm)</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="text-center p-3 border rounded-4">
+                            <div class="icon-box md bg-warning-subtle rounded-circle mx-auto mb-2">
+                                <i class="ri-scales-line text-warning"></i>
+                            </div>
+                            <h4 class="text-warning mb-1">@Model.Weight</h4>
+                            <small class="text-muted">Weight (kg)</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="text-center p-3 border rounded-4 @(Model.BMIStatus == "Normal" ? "border-success" : "border-warning")">
+                            <div class="icon-box md bg-@(Model.BMIStatus == "Normal" ? "success" : "warning")-subtle rounded-circle mx-auto mb-2">
+                                <i class="ri-heart-pulse-line text-@(Model.BMIStatus == "Normal" ? "success" : "warning")"></i>
+                            </div>
+                            <h4 class="text-@(Model.BMIStatus == "Normal" ? "success" : "warning") mb-1">@Model.BMI.ToString("F1")</h4>
+                            <small class="text-muted">BMI - @Model.BMIStatus</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Allergies -->
+                <div class="mb-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="ri-alert-line me-2 text-danger fs-5"></i>
+                        <h6 class="mb-0">Known Allergies</h6>
+                    </div>
+                    @if (Model.Allergies.Any())
+                    {
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var allergy in Model.Allergies)
+                            {
+                                <span class="badge bg-danger-subtle text-danger px-3 py-2">
+                                    <i class="ri-alert-line me-1"></i>@allergy
+                                </span>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">No known allergies</p>
+                    }
+                </div>
+
+                <!-- Chronic Diseases -->
+                <div>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="ri-heart-pulse-line me-2 text-warning fs-5"></i>
+                        <h6 class="mb-0">Chronic Conditions</h6>
+                    </div>
+                    @if (Model.ChronicDiseases.Any())
+                    {
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var disease in Model.ChronicDiseases)
+                            {
+                                <span class="badge bg-warning-subtle text-warning px-3 py-2">
+                                    <i class="ri-heart-pulse-line me-1"></i>@disease
+                                </span>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">No chronic conditions</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-xl-4">
+        <!-- Emergency Contact -->
+        <div class="card mb-3">
+            <div class="card-header bg-danger-subtle">
+                <h6 class="card-title text-danger mb-0">
+                    <i class="ri-phone-line me-2"></i>Emergency Contact
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="icon-box md bg-danger-subtle rounded-circle me-3">
+                        <i class="ri-user-line text-danger"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <small class="text-muted d-block">Name</small>
+                        <h6 class="mb-0">@Model.EmergencyContactName</h6>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center mb-3">
+                    <div class="icon-box md bg-danger-subtle rounded-circle me-3">
+                        <i class="ri-phone-line text-danger"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <small class="text-muted d-block">Phone</small>
+                        <h6 class="mb-0">@Model.EmergencyContactNumber</h6>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="icon-box md bg-danger-subtle rounded-circle me-3">
+                        <i class="ri-heart-line text-danger"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <small class="text-muted d-block">Relationship</small>
+                        <h6 class="mb-0">@Model.RelationshipToEmergency</h6>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-sm btn-outline-danger w-100" data-bs-toggle="modal" data-bs-target="#editEmergencyContactModal">
+                        <i class="ri-edit-line me-1"></i>Update Contact
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="ri-time-line me-2"></i>Recent Activity
+                </h6>
+            </div>
+            <div class="card-body">
+                @foreach (var activity in Model.RecentActivity)
+                {
+                    <div class="activity-item d-flex align-items-start mb-3 pb-3 @(activity != Model.RecentActivity.Last() ? "border-bottom" : "")">
+                        <div class="icon-box sm bg-@(activity.IconColor)-subtle rounded-circle me-3 mt-1">
+                            <i class="@activity.Icon text-@activity.IconColor"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">@activity.Title</h6>
+                            <p class="text-muted mb-1 small">@activity.Description</p>
+                            <small class="text-muted">@activity.Date</small>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="ri-dashboard-line me-2"></i>Quick Actions
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="/Patient/BookAppointment" class="btn btn-outline-primary">
+                        <i class="ri-calendar-event-line me-2"></i>Book Appointment
+                    </a>
+                    <a href="/Patient/MedicalHistory" class="btn btn-outline-success">
+                        <i class="ri-file-text-line me-2"></i>Medical History
+                    </a>
+                    <a href="/Patient/Prescriptions" class="btn btn-outline-info">
+                        <i class="ri-medicine-bottle-line me-2"></i>My Prescriptions
+                    </a>
+                    <a href="/Patient/LabResults" class="btn btn-outline-warning">
+                        <i class="ri-test-tube-line me-2"></i>Lab Results
+                    </a>
+                    <a href="/Patient/Documents" class="btn btn-outline-secondary">
+                        <i class="ri-folder-line me-2"></i>My Documents
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post">
+                <div class="modal-header bg-primary-subtle">
+                    <h5 class="modal-title text-primary">
+                        <i class="ri-edit-line me-2"></i>Edit Profile Information
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="ri-information-line me-2"></i>
+                        Update your personal and medical information. Fields marked with * are required.
+                    </div>
+
+                    <!-- Personal Information Tab -->
+                    <h6 class="text-primary mb-3">
+                        <i class="ri-user-line me-2"></i>Personal Information
+                    </h6>
+                    <div class="row mb-4">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">
-                                <i class="ri-calendar-line me-1"></i>Date of Birth
+                                <i class="ri-user-line me-1"></i>First Name *
                             </label>
-                            <input type="date" class="form-control" name="DateOfBirth" value="1992-03-15" />
+                            <input type="text" class="form-control" name="FirstName" value="@Model.FirstName" required />
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">
-                                <i class="ri-user-heart-line me-1"></i>Gender
+                                <i class="ri-user-line me-1"></i>Last Name *
                             </label>
-                            <select class="form-select" name="Gender">
+                            <input type="text" class="form-control" name="LastName" value="@Model.LastName" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="ri-mail-line me-1"></i>Email Address *
+                            </label>
+                            <input type="email" class="form-control" name="Email" value="@Model.Email" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="ri-phone-line me-1"></i>Phone Number *
+                            </label>
+                            <input type="tel" class="form-control" name="PhoneNumber" value="@Model.PhoneNumber" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="ri-calendar-line me-1"></i>Date of Birth *
+                            </label>
+                            <input type="date" class="form-control" name="DateOfBirth" value="@Model.DateOfBirth" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="ri-user-heart-line me-1"></i>Gender *
+                            </label>
+                            <select class="form-select" name="Gender" required>
                                 <option value="">Select Gender</option>
-                                <option value="0">Male</option>
-                                <option value="1" selected>Female</option>
-                                <option value="2">Other</option>
+                                <option value="Male" selected="@(Model.Gender == "Male")">Male</option>
+                                <option value="Female" selected="@(Model.Gender == "Female")">Female</option>
+                                <option value="Other" selected="@(Model.Gender == "Other")">Other</option>
                             </select>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">
                                 <i class="ri-briefcase-line me-1"></i>Occupation
                             </label>
-                            <input type="text" class="form-control" name="Occupation" value="Software Engineer" />
+                            <input type="text" class="form-control" name="Occupation" value="@Model.Occupation" />
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">
@@ -143,171 +547,97 @@
                             </label>
                             <select class="form-select" name="MaritalStatus">
                                 <option value="">Select Status</option>
-                                <option value="Single">Single</option>
-                                <option value="Married" selected>Married</option>
-                                <option value="Divorced">Divorced</option>
-                                <option value="Widowed">Widowed</option>
+                                <option value="Single" selected="@(Model.MaritalStatus == "Single")">Single</option>
+                                <option value="Married" selected="@(Model.MaritalStatus == "Married")">Married</option>
+                                <option value="Divorced" selected="@(Model.MaritalStatus == "Divorced")">Divorced</option>
+                                <option value="Widowed" selected="@(Model.MaritalStatus == "Widowed")">Widowed</option>
+                            </select>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label">
+                                <i class="ri-map-pin-line me-1"></i>Address *
+                            </label>
+                            <textarea class="form-control" name="Address" rows="2" required>@Model.Address</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Medical Information -->
+                    <h6 class="text-danger mb-3">
+                        <i class="ri-heart-pulse-line me-2"></i>Medical Information
+                    </h6>
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="ri-contrast-drop-2-line me-1 text-danger"></i>Blood Group *
+                            </label>
+                            <select class="form-select" name="BloodGroup" required>
+                                <option value="">Select Blood Group</option>
+                                <option value="A+" selected="@(Model.BloodGroup == "A+")">A+</option>
+                                <option value="A-" selected="@(Model.BloodGroup == "A-")">A-</option>
+                                <option value="B+" selected="@(Model.BloodGroup == "B+")">B+</option>
+                                <option value="B-" selected="@(Model.BloodGroup == "B-")">B-</option>
+                                <option value="O+" selected="@(Model.BloodGroup == "O+")">O+</option>
+                                <option value="O-" selected="@(Model.BloodGroup == "O-")">O-</option>
+                                <option value="AB+" selected="@(Model.BloodGroup == "AB+")">AB+</option>
+                                <option value="AB-" selected="@(Model.BloodGroup == "AB-")">AB-</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="ri-ruler-line me-1"></i>Height (cm)
+                            </label>
+                            <input type="number" class="form-control" name="Height" value="@Model.Height" min="50" max="250" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="ri-scales-line me-1"></i>Weight (kg)
+                            </label>
+                            <input type="number" class="form-control" name="Weight" value="@Model.Weight" min="20" max="300" step="0.1" />
+                        </div>
+                    </div>
+
+                    <!-- Emergency Contact -->
+                    <h6 class="text-danger mb-3">
+                        <i class="ri-phone-line me-2"></i>Emergency Contact Information
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="ri-user-line me-1"></i>Emergency Contact Name *
+                            </label>
+                            <input type="text" class="form-control" name="EmergencyContactName" value="@Model.EmergencyContactName" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="ri-phone-line me-1"></i>Emergency Contact Number *
+                            </label>
+                            <input type="tel" class="form-control" name="EmergencyContactNumber" value="@Model.EmergencyContactNumber" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="ri-heart-line me-1"></i>Relationship to Patient *
+                            </label>
+                            <select class="form-select" name="RelationshipToEmergency" required>
+                                <option value="">Select Relationship</option>
+                                <option value="Spouse" selected="@(Model.RelationshipToEmergency == "Spouse")">Spouse</option>
+                                <option value="Parent" selected="@(Model.RelationshipToEmergency == "Parent")">Parent</option>
+                                <option value="Child" selected="@(Model.RelationshipToEmergency == "Child")">Child</option>
+                                <option value="Sibling" selected="@(Model.RelationshipToEmergency == "Sibling")">Sibling</option>
+                                <option value="Friend" selected="@(Model.RelationshipToEmergency == "Friend")">Friend</option>
+                                <option value="Other" selected="@(Model.RelationshipToEmergency == "Other")">Other</option>
                             </select>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">
-                            <i class="ri-map-pin-line me-1"></i>Address
-                        </label>
-                        <textarea class="form-control" name="Address" rows="3">123 Main Street, Apartment 4B, New York, NY 10001</textarea>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
-        <!-- Medical Information -->
-        <div class="card mb-3">
-            <div class="card-header">
-                <h5 class="card-title">
-                    <i class="ri-heart-pulse-line me-2"></i>Medical Information
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">
-                            <i class="ri-drop-line me-1"></i>Blood Group
-                        </label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" name="BloodGroup" value="A+" readonly />
-                            <span class="input-group-text bg-danger text-white">
-                                <i class="ri-drop-fill"></i>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">
-                            <i class="ri-ruler-line me-1"></i>Height (cm)
-                        </label>
-                        <input type="number" class="form-control" name="Height" value="165" />
-                    </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">
-                            <i class="ri-scales-line me-1"></i>Weight (kg)
-                        </label>
-                        <input type="number" class="form-control" name="Weight" value="58" />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">
-                            <i class="ri-heart-pulse-line me-1"></i>BMI
-                        </label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" value="21.3" readonly />
-                            <span class="input-group-text bg-success text-white">Normal</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">
-                        <i class="ri-alert-line me-1"></i>Known Allergies
-                    </label>
-                    <textarea class="form-control" name="Allergies" rows="2" placeholder="List any known allergies...">Penicillin, Shellfish</textarea>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">
-                        <i class="ri-file-text-line me-1"></i>Chronic Diseases
-                    </label>
-                    <textarea class="form-control" name="ChronicDiseases" rows="2" placeholder="List any chronic conditions...">None</textarea>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-xl-4">
-        <!-- Emergency Contact -->
-        <div class="card mb-3">
-            <div class="card-header">
-                <h5 class="card-title">
-                    <i class="ri-phone-line me-2"></i>Emergency Contact
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <label class="form-label">
-                        <i class="ri-user-line me-1"></i>Contact Name
-                    </label>
-                    <input type="text" class="form-control" name="EmergencyContactName" value="Michael Johnson" />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">
-                        <i class="ri-phone-line me-1"></i>Contact Number
-                    </label>
-                    <input type="tel" class="form-control" name="EmergencyContactNumber" value="+1 (555) 987-6543" />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">
-                        <i class="ri-heart-line me-1"></i>Relationship
-                    </label>
-                    <select class="form-select" name="RelationshipToEmergency">
-                        <option value="">Select Relationship</option>
-                        <option value="Spouse" selected>Spouse</option>
-                        <option value="Parent">Parent</option>
-                        <option value="Child">Child</option>
-                        <option value="Sibling">Sibling</option>
-                        <option value="Friend">Friend</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Account Information -->
-        <div class="card mb-3">
-            <div class="card-header">
-                <h5 class="card-title">
-                    <i class="ri-shield-user-line me-2"></i>Account Status
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <span class="text-muted">Status:</span>
-                    <span class="badge bg-success">Active</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <span class="text-muted">Member Since:</span>
-                    <span class="fw-semibold">January 2024</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <span class="text-muted">Last Login:</span>
-                    <span class="fw-semibold">Today, 2:30 PM</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-muted">Total Visits:</span>
-                    <span class="badge bg-primary-subtle text-primary">24</span>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Quick Actions -->
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">
-                    <i class="ri-dashboard-line me-2"></i>Quick Actions
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="d-grid gap-2">
-                    <button class="btn btn-outline-primary">
-                        <i class="ri-calendar-event-line me-2"></i>Book Appointment
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-1"></i>Cancel
                     </button>
-                    <button class="btn btn-outline-success">
-                        <i class="ri-file-text-line me-2"></i>View Medical History
-                    </button>
-                    <button class="btn btn-outline-info">
-                        <i class="ri-medicine-bottle-line me-2"></i>My Prescriptions
-                    </button>
-                    <button class="btn btn-outline-warning">
-                        <i class="ri-test-tube-line me-2"></i>Lab Results
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ri-save-line me-1"></i>Save Changes
                     </button>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </div>
@@ -315,63 +645,136 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Calculate and update BMI
-            function calculateBMI() {
-                const height = document.querySelector('input[name="Height"]').value;
-                const weight = document.querySelector('input[name="Weight"]').value;
-                
-                if (height && weight) {
-                    const heightInMeters = height / 100;
-                    const bmi = (weight / (heightInMeters * heightInMeters)).toFixed(1);
-                    const bmiInput = document.querySelector('input[value="21.3"]');
-                    const bmiStatus = bmiInput.nextElementSibling;
-                    
-                    bmiInput.value = bmi;
-                    
-                    // Update BMI status and color
-                    if (bmi < 18.5) {
-                        bmiStatus.textContent = 'Underweight';
-                        bmiStatus.className = 'input-group-text bg-warning text-white';
-                    } else if (bmi >= 18.5 && bmi < 25) {
-                        bmiStatus.textContent = 'Normal';
-                        bmiStatus.className = 'input-group-text bg-success text-white';
-                    } else if (bmi >= 25 && bmi < 30) {
-                        bmiStatus.textContent = 'Overweight';
-                        bmiStatus.className = 'input-group-text bg-warning text-white';
-                    } else {
-                        bmiStatus.textContent = 'Obese';
-                        bmiStatus.className = 'input-group-text bg-danger text-white';
+            // Auto-dismiss success message after 5 seconds
+            const successAlert = document.querySelector('.alert-success');
+            if (successAlert) {
+                setTimeout(function() {
+                    const bsAlert = new bootstrap.Alert(successAlert);
+                    bsAlert.close();
+                }, 5000);
+            }
+
+            // Hover effects for cards
+            document.querySelectorAll('.hover-lift').forEach(el => {
+                el.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.boxShadow = '0 8px 16px rgba(0,0,0,0.1)';
+                });
+                el.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '';
+                });
+            });
+
+            // Form validation for edit profile modal
+            const editForm = document.querySelector('#editProfileModal form');
+            if (editForm) {
+                editForm.addEventListener('submit', function(e) {
+                    if (!editForm.checkValidity()) {
+                        e.preventDefault();
+                        e.stopPropagation();
                     }
+                    editForm.classList.add('was-validated');
+                });
+
+                // Real-time BMI calculation
+                const heightInput = editForm.querySelector('input[name="Height"]');
+                const weightInput = editForm.querySelector('input[name="Weight"]');
+                
+                function calculateBMI() {
+                    const height = parseFloat(heightInput.value);
+                    const weight = parseFloat(weightInput.value);
+                    
+                    if (height && weight && height > 0) {
+                        const heightInMeters = height / 100;
+                        const bmi = (weight / (heightInMeters * heightInMeters)).toFixed(1);
+                        
+                        // You could display this somewhere in the modal if needed
+                        console.log('Calculated BMI:', bmi);
+                    }
+                }
+                
+                if (heightInput && weightInput) {
+                    heightInput.addEventListener('input', calculateBMI);
+                    weightInput.addEventListener('input', calculateBMI);
+                }
+
+                // Calculate age from date of birth
+                const dobInput = editForm.querySelector('input[name="DateOfBirth"]');
+                if (dobInput) {
+                    dobInput.addEventListener('change', function() {
+                        const dob = new Date(this.value);
+                        const today = new Date();
+                        let age = today.getFullYear() - dob.getFullYear();
+                        const monthDiff = today.getMonth() - dob.getMonth();
+                        
+                        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                            age--;
+                        }
+                        
+                        console.log('Calculated age:', age);
+                    });
                 }
             }
-            
-            // Add event listeners for height and weight changes
-            document.querySelector('input[name="Height"]').addEventListener('input', calculateBMI);
-            document.querySelector('input[name="Weight"]').addEventListener('input', calculateBMI);
-            
-            // Form validation and save functionality
-            document.querySelector('.btn-success').addEventListener('click', function() {
-                // Validate required fields
-                const requiredFields = ['FirstName', 'LastName', 'Email', 'PhoneNumber'];
-                let isValid = true;
-                
-                requiredFields.forEach(field => {
-                    const input = document.querySelector(`input[name="${field}"]`);
-                    if (!input.value.trim()) {
-                        input.classList.add('is-invalid');
-                        isValid = false;
-                    } else {
-                        input.classList.remove('is-invalid');
-                    }
-                });
-                
-                if (isValid) {
-                    // Show success message
-                    alert('Profile updated successfully!');
-                } else {
-                    alert('Please fill in all required fields.');
+
+            // Close modal after successful submission
+            const modal = document.querySelector('#editProfileModal');
+            if (modal && '@Model.SuccessMessage'.length > 0) {
+                const bsModal = bootstrap.Modal.getInstance(modal);
+                if (bsModal) {
+                    bsModal.hide();
                 }
-            });
+            }
         });
+
+        // Print functionality
+        function printProfile() {
+            window.print();
+        }
     </script>
+
+    <style>
+        .hover-lift {
+            transition: all 0.3s ease !important;
+        }
+        
+        .info-item {
+            padding: 12px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+        
+        .icon-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon-box.sm {
+            width: 36px;
+            height: 36px;
+        }
+        
+        .icon-box.md {
+            width: 48px;
+            height: 48px;
+        }
+        
+        .icon-box.lg {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .img-7x {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
+        
+        @@media print {
+            .btn, .card-header button, .hover-lift a {
+                display: none !important;
+            }
+        }
+    </style>
 }

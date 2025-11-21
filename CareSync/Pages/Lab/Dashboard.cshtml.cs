@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace CareSync.Pages.Lab
+namespace CareSync.Pages.Lab;
+
+public class DashboardModel : PageModel
 {
-    public class DashboardModel : PageModel
+    public void OnGet()
     {
-        public void OnGet()
-        {
-        }
     }
 }

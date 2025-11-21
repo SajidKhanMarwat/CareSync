@@ -5,245 +5,557 @@
     Layout = "Layouts/_AuthLayout";
 }
 
-<!-- Form starts -->
-<form method="post">
-    <div class="auth-box">
-        <a href="/" class="auth-logo mb-4">
-            <img src="~/theme/images/logo.svg" alt="CareSync">
-        </a>
-
-        <h4 class="mb-4">Create Account</h4>
-        <p class="text-muted mb-4">Join CareSync to manage your healthcare journey.</p>
-
-        @if (!string.IsNullOrEmpty(Model.SuccessMessage))
-        {
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="ri-check-circle-line me-2"></i>
-                @Model.SuccessMessage
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        }
-
-        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
-        {
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="ri-error-warning-line me-2"></i>
-                @Model.ErrorMessage
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        }
-
-        <div asp-validation-summary="All" class="text-danger mb-3"></div>
-
-        <!-- Personal Information Section -->
-        <div class="form-section mb-4">
-            <h6 class="form-section-title mb-3">
-                <i class="ri-user-line me-2"></i>Personal Information
-            </h6>
-            
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label" asp-for="RegisterRequest.FirstName">
-                        <i class="ri-user-line me-1"></i>First Name <span class="text-danger">*</span>
-                    </label>
-                    <input type="text" asp-for="RegisterRequest.FirstName" class="form-control" 
-                           placeholder="Enter your first name" autocomplete="given-name">
-                    <span asp-validation-for="RegisterRequest.FirstName" class="text-danger"></span>
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center py-5">
+    <div class="row w-100 justify-content-center">
+        <div class="col-xl-8 col-lg-9 col-md-10">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-primary text-white text-center py-4 rounded-top-4">
+                    <img src="~/theme/images/logo.svg" alt="CareSync" class="mb-3" style="height: 50px; filter: brightness(0) invert(1);">
+                    <h2 class="fw-bold mb-2">Patient Registration</h2>
+                    <p class="mb-0 opacity-90">Create your patient account to access CareSync services</p>
                 </div>
-                
-                <div class="col-md-6 mb-3">
-                    <label class="form-label" asp-for="RegisterRequest.LastName">
-                        <i class="ri-user-line me-1"></i>Last Name
-                    </label>
-                    <input type="text" asp-for="RegisterRequest.LastName" class="form-control" 
-                           placeholder="Enter your last name" autocomplete="family-name">
-                    <span asp-validation-for="RegisterRequest.LastName" class="text-danger"></span>
-                </div>
-            </div>
-            
-            <div class="mb-3">
-                <label class="form-label" asp-for="RegisterRequest.ArabicUserName">
-                    <i class="ri-translate-2 me-1"></i>Arabic Name <span class="text-danger">*</span>
-                </label>
-                <input type="text" asp-for="RegisterRequest.ArabicUserName" class="form-control" 
-                       placeholder="اكتب اسمك بالعربية" dir="rtl">
-                <span asp-validation-for="RegisterRequest.ArabicUserName" class="text-danger"></span>
-            </div>
-        </div>
+                <div class="card-body p-4">
 
-        <!-- Account Information Section -->
-        <div class="form-section mb-4">
-            <h6 class="form-section-title mb-3">
-                <i class="ri-account-circle-line me-2"></i>Account Information
-            </h6>
-            
-            <div class="mb-3">
-                <label class="form-label" asp-for="RegisterRequest.UserName">
-                    <i class="ri-at-line me-1"></i>Username <span class="text-danger">*</span>
-                </label>
-                <input type="text" asp-for="RegisterRequest.UserName" class="form-control" 
-                       placeholder="Choose a unique username" autocomplete="username">
-                <small class="form-text text-muted">This will be your unique identifier in the system</small>
-                <span asp-validation-for="RegisterRequest.UserName" class="text-danger"></span>
-            </div>
+                    <!-- Success/Error Messages -->
+                    @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="ri-check-circle-line me-2"></i>
+                            @Model.SuccessMessage
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
 
-            <div class="mb-3">
-                <label class="form-label" asp-for="RegisterRequest.Email">
-                    <i class="ri-mail-line me-1"></i>Email Address <span class="text-danger">*</span>
-                </label>
-                <input type="email" asp-for="RegisterRequest.Email" class="form-control" 
-                       placeholder="Enter your email address" autocomplete="email">
-                <span asp-validation-for="RegisterRequest.Email" class="text-danger"></span>
-            </div>
+                    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="ri-error-warning-line me-2"></i>
+                            @Model.ErrorMessage
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
 
-            <div class="mb-3">
-                <label class="form-label" asp-for="RegisterRequest.PhoneNumber">
-                    <i class="ri-phone-line me-1"></i>Phone Number
-                </label>
-                <input type="tel" asp-for="RegisterRequest.PhoneNumber" class="form-control" 
-                       placeholder="Enter your phone number" autocomplete="tel">
-                <span asp-validation-for="RegisterRequest.PhoneNumber" class="text-danger"></span>
-            </div>
-        </div>
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
-        <!-- Personal Details Section -->
-        <div class="form-section mb-4">
-            <h6 class="form-section-title mb-3">
-                <i class="ri-information-line me-2"></i>Personal Details
-            </h6>
-            
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label" asp-for="RegisterRequest.Gender">
-                        <i class="ri-user-2-line me-1"></i>Gender <span class="text-danger">*</span>
-                    </label>
-                    <select asp-for="RegisterRequest.Gender" class="form-select">
-                        <option value="">Select Gender</option>
-                        <option value="1">Male</option>
-                        <option value="2">Female</option>
-                        <option value="3">Other</option>
-                    </select>
-                    <span asp-validation-for="RegisterRequest.Gender" class="text-danger"></span>
-                </div>
-                
-                <div class="col-md-6 mb-3">
-                    <label class="form-label" asp-for="RegisterRequest.DateOfBirth">
-                        <i class="ri-calendar-line me-1"></i>Date of Birth
-                    </label>
-                    <input type="date" asp-for="RegisterRequest.DateOfBirth" class="form-control" 
-                           onchange="calculateAge()" autocomplete="bday">
-                    <span asp-validation-for="RegisterRequest.DateOfBirth" class="text-danger"></span>
-                </div>
-            </div>
-            
-            <div class="mb-3">
-                <label class="form-label" asp-for="RegisterRequest.Age">
-                    <i class="ri-time-line me-1"></i>Age
-                </label>
-                <input type="number" asp-for="RegisterRequest.Age" class="form-control" 
-                       placeholder="Age will be calculated automatically" readonly>
-                <span asp-validation-for="RegisterRequest.Age" class="text-danger"></span>
-            </div>
+                    <!-- Registration Form -->
+                    <form method="post" class="needs-validation" novalidate>
+                        <!-- Step Indicator -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <div class="step-circle active me-2">1</div>
+                                        <small class="text-muted">Personal Info</small>
+                                    </div>
+                                    <div class="flex-grow-1 mx-3">
+                                        <hr class="my-0">
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <div class="step-circle me-2">2</div>
+                                        <small class="text-muted">Account Details</small>
+                                    </div>
+                                    <div class="flex-grow-1 mx-3">
+                                        <hr class="my-0">
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <div class="step-circle me-2">3</div>
+                                        <small class="text-muted">Terms &amp; Submit</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-            <div class="mb-3">
-                <label class="form-label" asp-for="RegisterRequest.Address">
-                    <i class="ri-map-pin-line me-1"></i>Address
-                </label>
-                <textarea asp-for="RegisterRequest.Address" class="form-control" rows="3" 
-                          placeholder="Enter your full address" autocomplete="street-address"></textarea>
-                <span asp-validation-for="RegisterRequest.Address" class="text-danger"></span>
-            </div>
-        </div>
+                        <!-- Step 1: Personal Info (includes personal details and security) -->
+                        <!-- Personal Information -->
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="ri-user-line text-white fs-6"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-primary fw-bold mb-1">Personal Information</h4>
+                                    <p class="text-muted mb-0 small">Tell us about yourself</p>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold" asp-for="RegisterRequest.FirstName">
+                                        First Name <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="ri-user-line text-muted"></i>
+                                        </span>
+                                        <input type="text" asp-for="RegisterRequest.FirstName"
+                                               class="form-control border-start-0 ps-0"
+                                               placeholder="Enter your first name" autocomplete="given-name">
+                                    </div>
+                                    <span asp-validation-for="RegisterRequest.FirstName" class="text-danger small"></span>
+                                </div>
 
-        <!-- Security Section -->
-        <div class="form-section mb-4">
-            <h6 class="form-section-title mb-3">
-                <i class="ri-shield-keyhole-line me-2"></i>Security
-            </h6>
-            
-            <div class="mb-3">
-                <label class="form-label" asp-for="RegisterRequest.Password">
-                    <i class="ri-lock-line me-1"></i>Password <span class="text-danger">*</span>
-                </label>
-                <div class="input-group">
-                    <input type="password" asp-for="RegisterRequest.Password" id="password" class="form-control" 
-                           placeholder="Create a strong password" autocomplete="new-password">
-                    <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordField('password', this)">
-                        <i class="ri-eye-line text-primary"></i>
-                    </button>
-                </div>
-                <div class="password-strength mt-2">
-                    <div class="progress" style="height: 4px;">
-                        <div class="progress-bar" id="passwordStrength" role="progressbar" style="width: 0%"></div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold" asp-for="RegisterRequest.LastName">
+                                        Last Name
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="ri-user-line text-muted"></i>
+                                        </span>
+                                        <input type="text" asp-for="RegisterRequest.LastName"
+                                               class="form-control border-start-0 ps-0"
+                                               placeholder="Enter your last name" autocomplete="family-name">
+                                    </div>
+                                    <span asp-validation-for="RegisterRequest.LastName" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Personal Details -->
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="ri-information-line text-white fs-6"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-primary fw-bold mb-1">Personal Details</h4>
+                                    <p class="text-muted mb-0 small">Additional information about you</p>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold" asp-for="RegisterRequest.Gender">
+                                        Gender <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="ri-user-2-line text-muted"></i>
+                                        </span>
+                                        <select asp-for="RegisterRequest.Gender" class="form-select border-start-0">
+                                            <option value="">Select Gender</option>
+                                            <option value="1">Male</option>
+                                            <option value="2">Female</option>
+                                            <option value="3">Other</option>
+                                        </select>
+                                    </div>
+                                    <span asp-validation-for="RegisterRequest.Gender" class="text-danger small"></span>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold" asp-for="RegisterRequest.DateOfBirth">
+                                        Date of Birth
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="ri-calendar-line text-muted"></i>
+                                        </span>
+                                        <input type="date" asp-for="RegisterRequest.DateOfBirth" 
+                                               class="form-control border-start-0 ps-0" 
+                                               onchange="calculateAge()" autocomplete="bday">
+                                    </div>
+                                    <span asp-validation-for="RegisterRequest.DateOfBirth" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold" asp-for="RegisterRequest.Age">
+                                        Age
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="ri-time-line text-muted"></i>
+                                        </span>
+                                        <input type="number" asp-for="RegisterRequest.Age" 
+                                               class="form-control border-start-0 ps-0" 
+                                               placeholder="Auto-calculated" readonly>
+                                    </div>
+                                    <span asp-validation-for="RegisterRequest.Age" class="text-danger small"></span>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold" asp-for="RegisterRequest.Address">
+                                        Address
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="ri-map-pin-line text-muted"></i>
+                                        </span>
+                                        <textarea asp-for="RegisterRequest.Address" 
+                                                  class="form-control border-start-0 ps-0" rows="2" 
+                                                  placeholder="Enter your address" autocomplete="street-address"></textarea>
+                                    </div>
+                                    <span asp-validation-for="RegisterRequest.Address" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Account Details (email and phone) -->
+                        <!-- Account Information -->
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="ri-account-circle-line text-white fs-6"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-primary fw-bold mb-1">Account Details</h4>
+                                    <p class="text-muted mb-0 small">Provide your contact information</p>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold" asp-for="RegisterRequest.UserName">
+                                        User Name <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="ri-at-line text-muted"></i>
+                                        </span>
+                                        <input type="text" asp-for="RegisterRequest.UserName"
+                                               class="form-control border-start-0 ps-0"
+                                               placeholder="Choose a username" autocomplete="username">
+                                    </div>
+                                    <span asp-validation-for="RegisterRequest.UserName" class="text-danger small"></span>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold" asp-for="RegisterRequest.ArabicUserName">
+                                        Arabic UserName <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="ri-translate-2 text-muted"></i>
+                                        </span>
+                                        <input type="text" asp-for="RegisterRequest.ArabicUserName"
+                                               class="form-control border-start-0 ps-0"
+                                               placeholder="اكتب اسمك بالعربية" dir="rtl">
+                                    </div>
+                                    <span asp-validation-for="RegisterRequest.ArabicUserName" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold" asp-for="RegisterRequest.Email">
+                                        Email Address <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="ri-mail-line text-muted"></i>
+                                        </span>
+                                        <input type="email" asp-for="RegisterRequest.Email"
+                                               class="form-control border-start-0 ps-0"
+                                               placeholder="Enter your email address" autocomplete="email">
+                                    </div>
+                                    <span asp-validation-for="RegisterRequest.Email" class="text-danger small"></span>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold" asp-for="RegisterRequest.PhoneNumber">
+                                        Phone Number
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="ri-phone-line text-muted"></i>
+                                        </span>
+                                        <input type="tel" asp-for="RegisterRequest.PhoneNumber"
+                                               class="form-control border-start-0 ps-0"
+                                               placeholder="Enter your phone number" autocomplete="tel">
+                                    </div>
+                                    <span asp-validation-for="RegisterRequest.PhoneNumber" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security Settings (still part of Step 1: Personal Info) -->
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="ri-shield-keyhole-line text-white fs-6"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-primary fw-bold mb-1">Security Settings</h4>
+                                    <p class="text-muted mb-0 small">Secure your account with a strong password</p>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold" asp-for="RegisterRequest.Password">
+                                        Password <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="ri-lock-line text-muted"></i>
+                                        </span>
+                                        <input type="password" asp-for="RegisterRequest.Password" id="password" 
+                                               class="form-control border-start-0 border-end-0 ps-0" 
+                                               placeholder="Create a strong password" autocomplete="new-password">
+                                        <button class="btn btn-outline-light border-start-0" type="button" onclick="togglePasswordField('password', this)">
+                                            <i class="ri-eye-line text-muted"></i>
+                                        </button>
+                                    </div>
+                                    <div class="mt-2">
+                                        <div class="progress" style="height: 4px;">
+                                            <div class="progress-bar" id="passwordStrength" role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                        <small class="form-text text-muted">Password must be at least 6 characters long</small>
+                                    </div>
+                                    <span asp-validation-for="RegisterRequest.Password" class="text-danger small"></span>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold" asp-for="RegisterRequest.ConfirmPassword">
+                                        Confirm Password <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="ri-lock-2-line text-muted"></i>
+                                        </span>
+                                        <input type="password" asp-for="RegisterRequest.ConfirmPassword" id="confirmPassword" 
+                                               class="form-control border-start-0 border-end-0 ps-0" 
+                                               placeholder="Confirm your password" autocomplete="new-password">
+                                        <button class="btn btn-outline-light border-start-0" type="button" onclick="togglePasswordField('confirmPassword', this)">
+                                            <i class="ri-eye-line text-muted"></i>
+                                        </button>
+                                    </div>
+                                    <span asp-validation-for="RegisterRequest.ConfirmPassword" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            
+                            @* <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" asp-for="RegisterRequest.TwoFactorEnabled" id="twoFactor">
+                                <label class="form-check-label text-muted" for="twoFactor">
+                                    <i class="ri-shield-check-line me-1"></i>Enable Two-Factor Authentication (Recommended)
+                                </label>
+                            </div> *@
+                        </div>
+                                                
+                        <!-- Step 3: Terms and Submit -->
+                        <div class="bg-light rounded-3 p-4 mb-4">
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" id="termsCheck" required>
+                                <label class="form-check-label" for="termsCheck">
+                                    <strong>I agree to the</strong> 
+                                    <a href="#" class="text-primary text-decoration-none fw-semibold">Terms of Service</a> 
+                                    <strong>and</strong> 
+                                    <a href="#" class="text-primary text-decoration-none fw-semibold">Privacy Policy</a> 
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="form-text">
+                                    <small class="text-muted">
+                                        <i class="ri-information-line me-1"></i>
+                                        By creating an account, you agree to our terms and conditions
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg py-3 rounded-3">
+                                    <i class="ri-user-add-line me-2"></i>Create My CareSync Account
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <!-- Login Link -->
+                    <div class="text-center">
+                        <p class="text-muted mb-0">
+                            Already have an account? 
+                            <a href="/Auth/Login" class="text-primary text-decoration-none fw-semibold">
+                                Sign In
+                            </a>
+                        </p>
                     </div>
-                    <small class="form-text text-muted">Password must be at least 6 characters long</small>
                 </div>
-                <span asp-validation-for="RegisterRequest.Password" class="text-danger"></span>
             </div>
-
-            <div class="mb-3">
-                <label class="form-label" asp-for="RegisterRequest.ConfirmPassword">
-                    <i class="ri-lock-2-line me-1"></i>Confirm Password <span class="text-danger">*</span>
-                </label>
-                <div class="input-group">
-                    <input type="password" asp-for="RegisterRequest.ConfirmPassword" id="confirmPassword" class="form-control" 
-                           placeholder="Confirm your password" autocomplete="new-password">
-                    <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordField('confirmPassword', this)">
-                        <i class="ri-eye-line text-primary"></i>
-                    </button>
-                </div>
-                <span asp-validation-for="RegisterRequest.ConfirmPassword" class="text-danger"></span>
-            </div>
-            
-            <div class="form-check mb-3">
-                <input class="form-check-input" type="checkbox" asp-for="RegisterRequest.TwoFactorEnabled" id="twoFactor">
-                <label class="form-check-label" for="twoFactor">
-                    <i class="ri-shield-check-line me-1"></i>Enable Two-Factor Authentication (Recommended)
-                </label>
-            </div>
-        </div>
-
-        <!-- Terms and Submit -->
-        <div class="mb-3">
-            <div class="form-check mb-3">
-                <input class="form-check-input" type="checkbox" id="termsCheck" required>
-                <label class="form-check-label" for="termsCheck">
-                    I agree to the <a href="#" class="text-primary">Terms of Service</a> and 
-                    <a href="#" class="text-primary">Privacy Policy</a> <span class="text-danger">*</span>
-                </label>
-            </div>
-            
-            <div class="d-grid gap-2 mb-3">
-                <button type="submit" class="btn btn-primary btn-lg">
-                    <i class="ri-user-add-line me-2"></i>Create Account
-                </button>
-            </div>
-        </div>
-        
-        <div class="text-center">
-            <p class="mb-0">Already have an account? 
-                <a href="/Auth/Login" class="text-primary text-decoration-underline fw-semibold">
-                    Sign In
-                </a>
-            </p>
         </div>
     </div>
-</form>
-<!-- Form ends -->
+</div>
+
+<!-- Patient Onboarding Modal Wizard -->
+@if (Model.ShowOnboardingWizard)
+{
+    <div class="modal fade" id="patientOnboardingModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title">Complete Your Patient Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="onboardingCloseBtn"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="step-circle active me-2" id="onboardingStepIndicator">1</div>
+                                <small class="text-muted" id="onboardingStepLabel">Patient Details</small>
+                            </div>
+                            <button type="button" class="btn btn-link text-decoration-none" id="skipAllOnboardingBtn">Skip all and continue to login</button>
+                        </div>
+                    </div>
+
+                    <div id="onboardingStep1" class="onboarding-step">
+                        <h6 class="mb-3">Patient Details</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Blood Group</label>
+                                <select class="form-select">
+                                    <option value="">Select Blood Group</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Marital Status</label>
+                                <select class="form-select">
+                                    <option value="">Select Status</option>
+                                    <option value="Single">Single</option>
+                                    <option value="Married">Married</option>
+                                    <option value="Divorced">Divorced</option>
+                                    <option value="Widowed">Widowed</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Occupation</label>
+                                <input type="text" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="onboardingStep2" class="onboarding-step d-none">
+                        <h6 class="mb-3">Emergency Contact</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Emergency Contact Name</label>
+                                <input type="text" class="form-control" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Emergency Contact Number</label>
+                                <input type="tel" class="form-control" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Relationship</label>
+                                <select class="form-select">
+                                    <option value="">Select Relationship</option>
+                                    <option value="Spouse">Spouse</option>
+                                    <option value="Parent">Parent</option>
+                                    <option value="Child">Child</option>
+                                    <option value="Sibling">Sibling</option>
+                                    <option value="Friend">Friend</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="onboardingStep3" class="onboarding-step d-none">
+                        <h6 class="mb-3">Basic Medical Info</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Known Allergies</label>
+                                <textarea class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Current Medications</label>
+                                <textarea class="form-control" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-secondary" id="onboardingSkipBtn">Skip this step</button>
+                    <div>
+                        <button type="button" class="btn btn-primary" id="onboardingNextBtn">Save &amp; Continue</button>
+                        <button type="button" class="btn btn-success d-none" id="onboardingFinishBtn">Finish &amp; Go to Login</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @section Scripts {
     <script>
         function calculateAge() {
-            const dob = document.querySelector('[name="RegisterRequest.DateOfBirth"]').value;
-            if (dob) {
-                const birthDate = new Date(dob);
+            const dobInput = document.querySelector('[name="RegisterRequest.DateOfBirth"]');
+            const ageInput = document.querySelector('[name="RegisterRequest.Age"]');
+            
+            if (dobInput && dobInput.value && ageInput) {
+                const birthDate = new Date(dobInput.value);
                 const today = new Date();
+                
+                // Validate that birth date is not in the future
+                if (birthDate > today) {
+                    ageInput.value = '';
+                    showAgeError('Birth date cannot be in the future');
+                    return;
+                }
+                
+                // Calculate age
                 let age = today.getFullYear() - birthDate.getFullYear();
-                const m = today.getMonth() - birthDate.getMonth();
-                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+                
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
                     age--;
                 }
-                document.querySelector('[name="RegisterRequest.Age"]').value = age;
+                
+                // Validate age range (0-150)
+                if (age < 0 || age > 150) {
+                    ageInput.value = '';
+                    showAgeError('Please enter a valid birth date');
+                    return;
+                }
+                
+                ageInput.value = age;
+                clearAgeError();
+                
+                // Update age display with additional info
+                updateAgeDisplay(age, birthDate);
+            } else if (ageInput) {
+                ageInput.value = '';
+                clearAgeError();
+            }
+        }
+        
+        function showAgeError(message) {
+            let errorSpan = document.querySelector('#age-error');
+            if (!errorSpan) {
+                errorSpan = document.createElement('span');
+                errorSpan.id = 'age-error';
+                errorSpan.className = 'text-danger small';
+                const ageInput = document.querySelector('[name="RegisterRequest.Age"]');
+                ageInput.parentNode.parentNode.appendChild(errorSpan);
+            }
+            errorSpan.textContent = message;
+        }
+        
+        function clearAgeError() {
+            const errorSpan = document.querySelector('#age-error');
+            if (errorSpan) {
+                errorSpan.remove();
+            }
+        }
+        
+        function updateAgeDisplay(age, birthDate) {
+            const ageInput = document.querySelector('[name="RegisterRequest.Age"]');
+            if (ageInput) {
+                // Add age category as placeholder
+                let category = '';
+                if (age < 13) category = ' (Child)';
+                else if (age < 20) category = ' (Teenager)';
+                else if (age < 60) category = ' (Adult)';
+                else category = ' (Senior)';
+                
+                ageInput.setAttribute('data-age-category', category);
+                ageInput.title = `Age: ${age} years${category}`;
             }
         }
         
@@ -283,12 +595,211 @@
         
         // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('password').addEventListener('input', checkPasswordStrength);
-            document.getElementById('RegisterRequest_FirstName').focus();
+            // Password strength checker
+            const passwordField = document.getElementById('password');
+            if (passwordField) {
+                passwordField.addEventListener('input', checkPasswordStrength);
+            }
+            
+            // Age calculation on date of birth change
+            const dobField = document.querySelector('[name="RegisterRequest.DateOfBirth"]');
+            if (dobField) {
+                dobField.addEventListener('change', calculateAge);
+                dobField.addEventListener('blur', calculateAge);
+            }
+            
+            // Focus on first field
+            const firstNameField = document.querySelector('[name="RegisterRequest.FirstName"]');
+            if (firstNameField) {
+                firstNameField.focus();
+            }
+            
+            // Real-time age calculation as user types (with debounce)
+            let ageTimeout;
+            if (dobField) {
+                dobField.addEventListener('input', function() {
+                    clearTimeout(ageTimeout);
+                    ageTimeout = setTimeout(calculateAge, 500); // 500ms delay
+                });
+            }
+
+            var showOnboarding = @(Model.ShowOnboardingWizard ? "true" : "false");
+            if (showOnboarding === true || showOnboarding === "true") {
+                var onboardingModalElement = document.getElementById('patientOnboardingModal');
+                if (onboardingModalElement) {
+                    var onboardingModal = new bootstrap.Modal(onboardingModalElement);
+                    onboardingModal.show();
+
+                    var currentOnboardingStep = 1;
+                    var totalOnboardingSteps = 3;
+                    var stepIndicator = document.getElementById('onboardingStepIndicator');
+                    var stepLabel = document.getElementById('onboardingStepLabel');
+                    var labels = ['Patient Details', 'Emergency Contact', 'Basic Medical Info'];
+                    var nextBtn = document.getElementById('onboardingNextBtn');
+                    var skipBtn = document.getElementById('onboardingSkipBtn');
+                    var finishBtn = document.getElementById('onboardingFinishBtn');
+                    var skipAllBtn = document.getElementById('skipAllOnboardingBtn');
+                    var closeBtn = document.getElementById('onboardingCloseBtn');
+
+                    function updateOnboardingStep() {
+                        for (var i = 1; i <= totalOnboardingSteps; i++) {
+                            var step = document.getElementById('onboardingStep' + i);
+                            if (step) {
+                                step.classList.toggle('d-none', i !== currentOnboardingStep);
+                            }
+                        }
+
+                        if (stepIndicator) stepIndicator.textContent = currentOnboardingStep.toString();
+                        if (stepLabel) stepLabel.textContent = labels[currentOnboardingStep - 1] || '';
+
+                        if (currentOnboardingStep === totalOnboardingSteps) {
+                            if (nextBtn) nextBtn.classList.add('d-none');
+                            if (finishBtn) finishBtn.classList.remove('d-none');
+                        } else {
+                            if (nextBtn) nextBtn.classList.remove('d-none');
+                            if (finishBtn) finishBtn.classList.add('d-none');
+                        }
+                    }
+
+                    function goToLogin() {
+                        window.location.href = '/Auth/Login';
+                    }
+
+                    if (nextBtn) {
+                        nextBtn.addEventListener('click', function () {
+                            if (currentOnboardingStep < totalOnboardingSteps) {
+                                currentOnboardingStep++;
+                                updateOnboardingStep();
+                            } else {
+                                goToLogin();
+                            }
+                        });
+                    }
+
+                    if (skipBtn) {
+                        skipBtn.addEventListener('click', function () {
+                            if (currentOnboardingStep < totalOnboardingSteps) {
+                                currentOnboardingStep++;
+                                updateOnboardingStep();
+                            } else {
+                                goToLogin();
+                            }
+                        });
+                    }
+
+                    if (finishBtn) {
+                        finishBtn.addEventListener('click', function () {
+                            goToLogin();
+                        });
+                    }
+
+                    if (skipAllBtn) {
+                        skipAllBtn.addEventListener('click', function () {
+                            goToLogin();
+                        });
+                    }
+
+                    if (closeBtn) {
+                        closeBtn.addEventListener('click', function () {
+                            goToLogin();
+                        });
+                    }
+
+                    updateOnboardingStep();
+                }
+            }
         });
     </script>
     
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    
+    <style>
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .step-circle.active {
+            background-color: #238781;
+            color: white;
+            border-color: #238781;
+        }
+        
+        .step-circle.completed {
+            background-color: #04a17f;
+            color: white;
+            border-color: #04a17f;
+        }
+        
+        .card-header.bg-primary {
+            background: linear-gradient(135deg, #238781 0%, #1a6b66 100%) !important;
+        }
+        
+        .input-group-text {
+            border-color: #dee2e6;
+        }
+        
+        .form-control:focus {
+            border-color: #238781;
+            box-shadow: 0 0 0 0.25rem rgba(35, 135, 129, 0.25);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #238781 0%, #1a6b66 100%);
+            border: none;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1a6b66 0%, #145550 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(35, 135, 129, 0.3);
+        }
+        
+        .card {
+            transition: all 0.3s ease;
+        }
+        
+        .rounded-4 {
+            border-radius: 1rem !important;
+        }
+        
+        .rounded-top-4 {
+            border-top-left-radius: 1rem !important;
+            border-top-right-radius: 1rem !important;
+        }
+        
+        .bg-light {
+            background-color: #f8f9fa !important;
+        }
+        
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+        
+        @@media (max-width: 768px) {
+            .card-body {
+                padding: 1.5rem !important;
+            }
+            
+            .step-circle {
+                width: 25px;
+                height: 25px;
+                font-size: 12px;
+            }
+        }
+    </style>
 }

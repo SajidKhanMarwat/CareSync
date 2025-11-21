@@ -1,5 +1,5 @@
 using CareSync.DataLayer.Entities;
-using CareSync.DataLayer.DataEnums;
+using CareSync.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 

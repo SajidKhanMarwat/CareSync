@@ -9,1531 +9,1530 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace CareSync.DataLayer.Migrations
+namespace CareSync.DataLayer.Migrations;
+
+[DbContext(typeof(CareSyncDbContext))]
+[Migration("20251110184642_modifieddbcontext")]
+partial class modifieddbcontext
 {
-    [DbContext(typeof(CareSyncDbContext))]
-    [Migration("20251110184642_modifieddbcontext")]
-    partial class modifieddbcontext
+    /// <inheritdoc />
+    protected override void BuildTargetModel(ModelBuilder modelBuilder)
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
-        {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.10")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+        modelBuilder
+            .HasAnnotation("ProductVersion", "9.0.10")
+            .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+        SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_AdditionalNotes", b =>
-                {
-                    b.Property<int>("NoteID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_AdditionalNotes", b =>
+            {
+                b.Property<int>("NoteID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NoteID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NoteID"));
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("DoctorRecommendations")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("DoctorRecommendations")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsDeleted")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("NutritionalPlan")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("NutritionalPlan")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PatientID")
-                        .HasColumnType("int");
+                b.Property<int>("PatientID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("SpecialInstructions")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("SpecialInstructions")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UpdatedBy")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("UpdatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("NoteID");
+                b.HasKey("NoteID");
 
-                    b.HasIndex("PatientID");
+                b.HasIndex("PatientID");
 
-                    b.ToTable("T_AdditionalNotes");
-                });
+                b.ToTable("T_AdditionalNotes");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_Appointments", b =>
-                {
-                    b.Property<int>("AppointmentID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_Appointments", b =>
+            {
+                b.Property<int>("AppointmentID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AppointmentID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AppointmentID"));
 
-                    b.Property<DateTime>("AppointmentDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("AppointmentDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<int>("AppointmentType")
-                        .HasColumnType("int");
+                b.Property<int>("AppointmentType")
+                    .HasColumnType("int");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<int>("DoctorID")
-                        .HasColumnType("int");
+                b.Property<int>("DoctorID")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsDeleted")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Notes")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PatientID")
-                        .HasColumnType("int");
+                b.Property<int>("PatientID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Reason")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                b.Property<int>("Status")
+                    .HasColumnType("int");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UpdatedBy")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("UpdatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("AppointmentID");
+                b.HasKey("AppointmentID");
 
-                    b.HasIndex("DoctorID");
+                b.HasIndex("DoctorID");
 
-                    b.HasIndex("PatientID");
+                b.HasIndex("PatientID");
 
-                    b.ToTable("T_Appointments");
-                });
+                b.ToTable("T_Appointments");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_ChronicDiseases", b =>
-                {
-                    b.Property<int>("ChronicDiseaseID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_ChronicDiseases", b =>
+            {
+                b.Property<int>("ChronicDiseaseID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ChronicDiseaseID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ChronicDiseaseID"));
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("CurrentStatus")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CurrentStatus")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("DiagnosedDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("DiagnosedDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("DiseaseName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("DiseaseName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsDeleted")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("PatientID")
-                        .HasColumnType("int");
+                b.Property<int>("PatientID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UpdatedBy")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("UpdatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("ChronicDiseaseID");
+                b.HasKey("ChronicDiseaseID");
 
-                    b.HasIndex("PatientID");
+                b.HasIndex("PatientID");
 
-                    b.ToTable("T_ChronicDiseases");
-                });
+                b.ToTable("T_ChronicDiseases");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_DoctorDetails", b =>
-                {
-                    b.Property<int>("DoctorID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_DoctorDetails", b =>
+            {
+                b.Property<int>("DoctorID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DoctorID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DoctorID"));
 
-                    b.Property<string>("AvailableDays")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AvailableDays")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal?>("ConsultationFee")
-                        .HasColumnType("decimal(18,2)");
+                b.Property<decimal?>("ConsultationFee")
+                    .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<TimeSpan?>("EndTime")
-                        .HasColumnType("time");
+                b.Property<TimeSpan?>("EndTime")
+                    .HasColumnType("time");
 
-                    b.Property<int?>("ExperienceYears")
-                        .HasColumnType("int");
+                b.Property<int?>("ExperienceYears")
+                    .HasColumnType("int");
 
-                    b.Property<string>("HospitalAffiliation")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("HospitalAffiliation")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsDeleted")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("LicenseNumber")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("LicenseNumber")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("QualificationSummary")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("QualificationSummary")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Specialization")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Specialization")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<TimeSpan?>("StartTime")
-                        .HasColumnType("time");
+                b.Property<TimeSpan?>("StartTime")
+                    .HasColumnType("time");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UpdatedBy")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("UpdatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("UserID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(128)");
+                b.Property<string>("UserID")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(128)");
 
-                    b.HasKey("DoctorID");
+                b.HasKey("DoctorID");
 
-                    b.HasIndex("UserID");
+                b.HasIndex("UserID");
 
-                    b.ToTable("T_DoctorDetails");
-                });
+                b.ToTable("T_DoctorDetails");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_Lab", b =>
-                {
-                    b.Property<int>("LabID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_Lab", b =>
+            {
+                b.Property<int>("LabID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LabID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LabID"));
 
-                    b.Property<TimeSpan?>("ClosingTime")
-                        .HasColumnType("time");
+                b.Property<TimeSpan?>("ClosingTime")
+                    .HasColumnType("time");
 
-                    b.Property<string>("ContactNumber")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ContactNumber")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Email")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsDeleted")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("LabName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("LabName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LicenseNumber")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("LicenseNumber")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Location")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Location")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<TimeSpan?>("OpeningTime")
-                        .HasColumnType("time");
+                b.Property<TimeSpan?>("OpeningTime")
+                    .HasColumnType("time");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UpdatedBy")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("UpdatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UserID")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("UserID")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("LabID");
+                b.HasKey("LabID");
 
-                    b.ToTable("T_Labs");
-                });
+                b.ToTable("T_Labs");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_LabReports", b =>
-                {
-                    b.Property<int>("LabReportID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_LabReports", b =>
+            {
+                b.Property<int>("LabReportID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LabReportID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LabReportID"));
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("ExpectedTime")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ExpectedTime")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FilePath")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FilePath")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsDeleted")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("LabRequestID")
-                        .HasColumnType("int");
+                b.Property<int>("LabRequestID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("PatientID")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PatientID")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ReportName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ReportName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ResultSummary")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ResultSummary")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ReviewedByDoctorID")
-                        .HasColumnType("int");
+                b.Property<int?>("ReviewedByDoctorID")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime?>("ReviewedDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("ReviewedDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UpdatedBy")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("UpdatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("LabReportID");
+                b.HasKey("LabReportID");
 
-                    b.ToTable("T_LabReports");
-                });
+                b.ToTable("T_LabReports");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_LabRequests", b =>
-                {
-                    b.Property<int>("LabRequestID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_LabRequests", b =>
+            {
+                b.Property<int>("LabRequestID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LabRequestID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LabRequestID"));
 
-                    b.Property<int>("AppointmentID")
-                        .HasColumnType("int");
+                b.Property<int>("AppointmentID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsDeleted")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("LabServiceID")
-                        .HasColumnType("int");
+                b.Property<int>("LabServiceID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Remarks")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("RequestedByDoctorID")
-                        .HasColumnType("int");
+                b.Property<int?>("RequestedByDoctorID")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("RequestedByPatientID")
-                        .HasColumnType("int");
+                b.Property<int?>("RequestedByPatientID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Status")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("T_AppointmentsAppointmentID")
-                        .HasColumnType("int");
+                b.Property<int?>("T_AppointmentsAppointmentID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UpdatedBy")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("UpdatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("LabRequestID");
+                b.HasKey("LabRequestID");
 
-                    b.HasIndex("T_AppointmentsAppointmentID");
+                b.HasIndex("T_AppointmentsAppointmentID");
 
-                    b.ToTable("T_LabRequests");
-                });
+                b.ToTable("T_LabRequests");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_LabServices", b =>
-                {
-                    b.Property<int>("LabServiceID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_LabServices", b =>
+            {
+                b.Property<int>("LabServiceID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LabServiceID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LabServiceID"));
 
-                    b.Property<string>("Category")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Category")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EstimatedTime")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("EstimatedTime")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsDeleted")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("LabID")
-                        .HasColumnType("int");
+                b.Property<int>("LabID")
+                    .HasColumnType("int");
 
-                    b.Property<decimal?>("Price")
-                        .HasColumnType("decimal(18,2)");
+                b.Property<decimal?>("Price")
+                    .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("SampleType")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("SampleType")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ServiceName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ServiceName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("T_LabLabID")
-                        .HasColumnType("int");
+                b.Property<int?>("T_LabLabID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UpdatedBy")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("UpdatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("LabServiceID");
+                b.HasKey("LabServiceID");
 
-                    b.HasIndex("T_LabLabID");
+                b.HasIndex("T_LabLabID");
 
-                    b.ToTable("T_LabServices");
-                });
+                b.ToTable("T_LabServices");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_LifestyleInfo", b =>
-                {
-                    b.Property<int>("LifestyleID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_LifestyleInfo", b =>
+            {
+                b.Property<int>("LifestyleID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LifestyleID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LifestyleID"));
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("DailyActivity")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("DailyActivity")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DietType")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("DietType")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ExerciseFrequency")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ExerciseFrequency")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ExerciseType")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ExerciseType")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsDeleted")
+                    .HasColumnType("bit");
 
-                    b.Property<bool?>("IsOnDiet")
-                        .HasColumnType("bit");
+                b.Property<bool?>("IsOnDiet")
+                    .HasColumnType("bit");
 
-                    b.Property<bool?>("IsSmoking")
-                        .HasColumnType("bit");
+                b.Property<bool?>("IsSmoking")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Occupation")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Occupation")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PatientID")
-                        .HasColumnType("int");
+                b.Property<int>("PatientID")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("SleepHours")
-                        .HasColumnType("int");
+                b.Property<int?>("SleepHours")
+                    .HasColumnType("int");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UpdatedBy")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("UpdatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("LifestyleID");
+                b.HasKey("LifestyleID");
 
-                    b.HasIndex("PatientID");
+                b.HasIndex("PatientID");
 
-                    b.ToTable("T_LifestyleInfo");
-                });
+                b.ToTable("T_LifestyleInfo");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_MedicalFollowUp", b =>
-                {
-                    b.Property<int>("FollowUpID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_MedicalFollowUp", b =>
+            {
+                b.Property<int>("FollowUpID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FollowUpID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FollowUpID"));
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("DailyNotes")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("DailyNotes")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsDeleted")
+                    .HasColumnType("bit");
 
-                    b.Property<DateTime?>("LastVisitDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("LastVisitDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<int>("PatientID")
-                        .HasColumnType("int");
+                b.Property<int>("PatientID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("RecentExaminations")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("RecentExaminations")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpcomingReviewDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("UpcomingReviewDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UpdatedBy")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("UpdatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("FollowUpID");
+                b.HasKey("FollowUpID");
 
-                    b.HasIndex("PatientID");
+                b.HasIndex("PatientID");
 
-                    b.ToTable("T_MedicalFollowUps");
-                });
+                b.ToTable("T_MedicalFollowUps");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_MedicalHistory", b =>
-                {
-                    b.Property<int>("MedicalHistoryID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_MedicalHistory", b =>
+            {
+                b.Property<int>("MedicalHistoryID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MedicalHistoryID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MedicalHistoryID"));
 
-                    b.Property<string>("Allergies")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Allergies")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ChronicDiseases")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ChronicDiseases")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("FamilyHistory")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FamilyHistory")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsDeleted")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("MainDiagnosis")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("MainDiagnosis")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PastDiseases")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PastDiseases")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PatientID")
-                        .HasColumnType("int");
+                b.Property<int>("PatientID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Surgery")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Surgery")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UpdatedBy")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("UpdatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("MedicalHistoryID");
+                b.HasKey("MedicalHistoryID");
 
-                    b.HasIndex("PatientID");
+                b.HasIndex("PatientID");
 
-                    b.ToTable("T_MedicalHistories");
-                });
+                b.ToTable("T_MedicalHistories");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_MedicationPlan", b =>
-                {
-                    b.Property<int>("MedicationID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_MedicationPlan", b =>
+            {
+                b.Property<int>("MedicationID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MedicationID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MedicationID"));
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Dosage")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Dosage")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Duration")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Duration")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Frequency")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Frequency")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Instructions")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Instructions")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsDeleted")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("MedicationName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("MedicationName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PatientID")
-                        .HasColumnType("int");
+                b.Property<int>("PatientID")
+                    .HasColumnType("int");
 
-                    b.Property<bool?>("Status")
-                        .HasColumnType("bit");
+                b.Property<bool?>("Status")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UpdatedBy")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("UpdatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("MedicationID");
+                b.HasKey("MedicationID");
 
-                    b.HasIndex("PatientID");
+                b.HasIndex("PatientID");
 
-                    b.ToTable("T_MedicationPlans");
-                });
+                b.ToTable("T_MedicationPlans");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_PatientDetails", b =>
-                {
-                    b.Property<int>("PatientID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_PatientDetails", b =>
+            {
+                b.Property<int>("PatientID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PatientID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PatientID"));
 
-                    b.Property<string>("BloodGroup")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("BloodGroup")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("EmergencyContactName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("EmergencyContactName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EmergencyContactNumber")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("EmergencyContactNumber")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsDeleted")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("MaritalStatus")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("MaritalStatus")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Occupation")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Occupation")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RelationshipToEmergency")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("RelationshipToEmergency")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UpdatedBy")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("UpdatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("UserID")
-                        .HasColumnType("nvarchar(128)");
+                b.Property<string>("UserID")
+                    .HasColumnType("nvarchar(128)");
 
-                    b.HasKey("PatientID");
+                b.HasKey("PatientID");
 
-                    b.HasIndex("UserID");
+                b.HasIndex("UserID");
 
-                    b.ToTable("T_PatientDetails");
-                });
+                b.ToTable("T_PatientDetails");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_PatientReports", b =>
-                {
-                    b.Property<int>("PatientReportID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_PatientReports", b =>
+            {
+                b.Property<int>("PatientReportID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PatientReportID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PatientReportID"));
 
-                    b.Property<int>("AppointmentID")
-                        .HasColumnType("int");
+                b.Property<int>("AppointmentID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("DocterID")
-                        .HasColumnType("int");
+                b.Property<int?>("DocterID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Documnt")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Documnt")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FilePath")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FilePath")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PatientID")
-                        .HasColumnType("int");
+                b.Property<int?>("PatientID")
+                    .HasColumnType("int");
 
-                    b.HasKey("PatientReportID");
+                b.HasKey("PatientReportID");
 
-                    b.ToTable("T_PatientReports");
-                });
+                b.ToTable("T_PatientReports");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_PatientVitals", b =>
-                {
-                    b.Property<int>("VitalID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_PatientVitals", b =>
+            {
+                b.Property<int>("VitalID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VitalID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VitalID"));
 
-                    b.Property<string>("BloodPressure")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("BloodPressure")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("BloodPressureReadings")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("BloodPressureReadings")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("DiabeticReadings")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("DiabeticReadings")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("HasHighBloodPressure")
-                        .HasColumnType("bit");
+                b.Property<bool?>("HasHighBloodPressure")
+                    .HasColumnType("bit");
 
-                    b.Property<decimal?>("Height")
-                        .HasColumnType("decimal(18,2)");
+                b.Property<decimal?>("Height")
+                    .HasColumnType("decimal(18,2)");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsDeleted")
+                    .HasColumnType("bit");
 
-                    b.Property<bool?>("IsDiabetic")
-                        .HasColumnType("bit");
+                b.Property<bool?>("IsDiabetic")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("PatientID")
-                        .HasColumnType("int");
+                b.Property<int>("PatientID")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("PulseRate")
-                        .HasColumnType("int");
+                b.Property<int?>("PulseRate")
+                    .HasColumnType("int");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UpdatedBy")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("UpdatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<decimal?>("Weight")
-                        .HasColumnType("decimal(18,2)");
+                b.Property<decimal?>("Weight")
+                    .HasColumnType("decimal(18,2)");
 
-                    b.HasKey("VitalID");
+                b.HasKey("VitalID");
 
-                    b.HasIndex("PatientID");
+                b.HasIndex("PatientID");
 
-                    b.ToTable("T_PatientVitals");
-                });
+                b.ToTable("T_PatientVitals");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_PrescriptionItems", b =>
-                {
-                    b.Property<int>("PrescriptionItemID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_PrescriptionItems", b =>
+            {
+                b.Property<int>("PrescriptionItemID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PrescriptionItemID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PrescriptionItemID"));
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Dosage")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Dosage")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Duration")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Duration")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Frequency")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Frequency")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsDeleted")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("MedicineName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("MedicineName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Notes")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PrescriptionID")
-                        .HasColumnType("int");
+                b.Property<int>("PrescriptionID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UpdatedBy")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("UpdatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("PrescriptionItemID");
+                b.HasKey("PrescriptionItemID");
 
-                    b.HasIndex("PrescriptionID");
+                b.HasIndex("PrescriptionID");
 
-                    b.ToTable("T_PrescriptionItems");
-                });
+                b.ToTable("T_PrescriptionItems");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_Prescriptions", b =>
-                {
-                    b.Property<int>("PrescriptionID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_Prescriptions", b =>
+            {
+                b.Property<int>("PrescriptionID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PrescriptionID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PrescriptionID"));
 
-                    b.Property<int>("AppointmentID")
-                        .HasColumnType("int");
+                b.Property<int>("AppointmentID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<int>("DoctorID")
-                        .HasColumnType("int");
+                b.Property<int>("DoctorID")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsDeleted")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Notes")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PatientID")
-                        .HasColumnType("int");
+                b.Property<int>("PatientID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UpdatedBy")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("UpdatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("PrescriptionID");
+                b.HasKey("PrescriptionID");
 
-                    b.HasIndex("AppointmentID");
+                b.HasIndex("AppointmentID");
 
-                    b.HasIndex("DoctorID");
+                b.HasIndex("DoctorID");
 
-                    b.HasIndex("PatientID");
+                b.HasIndex("PatientID");
 
-                    b.ToTable("T_Prescriptions");
-                });
+                b.ToTable("T_Prescriptions");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_Qualifications", b =>
-                {
-                    b.Property<int>("QualificationID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_Qualifications", b =>
+            {
+                b.Property<int>("QualificationID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QualificationID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QualificationID"));
 
-                    b.Property<string>("Certificate")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Certificate")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CertificatePath")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CertificatePath")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Degree")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Degree")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DoctorID")
-                        .HasColumnType("int");
+                b.Property<int>("DoctorID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Institution")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Institution")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsDeleted")
+                    .HasColumnType("bit");
 
-                    b.Property<int?>("T_DoctorDetailsDoctorID")
-                        .HasColumnType("int");
+                b.Property<int?>("T_DoctorDetailsDoctorID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UpdatedBy")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("UpdatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<int>("YearOfCompletion")
-                        .HasColumnType("int");
+                b.Property<int>("YearOfCompletion")
+                    .HasColumnType("int");
 
-                    b.HasKey("QualificationID");
+                b.HasKey("QualificationID");
 
-                    b.HasIndex("T_DoctorDetailsDoctorID");
+                b.HasIndex("T_DoctorDetailsDoctorID");
 
-                    b.ToTable("T_Qualifications");
-                });
+                b.ToTable("T_Qualifications");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_RoleClaim", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(128)
-                        .HasColumnType("int");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_RoleClaim", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasMaxLength(128)
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClaimType")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClaimValue")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(128)");
+                b.Property<string>("RoleId")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(128)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("RoleId");
+                b.HasIndex("RoleId");
 
-                    b.ToTable("T_RoleClaims", (string)null);
-                });
+                b.ToTable("T_RoleClaims", (string)null);
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_Roles", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_Roles", b =>
+            {
+                b.Property<string>("Id")
+                    .HasMaxLength(128)
+                    .HasColumnType("nvarchar(128)");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ConcurrencyStamp")
+                    .IsConcurrencyToken()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsActive")
+                    .HasColumnType("bit");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsDeleted")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("Name")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("NormalizedName")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("RoleArabicName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("RoleArabicName")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RoleName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("RoleName")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RoleType")
-                        .HasColumnType("int");
+                b.Property<int>("RoleType")
+                    .HasColumnType("int");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UpdatedBy")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("UpdatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                b.HasIndex("NormalizedName")
+                    .IsUnique()
+                    .HasDatabaseName("RoleNameIndex")
+                    .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("T_Roles", (string)null);
-                });
+                b.ToTable("T_Roles", (string)null);
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_UserLogin", b =>
-                {
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_UserLogin", b =>
+            {
+                b.Property<string>("LoginProvider")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("ProviderKey")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ProviderDisplayName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(128)");
+                b.Property<string>("UserId")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(128)");
 
-                    b.HasKey("LoginProvider", "ProviderKey");
+                b.HasKey("LoginProvider", "ProviderKey");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.ToTable("T_UserLogins", (string)null);
-                });
+                b.ToTable("T_UserLogins", (string)null);
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_UserRole", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_UserRole", b =>
+            {
+                b.Property<string>("UserId")
+                    .HasMaxLength(128)
+                    .HasColumnType("nvarchar(128)");
 
-                    b.Property<string>("RoleId")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                b.Property<string>("RoleId")
+                    .HasMaxLength(128)
+                    .HasColumnType("nvarchar(128)");
 
-                    b.HasKey("UserId", "RoleId");
+                b.HasKey("UserId", "RoleId");
 
-                    b.HasIndex("RoleId");
+                b.HasIndex("RoleId");
 
-                    b.ToTable("T_UserRoles", (string)null);
-                });
+                b.ToTable("T_UserRoles", (string)null);
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_UserToken", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(128)");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_UserToken", b =>
+            {
+                b.Property<string>("UserId")
+                    .HasColumnType("nvarchar(128)");
 
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("LoginProvider")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Value")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId", "LoginProvider", "Name");
+                b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("T_UserTokens", (string)null);
-                });
+                b.ToTable("T_UserTokens", (string)null);
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_Users", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_Users", b =>
+            {
+                b.Property<string>("Id")
+                    .HasMaxLength(128)
+                    .HasColumnType("nvarchar(128)");
 
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
+                b.Property<int>("AccessFailedCount")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Address")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Age")
-                        .HasColumnType("int");
+                b.Property<int?>("Age")
+                    .HasColumnType("int");
 
-                    b.Property<string>("ArabicUserName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ArabicUserName")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ConcurrencyStamp")
+                    .IsConcurrencyToken()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DateOfBirth")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("DateOfBirth")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("Email")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
+                b.Property<bool>("EmailConfirmed")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FirstName")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Gender")
-                        .HasColumnType("int");
+                b.Property<int>("Gender")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsActive")
+                    .HasColumnType("bit");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsDeleted")
+                    .HasColumnType("bit");
 
-                    b.Property<DateTime?>("LastLogin")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("LastLogin")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("LastName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
+                b.Property<bool>("LockoutEnabled")
+                    .HasColumnType("bit");
 
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
+                b.Property<DateTimeOffset?>("LockoutEnd")
+                    .HasColumnType("datetimeoffset");
 
-                    b.Property<int>("LoginID")
-                        .HasColumnType("int");
+                b.Property<int>("LoginID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("NormalizedEmail")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("NormalizedUserName")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PasswordHash")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PhoneNumber")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
+                b.Property<bool>("PhoneNumberConfirmed")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("ProfileImage")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ProfileImage")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RoleID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(128)");
+                b.Property<string>("RoleID")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(128)");
 
-                    b.Property<int>("RoleType")
-                        .HasColumnType("int");
+                b.Property<int>("RoleType")
+                    .HasColumnType("int");
 
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("SecurityStamp")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
+                b.Property<bool>("TwoFactorEnabled")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UpdatedBy")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("UpdatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("UserName")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
+                b.HasIndex("NormalizedEmail")
+                    .HasDatabaseName("EmailIndex");
 
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                b.HasIndex("NormalizedUserName")
+                    .IsUnique()
+                    .HasDatabaseName("UserNameIndex")
+                    .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.HasIndex("RoleID");
+                b.HasIndex("RoleID");
 
-                    b.ToTable("T_Users", (string)null);
-                });
+                b.ToTable("T_Users", (string)null);
+            });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClaimType")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClaimValue")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(128)");
+                b.Property<string>("UserId")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(128)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
-                });
+                b.ToTable("AspNetUserClaims", (string)null);
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_AdditionalNotes", b =>
-                {
-                    b.HasOne("CareSync.DataLayer.Entities.T_PatientDetails", "Patient")
-                        .WithMany("AdditionalNotes")
-                        .HasForeignKey("PatientID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_AdditionalNotes", b =>
+            {
+                b.HasOne("CareSync.DataLayer.Entities.T_PatientDetails", "Patient")
+                    .WithMany("AdditionalNotes")
+                    .HasForeignKey("PatientID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Patient");
-                });
+                b.Navigation("Patient");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_Appointments", b =>
-                {
-                    b.HasOne("CareSync.DataLayer.Entities.T_DoctorDetails", "Doctor")
-                        .WithMany("Appointments")
-                        .HasForeignKey("DoctorID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_Appointments", b =>
+            {
+                b.HasOne("CareSync.DataLayer.Entities.T_DoctorDetails", "Doctor")
+                    .WithMany("Appointments")
+                    .HasForeignKey("DoctorID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("CareSync.DataLayer.Entities.T_PatientDetails", "Patient")
-                        .WithMany("Appointments")
-                        .HasForeignKey("PatientID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("CareSync.DataLayer.Entities.T_PatientDetails", "Patient")
+                    .WithMany("Appointments")
+                    .HasForeignKey("PatientID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Doctor");
+                b.Navigation("Doctor");
 
-                    b.Navigation("Patient");
-                });
+                b.Navigation("Patient");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_ChronicDiseases", b =>
-                {
-                    b.HasOne("CareSync.DataLayer.Entities.T_PatientDetails", "Patient")
-                        .WithMany("ChronicDiseases")
-                        .HasForeignKey("PatientID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_ChronicDiseases", b =>
+            {
+                b.HasOne("CareSync.DataLayer.Entities.T_PatientDetails", "Patient")
+                    .WithMany("ChronicDiseases")
+                    .HasForeignKey("PatientID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Patient");
-                });
+                b.Navigation("Patient");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_DoctorDetails", b =>
-                {
-                    b.HasOne("CareSync.DataLayer.Entities.T_Users", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_DoctorDetails", b =>
+            {
+                b.HasOne("CareSync.DataLayer.Entities.T_Users", "User")
+                    .WithMany()
+                    .HasForeignKey("UserID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("User");
-                });
+                b.Navigation("User");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_LabRequests", b =>
-                {
-                    b.HasOne("CareSync.DataLayer.Entities.T_Appointments", null)
-                        .WithMany("LabRequests")
-                        .HasForeignKey("T_AppointmentsAppointmentID");
-                });
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_LabRequests", b =>
+            {
+                b.HasOne("CareSync.DataLayer.Entities.T_Appointments", null)
+                    .WithMany("LabRequests")
+                    .HasForeignKey("T_AppointmentsAppointmentID");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_LabServices", b =>
-                {
-                    b.HasOne("CareSync.DataLayer.Entities.T_Lab", null)
-                        .WithMany("LabServices")
-                        .HasForeignKey("T_LabLabID");
-                });
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_LabServices", b =>
+            {
+                b.HasOne("CareSync.DataLayer.Entities.T_Lab", null)
+                    .WithMany("LabServices")
+                    .HasForeignKey("T_LabLabID");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_LifestyleInfo", b =>
-                {
-                    b.HasOne("CareSync.DataLayer.Entities.T_PatientDetails", "Patient")
-                        .WithMany("LifestyleInfo")
-                        .HasForeignKey("PatientID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_LifestyleInfo", b =>
+            {
+                b.HasOne("CareSync.DataLayer.Entities.T_PatientDetails", "Patient")
+                    .WithMany("LifestyleInfo")
+                    .HasForeignKey("PatientID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Patient");
-                });
+                b.Navigation("Patient");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_MedicalFollowUp", b =>
-                {
-                    b.HasOne("CareSync.DataLayer.Entities.T_PatientDetails", "Patient")
-                        .WithMany("MedicalFollowUps")
-                        .HasForeignKey("PatientID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_MedicalFollowUp", b =>
+            {
+                b.HasOne("CareSync.DataLayer.Entities.T_PatientDetails", "Patient")
+                    .WithMany("MedicalFollowUps")
+                    .HasForeignKey("PatientID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Patient");
-                });
+                b.Navigation("Patient");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_MedicalHistory", b =>
-                {
-                    b.HasOne("CareSync.DataLayer.Entities.T_PatientDetails", "Patient")
-                        .WithMany("MedicalHistories")
-                        .HasForeignKey("PatientID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_MedicalHistory", b =>
+            {
+                b.HasOne("CareSync.DataLayer.Entities.T_PatientDetails", "Patient")
+                    .WithMany("MedicalHistories")
+                    .HasForeignKey("PatientID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Patient");
-                });
+                b.Navigation("Patient");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_MedicationPlan", b =>
-                {
-                    b.HasOne("CareSync.DataLayer.Entities.T_PatientDetails", "Patient")
-                        .WithMany("MedicationPlans")
-                        .HasForeignKey("PatientID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_MedicationPlan", b =>
+            {
+                b.HasOne("CareSync.DataLayer.Entities.T_PatientDetails", "Patient")
+                    .WithMany("MedicationPlans")
+                    .HasForeignKey("PatientID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Patient");
-                });
+                b.Navigation("Patient");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_PatientDetails", b =>
-                {
-                    b.HasOne("CareSync.DataLayer.Entities.T_Users", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_PatientDetails", b =>
+            {
+                b.HasOne("CareSync.DataLayer.Entities.T_Users", "User")
+                    .WithMany()
+                    .HasForeignKey("UserID");
 
-                    b.Navigation("User");
-                });
+                b.Navigation("User");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_PatientVitals", b =>
-                {
-                    b.HasOne("CareSync.DataLayer.Entities.T_PatientDetails", "Patient")
-                        .WithMany("PatientVitals")
-                        .HasForeignKey("PatientID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_PatientVitals", b =>
+            {
+                b.HasOne("CareSync.DataLayer.Entities.T_PatientDetails", "Patient")
+                    .WithMany("PatientVitals")
+                    .HasForeignKey("PatientID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Patient");
-                });
+                b.Navigation("Patient");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_PrescriptionItems", b =>
-                {
-                    b.HasOne("CareSync.DataLayer.Entities.T_Prescriptions", "Prescription")
-                        .WithMany("PrescriptionItems")
-                        .HasForeignKey("PrescriptionID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_PrescriptionItems", b =>
+            {
+                b.HasOne("CareSync.DataLayer.Entities.T_Prescriptions", "Prescription")
+                    .WithMany("PrescriptionItems")
+                    .HasForeignKey("PrescriptionID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Prescription");
-                });
+                b.Navigation("Prescription");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_Prescriptions", b =>
-                {
-                    b.HasOne("CareSync.DataLayer.Entities.T_Appointments", "Appointment")
-                        .WithMany("Prescriptions")
-                        .HasForeignKey("AppointmentID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_Prescriptions", b =>
+            {
+                b.HasOne("CareSync.DataLayer.Entities.T_Appointments", "Appointment")
+                    .WithMany("Prescriptions")
+                    .HasForeignKey("AppointmentID")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.HasOne("CareSync.DataLayer.Entities.T_DoctorDetails", "Doctor")
-                        .WithMany("Prescriptions")
-                        .HasForeignKey("DoctorID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                b.HasOne("CareSync.DataLayer.Entities.T_DoctorDetails", "Doctor")
+                    .WithMany("Prescriptions")
+                    .HasForeignKey("DoctorID")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.HasOne("CareSync.DataLayer.Entities.T_PatientDetails", "Patient")
-                        .WithMany("Prescriptions")
-                        .HasForeignKey("PatientID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                b.HasOne("CareSync.DataLayer.Entities.T_PatientDetails", "Patient")
+                    .WithMany("Prescriptions")
+                    .HasForeignKey("PatientID")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.Navigation("Appointment");
+                b.Navigation("Appointment");
 
-                    b.Navigation("Doctor");
+                b.Navigation("Doctor");
 
-                    b.Navigation("Patient");
-                });
+                b.Navigation("Patient");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_Qualifications", b =>
-                {
-                    b.HasOne("CareSync.DataLayer.Entities.T_DoctorDetails", null)
-                        .WithMany("Qualifications")
-                        .HasForeignKey("T_DoctorDetailsDoctorID");
-                });
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_Qualifications", b =>
+            {
+                b.HasOne("CareSync.DataLayer.Entities.T_DoctorDetails", null)
+                    .WithMany("Qualifications")
+                    .HasForeignKey("T_DoctorDetailsDoctorID");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_RoleClaim", b =>
-                {
-                    b.HasOne("CareSync.DataLayer.Entities.T_Roles", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_RoleClaim", b =>
+            {
+                b.HasOne("CareSync.DataLayer.Entities.T_Roles", null)
+                    .WithMany()
+                    .HasForeignKey("RoleId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_UserLogin", b =>
-                {
-                    b.HasOne("CareSync.DataLayer.Entities.T_Users", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_UserLogin", b =>
+            {
+                b.HasOne("CareSync.DataLayer.Entities.T_Users", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_UserRole", b =>
-                {
-                    b.HasOne("CareSync.DataLayer.Entities.T_Roles", "Role")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_UserRole", b =>
+            {
+                b.HasOne("CareSync.DataLayer.Entities.T_Roles", "Role")
+                    .WithMany("UserRoles")
+                    .HasForeignKey("RoleId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.HasOne("CareSync.DataLayer.Entities.T_Users", "User")
-                        .WithMany("UserRole")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                b.HasOne("CareSync.DataLayer.Entities.T_Users", "User")
+                    .WithMany("UserRole")
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.Navigation("Role");
+                b.Navigation("Role");
 
-                    b.Navigation("User");
-                });
+                b.Navigation("User");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_UserToken", b =>
-                {
-                    b.HasOne("CareSync.DataLayer.Entities.T_Users", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_UserToken", b =>
+            {
+                b.HasOne("CareSync.DataLayer.Entities.T_Users", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_Users", b =>
-                {
-                    b.HasOne("CareSync.DataLayer.Entities.T_Roles", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_Users", b =>
+            {
+                b.HasOne("CareSync.DataLayer.Entities.T_Roles", "Role")
+                    .WithMany()
+                    .HasForeignKey("RoleID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Role");
-                });
+                b.Navigation("Role");
+            });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.HasOne("CareSync.DataLayer.Entities.T_Users", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            {
+                b.HasOne("CareSync.DataLayer.Entities.T_Users", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_Appointments", b =>
-                {
-                    b.Navigation("LabRequests");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_Appointments", b =>
+            {
+                b.Navigation("LabRequests");
 
-                    b.Navigation("Prescriptions");
-                });
+                b.Navigation("Prescriptions");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_DoctorDetails", b =>
-                {
-                    b.Navigation("Appointments");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_DoctorDetails", b =>
+            {
+                b.Navigation("Appointments");
 
-                    b.Navigation("Prescriptions");
+                b.Navigation("Prescriptions");
 
-                    b.Navigation("Qualifications");
-                });
+                b.Navigation("Qualifications");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_Lab", b =>
-                {
-                    b.Navigation("LabServices");
-                });
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_Lab", b =>
+            {
+                b.Navigation("LabServices");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_PatientDetails", b =>
-                {
-                    b.Navigation("AdditionalNotes");
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_PatientDetails", b =>
+            {
+                b.Navigation("AdditionalNotes");
 
-                    b.Navigation("Appointments");
+                b.Navigation("Appointments");
 
-                    b.Navigation("ChronicDiseases");
+                b.Navigation("ChronicDiseases");
 
-                    b.Navigation("LifestyleInfo");
+                b.Navigation("LifestyleInfo");
 
-                    b.Navigation("MedicalFollowUps");
+                b.Navigation("MedicalFollowUps");
 
-                    b.Navigation("MedicalHistories");
+                b.Navigation("MedicalHistories");
 
-                    b.Navigation("MedicationPlans");
+                b.Navigation("MedicationPlans");
 
-                    b.Navigation("PatientVitals");
+                b.Navigation("PatientVitals");
 
-                    b.Navigation("Prescriptions");
-                });
+                b.Navigation("Prescriptions");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_Prescriptions", b =>
-                {
-                    b.Navigation("PrescriptionItems");
-                });
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_Prescriptions", b =>
+            {
+                b.Navigation("PrescriptionItems");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_Roles", b =>
-                {
-                    b.Navigation("UserRoles");
-                });
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_Roles", b =>
+            {
+                b.Navigation("UserRoles");
+            });
 
-            modelBuilder.Entity("CareSync.DataLayer.Entities.T_Users", b =>
-                {
-                    b.Navigation("UserRole");
-                });
+        modelBuilder.Entity("CareSync.DataLayer.Entities.T_Users", b =>
+            {
+                b.Navigation("UserRole");
+            });
 #pragma warning restore 612, 618
-        }
     }
 }

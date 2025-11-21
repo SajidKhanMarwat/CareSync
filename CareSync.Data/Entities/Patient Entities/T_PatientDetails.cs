@@ -1,3 +1,5 @@
+using CareSync.Shared.Enums.Patient;
+
 namespace CareSync.DataLayer.Entities;
 
 /// <summary>
@@ -34,7 +36,7 @@ public class T_PatientDetails : BaseEntity
     /// Important for medical history, insurance coverage, and emergency contact relationships.
     /// Nullable to respect privacy preferences and handle incomplete patient profiles.
     /// </summary>
-    public string? MaritalStatus { get; set; }
+    public MaritalStatusEnum MaritalStatus { get; set; }
 
     /// <summary>
     /// The patient's current occupation or profession.

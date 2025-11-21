@@ -1,4 +1,4 @@
-using CareSync.DataLayer.DataEnums;
+using CareSync.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
 
 namespace CareSync.DataLayer.Entities;

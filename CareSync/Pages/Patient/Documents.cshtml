@@ -1,0 +1,475 @@
+@page "/Patient/Documents"
+@model CareSync.Pages.Patient.DocumentsModel
+@{
+    ViewData["Title"] = "Medical Documents";
+}
+
+<!-- Page Header -->
+<div class="row gx-3 mb-4">
+    <div class="col-12">
+        <div class="card border-start border-warning border-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-1"><i class="ri-folder-line me-2 text-warning"></i>Medical Documents</h4>
+                        <p class="text-muted mb-0">Access and manage all your medical documents</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="/Patient/MedicalHistory" class="btn btn-outline-primary">
+                            <i class="ri-history-line me-1"></i>Medical History
+                        </a>
+                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#uploadDocumentModal">
+                            <i class="ri-upload-line me-1"></i>Upload Document
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row gx-3 mb-4">
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-primary-subtle rounded-5 me-3">
+                        <i class="ri-folder-line fs-3 text-primary"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h3 class="text-primary mb-1">@Model.TotalDocuments</h3>
+                        <small class="text-muted">Total Documents</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-danger-subtle rounded-5 me-3">
+                        <i class="ri-file-list-3-line fs-3 text-danger"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h3 class="text-danger mb-1">@Model.MedicalReports</h3>
+                        <small class="text-muted">Medical Reports</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-info-subtle rounded-5 me-3">
+                        <i class="ri-image-line fs-3 text-info"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h3 class="text-info mb-1">@Model.ImagesScans</h3>
+                        <small class="text-muted">Images & Scans</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-success-subtle rounded-5 me-3">
+                        <i class="ri-upload-cloud-line fs-3 text-success"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h3 class="text-success mb-1">@Model.UploadedFiles</h3>
+                        <small class="text-muted">My Uploads</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="row gx-3">
+    <div class="col-xl-9">
+        <!-- Document Categories -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-folder-open-line me-2"></i>Document Categories
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" style="width: auto;" id="categoryFilter">
+                            <option value="all">All Categories</option>
+                            <option value="lab">Lab Reports</option>
+                            <option value="imaging">Imaging & Scans</option>
+                            <option value="prescriptions">Prescriptions</option>
+                            <option value="hospital">Hospital Records</option>
+                            <option value="vaccination">Vaccination Records</option>
+                            <option value="insurance">Insurance Documents</option>
+                        </select>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-outline-primary active" id="gridView">
+                                <i class="ri-grid-line"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary" id="listView">
+                                <i class="ri-list-check"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Categories Grid -->
+                <div class="row mb-4">
+                    @foreach (var category in Model.Categories)
+                    {
+                        <div class="col-md-4 mb-3">
+                            <div class="category-card border rounded-4 p-3 cursor-pointer hover-lift" data-category="@category.Name.ToLower().Replace(" & ", "-").Replace(" ", "-")">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-box md bg-@(category.Color)-subtle rounded-circle me-3">
+                                        <i class="@category.Icon text-@category.Color"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-0">@category.Name</h6>
+                                        <small class="text-muted">@category.Count documents</small>
+                                    </div>
+                                    <i class="ri-arrow-right-s-line text-muted"></i>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Documents Grid -->
+                <div id="documentsGrid">
+                    <div class="row">
+                        @foreach (var doc in Model.Documents)
+                        {
+                            <div class="col-md-4 mb-3 document-item" data-category="@doc.Category.ToLower().Replace(" & ", "-").Replace(" ", "-")">
+                                <div class="card h-100 hover-lift">
+                                    <div class="card-body">
+                                        <div class="text-center mb-3">
+                                            <div class="icon-box xl bg-@(doc.IconColor)-subtle rounded-circle mx-auto">
+                                                <i class="@doc.Icon fs-1 text-@doc.IconColor"></i>
+                                            </div>
+                                        </div>
+                                        <h6 class="card-title text-center mb-2">@doc.Name</h6>
+                                        <div class="text-center mb-3">
+                                            <span class="badge bg-@(doc.IconColor)-subtle text-@doc.IconColor">@doc.Category</span>
+                                        </div>
+                                        <div class="text-muted small text-center mb-3">
+                                            <div><i class="ri-calendar-line me-1"></i>@doc.Date</div>
+                                            @if (!string.IsNullOrEmpty(doc.DoctorName))
+                                            {
+                                                <div><i class="ri-user-line me-1"></i>@doc.DoctorName</div>
+                                            }
+                                            <div><i class="ri-file-line me-1"></i>@doc.Type - @doc.Size</div>
+                                        </div>
+                                        <div class="d-grid gap-2">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewDocument(@doc.Id)">
+                                                <i class="ri-eye-line me-1"></i>View
+                                            </button>
+                                            <div class="btn-group" role="group">
+                                                <button class="btn btn-sm btn-outline-success" onclick="downloadDocument(@doc.Id)">
+                                                    <i class="ri-download-line me-1"></i>Download
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-info" onclick="shareDocument(@doc.Id)">
+                                                    <i class="ri-share-line me-1"></i>Share
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-xl-3">
+        <!-- Quick Upload -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning-subtle">
+                <h6 class="card-title text-warning mb-0">
+                    <i class="ri-upload-cloud-line me-2"></i>Quick Upload
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-3">Upload medical documents, test results, or images</p>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#uploadDocumentModal">
+                        <i class="ri-upload-line me-2"></i>Upload Document
+                    </button>
+                </div>
+                <div class="mt-3">
+                    <small class="text-muted">Accepted formats:</small>
+                    <div class="d-flex gap-1 mt-1">
+                        <span class="badge bg-light text-dark">PDF</span>
+                        <span class="badge bg-light text-dark">JPG</span>
+                        <span class="badge bg-light text-dark">PNG</span>
+                        <span class="badge bg-light text-dark">DOCX</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="ri-time-line me-2"></i>Recent Activity
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="activity-item mb-3">
+                    <div class="d-flex align-items-start">
+                        <i class="ri-file-add-line text-success me-2 mt-1"></i>
+                        <div>
+                            <small class="text-muted">Uploaded</small>
+                            <p class="mb-0">Blood Test Report</p>
+                            <small class="text-muted">2 days ago</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="activity-item mb-3">
+                    <div class="d-flex align-items-start">
+                        <i class="ri-download-line text-info me-2 mt-1"></i>
+                        <div>
+                            <small class="text-muted">Downloaded</small>
+                            <p class="mb-0">Chest X-Ray</p>
+                            <small class="text-muted">5 days ago</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="d-flex align-items-start">
+                        <i class="ri-share-line text-warning me-2 mt-1"></i>
+                        <div>
+                            <small class="text-muted">Shared</small>
+                            <p class="mb-0">Prescription with Dr. Johnson</p>
+                            <small class="text-muted">1 week ago</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="ri-dashboard-line me-2"></i>Quick Actions
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="/Patient/LabResults" class="btn btn-outline-danger btn-sm">
+                        <i class="ri-test-tube-line me-2"></i>View Lab Reports
+                    </a>
+                    <a href="/Patient/Prescriptions" class="btn btn-outline-success btn-sm">
+                        <i class="ri-medicine-bottle-line me-2"></i>View Prescriptions
+                    </a>
+                    <a href="/Patient/Appointments" class="btn btn-outline-primary btn-sm">
+                        <i class="ri-calendar-line me-2"></i>My Appointments
+                    </a>
+                    <button class="btn btn-outline-warning btn-sm" onclick="printAllDocuments()">
+                        <i class="ri-printer-line me-2"></i>Print Summary
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Document Modal -->
+<div class="modal fade" id="uploadDocumentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning-subtle">
+                <h5 class="modal-title text-warning">
+                    <i class="ri-upload-cloud-line me-2"></i>Upload Medical Document
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Document Name</label>
+                        <input type="text" class="form-control" placeholder="e.g., Blood Test Results">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select class="form-select">
+                            <option value="">Select Category</option>
+                            <option value="lab">Lab Reports</option>
+                            <option value="imaging">Imaging & Scans</option>
+                            <option value="prescription">Prescriptions</option>
+                            <option value="hospital">Hospital Records</option>
+                            <option value="vaccination">Vaccination Records</option>
+                            <option value="insurance">Insurance Documents</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Upload File</label>
+                        <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.docx">
+                        <small class="text-muted">Max file size: 10MB. Formats: PDF, JPG, PNG, DOCX</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes (Optional)</label>
+                        <textarea class="form-control" rows="3" placeholder="Add any additional notes..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" onclick="uploadDocument()">
+                    <i class="ri-upload-line me-1"></i>Upload Document
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View Document Modal -->
+<div class="modal fade" id="viewDocumentModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="ri-file-text-line me-2"></i>Document Preview
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center p-5">
+                    <i class="ri-file-pdf-line fs-1 text-danger mb-3"></i>
+                    <h5 id="documentName">Document Name</h5>
+                    <p class="text-muted">Document preview will be displayed here</p>
+                    <div class="d-flex gap-2 justify-content-center mt-4">
+                        <button class="btn btn-success" onclick="downloadDocument()">
+                            <i class="ri-download-line me-1"></i>Download
+                        </button>
+                        <button class="btn btn-info" onclick="shareDocument()">
+                            <i class="ri-share-line me-1"></i>Share
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="printDocument()">
+                            <i class="ri-printer-line me-1"></i>Print
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // View/Grid Toggle
+        document.getElementById('gridView').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('listView').classList.remove('active');
+            document.getElementById('documentsGrid').classList.remove('list-view');
+        });
+
+        document.getElementById('listView').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('gridView').classList.remove('active');
+            document.getElementById('documentsGrid').classList.add('list-view');
+        });
+
+        // Category Filter
+        document.getElementById('categoryFilter').addEventListener('change', function() {
+            const selectedCategory = this.value;
+            const documents = document.querySelectorAll('.document-item');
+            
+            documents.forEach(doc => {
+                if (selectedCategory === 'all') {
+                    doc.style.display = 'block';
+                } else {
+                    const docCategory = doc.getAttribute('data-category');
+                    doc.style.display = docCategory === selectedCategory ? 'block' : 'none';
+                }
+            });
+        });
+
+        // Category Card Click
+        document.querySelectorAll('.category-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const category = this.getAttribute('data-category');
+                const select = document.getElementById('categoryFilter');
+                select.value = category;
+                select.dispatchEvent(new Event('change'));
+            });
+        });
+
+        // Document Functions
+        function viewDocument(id) {
+            document.getElementById('viewDocumentModal').querySelector('.modal').show();
+            // Implementation: Load document preview
+            console.log('Viewing document:', id);
+        }
+
+        function downloadDocument(id) {
+            // Implementation: Download document
+            console.log('Downloading document:', id);
+            alert('Downloading document...');
+        }
+
+        function shareDocument(id) {
+            // Implementation: Share document
+            console.log('Sharing document:', id);
+            alert('Opening share options...');
+        }
+
+        function uploadDocument() {
+            // Implementation: Upload document
+            alert('Uploading document...');
+            document.querySelector('#uploadDocumentModal .btn-close').click();
+        }
+
+        function printAllDocuments() {
+            window.print();
+        }
+
+        function printDocument() {
+            window.print();
+        }
+
+        // Hover effects
+        document.querySelectorAll('.hover-lift').forEach(el => {
+            el.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-4px)';
+                this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            });
+            el.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '';
+            });
+        });
+    </script>
+
+    <style>
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        .cursor-pointer {
+            cursor: pointer;
+        }
+        .icon-box.xl {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+}
