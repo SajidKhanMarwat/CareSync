@@ -43,6 +43,7 @@ public class RegisterModel : PageModel
             // Map Register_Request to UserRegisteration_DTO
             var registrationDto = new UserRegisteration_DTO
             {
+                ArabicFirstName = RegisterRequest.ArabicUserName,
                 FirstName = RegisterRequest.FirstName,
                 MiddleName = RegisterRequest.MiddleName,
                 LastName = RegisterRequest.LastName,

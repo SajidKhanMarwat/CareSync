@@ -1,8 +1,10 @@
-﻿namespace CareSync.ApplicationLayer.Contracts.UsersDTOs;
-
+﻿using CareSync.ApplicationLayer.Contracts.DoctorsDTOs;
+using CareSync.ApplicationLayer.Contracts.LabDTOs;
+using CareSync.ApplicationLayer.Contracts.PatientsDTOs;
 using CareSync.Shared.Enums;
-using System;
 using System.ComponentModel.DataAnnotations;
+
+namespace CareSync.ApplicationLayer.Contracts.UsersDTOs;
 
 public record UserRegisteration_DTO
 {
@@ -11,10 +13,12 @@ public record UserRegisteration_DTO
 
     [Required(ErrorMessage = "First name is required")]
     public required string FirstName { get; set; }
-
     public string? MiddleName { get; set; }
-
     public string? LastName { get; set; }
+
+    [Required(ErrorMessage = "Arabic first name is required")]
+    public required string ArabicFirstName { get; set; }
+    public string? ArabicLastName { get; set; }
 
     [Required(ErrorMessage = "Email is required")]
     [EmailAddress(ErrorMessage = "Invalid email address")]
@@ -36,14 +40,18 @@ public record UserRegisteration_DTO
     public required string ConfirmPassword { get; set; }
 
     [Required(ErrorMessage = "Gender is required")]
-    public Gender_Enum Gender { get; set; } // 1 = Male, 2 = Female, 3 = Other
+    public Gender_Enum Gender { get; set; }
 
     [DataType(DataType.Date)]
     public DateTime? DateOfBirth { get; set; }
-
     public int? Age { get; set; }
-
     public string? Address { get; set; }
-
+    public string? ProfileImage { get; set; }
+    public bool IsActive { get; set; } = true;
+    public RoleType RoleType { get; set; } = RoleType.Patient;
+    public DateTime? LastLogin { get; set; }
     public bool TwoFactorEnabled { get; set; } = false;
+    public RegisterPatient_DTO? RegisterPatient { get; set; }
+    public RegisterDoctor_DTO? RegisterDoctor { get; set; }
+    public RegisterLabAssistant_DTO? RegisterLabAssistant { get; set; }
 }

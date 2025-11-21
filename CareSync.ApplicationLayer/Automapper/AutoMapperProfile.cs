@@ -1,13 +1,17 @@
 using AutoMapper;
+using CareSync.ApplicationLayer.Contracts.AppointmentsDTOs;
+using CareSync.ApplicationLayer.Contracts.DoctorsDTOs;
+using CareSync.ApplicationLayer.Contracts.LabDTOs;
+using CareSync.ApplicationLayer.Contracts.PatientsDTOs;
 using CareSync.ApplicationLayer.Contracts.UsersDTOs;
-using CareSync.Shared.Enums;
 using CareSync.DataLayer.Entities;
+using CareSync.Shared.Enums;
 
-namespace CareSync.ApplicationLayer.Mappings;
+namespace CareSync.ApplicationLayer.Automapper;
 
-public class UserMappingProfile : Profile
+public class AutoMapperProfile : Profile
 {
-    public UserMappingProfile()
+    public AutoMapperProfile()
     {
         CreateMap<UserRegisteration_DTO, T_Users>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid().ToString())) // Generate new GUID for ID
@@ -35,5 +39,12 @@ public class UserMappingProfile : Profile
             .ForMember(dest => dest.TwoFactorEnabled, opt => opt.MapFrom(src => src.TwoFactorEnabled))
             .ForMember(dest => dest.Role, opt => opt.Ignore())
             .ForMember(dest => dest.UserRole, opt => opt.Ignore());
+
+        CreateMap<UserUpdate_DTO, T_Users>();
+        CreateMap<Appointment_DTO, T_Appointments>();
+        CreateMap<UserRegisteration_DTO, RegisterPatient_DTO>();
+        CreateMap<UserRegisteration_DTO, RegisterDoctor_DTO>();
+        CreateMap<UserRegisteration_DTO, RegisterLabAssistant_DTO>();
+        CreateMap<RegisterPatient_DTO, T_PatientDetails>();
     }
 }
