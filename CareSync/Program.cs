@@ -5,6 +5,9 @@ builder.Services.AddHttpClient("ApiClient", client =>
     client.BaseAddress = new Uri("http://localhost:5157/api/");
 });
 
+// Register API Services
+builder.Services.AddScoped<CareSync.Services.AdminApiService>();
+
 // Add services to the container.
 builder.Services.AddRazorPages();
 
