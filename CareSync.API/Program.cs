@@ -1,5 +1,8 @@
 using CareSync.ApplicationLayer.Extensions;
 using CareSync.ApplicationLayer.IServices.EntitiesServices;
+using CareSync.ApplicationLayer.Repository;
+using CareSync.ApplicationLayer.Services.EntitiesServices;
+using CareSync.ApplicationLayer.UnitOfWork;
 using CareSync.DataLayer;
 using CareSync.DataLayer.Entities;
 using CareSync.InfrastructureLayer.Services.EntitiesServices;
@@ -25,7 +28,7 @@ builder.Services.ApplicationLayerServices();
 #region Serilog
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
-    .WriteTo.File($"Logs/logs{DateTime.Today.Date}.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.File("Logs/logs-.txt",rollingInterval: RollingInterval.Day)
     .WriteTo.Console()
     .CreateLogger();
 
@@ -33,7 +36,14 @@ builder.Services.AddSerilog();
 #endregion
 
 #region Services
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<IDoctorService, DoctorService>();
+builder.Services.AddScoped<ILabService, LabService>();
 #endregion
 
 var app = builder.Build();

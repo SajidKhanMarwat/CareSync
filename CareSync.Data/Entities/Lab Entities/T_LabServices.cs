@@ -8,6 +8,11 @@ public class T_LabServices : BaseEntity
     public string? Description { get; set; }
     public string? Category { get; set; }
     public string? SampleType { get; set; }
+    /// <summary>
+    /// Instructions regarding this Service
+    /// e.g: Patient must not drink water for 1 hour
+    /// </summary>
+    public string? Instructions { get; set; }
     public decimal? Price { get; set; }
     public string? EstimatedTime { get; set; }
 

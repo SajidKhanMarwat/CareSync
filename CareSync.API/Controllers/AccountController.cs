@@ -22,7 +22,7 @@ public class AccountController(IUserService userService, ILogger<AccountControll
                 Message = "invalid input values.",
                 Token = string.Empty
             });
-        return await userService.GenerateLoginToken(input);
+        return await userService.GenerateLoginTokenAsync(input);
     }
 
     [HttpPost("Register")]
@@ -35,7 +35,7 @@ public class AccountController(IUserService userService, ILogger<AccountControll
                 Success = false,
                 Message = "invalid input values.",
             });
-        return await userService.RegisterNewUser(request);
+        return await userService.RegisterNewUserAsync(request);
     }
 
     [HttpPost("forget-password")]
@@ -48,7 +48,7 @@ public class AccountController(IUserService userService, ILogger<AccountControll
                 Success = false,
                 Message = "invalid input values.",
             });
-        return await userService.CreatePassword(input);
+        return await userService.CreatePasswordAsync(input);
     }
 
     [HttpPost("refresh-token")]
