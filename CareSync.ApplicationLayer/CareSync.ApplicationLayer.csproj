@@ -13,7 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Automapper\" />
     <Folder Include="Services\Email Service\" />
   </ItemGroup>
 
