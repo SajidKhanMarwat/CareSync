@@ -3,5 +3,6 @@
 public enum AppointmentType_Enum
 {
     WalkIn,
-    ABP
+    ABP,
+    InPerson
 }

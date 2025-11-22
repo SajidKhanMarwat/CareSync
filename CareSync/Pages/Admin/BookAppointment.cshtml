@@ -52,38 +52,39 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search doctors..." id="searchDoctors">
-                            <button class="btn btn-outline-secondary" type="button">
-                                <i class="ri-search-line"></i>
+                <form method="get" id="filterForm">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Search doctors by name..." id="searchDoctors">
+                                <button class="btn btn-outline-secondary" type="button" onclick="searchDoctors()">
+                                    <i class="ri-search-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" name="SpecializationFilter" id="filterSpecialty" onchange="this.form.submit()">
+                                <option value="">All Specialties</option>
+                                @foreach (var spec in Model.AvailableDoctors.Select(d => d.Specialization).Distinct().OrderBy(s => s))
+                                {
+                                    <option value="@spec" selected="@(Model.SpecializationFilter == spec)">@spec</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" name="ActiveOnlyFilter" id="filterAvailability" onchange="this.form.submit()">
+                                <option value="">All Doctors</option>
+                                <option value="true" selected="@(Model.ActiveOnlyFilter == true)">Active Only</option>
+                                <option value="false" selected="@(Model.ActiveOnlyFilter == false)">Inactive Only</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                                <i class="ri-refresh-line me-2"></i>Clear
                             </button>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <select class="form-select" id="filterSpecialty">
-                            <option value="">All Specialties</option>
-                            <option value="cardiology">Cardiology</option>
-                            <option value="neurology">Neurology</option>
-                            <option value="orthopedics">Orthopedics</option>
-                            <option value="pediatrics">Pediatrics</option>
-                            <option value="emergency">Emergency</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <select class="form-select" id="filterAvailability">
-                            <option value="">All Doctors</option>
-                            <option value="available">Available Today</option>
-                            <option value="tomorrow">Available Tomorrow</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <button class="btn btn-primary w-100" onclick="applyFilters()">
-                            <i class="ri-filter-line me-2"></i>Filter
-                        </button>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
@@ -91,218 +92,105 @@
 
 <!-- Doctors Cards -->
 <div class="row" id="doctorsContainer">
-    <!-- Doctor 1 -->
-    <div class="col-xl-4 col-lg-6 col-md-6 mb-4">
-        <div class="card doctor-card h-100">
-            <div class="card-body">
-                <div class="text-center mb-3">
-                    <img src="~/theme/images/doctor1.png" class="rounded-circle mb-3" width="80" height="80" alt="Doctor">
-                    <h5 class="card-title mb-1">Dr. Sarah Wilson</h5>
-                    <p class="text-muted mb-2">Cardiologist</p>
-                    <div class="d-flex justify-content-center align-items-center mb-2">
-                        <span class="badge bg-primary-light text-primary me-2">12 Years Experience</span>
-                        <div class="text-warning">
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <span class="text-muted ms-1">(4.8)</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="doctor-details mb-3">
-                    <div class="row g-2 text-center">
-                        <div class="col-6">
-                            <div class="p-2 bg-light rounded">
-                                <i class="ri-user-line text-primary"></i>
-                                <small class="d-block text-muted">Age</small>
-                                <strong>42 Years</strong>
+    @if (Model.AvailableDoctors != null && Model.AvailableDoctors.Any())
+    {
+        @foreach (var doctor in Model.AvailableDoctors)
+        {
+            <div class="col-xl-4 col-lg-6 col-md-6 mb-4 doctor-item" data-name="@doctor.FullName.ToLower()" data-specialization="@doctor.Specialization.ToLower()">
+                <div class="card doctor-card h-100">
+                    <div class="card-body">
+                        <div class="text-center mb-3">
+                            <img src="@(!string.IsNullOrEmpty(doctor.ProfileImage) ? doctor.ProfileImage : "~/theme/images/doctor1.png")" 
+                                 class="rounded-circle mb-3" width="80" height="80" alt="@doctor.FullName">
+                            <h5 class="card-title mb-1">Dr. @doctor.FullName</h5>
+                            <p class="text-muted mb-2">@doctor.Specialization</p>
+                            <div class="d-flex justify-content-center align-items-center mb-2">
+                                @if (doctor.ExperienceYears.HasValue)
+                                {
+                                    <span class="badge bg-primary-light text-primary me-2">@doctor.ExperienceYears Years Experience</span>
+                                }
+                                @if (doctor.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inactive</span>
+                                }
                             </div>
                         </div>
-                        <div class="col-6">
-                            <div class="p-2 bg-light rounded">
-                                <i class="ri-money-dollar-circle-line text-success"></i>
-                                <small class="d-block text-muted">Fee</small>
-                                <strong>$150</strong>
+                        
+                        <div class="doctor-details mb-3">
+                            <div class="row g-2">
+                                <div class="col-12">
+                                    <div class="p-2 bg-light rounded">
+                                        <i class="ri-phone-line text-primary"></i>
+                                        <small class="d-block text-muted">Phone</small>
+                                        <strong>@doctor.PhoneNumber</strong>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="p-2 bg-light rounded">
+                                        <i class="ri-mail-line text-info"></i>
+                                        <small class="d-block text-muted">Email</small>
+                                        <strong class="small">@doctor.Email</strong>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                        
+                        <div class="working-hours mb-3">
+                            <h6 class="mb-2"><i class="ri-time-line me-2"></i>Available Days</h6>
+                            <p class="small text-muted mb-0">@doctor.AvailableDays</p>
+                        </div>
+                        
+                        @if (!string.IsNullOrEmpty(doctor.HospitalAffiliation))
+                        {
+                            <div class="hospital mb-3">
+                                <h6 class="mb-2"><i class="ri-hospital-line me-2"></i>Hospital</h6>
+                                <p class="small text-muted mb-0">@doctor.HospitalAffiliation</p>
+                            </div>
+                        }
+                        
+                        <div class="appointments-info mb-3">
+                            <div class="d-flex justify-content-between small">
+                                <span class="text-muted">Total Appointments:</span>
+                                <strong class="text-primary">@doctor.TotalAppointments</strong>
+                            </div>
+                            <div class="d-flex justify-content-between small">
+                                <span class="text-muted">Today's Appointments:</span>
+                                <strong class="text-success">@doctor.TodaysAppointments</strong>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary w-100" 
+                                onclick="bookAppointment(@doctor.DoctorID, '@doctor.FullName', '@doctor.Specialization')"
+                                @(!doctor.IsActive ? "disabled" : "")>
+                            <i class="ri-calendar-event-line me-2"></i>@(doctor.IsActive ? "Book Appointment" : "Not Available")
+                        </button>
                     </div>
                 </div>
-                
-                <div class="working-hours mb-3">
-                    <h6 class="mb-2"><i class="ri-time-line me-2"></i>Working Hours</h6>
-                    <div class="small">
-                        <div class="d-flex justify-content-between">
-                            <span>Mon - Fri:</span>
-                            <span class="text-success">9:00 AM - 5:00 PM</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span>Saturday:</span>
-                            <span class="text-success">9:00 AM - 1:00 PM</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span>Sunday:</span>
-                            <span class="text-danger">Closed</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="availability mb-3">
-                    <h6 class="mb-2"><i class="ri-calendar-check-line me-2"></i>Next Available</h6>
-                    <span class="badge bg-success">Today 2:00 PM</span>
-                    <span class="badge bg-info ms-1">Tomorrow 10:00 AM</span>
-                </div>
-                
-                <button class="btn btn-primary w-100" onclick="bookAppointment('dr-sarah-wilson', 'Dr. Sarah Wilson', 'Cardiology')">
-                    <i class="ri-calendar-event-line me-2"></i>Book Appointment
-                </button>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="ri-information-line me-2"></i>
+                @if (!string.IsNullOrEmpty(Model.SpecializationFilter))
+                {
+                    <strong>No doctors found with specialization "@Model.SpecializationFilter".</strong>
+                    <br>
+                    @* Try selecting a different specialty or clear the filter. *@
+                }
+                else
+                {
+                    <strong>No doctors available at the moment.</strong>
+                }
             </div>
         </div>
-    </div>
-    
-    <!-- Doctor 2 -->
-    <div class="col-xl-4 col-lg-6 col-md-6 mb-4">
-        <div class="card doctor-card h-100">
-            <div class="card-body">
-                <div class="text-center mb-3">
-                    <img src="~/theme/images/doctor2.png" class="rounded-circle mb-3" width="80" height="80" alt="Doctor">
-                    <h5 class="card-title mb-1">Dr. James Chen</h5>
-                    <p class="text-muted mb-2">Neurologist</p>
-                    <div class="d-flex justify-content-center align-items-center mb-2">
-                        <span class="badge bg-success-light text-success me-2">8 Years Experience</span>
-                        <div class="text-warning">
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-line"></i>
-                            <span class="text-muted ms-1">(4.6)</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="doctor-details mb-3">
-                    <div class="row g-2 text-center">
-                        <div class="col-6">
-                            <div class="p-2 bg-light rounded">
-                                <i class="ri-user-line text-primary"></i>
-                                <small class="d-block text-muted">Age</small>
-                                <strong>38 Years</strong>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="p-2 bg-light rounded">
-                                <i class="ri-money-dollar-circle-line text-success"></i>
-                                <small class="d-block text-muted">Fee</small>
-                                <strong>$180</strong>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="working-hours mb-3">
-                    <h6 class="mb-2"><i class="ri-time-line me-2"></i>Working Hours</h6>
-                    <div class="small">
-                        <div class="d-flex justify-content-between">
-                            <span>Mon - Thu:</span>
-                            <span class="text-success">10:00 AM - 6:00 PM</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span>Friday:</span>
-                            <span class="text-success">10:00 AM - 2:00 PM</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span>Weekends:</span>
-                            <span class="text-danger">Closed</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="availability mb-3">
-                    <h6 class="mb-2"><i class="ri-calendar-check-line me-2"></i>Next Available</h6>
-                    <span class="badge bg-warning">Tomorrow 11:00 AM</span>
-                    <span class="badge bg-info ms-1">Monday 9:00 AM</span>
-                </div>
-                
-                <button class="btn btn-primary w-100" onclick="bookAppointment('dr-james-chen', 'Dr. James Chen', 'Neurology')">
-                    <i class="ri-calendar-event-line me-2"></i>Book Appointment
-                </button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Doctor 3 -->
-    <div class="col-xl-4 col-lg-6 col-md-6 mb-4">
-        <div class="card doctor-card h-100">
-            <div class="card-body">
-                <div class="text-center mb-3">
-                    <img src="~/theme/images/doctor3.png" class="rounded-circle mb-3" width="80" height="80" alt="Doctor">
-                    <h5 class="card-title mb-1">Dr. Emily Rodriguez</h5>
-                    <p class="text-muted mb-2">Pediatrician</p>
-                    <div class="d-flex justify-content-center align-items-center mb-2">
-                        <span class="badge bg-warning-light text-warning me-2">15 Years Experience</span>
-                        <div class="text-warning">
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <span class="text-muted ms-1">(4.9)</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="doctor-details mb-3">
-                    <div class="row g-2 text-center">
-                        <div class="col-6">
-                            <div class="p-2 bg-light rounded">
-                                <i class="ri-user-line text-primary"></i>
-                                <small class="d-block text-muted">Age</small>
-                                <strong>45 Years</strong>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="p-2 bg-light rounded">
-                                <i class="ri-money-dollar-circle-line text-success"></i>
-                                <small class="d-block text-muted">Fee</small>
-                                <strong>$120</strong>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="working-hours mb-3">
-                    <h6 class="mb-2"><i class="ri-time-line me-2"></i>Working Hours</h6>
-                    <div class="small">
-                        <div class="d-flex justify-content-between">
-                            <span>Mon - Fri:</span>
-                            <span class="text-success">8:00 AM - 4:00 PM</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span>Saturday:</span>
-                            <span class="text-success">8:00 AM - 12:00 PM</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span>Sunday:</span>
-                            <span class="text-danger">Closed</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="availability mb-3">
-                    <h6 class="mb-2"><i class="ri-calendar-check-line me-2"></i>Next Available</h6>
-                    <span class="badge bg-success">Today 3:30 PM</span>
-                    <span class="badge bg-info ms-1">Tomorrow 8:00 AM</span>
-                </div>
-                
-                <button class="btn btn-primary w-100" onclick="bookAppointment('dr-emily-rodriguez', 'Dr. Emily Rodriguez', 'Pediatrics')">
-                    <i class="ri-calendar-event-line me-2"></i>Book Appointment
-                </button>
-            </div>
-        </div>
-    </div>
+    }
 </div>
 
 <!-- Step 1: Patient Search/Verification Modal -->
@@ -322,11 +210,14 @@
                 </div>
 
                 <form id="patientSearchForm">
+                    @Html.AntiForgeryToken()
                     <div class="mb-3">
                         <label class="form-label">Search Patient *</label>
                         <input type="text" class="form-control form-control-lg" id="patientSearchInput" 
-                               placeholder="Enter LoginId, Username, or Email" required>
-                        <small class="text-muted">You can search by any of these: LoginId, Username, or Email</small>
+                               placeholder="Enter Name, Email, or Phone Number" 
+                               onkeypress="if(event.key === 'Enter') { event.preventDefault(); searchPatient(); }"
+                               required>
+                        <small class="text-muted">Search by patient name, email address, or phone number</small>
                     </div>
 
                     <div class="d-grid gap-2">
@@ -360,20 +251,24 @@
                                 <hr>
                                 <div class="row g-2 small">
                                     <div class="col-6">
-                                        <strong>Login ID:</strong>
-                                        <div id="foundPatientLoginId" class="text-muted"></div>
+                                        <strong>Patient ID:</strong>
+                                        <div id="foundPatientId" class="text-muted"></div>
                                     </div>
                                     <div class="col-6">
-                                        <strong>Username:</strong>
-                                        <div id="foundPatientUsername" class="text-muted"></div>
+                                        <strong>Age:</strong>
+                                        <div id="foundPatientAge" class="text-muted"></div>
                                     </div>
                                     <div class="col-6">
                                         <strong>Phone:</strong>
                                         <div id="foundPatientPhone" class="text-muted"></div>
                                     </div>
                                     <div class="col-6">
-                                        <strong>Status:</strong>
-                                        <div id="foundPatientStatus"></div>
+                                        <strong>Blood Group:</strong>
+                                        <div id="foundPatientBloodGroup" class="text-muted"></div>
+                                    </div>
+                                    <div class="col-12">
+                                        <strong>Last Visit:</strong>
+                                        <div id="foundPatientLastVisit" class="text-muted"></div>
                                     </div>
                                 </div>
                             </div>
@@ -505,7 +400,7 @@
                     </div>
 
                     <!-- Address Information -->
-                    <div class="mb-3">
+                    <div class="border-bottom pb-3 mb-4">
                         <h6 class="text-primary mb-3">
                             <i class="ri-map-pin-line me-2"></i>Contact Information
                         </h6>
@@ -524,6 +419,7 @@
                             </div>
                         </div>
                     </div>
+
                 </form>
             </div>
             <div class="modal-footer">
@@ -683,83 +579,93 @@
         }
         
         // ========== STEP 2: PATIENT SEARCH/VERIFICATION ==========
-        function searchPatient() {
+        async function searchPatient(event) {
+            if (event) event.preventDefault();
+            
             const searchInput = document.getElementById('patientSearchInput').value.trim();
             
             if (!searchInput) {
-                alert('Please enter LoginId, Username, or Email to search.');
+                alert('Please enter a search term (name, email, or phone number).');
                 return;
             }
             
-            // Show loading state (you can add a spinner here)
-            console.log('Searching for patient:', searchInput);
+            // Get the search button
+            const searchButton = document.querySelector('#patientSearchForm button[onclick="searchPatient()"]');
+            const originalText = searchButton.innerHTML;
+            searchButton.disabled = true;
+            searchButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Searching...';
             
-            // TODO: Replace with actual API call
-            // For now, simulating the search with mock data
-            simulatePatientSearch(searchInput);
-        }
-        
-        function simulatePatientSearch(searchTerm) {
-            // Simulate API call delay
-            setTimeout(() => {
-                // Mock patient database
-                const mockPatients = [
-                    {
-                        id: 'P001',
-                        loginId: 'john.doe123',
-                        username: 'johndoe',
-                        email: 'john.doe@@email.com',
-                        firstName: 'John',
-                        lastName: 'Doe',
-                        phone: '+1-234-567-8900',
-                        status: 'Active',
-                        isVerified: true
-                    },
-                    {
-                        id: 'P002',
-                        loginId: 'jane.smith456',
-                        username: 'janesmith',
-                        email: 'jane.smith@@email.com',
-                        firstName: 'Jane',
-                        lastName: 'Smith',
-                        phone: '+1-234-567-8901',
-                        status: 'Pending Verification',
-                        isVerified: false
-                    }
-                ];
+            try {
+                console.log('=== Patient Search Started ===');
+                console.log('Search term:', searchInput);
                 
-                // Search in mock database
-                const foundPatient = mockPatients.find(p => 
-                    p.loginId.toLowerCase() === searchTerm.toLowerCase() ||
-                    p.username.toLowerCase() === searchTerm.toLowerCase() ||
-                    p.email.toLowerCase() === searchTerm.toLowerCase()
-                );
+                // Get anti-forgery token
+                const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (!tokenInput) {
+                    throw new Error('Anti-forgery token not found on page');
+                }
+                const token = tokenInput.value;
+                console.log('Anti-forgery token found:', token ? 'Yes' : 'No');
                 
-                if (foundPatient) {
-                    displayFoundPatient(foundPatient);
+                // Create form data
+                const formData = new FormData();
+                formData.append('searchTerm', searchInput);
+                formData.append('__RequestVerificationToken', token);
+                
+                console.log('FormData created with searchTerm and token');
+                
+                // Call the search API
+                console.log('Calling API:', '/Admin/BookAppointment?handler=SearchPatient');
+                const response = await fetch('/Admin/BookAppointment?handler=SearchPatient', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                console.log('Response received - Status:', response.status, 'OK:', response.ok);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Server error response:', errorText);
+                    console.error('Response headers:', [...response.headers.entries()]);
+                    alert(`Server error (${response.status})\n\nCheck application logs and browser console for details.`);
+                    throw new Error(`Server returned ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('Search result:', result);
+                console.log('=== Patient Search Completed ===');
+                
+                if (result.success && result.patient) {
+                    console.log('Patient found:', result.patient.fullName);
+                    displayFoundPatient(result.patient);
                 } else {
+                    console.log('Patient not found:', result.message);
                     displayPatientNotFound();
                 }
-            }, 500);
+            } catch (error) {
+                console.error('=== Patient Search Error ===');
+                console.error('Error type:', error.constructor.name);
+                console.error('Error message:', error.message);
+                console.error('Error stack:', error.stack);
+                alert('An error occurred while searching.\n\nCheck the browser console (F12) for detailed error information.');
+            } finally {
+                // Restore button
+                searchButton.disabled = false;
+                searchButton.innerHTML = originalText;
+            }
         }
         
         function displayFoundPatient(patient) {
             selectedPatient = patient;
             
             // Populate patient details
-            document.getElementById('foundPatientName').textContent = `${patient.firstName} ${patient.lastName}`;
+            document.getElementById('foundPatientName').textContent = patient.fullName;
             document.getElementById('foundPatientEmail').textContent = patient.email;
-            document.getElementById('foundPatientLoginId').textContent = patient.loginId;
-            document.getElementById('foundPatientUsername').textContent = patient.username;
-            document.getElementById('foundPatientPhone').textContent = patient.phone;
-            
-            // Show status badge
-            const statusElement = document.getElementById('foundPatientStatus');
-            if (patient.isVerified) {
-                statusElement.innerHTML = '<span class="badge bg-success">Active</span>';
-            } else {
-                statusElement.innerHTML = '<span class="badge bg-warning">Pending Verification</span>';
-            }
+            document.getElementById('foundPatientId').textContent = `#${patient.patientId}`;
+            document.getElementById('foundPatientAge').textContent = patient.age ? `${patient.age} years` : 'N/A';
+            document.getElementById('foundPatientPhone').textContent = patient.phoneNumber || 'N/A';
+            document.getElementById('foundPatientBloodGroup').textContent = patient.bloodGroup || 'N/A';
+            document.getElementById('foundPatientLastVisit').textContent = patient.lastVisit || 'No previous visits';
             
             // Show found section
             document.getElementById('patientSearchResults').style.display = 'block';
@@ -811,6 +717,11 @@
             const maxDate = new Date();
             maxDate.setFullYear(maxDate.getFullYear() - 18);
             document.getElementById('regDOB').max = maxDate.toISOString().split('T')[0];
+            
+            // Set min date for appointment (today)
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('regAppointmentDate').min = today;
+            document.getElementById('regAppointmentDate').value = today;
         }
         
         function cancelQuickRegistration() {
@@ -821,70 +732,133 @@
             modalInstances.patientSearch.show();
         }
         
-        function submitQuickRegistration() {
+        async function submitQuickRegistration() {
             const form = document.getElementById('quickRegistrationForm');
             
             // Validate required fields
-            const requiredFields = {
-                firstName: document.getElementById('regFirstName').value,
-                lastName: document.getElementById('regLastName').value,
-                dob: document.getElementById('regDOB').value,
-                gender: document.getElementById('regGender').value,
-                phone: document.getElementById('regPhone').value,
-                username: document.getElementById('regUsername').value,
-                email: document.getElementById('regEmail').value
-            };
+            const firstName = document.getElementById('regFirstName').value.trim();
+            const lastName = document.getElementById('regLastName').value.trim();
+            const dob = document.getElementById('regDOB').value;
+            const gender = document.getElementById('regGender').value;
+            const phone = document.getElementById('regPhone').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
             
             // Check if all required fields are filled
-            for (const [key, value] of Object.entries(requiredFields)) {
-                if (!value || value.trim() === '') {
-                    alert(`Please fill in all required fields.`);
-                    return;
-                }
+            if (!firstName || !lastName || !dob || !gender || !phone || !username || !email) {
+                alert('Please fill in all required fields (marked with *).');
+                return;
             }
             
             // Validate email format
             const emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
-            if (!emailRegex.test(requiredFields.email)) {
+            if (!emailRegex.test(email)) {
                 alert('Please enter a valid email address.');
                 return;
             }
-            
-            // Create patient object
-            const newPatient = {
-                id: 'P' + Date.now(), // Generate temporary ID
-                loginId: requiredFields.username,
-                username: requiredFields.username,
-                email: requiredFields.email,
-                firstName: requiredFields.firstName,
-                lastName: requiredFields.lastName,
-                phone: requiredFields.phone,
-                dateOfBirth: requiredFields.dob,
-                gender: requiredFields.gender,
-                bloodGroup: document.getElementById('regBloodGroup').value,
-                address: document.getElementById('regAddress').value,
-                emergencyContactName: document.getElementById('regEmergencyName').value,
-                emergencyContactPhone: document.getElementById('regEmergencyPhone').value,
-                autoGeneratePassword: document.getElementById('regAutoGeneratePassword').checked,
-                status: 'Pending Verification',
-                isVerified: false,
-                isNewRegistration: true
-            };
-            
-            // TODO: Send to backend API for registration
-            console.log('New patient registration:', newPatient);
-            
-            // Show success message
-            alert(`Patient account created successfully!\n\nName: ${newPatient.firstName} ${newPatient.lastName}\nEmail: ${newPatient.email}\n\nA verification email will be sent to the patient.`);
-            
-            // Set as selected patient
-            selectedPatient = newPatient;
-            
-            // Hide registration modal
-            modalInstances.quickRegistration.hide();
-            
-            // Show appointment booking modal
-            showAppointmentBookingModal();
+
+            if (!selectedDoctor) {
+                alert('Missing doctor information. Please start over.');
+                return;
+            }
+
+            // Get the submit button
+            const submitButton = document.querySelector('#quickRegistrationModal button[onclick="submitQuickRegistration()"]');
+            const originalText = submitButton.innerHTML;
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating Account...';
+
+            try {
+                console.log('=== Creating Patient Account ===');
+                console.log('Patient:', firstName, lastName, email);
+                console.log('Doctor ID:', selectedDoctor.id);
+
+                // Get anti-forgery token
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                // Create form data
+                const formData = new FormData();
+                formData.append('firstName', firstName);
+                formData.append('lastName', lastName);
+                formData.append('username', username);
+                formData.append('email', email);
+                formData.append('phoneNumber', phone);
+                formData.append('dateOfBirth', dob);
+                formData.append('gender', gender);
+                formData.append('bloodGroup', document.getElementById('regBloodGroup').value || '');
+                formData.append('address', document.getElementById('regAddress').value || '');
+                formData.append('emergencyContactName', document.getElementById('regEmergencyName').value || '');
+                formData.append('emergencyContactPhone', document.getElementById('regEmergencyPhone').value || '');
+                formData.append('doctorId', selectedDoctor.id);
+                formData.append('appointmentDate', appointmentDate);
+                formData.append('appointmentTime', appointmentTime);
+                formData.append('appointmentType', appointmentType);
+                formData.append('reason', 'New patient - First appointment');
+                formData.append('__RequestVerificationToken', token);
+
+                console.log('Calling API: /Admin/BookAppointment?handler=CreatePatientAndBook');
+
+                // Call the backend API
+                const response = await fetch('/Admin/BookAppointment?handler=CreatePatientAndBook', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                console.log('Response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Server error:', errorText);
+                    throw new Error(`Server returned ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('Creation result:', result);
+                console.log('Success:', result.success);
+                console.log('Message:', result.message);
+
+                if (result.success) {
+                    // Show success message
+                    let successMessage = `✓ Patient account created successfully!\n\n`;
+                    successMessage += `Patient: ${result.patientName}\n`;
+                    successMessage += `Email: ${email}\n`;
+                    successMessage += `Default Password: ${result.defaultPassword}\n\n`;
+                    successMessage += `Appointment Details:\n`;
+                    successMessage += `Doctor: ${selectedDoctor.name}\n`;
+                    successMessage += `Date: ${result.appointmentDate}\n`;
+                    successMessage += `Time: ${result.appointmentTime}\n\n`;
+                    successMessage += `Note: The patient should change their password after first login.`;
+                    
+                    alert(successMessage);
+                    
+                    // Hide registration modal
+                    modalInstances.quickRegistration.hide();
+                    
+                    // Reset form
+                    document.getElementById('quickRegistrationForm').reset();
+                    
+                    // Reset selections
+                    selectedDoctor = null;
+                    selectedPatient = null;
+                    
+                    console.log('=== Patient Created and Appointment Booked ===');
+                    
+                    // Redirect to appointments page
+                    window.location.href = '/Admin/Appointments';
+                } else {
+                    console.error('Server returned error:', result.message);
+                    alert(`Failed to create patient account.\n\nError: ${result.message}\n\nPlease check the form and try again.`);
+                    throw new Error(result.message || 'Failed to create patient account');
+                }
+            } catch (error) {
+                console.error('=== Patient Creation Error ===');
+                console.error('Error:', error);
+                alert(`Failed to create patient account.\n\n${error.message}\n\nCheck console for details.`);
+            } finally {
+                // Restore button
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalText;
+            }
         }
         
         // ========== STEP 4: APPOINTMENT BOOKING ==========
@@ -895,9 +869,13 @@
             }
             
             // Update patient info in modal
-            document.getElementById('linkedPatientName').textContent = `${selectedPatient.firstName} ${selectedPatient.lastName}`;
+            // Handle both API response (fullName) and quick registration (firstName + lastName)
+            const patientName = selectedPatient.fullName || `${selectedPatient.firstName} ${selectedPatient.lastName}`;
+            const patientPhone = selectedPatient.phoneNumber || selectedPatient.phone;
+            
+            document.getElementById('linkedPatientName').textContent = patientName;
             document.getElementById('linkedPatientEmail').textContent = selectedPatient.email;
-            document.getElementById('linkedPatientPhone').textContent = selectedPatient.phone;
+            document.getElementById('linkedPatientPhone').textContent = patientPhone;
             
             // Update doctor info in modal
             document.getElementById('modalDoctorName').textContent = selectedDoctor.name;
@@ -930,62 +908,107 @@
             modalInstances.patientSearch.show();
         }
         
-        function submitAppointment() {
+        async function submitAppointment() {
             // Validate required fields
             const appointmentDate = document.getElementById('appointmentDate').value;
             const appointmentTime = document.getElementById('appointmentTime').value;
             const appointmentType = document.getElementById('appointmentType').value;
+            const reason = document.getElementById('reasonForVisit').value;
+            const notes = document.getElementById('appointmentPriority').value; // Using priority as notes for now
             
             if (!appointmentDate || !appointmentTime || !appointmentType) {
                 alert('Please fill in all required fields.');
                 return;
             }
-            
-            // Create appointment object
-            const appointment = {
-                doctorId: selectedDoctor.id,
-                doctorName: selectedDoctor.name,
-                doctorSpecialty: selectedDoctor.specialty,
-                patientId: selectedPatient.id,
-                patientName: `${selectedPatient.firstName} ${selectedPatient.lastName}`,
-                patientEmail: selectedPatient.email,
-                patientPhone: selectedPatient.phone,
-                appointmentDate: appointmentDate,
-                appointmentTime: appointmentTime,
-                appointmentType: appointmentType,
-                reasonForVisit: document.getElementById('reasonForVisit').value,
-                priority: document.getElementById('appointmentPriority').value,
-                isNewPatient: selectedPatient.isNewRegistration || false,
-                patientVerified: selectedPatient.isVerified || false
-            };
-            
-            // TODO: Send to backend API
-            console.log('Appointment booking:', appointment);
-            
-            // Show success message
-            let successMessage = `Appointment booked successfully!\n\n`;
-            successMessage += `Doctor: ${selectedDoctor.name}\n`;
-            successMessage += `Patient: ${selectedPatient.firstName} ${selectedPatient.lastName}\n`;
-            successMessage += `Date: ${appointmentDate}\n`;
-            successMessage += `Time: ${appointmentTime}\n`;
-            successMessage += `Type: ${appointmentType}`;
-            
-            if (selectedPatient.isNewRegistration) {
-                successMessage += `\n\nNote: New patient account created. Verification email will be sent.`;
+
+            if (!selectedDoctor || !selectedPatient) {
+                alert('Missing doctor or patient information. Please start over.');
+                return;
             }
-            
-            alert(successMessage);
-            
-            // Close modal and reset
-            modalInstances.appointment.hide();
-            document.getElementById('appointmentForm').reset();
-            
-            // Reset selections
-            selectedDoctor = null;
-            selectedPatient = null;
-            
-            // Redirect to appointments page
-            window.location.href = '/Admin/Appointments';
+
+            // Get the submit button
+            const submitButton = document.querySelector('#appointmentModal button[onclick="submitAppointment()"]');
+            const originalText = submitButton.innerHTML;
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Booking...';
+
+            try {
+                console.log('=== Booking Appointment ===');
+                console.log('Doctor ID:', selectedDoctor.id);
+                console.log('Patient ID:', selectedPatient.patientId);
+                console.log('Date:', appointmentDate);
+                console.log('Time:', appointmentTime);
+                console.log('Type:', appointmentType);
+
+                // Get anti-forgery token
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                // Create form data
+                const formData = new FormData();
+                formData.append('doctorId', selectedDoctor.id);
+                formData.append('patientId', selectedPatient.patientId);
+                formData.append('appointmentDate', appointmentDate);
+                formData.append('appointmentTime', appointmentTime);
+                formData.append('appointmentType', appointmentType);
+                formData.append('reason', reason || 'Walk-in appointment');
+                formData.append('notes', notes || '');
+                formData.append('__RequestVerificationToken', token);
+
+                console.log('Calling API: /Admin/BookAppointment?handler=BookAppointment');
+
+                // Call the backend API
+                const response = await fetch('/Admin/BookAppointment?handler=BookAppointment', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                console.log('Response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Server error:', errorText);
+                    throw new Error(`Server returned ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('Booking result:', result);
+
+                if (result.success) {
+                    // Show success message
+                    const patientName = selectedPatient.fullName || `${selectedPatient.firstName} ${selectedPatient.lastName}`;
+                    let successMessage = `✓ Appointment booked successfully!\n\n`;
+                    successMessage += `Doctor: ${selectedDoctor.name}\n`;
+                    successMessage += `Patient: ${patientName}\n`;
+                    successMessage += `Date: ${result.appointmentDate}\n`;
+                    successMessage += `Time: ${result.appointmentTime}\n`;
+                    successMessage += `Type: ${appointmentType}`;
+                    
+                    alert(successMessage);
+                    
+                    // Close modal and reset
+                    modalInstances.appointment.hide();
+                    document.getElementById('appointmentForm').reset();
+                    
+                    // Reset selections
+                    selectedDoctor = null;
+                    selectedPatient = null;
+                    
+                    console.log('=== Appointment Booked Successfully ===');
+                    
+                    // Redirect to appointments page
+                    window.location.href = '/Admin/Appointments';
+                } else {
+                    throw new Error(result.message || 'Failed to book appointment');
+                }
+            } catch (error) {
+                console.error('=== Appointment Booking Error ===');
+                console.error('Error:', error);
+                alert(`Failed to book appointment.\n\n${error.message}\n\nCheck console for details.`);
+            } finally {
+                // Restore button
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalText;
+            }
         }
         
         // ========== DOCTOR FILTERS ==========
@@ -1121,4 +1144,39 @@
             animation: fadeIn 0.3s ease-in-out;
         }
     </style>
+    
+    <script>
+        // Client-side search functionality
+        function searchDoctors() {
+            const searchTerm = document.getElementById('searchDoctors').value.toLowerCase();
+            const doctorCards = document.querySelectorAll('.doctor-item');
+            
+            doctorCards.forEach(card => {
+                const doctorName = card.getAttribute('data-name');
+                if (doctorName.includes(searchTerm)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        
+        // Clear all filters
+        function clearFilters() {
+            window.location.href = '/Admin/BookAppointment';
+        }
+        
+        // Allow Enter key to trigger search
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchDoctors');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        searchDoctors();
+                    }
+                });
+            }
+        });
+    </script>
 }

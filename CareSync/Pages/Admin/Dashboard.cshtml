@@ -10,18 +10,39 @@
     </button>
 } *@
 
-<!-- Critical Alerts & Notifications -->
-<div class="row mb-3">
-    <div class="col-12">
-        <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center" role="alert">
-            <i class="ri-alarm-warning-line fs-4 me-3"></i>
-            <div class="flex-grow-1">
-                <strong>3 Urgent Items</strong> require your attention: 2 appointments pending approval, 1 critical lab result awaiting review.
+@if (Model.HasError)
+{
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center" role="alert">
+                <i class="ri-error-warning-line fs-4 me-3"></i>
+                <div class="flex-grow-1">
+                    <strong>Error:</strong> @Model.ErrorMessage
+                </div>
             </div>
-            <button class="btn btn-sm btn-warning">Review Now</button>
         </div>
     </div>
-</div>
+}
+
+<!-- Critical Alerts & Notifications -->
+@if (Model.UrgentItems != null && Model.UrgentItems.Any())
+{
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center" role="alert">
+                <i class="ri-alarm-warning-line fs-4 me-3"></i>
+                <div class="flex-grow-1">
+                    <strong>@Model.UrgentItems.Count Urgent Item@(Model.UrgentItems.Count > 1 ? "s" : "")</strong> require your attention.
+                    @foreach (var item in Model.UrgentItems.Take(3))
+                    {
+                        <span class="d-block small mt-1">@item.Message</span>
+                    }
+                </div>
+                <a href="#urgent-items-section" class="btn btn-sm btn-warning">Review Now</a>
+            </div>
+        </div>
+    </div>
+}
 
 <!-- Welcome Section -->
 <div class="row mb-4">
@@ -53,7 +74,7 @@
                         </div>
                     </div>
                     <div class="d-flex flex-column">
-                        <h1 class="lh-1">260</h1>
+                        <h1 class="lh-1">@(Model.DashboardStats?.TotalAppointments ?? 0)</h1>
                         <p class="m-0">Appointments</p>
                     </div>
                 </div>
@@ -63,8 +84,15 @@
                         <i class="ri-arrow-right-line text-primary ms-1"></i>
                     </a>
                     <div class="text-end">
-                        <p class="mb-0 text-primary">+30%</p>
-                        <span class="badge bg-primary-light text-primary small">this month</span>
+                        @if (Model.DashboardStats != null)
+                        {
+                            var percent = Model.DashboardStats.ThisVsLastMonthPercentageAppointment;
+                            var isPositive = percent >= 0;
+                            <p class="mb-0 @(isPositive ? "text-success" : "text-danger")">
+                                @(isPositive ? "+" : "")@percent.ToString("F1")%
+                            </p>
+                            <span class="badge @(isPositive ? "bg-success-light text-success" : "bg-danger-light text-danger") small">this month</span>
+                        }
                     </div>
                 </div>
             </div>
@@ -80,7 +108,7 @@
                         </div>
                     </div>
                     <div class="d-flex flex-column">
-                        <h1 class="lh-1">24</h1>
+                        <h1 class="lh-1">@(Model.DashboardStats?.TotalDoctors ?? 0)</h1>
                         <p class="m-0">Doctors</p>
                     </div>
                 </div>
@@ -90,8 +118,15 @@
                         <i class="ri-arrow-right-line ms-1"></i>
                     </a>
                     <div class="text-end">
-                        <p class="mb-0 text-primary">+2</p>
-                        <span class="badge bg-primary-light text-primary small">this month</span>
+                        @if (Model.DashboardStats != null)
+                        {
+                            var percent = Model.DashboardStats.ThisVsLastMonthPercentageDoctors;
+                            var isPositive = percent >= 0;
+                            <p class="mb-0 @(isPositive ? "text-success" : "text-danger")">
+                                @(isPositive ? "+" : "")@percent.ToString("F1")%
+                            </p>
+                            <span class="badge @(isPositive ? "bg-success-light text-success" : "bg-danger-light text-danger") small">this month</span>
+                        }
                     </div>
                 </div>
             </div>
@@ -107,7 +142,7 @@
                         </div>
                     </div>
                     <div class="d-flex flex-column">
-                        <h1 class="lh-1">980</h1>
+                        <h1 class="lh-1">@(Model.DashboardStats?.TotalPatients ?? 0)</h1>
                         <p class="m-0">Patients</p>
                     </div>
                 </div>
@@ -117,8 +152,15 @@
                         <i class="ri-arrow-right-line text-primary ms-1"></i>
                     </a>
                     <div class="text-end">
-                        <p class="mb-0 text-primary">+40%</p>
-                        <span class="badge bg-primary-light text-primary small">this month</span>
+                        @if (Model.DashboardStats != null)
+                        {
+                            var percent = Model.DashboardStats.ThisVsLastMonthPercentagePatients;
+                            var isPositive = percent >= 0;
+                            <p class="mb-0 @(isPositive ? "text-success" : "text-danger")">
+                                @(isPositive ? "+" : "")@percent.ToString("F1")%
+                            </p>
+                            <span class="badge @(isPositive ? "bg-success-light text-success" : "bg-danger-light text-danger") small">this month</span>
+                        }
                     </div>
                 </div>
             </div>
@@ -183,54 +225,84 @@
 <div class="row mb-4">
     <div class="col-xl-4 col-lg-6 mb-3">
         <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-white border-bottom py-3">
+            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0 fw-semibold">
                     <i class="ri-user-star-line me-2 text-primary"></i>Doctor Availability
                 </h5>
+                @if (Model.DoctorAvailability != null)
+                {
+                    <div class="text-end">
+                        <small class="text-muted d-block">Available: @Model.DoctorAvailability.TotalAvailable</small>
+                        <small class="text-muted">In Session: @Model.DoctorAvailability.InSession</small>
+                    </div>
+                }
             </div>
             <div class="card-body p-4">
-                <div class="doctor-status-list">
-                    <div class="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
-                        <div class="d-flex align-items-center">
-                            <div class="status-indicator status-available me-2"></div>
-                            <div>
-                                <h6 class="mb-0">Dr. Sarah Smith</h6>
-                                <small class="text-muted">Cardiology</small>
+                @if (Model.DoctorAvailability != null && Model.DoctorAvailability.Doctors.Any())
+                {
+                    <div class="doctor-status-list">
+                        @foreach (var doctor in Model.DoctorAvailability.Doctors.Take(6))
+                        {
+                            var statusClass = doctor.Status switch
+                            {
+                                "Available" => "status-available",
+                                "InSession" => "status-busy",
+                                "OnBreak" => "status-break",
+                                "Off" => "status-off",
+                                _ => "status-available"
+                            };
+                            var badgeClass = doctor.Status switch
+                            {
+                                "Available" => "bg-success-subtle text-success",
+                                "InSession" => "bg-warning-subtle text-warning",
+                                "OnBreak" => "bg-info-subtle text-info",
+                                "Off" => "bg-secondary-subtle text-secondary",
+                                _ => "bg-success-subtle text-success"
+                            };
+                            var statusText = doctor.Status switch
+                            {
+                                "InSession" => "In Session",
+                                "OnBreak" => "On Break",
+                                _ => doctor.Status
+                            };
+
+                            <div class="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
+                                <div class="d-flex align-items-center">
+                                    <div class="status-indicator @statusClass me-2"></div>
+                                    <div>
+                                        <h6 class="mb-0">@doctor.DoctorName</h6>
+                                        <small class="text-muted">@doctor.Specialization</small>
+                                        @if (doctor.TodaysAppointmentCount > 0)
+                                        {
+                                            <small class="d-block text-muted">
+                                                @doctor.TodaysAppointmentCount appointment(s) today
+                                            </small>
+                                        }
+                                    </div>
+                                </div>
+                                <span class="badge @badgeClass">@statusText</span>
                             </div>
-                        </div>
-                        <span class="badge bg-success-subtle text-success">Available</span>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
-                        <div class="d-flex align-items-center">
-                            <div class="status-indicator status-busy me-2"></div>
-                            <div>
-                                <h6 class="mb-0">Dr. John Wilson</h6>
-                                <small class="text-muted">Neurology</small>
+                        }
+                        @if (Model.DoctorAvailability.Doctors.Count > 6)
+                        {
+                            <div class="text-center mt-3">
+                                <a href="~/Admin/Doctors" class="btn btn-sm btn-outline-primary">
+                                    View All Doctors (@Model.DoctorAvailability.Doctors.Count)
+                                </a>
                             </div>
-                        </div>
-                        <span class="badge bg-warning-subtle text-warning">In Session</span>
+                        }
                     </div>
-                    <div class="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
-                        <div class="d-flex align-items-center">
-                            <div class="status-indicator status-available me-2"></div>
-                            <div>
-                                <h6 class="mb-0">Dr. Emily Davis</h6>
-                                <small class="text-muted">Pediatrics</small>
-                            </div>
-                        </div>
-                        <span class="badge bg-success-subtle text-success">Available</span>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="ri-user-star-line text-muted" style="font-size: 3rem;"></i>
+                        <p class="text-muted mb-0">No doctors available</p>
+                        <a href="~/Admin/CreateDoctor" class="btn btn-sm btn-primary mt-2">
+                            <i class="ri-add-line me-1"></i>Add Doctor
+                        </a>
                     </div>
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center">
-                            <div class="status-indicator status-offline me-2"></div>
-                            <div>
-                                <h6 class="mb-0">Dr. Michael Brown</h6>
-                                <small class="text-muted">Orthopedics</small>
-                            </div>
-                        </div>
-                        <span class="badge bg-secondary-subtle text-secondary">Off Duty</span>
-                    </div>
-                </div>
+                }
             </div>
         </div>
     </div>
@@ -243,42 +315,67 @@
                 </h5>
             </div>
             <div class="card-body p-4">
-                <div class="metric-item mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-muted">Patient Check-ins</span>
-                        <span class="fw-bold text-primary">18 / 23</span>
+                @if (Model.TodayPerformanceMetrics != null)
+                {
+                    <div class="metric-item mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted">Patient Check-ins</span>
+                            <span class="fw-bold text-primary">@Model.TodayPerformanceMetrics.CheckedInToday / @Model.TodayPerformanceMetrics.TotalScheduledToday</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: @(Model.TodayPerformanceMetrics.CheckInPercentage)%"></div>
+                        </div>
+                        <small class="text-muted">@Model.TodayPerformanceMetrics.CheckInPercentage% checked in</small>
                     </div>
-                    <div class="progress" style="height: 8px;">
-                        <div class="progress-bar bg-primary" role="progressbar" style="width: 78%"></div>
+                    <div class="metric-item mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted">Appointments Completed</span>
+                            <span class="fw-bold text-success">@Model.TodayPerformanceMetrics.CompletedAppointments / @Model.TodayPerformanceMetrics.TotalAppointmentsToday</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: @(Model.TodayPerformanceMetrics.CompletionPercentage)%"></div>
+                        </div>
+                        <small class="text-muted">@Model.TodayPerformanceMetrics.CompletionPercentage% completion rate</small>
                     </div>
-                </div>
-                <div class="metric-item mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-muted">Appointments Completed</span>
-                        <span class="fw-bold text-success">12 / 23</span>
+                    @if (Model.TodayPerformanceMetrics.TotalLabReportsRequested > 0)
+                    {
+                        <div class="metric-item mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted">Lab Reports Ready</span>
+                                <span class="fw-bold text-info">@Model.TodayPerformanceMetrics.LabReportsReady / @Model.TodayPerformanceMetrics.TotalLabReportsRequested</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: @(Model.TodayPerformanceMetrics.LabReportsPercentage)%"></div>
+                            </div>
+                            <small class="text-muted">@Model.TodayPerformanceMetrics.LabReportsPercentage% ready</small>
+                        </div>
+                    }
+                    <div class="metric-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted">Revenue Today</span>
+                            <span class="fw-bold text-success">$@Model.TodayPerformanceMetrics.RevenueToday.ToString("N2")</span>
+                        </div>
+                        @if (Model.TodayPerformanceMetrics.IsRevenueAboveAverage)
+                        {
+                            <small class="text-success">
+                                <i class="ri-arrow-up-line"></i> @Model.TodayPerformanceMetrics.RevenuePercentageChange.ToString("F1")% above average
+                            </small>
+                        }
+                        else
+                        {
+                            <small class="text-danger">
+                                <i class="ri-arrow-down-line"></i> @Model.TodayPerformanceMetrics.RevenuePercentageChange.ToString("F1")% below average
+                            </small>
+                        }
                     </div>
-                    <div class="progress" style="height: 8px;">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: 52%"></div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="ri-line-chart-line text-muted" style="font-size: 3rem;"></i>
+                        <p class="text-muted mb-0">No performance data available</p>
                     </div>
-                </div>
-                <div class="metric-item mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-muted">Lab Reports Ready</span>
-                        <span class="fw-bold text-info">8 / 12</span>
-                    </div>
-                    <div class="progress" style="height: 8px;">
-                        <div class="progress-bar bg-info" role="progressbar" style="width: 67%"></div>
-                    </div>
-                </div>
-                <div class="metric-item">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-muted">Revenue Today</span>
-                        <span class="fw-bold text-success">$12,450</span>
-                    </div>
-                    <small class="text-success">
-                        <i class="ri-arrow-up-line"></i> 15% above average
-                    </small>
-                </div>
+                }
             </div>
         </div>
     </div>
@@ -344,48 +441,94 @@
                 </h5>
             </div>
             <div class="card-body p-4">
-                <div class="row g-3">
-                    <div class="col-6">
-                        <div class="text-center p-3 border rounded-3 bg-light">
-                            <div class="mb-2">
-                                <i class="ri-user-heart-line text-primary" style="font-size: 2rem;"></i>
+                @if (Model.UserDistribution != null)
+                {
+                    <div class="row g-3">
+                        <!-- Patients -->
+                        <div class="col-6">
+                            <div class="text-center p-3 border rounded-3 bg-light">
+                                <div class="mb-2">
+                                    <i class="ri-user-heart-line text-primary" style="font-size: 2rem;"></i>
+                                </div>
+                                <h4 class="text-primary">@Model.UserDistribution.Patients.TotalCount.ToString("N0")</h4>
+                                <p class="mb-0 text-muted">Patients</p>
+                                <small class="@(Model.UserDistribution.Patients.PercentageChange >= 0 ? "text-success" : "text-danger")">
+                                    @(Model.UserDistribution.Patients.PercentageChange >= 0 ? "+" : "")@Model.UserDistribution.Patients.PercentageChange.ToString("F1")% from last month
+                                </small>
                             </div>
-                            <h4 class="text-primary">1,247</h4>
-                            <p class="mb-0 text-muted">Patients</p>
-                            <small class="text-success">+5.2% from last month</small>
+                        </div>
+                        
+                        <!-- Doctors -->
+                        <div class="col-6">
+                            <div class="text-center p-3 border rounded-3 bg-light">
+                                <div class="mb-2">
+                                    <i class="ri-user-star-line text-success" style="font-size: 2rem;"></i>
+                                </div>
+                                <h4 class="text-success">@Model.UserDistribution.Doctors.TotalCount</h4>
+                                <p class="mb-0 text-muted">Doctors</p>
+                                <small class="@(Model.UserDistribution.Doctors.ThisMonthCount > 0 ? "text-success" : "text-muted")">
+                                    @if (Model.UserDistribution.Doctors.ThisMonthCount > 0)
+                                    {
+                                        <text>+@Model.UserDistribution.Doctors.ThisMonthCount new this month</text>
+                                    }
+                                    else
+                                    {
+                                        <text>No new doctors this month</text>
+                                    }
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <!-- Admin Staff -->
+                        <div class="col-6">
+                            <div class="text-center p-3 border rounded-3 bg-light">
+                                <div class="mb-2">
+                                    <i class="ri-admin-line text-info" style="font-size: 2rem;"></i>
+                                </div>
+                                <h4 class="text-info">@Model.UserDistribution.AdminStaff.TotalCount</h4>
+                                <p class="mb-0 text-muted">Admin Staff</p>
+                                <small class="@(Model.UserDistribution.AdminStaff.PercentageChange == 0 ? "text-muted" : Model.UserDistribution.AdminStaff.PercentageChange > 0 ? "text-success" : "text-danger")">
+                                    @if (Model.UserDistribution.AdminStaff.PercentageChange == 0)
+                                    {
+                                        <text>No change</text>
+                                    }
+                                    else
+                                    {
+                                        <text>@(Model.UserDistribution.AdminStaff.PercentageChange >= 0 ? "+" : "")@Model.UserDistribution.AdminStaff.PercentageChange.ToString("F1")% from last month</text>
+                                    }
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <!-- Lab Staff -->
+                        <div class="col-6">
+                            <div class="text-center p-3 border rounded-3 bg-light">
+                                <div class="mb-2">
+                                    <i class="ri-test-tube-line text-warning" style="font-size: 2rem;"></i>
+                                </div>
+                                <h4 class="text-warning">@Model.UserDistribution.Labs.TotalCount</h4>
+                                <p class="mb-0 text-muted">Lab Staff</p>
+                                <small class="@(Model.UserDistribution.Labs.ThisMonthCount > 0 ? "text-success" : "text-muted")">
+                                    @if (Model.UserDistribution.Labs.ThisMonthCount > 0)
+                                    {
+                                        <text>+@Model.UserDistribution.Labs.ThisMonthCount this month</text>
+                                    }
+                                    else
+                                    {
+                                        <text>No new lab staff this month</text>
+                                    }
+                                </small>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-6">
-                        <div class="text-center p-3 border rounded-3 bg-light">
-                            <div class="mb-2">
-                                <i class="ri-user-star-line text-success" style="font-size: 2rem;"></i>
-                            </div>
-                            <h4 class="text-success">24</h4>
-                            <p class="mb-0 text-muted">Doctors</p>
-                            <small class="text-success">+2 new this month</small>
-                        </div>
+                }
+                else
+                {
+                    <div class="text-center text-muted py-4">
+                        <i class="ri-loader-4-line ri-spin" style="font-size: 2rem;"></i>
+                        <p class="mt-2">Loading user distribution data...</p>
                     </div>
-                    <div class="col-6">
-                        <div class="text-center p-3 border rounded-3 bg-light">
-                            <div class="mb-2">
-                                <i class="ri-admin-line text-info" style="font-size: 2rem;"></i>
-                            </div>
-                            <h4 class="text-info">8</h4>
-                            <p class="mb-0 text-muted">Admin Staff</p>
-                            <small class="text-muted">No change</small>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="text-center p-3 border rounded-3 bg-light">
-                            <div class="mb-2">
-                                <i class="ri-test-tube-line text-warning" style="font-size: 2rem;"></i>
-                            </div>
-                            <h4 class="text-warning">12</h4>
-                            <p class="mb-0 text-muted">Lab Staff</p>
-                            <small class="text-success">+1 this month</small>
-                        </div>
-                    </div>
-                </div>
+                }
             </div>
         </div>
     </div>
