@@ -116,6 +116,11 @@ public interface IAdminService
     /// </summary>
     Task<Result<GeneralResponse>> CreateAppointmentWithQuickPatientAsync(AddAppointmentWithQuickPatient_DTO input);
 
+    /// <summary>
+    /// Create patient account without appointment
+    /// </summary>
+    Task<Result<GeneralResponse>> CreatePatientAccountAsync(CreatePatient_DTO input);
+
     // ========== Admin User Management ==========
     
     /// <summary>

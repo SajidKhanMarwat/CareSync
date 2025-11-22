@@ -717,11 +717,6 @@
             const maxDate = new Date();
             maxDate.setFullYear(maxDate.getFullYear() - 18);
             document.getElementById('regDOB').max = maxDate.toISOString().split('T')[0];
-            
-            // Set min date for appointment (today)
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('regAppointmentDate').min = today;
-            document.getElementById('regAppointmentDate').value = today;
         }
         
         function cancelQuickRegistration() {
@@ -789,17 +784,12 @@
                 formData.append('address', document.getElementById('regAddress').value || '');
                 formData.append('emergencyContactName', document.getElementById('regEmergencyName').value || '');
                 formData.append('emergencyContactPhone', document.getElementById('regEmergencyPhone').value || '');
-                formData.append('doctorId', selectedDoctor.id);
-                formData.append('appointmentDate', appointmentDate);
-                formData.append('appointmentTime', appointmentTime);
-                formData.append('appointmentType', appointmentType);
-                formData.append('reason', 'New patient - First appointment');
                 formData.append('__RequestVerificationToken', token);
 
-                console.log('Calling API: /Admin/BookAppointment?handler=CreatePatientAndBook');
+                console.log('Calling API: /Admin/BookAppointment?handler=CreatePatient');
 
                 // Call the backend API
-                const response = await fetch('/Admin/BookAppointment?handler=CreatePatientAndBook', {
+                const response = await fetch('/Admin/BookAppointment?handler=CreatePatient', {
                     method: 'POST',
                     body: formData
                 });
@@ -818,18 +808,43 @@
                 console.log('Message:', result.message);
 
                 if (result.success) {
-                    // Show success message
-                    let successMessage = `✓ Patient account created successfully!\n\n`;
-                    successMessage += `Patient: ${result.patientName}\n`;
-                    successMessage += `Email: ${email}\n`;
-                    successMessage += `Default Password: ${result.defaultPassword}\n\n`;
-                    successMessage += `Appointment Details:\n`;
-                    successMessage += `Doctor: ${selectedDoctor.name}\n`;
-                    successMessage += `Date: ${result.appointmentDate}\n`;
-                    successMessage += `Time: ${result.appointmentTime}\n\n`;
-                    successMessage += `Note: The patient should change their password after first login.`;
+                    console.log('=== Patient Created Successfully ===');
+                    console.log('Patient Data:', result.patient);
+                    console.log('Patient ID from result:', result.patient.patientId);
                     
-                    alert(successMessage);
+                    // Verify we have a valid patient ID
+                    if (!result.patient.patientId || result.patient.patientId === 0) {
+                        alert('Patient was created but ID is missing. Please search for the patient and book appointment manually.');
+                        window.location.reload();
+                        return;
+                    }
+                    
+                    // Set the newly created patient as selectedPatient
+                    selectedPatient = {
+                        id: result.patient.patientId,
+                        patientId: result.patient.patientId,  // Added for appointment booking
+                        loginId: result.patient.loginId || username,
+                        username: username,
+                        email: email,
+                        firstName: firstName,
+                        lastName: lastName,
+                        phone: phone,
+                        phoneNumber: phone,  // Added for compatibility
+                        dateOfBirth: dob,
+                        gender: gender,
+                        bloodGroup: document.getElementById('regBloodGroup').value,
+                        address: document.getElementById('regAddress').value,
+                        emergencyContactName: document.getElementById('regEmergencyName').value,
+                        emergencyContactPhone: document.getElementById('regEmergencyPhone').value,
+                        status: 'Active',
+                        isVerified: true
+                    };
+                    
+                    console.log('Selected Patient:', selectedPatient);
+                    console.log('Selected Patient ID:', selectedPatient.patientId);
+                    
+                    // Show success toast notification
+                    alert(`✓ Patient account created successfully!\n\nPatient: ${result.patientName}\nEmail: ${email}\nDefault Password: ${result.defaultPassword}\n\nNote: The patient should change their password after first login.\n\nNow proceeding to book appointment...`);
                     
                     // Hide registration modal
                     modalInstances.quickRegistration.hide();
@@ -837,14 +852,10 @@
                     // Reset form
                     document.getElementById('quickRegistrationForm').reset();
                     
-                    // Reset selections
-                    selectedDoctor = null;
-                    selectedPatient = null;
+                    // Show appointment booking modal
+                    console.log('Opening appointment booking modal...');
+                    showAppointmentBookingModal();
                     
-                    console.log('=== Patient Created and Appointment Booked ===');
-                    
-                    // Redirect to appointments page
-                    window.location.href = '/Admin/Appointments';
                 } else {
                     console.error('Server returned error:', result.message);
                     alert(`Failed to create patient account.\n\nError: ${result.message}\n\nPlease check the form and try again.`);

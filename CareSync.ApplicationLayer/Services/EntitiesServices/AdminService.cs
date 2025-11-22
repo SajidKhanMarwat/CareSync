@@ -456,6 +456,90 @@ public class AdminService(
         }
     }
 
+    public async Task<Result<GeneralResponse>> CreatePatientAccountAsync(CreatePatient_DTO input)
+    {
+        logger.LogInformation("Executing: CreatePatientAccountAsync");
+        try
+        {
+            // Get Patient role
+            var patientRole = await roleManager.FindByNameAsync(RoleType.Patient.ToString());
+            
+            // Create user account with a new GUID
+            var userId = Guid.NewGuid().ToString();
+            var user = new T_Users
+            {
+                Id = userId,  // Explicitly set the Id
+                UserName = !string.IsNullOrWhiteSpace(input.Username) ? input.Username : input.Email,
+                Email = input.Email,
+                FirstName = input.FirstName,
+                LastName = input.LastName ?? string.Empty,
+                PhoneNumber = input.PhoneNumber,
+                Gender = input.Gender,
+                DateOfBirth = input.DateOfBirth,
+                Address = input.Address,
+                RoleType = RoleType.Patient,
+                RoleID = patientRole!.Id,
+                IsActive = true,
+                EmailConfirmed = true,
+                CreatedBy = "Admin",
+                CreatedOn = DateTime.UtcNow,
+                ArabicUserName = input.FirstName,
+                ArabicFirstName = input.FirstName,
+                LoginID = 0
+            };
+
+            logger.LogInformation("Creating user with ID: {UserId}, Username: {Username}, Email: {Email}", 
+                userId, user.UserName, user.Email);
+
+            var result = await userManager.CreateAsync(user, input.Password ?? "CareSync@123");
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                logger.LogError("User creation failed: {Errors}", errors);
+                return Result<GeneralResponse>.Failure(new GeneralResponse
+                {
+                    Success = false,
+                    Message = result.Errors.FirstOrDefault()?.Description ?? "Patient registration failed"
+                });
+            }
+
+            logger.LogInformation("User created successfully with ID: {UserId}", userId);
+
+            // Create patient details
+            var patientDetails = new T_PatientDetails
+            {
+                UserID = userId,
+                BloodGroup = input.BloodGroup,
+                MaritalStatus = !string.IsNullOrEmpty(input.MaritalStatus) ? Enum.Parse<MaritalStatusEnum>(input.MaritalStatus) : MaritalStatusEnum.Single,
+                EmergencyContactName = input.EmergencyContactName,
+                EmergencyContactNumber = input.EmergencyContactPhone,
+                CreatedBy = "Admin",
+                CreatedOn = DateTime.UtcNow
+            };
+
+            logger.LogInformation("Adding patient details for user: {UserId}", userId);
+            await uow.PatientDetailsRepo.AddAsync(patientDetails);
+            await uow.SaveChangesAsync();
+            logger.LogInformation("Patient details saved with PatientID: {PatientId}", patientDetails.PatientID);
+
+            return Result<GeneralResponse>.Success(new GeneralResponse
+            {
+                Success = true,
+                Message = "Patient account created successfully"
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error creating patient account: {Message}, InnerException: {Inner}", 
+                ex.Message, ex.InnerException?.Message);
+            return Result<GeneralResponse>.Failure(new GeneralResponse
+            {
+                Success = false,
+                Message = $"Error: {ex.Message}{(ex.InnerException != null ? $" - {ex.InnerException.Message}" : "")}"
+            });
+        }
+    }
+
     public async Task<Result<GeneralResponse>> CreateAppointmentWithQuickPatientAsync(AddAppointmentWithQuickPatient_DTO input)
     {
         logger.LogInformation("Executing: CreateAppointmentWithQuickPatientAsync");

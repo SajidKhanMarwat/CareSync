@@ -270,6 +270,133 @@ public class BookAppointmentModel : BasePageModel
         }
     }
 
+    public async Task<IActionResult> OnPostCreatePatientAsync(
+        [FromForm] string firstName,
+        [FromForm] string lastName,
+        [FromForm] string username,
+        [FromForm] string email,
+        [FromForm] string phoneNumber,
+        [FromForm] string dateOfBirth,
+        [FromForm] string gender,
+        [FromForm] string? bloodGroup,
+        [FromForm] string? address,
+        [FromForm] string? emergencyContactName,
+        [FromForm] string? emergencyContactPhone)
+    {
+        try
+        {
+            var authResult = RequireRole("Admin");
+            if (authResult != null) return authResult;
+
+            _logger.LogInformation("Creating patient account - Name: {FirstName} {LastName}, Email: {Email}", 
+                firstName, lastName, email);
+
+            // Validate required fields
+            if (string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(email) || 
+                string.IsNullOrWhiteSpace(username))
+            {
+                return new JsonResult(new { success = false, message = "Required fields are missing" });
+            }
+
+            // Parse date of birth
+            if (!DateTime.TryParse(dateOfBirth, out var dob))
+            {
+                return new JsonResult(new { success = false, message = "Invalid date of birth" });
+            }
+
+            // Parse gender
+            if (!Enum.TryParse<Gender_Enum>(gender, out var genderEnum))
+            {
+                return new JsonResult(new { success = false, message = "Invalid gender" });
+            }
+
+            // Create DTO for quick patient creation
+            var quickPatientDto = new
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                Username = username,
+                Email = email,
+                PhoneNumber = phoneNumber,
+                DateOfBirth = dob,
+                Gender = genderEnum,
+                BloodGroup = bloodGroup,
+                Address = address,
+                EmergencyContactName = emergencyContactName,
+                EmergencyContactPhone = emergencyContactPhone,
+                Password = "CareSync@123" // Default password
+            };
+
+            _logger.LogInformation("Calling API to create patient account");
+
+            // Call API to create patient
+            var result = await _adminApiService.CreatePatientAsync<Result<GeneralResponse>>(quickPatientDto);
+
+            _logger.LogInformation("API Result - IsSuccess: {IsSuccess}, Data: {Data}", result?.IsSuccess, result?.Data);
+            
+            if (result?.IsSuccess == true)
+            {
+                _logger.LogInformation("Patient created successfully");
+                
+                // Wait a moment for database to update
+                await Task.Delay(100);
+                
+                // Search for the newly created patient to get their ID
+                var searchResult = await _adminApiService.SearchPatientsAsync<Result<List<PatientSearch_DTO>>>(email);
+                
+                PatientSearch_DTO? patient = null;
+                if (searchResult?.IsSuccess == true && searchResult.Data != null && searchResult.Data.Count > 0)
+                {
+                    patient = searchResult.Data[0];
+                    _logger.LogInformation("Found patient with ID: {PatientID}", patient.PatientID);
+                }
+                else
+                {
+                    _logger.LogWarning("Could not find newly created patient with email: {Email}", email);
+                }
+
+                if (patient == null || patient.PatientID == 0)
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "Patient account was created but could not be retrieved. Please refresh and search for the patient."
+                    });
+                }
+
+                return new JsonResult(new 
+                { 
+                    success = true, 
+                    message = "Patient account created successfully!",
+                    patientName = $"{firstName} {lastName}",
+                    defaultPassword = "CareSync@123",
+                    patient = new
+                    {
+                        patientId = patient.PatientID,
+                        loginId = username,
+                        email = email,
+                        firstName = firstName,
+                        lastName = lastName,
+                        phone = phoneNumber
+                    }
+                });
+            }
+            else
+            {
+                var errorMessage = result?.GetError() ?? "Failed to create patient account";
+                var detailedError = result?.Data?.Message ?? errorMessage;
+                _logger.LogWarning("Patient creation failed: {Error}, Detailed: {DetailedError}", 
+                    errorMessage, detailedError);
+                return new JsonResult(new { success = false, message = detailedError });
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating patient: {Message}", ex.Message);
+            return new JsonResult(new { success = false, message = $"Error: {ex.Message}" });
+        }
+    }
+
     public async Task<IActionResult> OnPostCreatePatientAndBookAsync(
         [FromForm] string firstName,
         [FromForm] string lastName,

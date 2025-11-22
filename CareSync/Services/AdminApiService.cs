@@ -327,6 +327,22 @@ public class AdminApiService
         }
     }
 
+    public async Task<T?> CreatePatientAsync<T>(object patientData)
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.PostAsJsonAsync("Admin/patients/create", patientData);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating patient");
+            return default;
+        }
+    }
+
     public async Task<T?> RegisterDoctorAsync<T>(object doctorData)
     {
         try

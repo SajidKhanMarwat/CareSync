@@ -271,6 +271,23 @@ public class AdminController(IAdminService adminService, IUserService userServic
         return await adminService.CreateAppointmentWithQuickPatientAsync(input);
     }
 
+    /// <summary>
+    /// Create a new patient account (without appointment)
+    /// </summary>
+    [HttpPost("patients/create")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<GeneralResponse>> CreatePatient(
+        [FromBody] CreatePatient_DTO input)
+    {
+        if (!ModelState.IsValid)
+            return Result<GeneralResponse>.Failure(
+                new GeneralResponse { Success = false, Message = "Validation failed" },
+                "Validation failed",
+                System.Net.HttpStatusCode.BadRequest);
+
+        return await adminService.CreatePatientAccountAsync(input);
+    }
+
     #endregion
 
     #region User Registration (Admin-initiated)
