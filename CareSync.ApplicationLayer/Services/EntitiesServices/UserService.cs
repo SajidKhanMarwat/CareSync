@@ -9,6 +9,7 @@ using CareSync.ApplicationLayer.IServices.EntitiesServices;
 using CareSync.ApplicationLayer.Repository;
 using CareSync.ApplicationLayer.UnitOfWork;
 using CareSync.DataLayer.Entities;
+using CareSync.Shared.Enums;
 using CareSync.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
@@ -102,16 +103,28 @@ public sealed class UserService(
         });
     }
 
-    private async Task<T_Users?> GetUserByEmailOrUsername(string Email)
+    private async Task<T_Users?> GetUserByEmailOrUsername(string email)
     {
         var query = signInManager?.UserManager?.Users?
             .Include(u => u.UserRole)!
             .ThenInclude(ur => ur.Role)!;
         T_Users? user;
-        if (Email.Contains("@"))
-            user = await query.FirstOrDefaultAsync(u => u.Email == Email);
+        if (email.Contains("@"))
+        {
+            user = await query.FirstOrDefaultAsync(u => u.Email == email);
+        }
         else
-            user = await query.FirstOrDefaultAsync(u => u.UserName == Email || u.LoginID.ToString() == Email);
+        {
+            // Try to parse as LoginID (int) or use as UserName
+            if (int.TryParse(email, out int loginId))
+            {
+                user = await query.FirstOrDefaultAsync(u => u.UserName == email || u.LoginID == loginId);
+            }
+            else
+            {
+                user = await query.FirstOrDefaultAsync(u => u.UserName == email);
+            }
+        }
         return user;
     }
 
@@ -160,93 +173,373 @@ public sealed class UserService(
     }
 
     public async Task<Result<GeneralResponse>> RegisterNewUserAsync(
-    UserRegisteration_DTO request, string roleName = "patient", string roleId = "")
+        UserRegisteration_DTO request, string roleName = "patient")
     {
-        logger.LogInformation("Executing: RegisterNewUserAsync");
+        logger.LogInformation("Executing: RegisterNewUserAsync for role: {RoleName}", roleName);
         try
         {
             await uow.BeginTransactionAsync();
+            
+            // Map user data
             var userEntity = mapper.Map<T_Users>(request);
 
+            // Get role and set role type
             var role = await roleManager.FindByNameAsync(roleName);
-            userEntity.RoleID = role?.Id!;
+            if (role == null)
+            {
+                await uow.RollbackAsync();
+                return Result<GeneralResponse>.Failure(new GeneralResponse
+                {
+                    Success = false,
+                    Message = $"Role '{roleName}' not found in the system."
+                });
+            }
 
+            userEntity.RoleID = role.Id;
+            userEntity.RoleType = Enum.Parse<RoleType>(roleName, true);
+
+            // Create user account
             var userManagerResponse = await userManager.CreateAsync(userEntity, request.Password);
             if (!userManagerResponse.Succeeded)
+            {
+                await uow.RollbackAsync();
                 return Result<GeneralResponse>.Failure(new GeneralResponse
                 {
                     Success = false,
                     Message = userManagerResponse.Errors.First().Description
                 });
+            }
+
+            // Add user to role
             await userManager.AddToRoleAsync(userEntity, roleName);
 
-            if( request.RegisterPatient != null ||
-                request.RegisterDoctor != null ||
-                request.RegisterLabAssistant != null )
-                return await CreateUserDetails(request, roleName);
-            else
+            // Create role-specific details if provided
+            if (request.RegisterPatient != null || 
+                request.RegisterDoctor != null || 
+                request.RegisterLabAssistant != null)
             {
-                await uow.SaveChangesAsync();
-                await uow.CommitAsync();
-                return Result<GeneralResponse>.Success(new GeneralResponse()
+                var detailsResult = await CreateUserDetailsAsync(userEntity.Id, request, roleName);
+                if (!detailsResult.IsSuccess)
                 {
-                    Success = userManagerResponse.Succeeded,
-                    Message = "account created successfully, check confirmation email.",
-                });
+                    await uow.RollbackAsync();
+                    return detailsResult;
+                }
             }
+
+            await uow.SaveChangesAsync();
+            await uow.CommitAsync();
+            
+            logger.LogInformation("User {Email} registered successfully with role {RoleName}", request.Email, roleName);
+            
+            return Result<GeneralResponse>.Success(new GeneralResponse
+            {
+                Success = true,
+                Message = $"Account created successfully. Welcome to CareSync!"
+            });
         }
         catch (DbUpdateException dbEx)
         {
             await uow.RollbackAsync();
-            logger.LogInformation(dbEx.Message);
-            var sqlException =
-                dbEx.InnerException as SqlException ??
-                dbEx.InnerException?.InnerException as SqlException;
+            logger.LogError(dbEx, "Database error during user registration");
+            
+            var sqlException = dbEx.InnerException as SqlException ?? 
+                             dbEx.InnerException?.InnerException as SqlException;
 
-            if (sqlException != null &&
-                (sqlException.Number == 2601 || sqlException.Number == 2627))
+            if (sqlException != null && (sqlException.Number == 2601 || sqlException.Number == 2627))
             {
                 return Result<GeneralResponse>.Failure(new GeneralResponse
                 {
                     Success = false,
-                    Message = "This Email/Username is already registered.",
+                    Message = "This Email/Username is already registered."
                 });
             }
 
             return Result<GeneralResponse>.Exception(dbEx);
         }
+        catch (Exception ex)
+        {
+            await uow.RollbackAsync();
+            logger.LogError(ex, "Unexpected error during user registration");
+            return Result<GeneralResponse>.Exception(ex);
+        }
     }
 
-    private async Task<Result<GeneralResponse>> CreateUserDetails(UserRegisteration_DTO request, string roleName)
+    private async Task<Result<GeneralResponse>> CreateUserDetailsAsync(string userId, UserRegisteration_DTO request, string roleName)
     {
-        logger.LogInformation("Executing: CreateUserDetails");
-        Result<GeneralResponse> detailsResult = new();
+        logger.LogInformation("Creating {RoleName} details for user {UserId}", roleName, userId);
+        
         try
         {
-            if (roleName.ToLower() == "patient")
+            switch (roleName.ToLower())
             {
-                var patientDto = mapper.Map<RegisterPatient_DTO>(request.RegisterPatient);
-                detailsResult = await patientService.AddPatientDetailsAsync(patientDto);
+                case "patient":
+                    if (request.RegisterPatient != null)
+                    {
+                        request.RegisterPatient.UserID = userId;
+                        request.RegisterPatient.CreatedBy = userId;
+                        var patientDetails = mapper.Map<T_PatientDetails>(request.RegisterPatient);
+                        await uow.PatientDetailsRepo.AddAsync(patientDetails);
+                        logger.LogInformation("Patient details created for user {UserId}", userId);
+                    }
+                    break;
+
+                case "doctor":
+                    if (request.RegisterDoctor != null)
+                    {
+                        request.RegisterDoctor.UserID = userId;
+                        request.RegisterDoctor.CreatedBy = userId;
+                        var doctorDetails = mapper.Map<T_DoctorDetails>(request.RegisterDoctor);
+                        await uow.DoctorDetailsRepo.AddAsync(doctorDetails);
+                        logger.LogInformation("Doctor details created for user {UserId}", userId);
+                    }
+                    break;
+
+                case "lab":
+                case "labassistant":
+                    if (request.RegisterLabAssistant != null)
+                    {
+                        request.RegisterLabAssistant.UserID = userId;
+                        request.RegisterLabAssistant.CreatedBy = userId;
+                        var labDetails = mapper.Map<T_Lab>(request.RegisterLabAssistant);
+                        await uow.LabRepo.AddAsync(labDetails);
+                        logger.LogInformation("Lab details created for user {UserId}", userId);
+                    }
+                    break;
+
+                default:
+                    logger.LogWarning("No specific details to create for role {RoleName}", roleName);
+                    break;
             }
-            else if (roleName.ToLower() == "doctor")
+
+            return Result<GeneralResponse>.Success(new GeneralResponse
             {
-                var doctorDto = mapper.Map<RegisterDoctor_DTO>(request.RegisterDoctor);
-                //detailsResult = await doctorService.AddPatientAsync(doctorDto);
-            }
-            else if (roleName.ToLower() == "labassistant")
-            {
-                var labDto = mapper.Map<RegisterLabAssistant_DTO>(request.RegisterLabAssistant);
-                //detailsResult = await labService.AddPatientAsync(labDto);
-            }
-            await uow.SaveChangesAsync();
-            await uow.CommitAsync();
+                Success = true,
+                Message = $"{roleName} details created successfully."
+            });
         }
         catch (Exception ex)
         {
-            logger.LogError($"Exception: {ex}");
-            Result<GeneralResponse>.Exception(ex);
+            logger.LogError(ex, "Error creating {RoleName} details for user {UserId}", roleName, userId);
+            return Result<GeneralResponse>.Exception(ex);
         }
+    }
 
-        return detailsResult;
+    public async Task<Result<T_Users>> GetUserByIdAsync(string userId)
+    {
+        logger.LogInformation("Executing: GetUserByIdAsync for {UserId}", userId);
+        try
+        {
+            var user = await signInManager.UserManager.Users
+                .Include(u => u.Role)
+                .Include(u => u.UserRole)
+                    .ThenInclude(ur => ur.Role)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+            {
+                return Result<T_Users>.Failure(null!, "User not found", System.Net.HttpStatusCode.NotFound);
+            }
+
+            return Result<T_Users>.Success(user);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error retrieving user {UserId}", userId);
+            return Result<T_Users>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<T_Users>> GetUserByEmailOrUsernameAsync(string emailOrUsername)
+    {
+        logger.LogInformation("Executing: GetUserByEmailOrUsernameAsync");
+        try
+        {
+            var user = await GetUserByEmailOrUsername(emailOrUsername);
+            
+            if (user == null)
+            {
+                return Result<T_Users>.Failure(null!, "User not found", System.Net.HttpStatusCode.NotFound);
+            }
+
+            return Result<T_Users>.Success(user);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error retrieving user by email/username");
+            return Result<T_Users>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<List<T_Users>>> GetUsersByRoleAsync(string roleName)
+    {
+        logger.LogInformation("Executing: GetUsersByRoleAsync for role {RoleName}", roleName);
+        try
+        {
+            var role = await roleManager.FindByNameAsync(roleName);
+            if (role == null)
+            {
+                return Result<List<T_Users>>.Failure(new List<T_Users>(), 
+                    $"Role '{roleName}' not found", 
+                    System.Net.HttpStatusCode.NotFound);
+            }
+
+            var users = await signInManager.UserManager.Users
+                .Include(u => u.Role)
+                .Where(u => u.RoleID == role.Id && !u.IsDeleted)
+                .ToListAsync();
+
+            return Result<List<T_Users>>.Success(users);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error retrieving users for role {RoleName}", roleName);
+            return Result<List<T_Users>>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<GeneralResponse>> UpdateUserAsync(UserUpdate_DTO userUpdate)
+    {
+        logger.LogInformation("Executing: UpdateUserAsync for user {UserId}", userUpdate.UserId);
+        try
+        {
+            var user = await userManager.FindByIdAsync(userUpdate.UserId);
+            if (user == null)
+            {
+                return Result<GeneralResponse>.Failure(new GeneralResponse
+                {
+                    Success = false,
+                    Message = "User not found"
+                });
+            }
+
+            // Update user properties
+            mapper.Map(userUpdate, user);
+            user.UpdatedBy = userUpdate.UserId;
+            user.UpdatedOn = DateTime.UtcNow;
+
+            var result = await userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return Result<GeneralResponse>.Failure(new GeneralResponse
+                {
+                    Success = false,
+                    Message = result.Errors.FirstOrDefault()?.Description ?? "Update failed"
+                });
+            }
+
+            return Result<GeneralResponse>.Success(new GeneralResponse
+            {
+                Success = true,
+                Message = "User updated successfully"
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error updating user {UserId}", userUpdate.UserId);
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<GeneralResponse>> DeleteUserAsync(string userId, string deletedBy)
+    {
+        logger.LogInformation("Executing: DeleteUserAsync for user {UserId}", userId);
+        try
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return Result<GeneralResponse>.Failure(new GeneralResponse
+                {
+                    Success = false,
+                    Message = "User not found"
+                });
+            }
+
+            // Soft delete
+            user.IsDeleted = true;
+            user.UpdatedBy = deletedBy;
+            user.UpdatedOn = DateTime.UtcNow;
+            user.IsActive = false;
+
+            var result = await userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return Result<GeneralResponse>.Failure(new GeneralResponse
+                {
+                    Success = false,
+                    Message = result.Errors.FirstOrDefault()?.Description ?? "Delete failed"
+                });
+            }
+
+            logger.LogInformation("User {UserId} soft deleted by {DeletedBy}", userId, deletedBy);
+            
+            return Result<GeneralResponse>.Success(new GeneralResponse
+            {
+                Success = true,
+                Message = "User deleted successfully"
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error deleting user {UserId}", userId);
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<GeneralResponse>> ToggleUserStatusAsync(string userId, bool isActive)
+    {
+        logger.LogInformation("Executing: ToggleUserStatusAsync for user {UserId} to {IsActive}", userId, isActive);
+        try
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return Result<GeneralResponse>.Failure(new GeneralResponse
+                {
+                    Success = false,
+                    Message = "User not found"
+                });
+            }
+
+            user.IsActive = isActive;
+            user.UpdatedBy = userId;
+            user.UpdatedOn = DateTime.UtcNow;
+
+            var result = await userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return Result<GeneralResponse>.Failure(new GeneralResponse
+                {
+                    Success = false,
+                    Message = result.Errors.FirstOrDefault()?.Description ?? "Status toggle failed"
+                });
+            }
+
+            return Result<GeneralResponse>.Success(new GeneralResponse
+            {
+                Success = true,
+                Message = $"User {(isActive ? "activated" : "deactivated")} successfully"
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error toggling status for user {UserId}", userId);
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<bool>> CheckUserExistsAsync(string emailOrUsername)
+    {
+        logger.LogInformation("Executing: CheckUserExistsAsync");
+        try
+        {
+            var user = await GetUserByEmailOrUsername(emailOrUsername);
+            return Result<bool>.Success(user != null);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error checking if user exists");
+            return Result<bool>.Exception(ex);
+        }
     }
 }
