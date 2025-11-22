@@ -368,18 +368,22 @@
               <div id="bpLevels" class="mb-3"></div>
             </div>
             <ul class="list-group">
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>24/04/2024</div>
-                <div><span class="badge bg-success">140</span></div>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>16/04/2024</div>
-                <div><span class="badge bg-warning">190</span></div>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>10/04/2024</div>
-                <div><span class="badge bg-danger">230</span></div>
-              </li>
+              @if (Model.BPReadings.Any())
+              {
+                @foreach (var reading in Model.BPReadings.Take(3))
+                {
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>@reading.Date</div>
+                    <div><span class="badge @reading.BadgeClass">@reading.Value.ToString("0")</span></div>
+                  </li>
+                }
+              }
+              else
+              {
+                <li class="list-group-item text-center text-muted">
+                  <small>No BP readings available</small>
+                </li>
+              }
             </ul>
             <div class="text-center mt-2">
               <small class="text-primary">Click for details <i class="ri-arrow-right-line"></i></small>
@@ -405,18 +409,22 @@
               <div id="sugarLevels" class="mb-3"></div>
             </div>
             <ul class="list-group">
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>24/04/2024</div>
-                <div><span class="badge bg-success">140</span></div>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>16/04/2024</div>
-                <div><span class="badge bg-warning">190</span></div>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>10/04/2024</div>
-                <div><span class="badge bg-danger">230</span></div>
-              </li>
+              @if (Model.SugarReadings.Any())
+              {
+                @foreach (var reading in Model.SugarReadings.Take(3))
+                {
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>@reading.Date</div>
+                    <div><span class="badge @reading.BadgeClass">@reading.Value.ToString("0")</span></div>
+                  </li>
+                }
+              }
+              else
+              {
+                <li class="list-group-item text-center text-muted">
+                  <small>No sugar readings available</small>
+                </li>
+              }
             </ul>
             <div class="text-center mt-2">
               <small class="text-primary">Click for details <i class="ri-arrow-right-line"></i></small>
@@ -442,18 +450,22 @@
               <div id="heartRate" class="mb-3"></div>
             </div>
             <ul class="list-group">
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>24/04/2024</div>
-                <div><span class="badge bg-success">110</span></div>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>16/04/2024</div>
-                <div><span class="badge bg-success">120</span></div>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>10/04/2024</div>
-                <div><span class="badge bg-success">100</span></div>
-              </li>
+              @if (Model.HeartRateReadings.Any())
+              {
+                @foreach (var reading in Model.HeartRateReadings.Take(3))
+                {
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>@reading.Date</div>
+                    <div><span class="badge @reading.BadgeClass">@reading.Value.ToString("0")</span></div>
+                  </li>
+                }
+              }
+              else
+              {
+                <li class="list-group-item text-center text-muted">
+                  <small>No heart rate readings available</small>
+                </li>
+              }
             </ul>
             <div class="text-center mt-2">
               <small class="text-primary">Click for details <i class="ri-arrow-right-line"></i></small>
@@ -479,18 +491,22 @@
               <div id="clolesterolLevels" class="mb-3"></div>
             </div>
             <ul class="list-group">
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>24/04/2024</div>
-                <div><span class="badge bg-success">180</span></div>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>16/04/2024</div>
-                <div><span class="badge bg-warning">220</span></div>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>10/04/2024</div>
-                <div><span class="badge bg-danger">230</span></div>
-              </li>
+              @if (Model.CholesterolReadings.Any())
+              {
+                @foreach (var reading in Model.CholesterolReadings.Take(3))
+                {
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>@reading.Date</div>
+                    <div><span class="badge @reading.BadgeClass">@reading.Value.ToString("0")</span></div>
+                  </li>
+                }
+              }
+              else
+              {
+                <li class="list-group-item text-center text-muted">
+                  <small>No cholesterol readings available</small>
+                </li>
+              }
             </ul>
             <div class="text-center mt-2">
               <small class="text-primary">Click for details <i class="ri-arrow-right-line"></i></small>

@@ -4,6 +4,7 @@
     ViewData["Title"] = "Book Appointment";
 }
 
+
 @section PageActions {
     <div class="d-flex gap-2">
         <button type="button" class="btn btn-primary" onclick="location.href='/Patient/Appointments'">
@@ -44,6 +45,10 @@
 </div>
 
 <!-- Main Booking Content -->
+<form method="post" id="bookingForm">
+    @Html.AntiForgeryToken()
+</form>
+
 <div class="row gx-3">
     <div class="col-xl-8">
         <!-- Step 1: Select Doctor -->
@@ -68,10 +73,13 @@
                         <div class="col-md-3">
                             <select class="form-select" id="specializationFilter" onchange="filterDoctors()">
                                 <option value="">All Specializations</option>
-                                <option value="Cardiology">Cardiology</option>
-                                <option value="General Medicine">General Medicine</option>
-                                <option value="Dermatology">Dermatology</option>
-                                <option value="Orthopedics">Orthopedics</option>
+                                @if (Model.AvailableDoctors != null)
+                                {
+                                    @foreach (var spec in Model.AvailableDoctors.Select(d => d.Specialization).Distinct().OrderBy(s => s))
+                                    {
+                                        <option value="@spec">@spec</option>
+                                    }
+                                }
                             </select>
                         </div>
                         <div class="col-md-5">
@@ -89,166 +97,94 @@
                     </div>
 
                     <!-- Doctors List -->
-                    <div class="doctors-list">
-                        <!-- Doctor 1 -->
-                        <div class="doctor-card border rounded-4 p-3 mb-3 selectable-card" data-doctor-id="1" data-specialty="Cardiology" data-name="Dr. Sarah Johnson">
-                            <div class="row align-items-center">
-                                <div class="col-auto">
-                                    <img src="~/theme/images/doctor1.png" class="img-4x rounded-circle" alt="Doctor">
+                    <div class="doctors-list" id="doctorsList">
+                        @if (Model.AvailableDoctors != null && Model.AvailableDoctors.Any())
+                        {
+                            @foreach (var doctor in Model.AvailableDoctors)
+                            {
+                                <div class="doctor-card border rounded-4 p-3 mb-3 selectable-card" 
+                                     data-doctor-id="@doctor.DoctorID" 
+                                     data-specialty="@doctor.Specialization" 
+                                     data-name="Dr. @doctor.DoctorName"
+                                     data-fee="@doctor.ConsultationFee"
+                                     data-experience="@doctor.ExperienceYears"
+                                     data-location="@doctor.Location"
+                                     data-rating="@doctor.Rating"
+                                     data-reviews="@doctor.ReviewCount"
+                                     data-available-days="@string.Join(",", doctor.AvailableDaysList)"
+                                     data-available-times="@string.Join(",", doctor.AvailableTimeSlots)">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <img src="@(!string.IsNullOrEmpty(doctor.ProfileImage) ? doctor.ProfileImage : "~/theme/images/user.png")" 
+                                                 class="img-4x rounded-circle" alt="@doctor.DoctorName">
+                                        </div>
+                                        <div class="col">
+                                            <h5 class="mb-1">Dr. @doctor.DoctorName</h5>
+                                            <p class="text-muted mb-2">@doctor.Specialization | @doctor.ExperienceYears years experience</p>
+                                            <div class="d-flex align-items-center mb-2">
+                                                <div class="rating me-2">
+                                                    @for (int i = 1; i <= 5; i++)
+                                                    {
+                                                        if (i <= Math.Floor(doctor.Rating))
+                                                        {
+                                                            <i class="ri-star-fill text-warning"></i>
+                                                        }
+                                                        else if (i == Math.Ceiling(doctor.Rating) && doctor.Rating % 1 != 0)
+                                                        {
+                                                            <i class="ri-star-half-line text-warning"></i>
+                                                        }
+                                                        else
+                                                        {
+                                                            <i class="ri-star-line text-muted"></i>
+                                                        }
+                                                    }
+                                                </div>
+                                                <span class="text-muted">@doctor.Rating.ToString("0.0") (@doctor.ReviewCount reviews)</span>
+                                            </div>
+                                            <div class="doctor-info">
+                                                <small class="text-muted">
+                                                    <i class="ri-map-pin-line me-1"></i>@doctor.Location
+                                                    <i class="ri-money-dollar-circle-line ms-3 me-1"></i>@doctor.ConsultationFee consultation
+                                                </small>
+                                            </div>
+                                            <div class="mt-2">
+                                                <small class="fw-semibold text-primary d-block mb-1">Available Days:</small>
+                                                <div class="d-flex gap-1 flex-wrap">
+                                                    @foreach (var day in doctor.AvailableDaysList)
+                                                    {
+                                                        <span class="badge bg-primary-subtle text-primary">@day</span>
+                                                    }
+                                                </div>
+                                                <small class="fw-semibold text-success d-block mt-2 mb-1">Available Times:</small>
+                                                <div class="d-flex gap-1 flex-wrap">
+                                                    @foreach (var time in doctor.AvailableTimeSlots.Take(4))
+                                                    {
+                                                        <span class="badge bg-success-subtle text-success">@time</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="text-center">
+                                                <span class="badge bg-@(doctor.AvailabilityStatus == "Available" ? "success" : "warning") mb-2">
+                                                    @doctor.AvailabilityStatus
+                                                </span>
+                                                <div class="text-muted">
+                                                    <small>Next: @doctor.NextAvailableSlot</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col">
-                                    <h5 class="mb-1">Dr. Sarah Johnson</h5>
-                                    <p class="text-muted mb-2">Cardiologist | 15 years experience</p>
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="rating me-2">
-                                            <i class="ri-star-fill text-warning"></i>
-                                            <i class="ri-star-fill text-warning"></i>
-                                            <i class="ri-star-fill text-warning"></i>
-                                            <i class="ri-star-fill text-warning"></i>
-                                            <i class="ri-star-fill text-warning"></i>
-                                        </div>
-                                        <span class="text-muted">4.9 (127 reviews)</span>
-                                    </div>
-                                    <div class="doctor-info">
-                                        <small class="text-muted">
-                                            <i class="ri-map-pin-line me-1"></i>City Medical Center
-                                            <i class="ri-money-dollar-circle-line ms-3 me-1"></i>$150 consultation
-                                        </small>
-                                    </div>
-                                    <div class="mt-2">
-                                        <small class="fw-semibold text-primary d-block mb-1">Available Days:</small>
-                                        <div class="d-flex gap-1 flex-wrap">
-                                            <span class="badge bg-primary-subtle text-primary">Mon</span>
-                                            <span class="badge bg-primary-subtle text-primary">Tue</span>
-                                            <span class="badge bg-primary-subtle text-primary">Wed</span>
-                                            <span class="badge bg-primary-subtle text-primary">Thu</span>
-                                            <span class="badge bg-primary-subtle text-primary">Fri</span>
-                                        </div>
-                                        <small class="fw-semibold text-success d-block mt-2 mb-1">Available Times:</small>
-                                        <div class="d-flex gap-1 flex-wrap">
-                                            <span class="badge bg-success-subtle text-success">9:00 AM</span>
-                                            <span class="badge bg-success-subtle text-success">10:00 AM</span>
-                                            <span class="badge bg-success-subtle text-success">2:00 PM</span>
-                                            <span class="badge bg-success-subtle text-success">3:00 PM</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-auto">
-                                    <div class="text-center">
-                                        <span class="badge bg-success mb-2">Available</span>
-                                        <div class="text-muted">
-                                            <small>Next: Tomorrow 10:00 AM</small>
-                                        </div>
-                                    </div>
-                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="alert alert-info">
+                                <i class="ri-information-line me-2"></i>
+                                No doctors available at the moment. Please try again later.
                             </div>
-                        </div>
-
-                        <!-- Doctor 2 -->
-                        <div class="doctor-card border rounded-4 p-3 mb-3 selectable-card" data-doctor-id="2" data-specialty="General Medicine" data-name="Dr. Michael Brown">
-                            <div class="row align-items-center">
-                                <div class="col-auto">
-                                    <img src="~/theme/images/doctor2.png" class="img-4x rounded-circle" alt="Doctor">
-                                </div>
-                                <div class="col">
-                                    <h5 class="mb-1">Dr. Michael Brown</h5>
-                                    <p class="text-muted mb-2">General Medicine | 12 years experience</p>
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="rating me-2">
-                                            <i class="ri-star-fill text-warning"></i>
-                                            <i class="ri-star-fill text-warning"></i>
-                                            <i class="ri-star-fill text-warning"></i>
-                                            <i class="ri-star-fill text-warning"></i>
-                                            <i class="ri-star-line text-muted"></i>
-                                        </div>
-                                        <span class="text-muted">4.7 (89 reviews)</span>
-                                    </div>
-                                    <div class="doctor-info">
-                                        <small class="text-muted">
-                                            <i class="ri-map-pin-line me-1"></i>Downtown Clinic
-                                            <i class="ri-money-dollar-circle-line ms-3 me-1"></i>$120 consultation
-                                        </small>
-                                    </div>
-                                    <div class="mt-2">
-                                        <small class="fw-semibold text-primary d-block mb-1">Available Days:</small>
-                                        <div class="d-flex gap-1 flex-wrap">
-                                            <span class="badge bg-primary-subtle text-primary">Mon</span>
-                                            <span class="badge bg-primary-subtle text-primary">Wed</span>
-                                            <span class="badge bg-primary-subtle text-primary">Fri</span>
-                                            <span class="badge bg-primary-subtle text-primary">Sat</span>
-                                        </div>
-                                        <small class="fw-semibold text-success d-block mt-2 mb-1">Available Times:</small>
-                                        <div class="d-flex gap-1 flex-wrap">
-                                            <span class="badge bg-success-subtle text-success">8:00 AM</span>
-                                            <span class="badge bg-success-subtle text-success">11:00 AM</span>
-                                            <span class="badge bg-success-subtle text-success">1:00 PM</span>
-                                            <span class="badge bg-success-subtle text-success">4:00 PM</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-auto">
-                                    <div class="text-center">
-                                        <span class="badge bg-warning mb-2">Busy</span>
-                                        <div class="text-muted">
-                                            <small>Next: Nov 18, 2:00 PM</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Doctor 3 -->
-                        <div class="doctor-card border rounded-4 p-3 mb-3 selectable-card" data-doctor-id="3" data-specialty="Dermatology" data-name="Dr. Lisa Anderson">
-                            <div class="row align-items-center">
-                                <div class="col-auto">
-                                    <img src="~/theme/images/doctor3.png" class="img-4x rounded-circle" alt="Doctor">
-                                </div>
-                                <div class="col">
-                                    <h5 class="mb-1">Dr. Lisa Anderson</h5>
-                                    <p class="text-muted mb-2">Dermatologist | 10 years experience</p>
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="rating me-2">
-                                            <i class="ri-star-fill text-warning"></i>
-                                            <i class="ri-star-fill text-warning"></i>
-                                            <i class="ri-star-fill text-warning"></i>
-                                            <i class="ri-star-fill text-warning"></i>
-                                            <i class="ri-star-half-line text-warning"></i>
-                                        </div>
-                                        <span class="text-muted">4.8 (156 reviews)</span>
-                                    </div>
-                                    <div class="doctor-info">
-                                        <small class="text-muted">
-                                            <i class="ri-map-pin-line me-1"></i>Skin Care Clinic
-                                            <i class="ri-money-dollar-circle-line ms-3 me-1"></i>$180 consultation
-                                        </small>
-                                    </div>
-                                    <div class="mt-2">
-                                        <small class="fw-semibold text-primary d-block mb-1">Available Days:</small>
-                                        <div class="d-flex gap-1 flex-wrap">
-                                            <span class="badge bg-primary-subtle text-primary">Tue</span>
-                                            <span class="badge bg-primary-subtle text-primary">Thu</span>
-                                            <span class="badge bg-primary-subtle text-primary">Fri</span>
-                                            <span class="badge bg-primary-subtle text-primary">Sat</span>
-                                        </div>
-                                        <small class="fw-semibold text-success d-block mt-2 mb-1">Available Times:</small>
-                                        <div class="d-flex gap-1 flex-wrap">
-                                            <span class="badge bg-success-subtle text-success">10:00 AM</span>
-                                            <span class="badge bg-success-subtle text-success">12:00 PM</span>
-                                            <span class="badge bg-success-subtle text-success">3:00 PM</span>
-                                            <span class="badge bg-success-subtle text-success">5:00 PM</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-auto">
-                                    <div class="text-center">
-                                        <span class="badge bg-success mb-2">Available</span>
-                                        <div class="text-muted">
-                                            <small>Next: Today 4:00 PM</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -754,33 +690,69 @@
             // Attach handlers initially
             attachDoctorClickHandlers();
             
-            // Date selection
-            document.getElementById('appointmentDate').addEventListener('change', function() {
+            // Date selection - Load time slots from API
+            document.getElementById('appointmentDate').addEventListener('change', async function() {
                 selectedDate = this.value;
                 const timeSlots = document.getElementById('timeSlots');
                 
-                // Generate time slots (mock data)
-                const slots = ['9:00 AM', '10:00 AM', '11:00 AM', '2:00 PM', '3:00 PM', '4:00 PM'];
-                timeSlots.innerHTML = '';
+                if (!selectedDoctor || !selectedDoctor.id) {
+                    timeSlots.innerHTML = '<div class="text-muted"><i class="ri-information-line me-1"></i>Please select a doctor first</div>';
+                    return;
+                }
                 
-                slots.forEach(slot => {
-                    const slotBtn = document.createElement('button');
-                    slotBtn.className = 'btn btn-outline-primary me-2 mb-2 time-slot';
-                    slotBtn.textContent = slot;
-                    slotBtn.addEventListener('click', function() {
-                        document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('btn-primary'));
-                        document.querySelectorAll('.time-slot').forEach(s => s.classList.add('btn-outline-primary'));
-                        this.classList.remove('btn-outline-primary');
-                        this.classList.add('btn-primary');
-                        selectedTime = slot;
+                // Show loading
+                timeSlots.innerHTML = '<div class="text-center"><div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading available time slots...</div>';
+                
+                try {
+                    // Call API to get available time slots
+                    const response = await fetch(`/Patient/BookAppointment?handler=TimeSlots&doctorId=${selectedDoctor.id}&date=${selectedDate}`);
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to load time slots');
+                    }
+                    
+                    const slots = await response.json();
+                    
+                    timeSlots.innerHTML = '';
+                    
+                    if (slots && slots.length > 0) {
+
+                        console.log("avilable slots",slots)
+                        const availableSlots = slots.filter(s => s.isAvailable);
                         
-                        // Update sidebar
-                        document.getElementById('sidebarDate').textContent = new Date(selectedDate).toLocaleDateString();
-                        document.getElementById('sidebarTime').textContent = selectedTime;
-                        document.getElementById('appointmentSummaryCard').style.display = 'block';
-                    });
-                    timeSlots.appendChild(slotBtn);
-                });
+                        if (availableSlots.length === 0) {
+                            timeSlots.innerHTML = '<div class="alert alert-warning"><i class="ri-calendar-close-line me-1"></i>No available time slots for this date. Please select another date.</div>';
+                            return;
+                        }
+                        
+                        availableSlots.forEach(slot => {
+                            const slotBtn = document.createElement('button');
+                            slotBtn.type = 'button';
+                            slotBtn.className = 'btn btn-outline-primary me-2 mb-2 time-slot';
+                            slotBtn.textContent = slot.time;
+                            slotBtn.addEventListener('click', function() {
+                                document.querySelectorAll('.time-slot').forEach(s => {
+                                    s.classList.remove('btn-primary');
+                                    s.classList.add('btn-outline-primary');
+                                });
+                                this.classList.remove('btn-outline-primary');
+                                this.classList.add('btn-primary');
+                                selectedTime = slot.time;
+                                
+                                // Update sidebar
+                                document.getElementById('sidebarDate').textContent = new Date(selectedDate).toLocaleDateString();
+                                document.getElementById('sidebarTime').textContent = selectedTime;
+                                document.getElementById('appointmentSummaryCard').style.display = 'block';
+                            });
+                            timeSlots.appendChild(slotBtn);
+                        });
+                    } else {
+                        timeSlots.innerHTML = '<div class="text-muted"><i class="ri-information-line me-1"></i>No time slots available for this date</div>';
+                    }
+                } catch (error) {
+                    console.error('Error loading time slots:', error);
+                    timeSlots.innerHTML = '<div class="alert alert-danger"><i class="ri-error-warning-line me-1"></i>Error loading time slots. Please try again.</div>';
+                }
             });
             
             // Navigation buttons
@@ -851,9 +823,81 @@
             });
             
             // Confirm appointment
-            document.getElementById('confirmBtn').addEventListener('click', function() {
-                alert('Appointment booked successfully! You will receive a confirmation email shortly.');
-                window.location.href = '/Patient/Appointments';
+            document.getElementById('confirmBtn').addEventListener('click', async function() {
+                const btn = this;
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Booking...';
+                
+                try {
+                    // Get form data
+                    const form = document.querySelector('#step3 form');
+                    const appointmentType = form.querySelector('select').value;
+                    const reason = form.querySelectorAll('textarea')[0].value;
+                    const medications = form.querySelectorAll('textarea')[1].value;
+                    const allergies = form.querySelector('input[type="text"]').value;
+                    const useInsurance = document.getElementById('insuranceCheck').checked;
+                    const sendReminders = document.getElementById('reminderCheck').checked;
+                    
+                    // Prepare booking request
+                    const bookingData = {
+                        doctorID: parseInt(selectedDoctor.id),
+                        appointmentDate: selectedDate,
+                        appointmentTime: selectedTime,
+                        appointmentType: appointmentType,
+                        reason: reason,
+                        currentMedications: medications || null,
+                        allergies: allergies || null,
+                        useInsurance: useInsurance,
+                        sendReminders: sendReminders
+                    };
+                    
+                    console.log('Booking appointment:', bookingData);
+                    
+                    // Get anti-forgery token
+                    const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+                    
+                    // Call API
+                    const response = await fetch('/Patient/BookAppointment?handler=BookAppointment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': token || ''
+                        },
+                        body: JSON.stringify(bookingData)
+                    });
+                    
+                    console.log('Response status:', response.status);
+                    
+                    // Check if response has content
+                    const contentType = response.headers.get('content-type');
+                    let result;
+                    
+                    if (contentType && contentType.includes('application/json')) {
+                        result = await response.json();
+                    } else {
+                        const text = await response.text();
+                        console.error('Non-JSON response:', text);
+                        throw new Error('Invalid response from server');
+                    }
+                    
+                    console.log('Booking result:', result);
+                    
+                    if (response.ok && result.success) {
+                        // Show success message
+                        alert(result.message || 'Appointment booked successfully! You will receive a confirmation email shortly.');
+                        window.location.href = '/Patient/Appointments';
+                    } else {
+                        // Show error message
+                        alert(result.message || 'Failed to book appointment. Please try again.');
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="ri-check-line me-1"></i>Confirm Appointment';
+                    }
+                } catch (error) {
+                    console.error('Error booking appointment:', error);
+                    alert('An error occurred while booking the appointment. Please try again.');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="ri-check-line me-1"></i>Confirm Appointment';
+                }
             });
             
             // Handle pre-selected doctor from URL

@@ -18,6 +18,7 @@ builder.Services.AddHttpClient("ApiClient", client =>
 
 // Register API Services
 builder.Services.AddScoped<CareSync.Services.AdminApiService>();
+builder.Services.AddScoped<CareSync.Services.PatientApiService>();
 
 // Add services to the container.
 builder.Services.AddRazorPages();

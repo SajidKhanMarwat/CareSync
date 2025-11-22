@@ -14,6 +14,8 @@ public sealed class UnitOfWork : IUnitOfWork
     public IRepository<T_DoctorDetails> DoctorDetailsRepo { get; }
     public IRepository<T_Lab> LabRepo { get; }
     public IRepository<T_Appointments> AppointmentsRepo { get; }
+    public IRepository<T_PatientVitals> PatientVitalsRepo { get; }
+    public IRepository<T_PatientReports> PatientReportsRepo { get; }
 
     public UnitOfWork(
         CareSyncDbContext dbContext,
@@ -21,7 +23,9 @@ public sealed class UnitOfWork : IUnitOfWork
         IRepository<T_PatientDetails> patientRepo,
         IRepository<T_DoctorDetails> doctorRepo,
         IRepository<T_Lab> labRepo,
-        IRepository<T_Appointments> appointmentRepo)
+        IRepository<T_Appointments> appointmentRepo,
+        IRepository<T_PatientVitals> patientVitalsRepo,
+        IRepository<T_PatientReports> patientReportsRepo)
     {
         _dbContext = dbContext;
         UserRepo = userRepo;
@@ -29,6 +33,8 @@ public sealed class UnitOfWork : IUnitOfWork
         DoctorDetailsRepo = doctorRepo;
         LabRepo = labRepo;
         AppointmentsRepo = appointmentRepo;
+        PatientVitalsRepo = patientVitalsRepo;
+        PatientReportsRepo = patientReportsRepo;
     }
 
     public async Task BeginTransactionAsync() =>
