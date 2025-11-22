@@ -68,6 +68,7 @@
             </div>
             <div class="card-body">
                 <form id="doctorForm">
+                    @Html.AntiForgeryToken()
                     
                     <!-- Step 1: Personal Information -->
                     <div class="step-content active" data-step="1">
@@ -378,35 +379,69 @@
         }
 
         // Form submission
-        document.getElementById('doctorForm').addEventListener('submit', function(e) {
+        document.getElementById('doctorForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            if (validateCurrentStep()) {
-                const doctorData = collectFormData();
-                console.log('Doctor Data to Submit:', doctorData);
+            
+            if (!validateCurrentStep()) {
+                return;
+            }
+
+            const doctorData = collectFormData();
+            console.log('Doctor Data to Submit:', doctorData);
+            
+            // Show loading state
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="ri-loader-4-line ri-spin me-2"></i>Creating Doctor...';
+            
+            try {
+                // Get anti-forgery token
+                const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
                 
-                // Display formatted summary
-                const summary = `
-Doctor Account Summary:
+                // Send to backend API
+                const response = await fetch(window.location.pathname, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token || ''
+                    },
+                    body: JSON.stringify(doctorData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Display success message
+                    const summary = `
+Doctor Account Created Successfully!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-👤 Name: ${doctorData.firstName} ${doctorData.lastName}
+👤 Name: Dr. ${doctorData.firstName} ${doctorData.lastName || ''}
 📧 Email: ${doctorData.email}
 🏥 Specialization: ${doctorData.specialization}
 📅 Working Days: ${doctorData.availableDays}
 ⏰ Sitting Time: ${formatTime(doctorData.startTime)} - ${formatTime(doctorData.endTime)}
-💰 Consultation Fee: $${doctorData.consultationFee}
+🔐 Default Password: CareSync@123
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                `;
-                
-                console.log(summary);
-                alert('Doctor created successfully!\n\nCheck console for details.');
-                
-                // TODO: Send to backend API
-                // Example:
-                // fetch('/api/doctors/create', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify(doctorData)
-                // });
+
+The doctor should change their password on first login.
+                    `;
+                    
+                    console.log(summary);
+                    alert(result.message || 'Doctor created successfully!');
+                    
+                    // Redirect to doctors list
+                    window.location.href = '/Admin/Doctors';
+                } else {
+                    alert('Error: ' + (result.message || 'Failed to create doctor. Please try again.'));
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            } catch (error) {
+                console.error('Error creating doctor:', error);
+                alert('An error occurred while creating the doctor. Please check the console for details.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
             }
         });
 
@@ -433,20 +468,18 @@ Doctor Account Summary:
                 
                 // Professional Details
                 licenseNumber: formData.get('licenseNumber'),
-                experienceYears: parseInt(formData.get('experience')),
+                experienceYears: parseInt(formData.get('experience')) || 0,
                 specialization: formData.get('specialization'),
                 department: formData.get('department'),
                 qualifications: formData.get('qualifications'),
                 certifications: formData.get('certifications'),
                 
-                // Schedule & Fees (as strings to match entity)
-                consultationFee: formData.get('consultationFee'),
-                followupFee: formData.get('followupFee'),
+                // Schedule & Fees
                 availableDays: workingDays.join(', '),  // "Monday, Wednesday, Friday"
                 startTime: formData.get('startTime'),    // "09:00" format
                 endTime: formData.get('endTime'),        // "17:00" format
-                appointmentDuration: formData.get('appointmentDuration'),
-                maxPatients: parseInt(formData.get('maxPatients'))
+                appointmentDuration: parseInt(formData.get('appointmentDuration')) || 30,
+                maxPatients: parseInt(formData.get('maxPatients')) || 20
             };
         }
 

@@ -5,5 +5,6 @@ public enum AppointmentStatus_Enum
     Created,
     Pending,
     Approved,
-    Rejected
+    Rejected,
+    Scheduled
 }

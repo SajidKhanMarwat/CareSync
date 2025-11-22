@@ -72,11 +72,19 @@
         </li>
         
         <!-- Appointments Management -->
-        <li class="@(currentPath.Contains("/Admin/Appointments") ? "active current-page" : "")">
-          <a href="~/Admin/Appointments">
+        <li class="treeview @(currentPath.Contains("/Admin/Appointments") || currentPath.Contains("/Admin/BookAppointment") ? "active" : "")">
+          <a href="#!">
             <i class="ri-calendar-line"></i>
             <span class="menu-text">Appointments</span>
           </a>
+          <ul class="treeview-menu">
+            <li class="@(currentPath.Equals("/Admin/Appointments", StringComparison.OrdinalIgnoreCase) ? "active current-page" : "")">
+              <a href="~/Admin/Appointments">All Appointments</a>
+            </li>
+            <li class="@(currentPath.Contains("/Admin/BookAppointment") ? "active current-page" : "")">
+              <a href="~/Admin/BookAppointment">Book Appointment</a>
+            </li>
+          </ul>
         </li>
         
         <!-- Doctors Management -->
@@ -96,7 +104,7 @@
         </li>
         
         <!-- Patients Management -->
-        <li class="treeview @(currentPath.Contains("/Admin/Patients") || currentPath.Contains("/Patients/Create") || currentPath.Contains("/Admin/Patients/Search") ? "active" : "")">
+        <li class="treeview @(currentPath.Contains("/Admin/Patients") || currentPath.Contains("/Admin/CreatePatient") || currentPath.Contains("/Admin/Patients/Search") ? "active" : "")">
           <a href="#!">
             <i class="ri-user-heart-line"></i>
             <span class="menu-text">Patients</span>
@@ -105,8 +113,8 @@
             <li class="@(currentPath.Equals("/Admin/Patients", StringComparison.OrdinalIgnoreCase) ? "active current-page" : "")">
               <a href="~/Admin/Patients">All Patients</a>
             </li>
-            <li class="@(currentPath.Contains("/Patients/Create") ? "active current-page" : "")">
-              <a href="~/Patients/Create">Add Patient</a>
+            <li class="@(currentPath.Contains("/Admin/CreatePatient") ? "active current-page" : "")">
+              <a href="~/Admin/CreatePatient">Add Patient</a>
             </li>
             <li class="@(currentPath.Contains("/Admin/Patients/Search") ? "active current-page" : "")">
               <a href="~/Admin/Patients/Search">Search Patients</a>

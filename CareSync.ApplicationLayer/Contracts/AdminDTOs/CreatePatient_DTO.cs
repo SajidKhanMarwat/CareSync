@@ -1,14 +1,13 @@
-﻿using CareSync.Shared.Enums;
-using CareSync.Shared.Enums.Appointment;
+using CareSync.Shared.Enums;
 
 namespace CareSync.ApplicationLayer.Contracts.AdminDTOs;
 
 /// <summary>
-/// Used for creating Appointment with Patient together by admin
+/// DTO for creating a patient account without appointment
 /// </summary>
-public class AddAppointmentWithQuickPatient_DTO
+public class CreatePatient_DTO
 {
-    // Patient/User Information
+    // User Information
     public required string FirstName { get; set; }
     public string? LastName { get; set; }
     public string? Username { get; set; }
@@ -26,11 +25,4 @@ public class AddAppointmentWithQuickPatient_DTO
     // Emergency Contact
     public string? EmergencyContactName { get; set; }
     public string? EmergencyContactPhone { get; set; }
-    
-    // Appointment Information
-    public required int DoctorID { get; set; }
-    public required DateTime AppointmentDate { get; set; }
-    public required AppointmentType_Enum AppointmentType { get; set; }
-    public string? Reason { get; set; }
-    public string? Notes { get; set; }
 }
