@@ -103,4 +103,311 @@ public sealed class PatientService(UserManager<T_Users> userManager,
     {
         throw new NotImplementedException();
     }
+
+    public async Task<Result<PatientDashboard_DTO>> GetPatientDashboardAsync(string userId)
+    {
+        logger.LogInformation($"Getting patient dashboard for user: {userId}");
+
+        try
+        {
+            // Get patient details with user information
+            var patients = await uow.PatientDetailsRepo
+                .GetAllAsync(p => p.UserID == userId && !p.IsDeleted);
+            
+            var patient = patients.FirstOrDefault();
+
+            if (patient == null)
+            {
+                logger.LogWarning($"Patient not found for user: {userId}");
+                return Result<PatientDashboard_DTO>.Failure(
+                    new PatientDashboard_DTO(),
+                    "Patient profile not found");
+            }
+
+            // Get user details
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return Result<PatientDashboard_DTO>.Failure(
+                    new PatientDashboard_DTO(),
+                    "User not found");
+            }
+
+            var dashboard = new PatientDashboard_DTO();
+
+            // Build Profile Information
+            dashboard.Profile = await BuildPatientProfileAsync(user, patient);
+
+            // Build Dashboard Statistics
+            dashboard.Statistics = await BuildDashboardStatsAsync(patient.PatientID);
+
+            // Get Recent Doctor Visits (last 5 completed appointments)
+            dashboard.RecentVisits = await GetRecentDoctorVisitsAsync(patient.PatientID);
+
+            // Get Recent Medical Reports (last 5 reports)
+            dashboard.RecentReports = await GetRecentMedicalReportsAsync(patient.PatientID);
+
+            // Get Latest Health Vitals
+            dashboard.LatestVitals = await GetLatestHealthVitalsAsync(patient.PatientID);
+
+            logger.LogInformation($"Successfully retrieved dashboard for patient: {patient.PatientID}");
+            return Result<PatientDashboard_DTO>.Success(dashboard);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, $"Error retrieving patient dashboard for user: {userId}");
+            return Result<PatientDashboard_DTO>.Exception(ex);
+        }
+    }
+
+    #region Private Helper Methods
+
+    private async Task<PatientProfile_DTO> BuildPatientProfileAsync(T_Users user, T_PatientDetails patient)
+    {
+        var profile = new PatientProfile_DTO
+        {
+            PatientName = $"{user.FirstName} {user.LastName}".Trim(),
+            Gender = user.Gender.ToString(),
+            Age = user.Age ?? CalculateAge(user.DateOfBirth),
+            BloodType = patient.BloodGroup ?? "Unknown",
+            ProfileImage = user.ProfileImage
+        };
+
+        // Get primary doctor (most frequent doctor from appointments)
+        var primaryDoctor = await uow.AppointmentsRepo
+            .GetAllAsync(a => a.PatientID == patient.PatientID && !a.IsDeleted)
+            .ContinueWith(async t =>
+            {
+                var appointments = t.Result;
+                if (!appointments.Any()) return null;
+
+                var mostFrequentDoctorId = appointments
+                    .GroupBy(a => a.DoctorID)
+                    .OrderByDescending(g => g.Count())
+                    .FirstOrDefault()?.Key;
+
+                if (mostFrequentDoctorId.HasValue)
+                {
+                    var doctor = await uow.DoctorDetailsRepo.GetByIdAsync(mostFrequentDoctorId.Value);
+                    if (doctor != null)
+                    {
+                        var doctorUser = await userManager.FindByIdAsync(doctor.UserID);
+                        return doctorUser != null ? $"Dr. {doctorUser.FirstName} {doctorUser.LastName}" : null;
+                    }
+                }
+                return null;
+            });
+
+        profile.PrimaryDoctor = await primaryDoctor ?? "Not Assigned";
+
+        // Get last visit date
+        var lastVisit = await uow.AppointmentsRepo
+            .GetAllAsync(a => a.PatientID == patient.PatientID && 
+                             a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.Scheduled && 
+                             a.AppointmentDate < DateTime.Now && 
+                             !a.IsDeleted)
+            .ContinueWith(t => t.Result.OrderByDescending(a => a.AppointmentDate).FirstOrDefault());
+
+        profile.LastVisitDate = lastVisit?.AppointmentDate.ToString("MMM dd, yyyy");
+
+        // Get next appointment date
+        var nextAppointment = await uow.AppointmentsRepo
+            .GetAllAsync(a => a.PatientID == patient.PatientID && 
+                             a.AppointmentDate > DateTime.Now && 
+                             !a.IsDeleted)
+            .ContinueWith(t => t.Result.OrderBy(a => a.AppointmentDate).FirstOrDefault());
+
+        profile.NextAppointmentDate = nextAppointment?.AppointmentDate.ToString("MMM dd, yyyy");
+
+        return profile;
+    }
+
+    private async Task<DashboardStats_DTO> BuildDashboardStatsAsync(int patientId)
+    {
+        var stats = new DashboardStats_DTO();
+
+        // Count upcoming appointments
+        stats.UpcomingAppointments = await uow.AppointmentsRepo
+            .GetCountAsync(a => a.PatientID == patientId && 
+                               a.AppointmentDate > DateTime.Now && 
+                               !a.IsDeleted);
+
+        // Count active prescriptions (prescriptions from last 30 days)
+        var thirtyDaysAgo = DateTime.Now.AddDays(-30);
+        try
+        {
+            // Get appointments from last 30 days and count their prescriptions
+            var recentAppointments = await uow.AppointmentsRepo
+                .GetAllAsync(a => a.PatientID == patientId && 
+                                 a.CreatedOn >= thirtyDaysAgo && 
+                                 !a.IsDeleted);
+            
+            stats.ActivePrescriptions = recentAppointments.Count();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error counting active prescriptions");
+            stats.ActivePrescriptions = 0;
+        }
+
+        // Count pending lab tests
+        stats.PendingLabTests = 0; // Lab requests not yet implemented in UnitOfWork
+
+        // Count new reports (last 7 days)
+        var sevenDaysAgo = DateTime.Now.AddDays(-7);
+        try
+        {
+            var recentReports = await uow.PatientReportsRepo
+                .GetAllAsync(r => r.PatientID == patientId);
+            
+            stats.NewReports = recentReports.Count();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error counting new reports");
+            stats.NewReports = 0;
+        }
+
+        return stats;
+    }
+
+    private async Task<List<RecentDoctorVisit_DTO>> GetRecentDoctorVisitsAsync(int patientId)
+    {
+        var visits = new List<RecentDoctorVisit_DTO>();
+
+        var recentAppointments = await uow.AppointmentsRepo
+            .GetAllAsync(a => a.PatientID == patientId && 
+                             a.AppointmentDate <= DateTime.Now && 
+                             !a.IsDeleted)
+            .ContinueWith(t => t.Result
+                .OrderByDescending(a => a.AppointmentDate)
+                .Take(5)
+                .ToList());
+
+        foreach (var appointment in recentAppointments)
+        {
+            var doctor = await uow.DoctorDetailsRepo.GetByIdAsync(appointment.DoctorID);
+            if (doctor == null) continue;
+
+            var doctorUser = await userManager.FindByIdAsync(doctor.UserID);
+            if (doctorUser == null) continue;
+
+            visits.Add(new RecentDoctorVisit_DTO
+            {
+                AppointmentId = appointment.AppointmentID,
+                DoctorName = $"Dr. {doctorUser.FirstName} {doctorUser.LastName}",
+                DoctorImage = doctorUser.ProfileImage ?? "~/theme/images/user.png",
+                Specialization = doctor.Specialization ?? "General Physician",
+                VisitDate = appointment.AppointmentDate.ToString("MMM dd, yyyy"),
+                Department = doctor.Specialization ?? "General Medicine",
+                Status = appointment.Status.ToString()
+            });
+        }
+
+        return visits;
+    }
+
+    private async Task<List<RecentMedicalReport_DTO>> GetRecentMedicalReportsAsync(int patientId)
+    {
+        var reports = new List<RecentMedicalReport_DTO>();
+
+        try
+        {
+            var patientReports = await uow.PatientReportsRepo
+                .GetAllAsync(r => r.PatientID == patientId)
+                .ContinueWith(t => t.Result
+                    .OrderByDescending(r => r.PatientReportID)
+                    .Take(5)
+                    .ToList());
+
+            foreach (var report in patientReports)
+            {
+                reports.Add(new RecentMedicalReport_DTO
+                {
+                    ReportId = report.PatientReportID,
+                    ReportTitle = report.Description ?? "Medical Report",
+                    ReportType = string.IsNullOrEmpty(report.Documnt) ? "Lab Report" : "Medical Document",
+                    ReportDate = DateTime.Now.ToString("MMM dd, yyyy"), // Use actual date when available
+                    FileUrl = report.FilePath
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, $"Error retrieving medical reports for patient: {patientId}");
+        }
+
+        return reports;
+    }
+
+    private async Task<HealthVitals_DTO?> GetLatestHealthVitalsAsync(int patientId)
+    {
+        try
+        {
+            var latestVital = await uow.PatientVitalsRepo
+                .GetAllAsync(v => v.PatientID == patientId && !v.IsDeleted)
+                .ContinueWith(t => t.Result
+                    .OrderByDescending(v => v.CreatedOn)
+                    .FirstOrDefault());
+
+            if (latestVital == null)
+                return null;
+
+            // Parse blood pressure if available
+            decimal? systolic = null;
+            decimal? diastolic = null;
+            if (!string.IsNullOrEmpty(latestVital.BloodPressure))
+            {
+                var bpParts = latestVital.BloodPressure.Split('/');
+                if (bpParts.Length == 2)
+                {
+                    if (decimal.TryParse(bpParts[0], out var sys))
+                        systolic = sys;
+                    if (decimal.TryParse(bpParts[1], out var dia))
+                        diastolic = dia;
+                }
+            }
+
+            // Parse diabetic readings for blood sugar
+            decimal? bloodSugar = null;
+            if (!string.IsNullOrEmpty(latestVital.DiabeticReadings))
+            {
+                if (decimal.TryParse(latestVital.DiabeticReadings, out var sugar))
+                    bloodSugar = sugar;
+            }
+
+            return new HealthVitals_DTO
+            {
+                BloodPressureSystolic = systolic,
+                BloodPressureDiastolic = diastolic,
+                BloodSugar = bloodSugar,
+                HeartRate = latestVital.PulseRate,
+                Cholesterol = null, // Not available in current schema
+                Weight = latestVital.Weight,
+                Height = latestVital.Height,
+                Temperature = null, // Not available in current schema
+                RecordedDate = latestVital.CreatedOn.ToString("MMM dd, yyyy")
+            };
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, $"Error retrieving health vitals for patient: {patientId}");
+            return null;
+        }
+    }
+
+    private int CalculateAge(DateTime? dateOfBirth)
+    {
+        if (!dateOfBirth.HasValue) return 0;
+
+        var today = DateTime.Today;
+        var age = today.Year - dateOfBirth.Value.Year;
+        
+        if (dateOfBirth.Value.Date > today.AddYears(-age))
+            age--;
+
+        return age;
+    }
+
+    #endregion
 }
