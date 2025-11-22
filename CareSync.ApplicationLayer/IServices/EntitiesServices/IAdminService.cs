@@ -116,6 +116,11 @@ public interface IAdminService
     /// </summary>
     Task<Result<GeneralResponse>> CreateAppointmentWithQuickPatientAsync(AddAppointmentWithQuickPatient_DTO input);
 
+    /// <summary>
+    /// Create patient account without appointment
+    /// </summary>
+    Task<Result<GeneralResponse>> CreatePatientAccountAsync(CreatePatient_DTO input);
+
     // ========== Admin User Management ==========
     
     /// <summary>
@@ -132,4 +137,50 @@ public interface IAdminService
     /// Delete/deactivate admin user
     /// </summary>
     Task<Result<GeneralResponse>> DeleteUserAdminAsync(string id);
+
+    // ========== Doctor Availability ==========
+    
+    /// <summary>
+    /// Get doctor availability status for dashboard
+    /// </summary>
+    Task<Result<DoctorAvailabilitySummary_DTO>> GetDoctorAvailabilityAsync();
+
+    // ========== Today's Performance ==========
+    
+    /// <summary>
+    /// Get today's performance metrics for dashboard
+    /// </summary>
+    Task<Result<TodayPerformanceMetrics_DTO>> GetTodayPerformanceMetricsAsync();
+
+    // ========== Additional Dashboard Widgets ==========
+    
+    /// <summary>
+    /// Get user distribution statistics by role with month comparison
+    /// </summary>
+    Task<Result<UserDistributionStats_DTO>> GetUserDistributionStatsAsync();
+
+    /// <summary>
+    /// Get monthly statistics summary with comparisons
+    /// </summary>
+    Task<Result<MonthlyStatistics_DTO>> GetMonthlyStatsAsync();
+
+    /// <summary>
+    /// Get patient registration trends over 12 months
+    /// </summary>
+    Task<Result<PatientRegistrationTrends_DTO>> GetPatientRegTrendsAsync();
+
+    /// <summary>
+    /// Get appointment status breakdown with percentages
+    /// </summary>
+    Task<Result<AppointmentStatusBreakdown_DTO>> GetAppointmentStatusAsync();
+
+    /// <summary>
+    /// Get today's appointments detailed list
+    /// </summary>
+    Task<Result<TodaysAppointmentsList_DTO>> GetTodaysApptsListAsync();
+
+    /// <summary>
+    /// Get recent lab results list
+    /// </summary>
+    Task<Result<RecentLabResults_DTO>> GetRecentLabsAsync();
 }

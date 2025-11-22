@@ -44,17 +44,17 @@ public class AdminController(IAdminService adminService, IUserService userServic
         => await adminService.GetUrgentItemsAsync();
 
     /// <summary>
-    /// Get today's performance metrics
+    /// Get today's performance metrics (original - used by existing Dashboard)
     /// </summary>
     [HttpGet("dashboard/today-performance")]
-    public async Task<Result<TodayPerformance_DTO>> GetTodayPerformance()
+    public async Task<Result<TodayPerformance_DTO>> GetTodayPerformanceOriginal()
         => await adminService.GetTodayPerformanceAsync();
 
     /// <summary>
-    /// Get user distribution across all roles
+    /// Get user distribution across all roles (original - used by existing Dashboard)
     /// </summary>
     [HttpGet("dashboard/user-distribution")]
-    public async Task<Result<UserDistribution_DTO>> GetUserDistribution()
+    public async Task<Result<UserDistribution_DTO>> GetUserDistributionOriginal()
         => await adminService.GetUserDistributionAsync();
 
     /// <summary>
@@ -77,6 +77,70 @@ public class AdminController(IAdminService adminService, IUserService userServic
     [HttpGet("dashboard/todays-appointments")]
     public async Task<Result<List<TodayAppointment_DTO>>> GetTodaysAppointments()
         => await adminService.GetTodaysAppointmentsAsync();
+
+    /// <summary>
+    /// Get doctor availability status for dashboard
+    /// </summary>
+    [HttpGet("dashboard/doctor-availability")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<DoctorAvailabilitySummary_DTO>> GetDoctorAvailability()
+        => await adminService.GetDoctorAvailabilityAsync();
+
+    /// <summary>
+    /// Get today's performance metrics (enhanced version with more details)
+    /// </summary>
+    [HttpGet("dashboard/today-performance-metrics")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<TodayPerformanceMetrics_DTO>> GetTodayPerformanceMetrics()
+        => await adminService.GetTodayPerformanceMetricsAsync();
+
+    /// <summary>
+    /// Get user distribution statistics by role (enhanced with month-over-month)
+    /// </summary>
+    [HttpGet("dashboard/user-distribution-stats")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<UserDistributionStats_DTO>> GetUserDistributionStats()
+        => await adminService.GetUserDistributionStatsAsync();
+
+    /// <summary>
+    /// Get monthly statistics summary
+    /// </summary>
+    [HttpGet("dashboard/monthly-statistics")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<MonthlyStatistics_DTO>> GetMonthlyStatistics()
+        => await adminService.GetMonthlyStatsAsync();
+
+    /// <summary>
+    /// Get patient registration trends (12 months)
+    /// </summary>
+    [HttpGet("dashboard/patient-registration-trends")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<PatientRegistrationTrends_DTO>> GetPatientRegistrationTrends()
+        => await adminService.GetPatientRegTrendsAsync();
+
+    /// <summary>
+    /// Get appointment status breakdown
+    /// </summary>
+    [HttpGet("dashboard/appointment-status-breakdown")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<AppointmentStatusBreakdown_DTO>> GetAppointmentStatusBreakdown()
+        => await adminService.GetAppointmentStatusAsync();
+
+    /// <summary>
+    /// Get today's appointments list
+    /// </summary>
+    [HttpGet("dashboard/todays-appointments-list")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<TodaysAppointmentsList_DTO>> GetTodaysAppointmentsList()
+        => await adminService.GetTodaysApptsListAsync();
+
+    /// <summary>
+    /// Get recent lab results
+    /// </summary>
+    [HttpGet("dashboard/recent-lab-results")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<RecentLabResults_DTO>> GetRecentLabResults()
+        => await adminService.GetRecentLabsAsync();
 
     #endregion
 
@@ -205,6 +269,23 @@ public class AdminController(IAdminService adminService, IUserService userServic
                 System.Net.HttpStatusCode.BadRequest);
 
         return await adminService.CreateAppointmentWithQuickPatientAsync(input);
+    }
+
+    /// <summary>
+    /// Create a new patient account (without appointment)
+    /// </summary>
+    [HttpPost("patients/create")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<GeneralResponse>> CreatePatient(
+        [FromBody] CreatePatient_DTO input)
+    {
+        if (!ModelState.IsValid)
+            return Result<GeneralResponse>.Failure(
+                new GeneralResponse { Success = false, Message = "Validation failed" },
+                "Validation failed",
+                System.Net.HttpStatusCode.BadRequest);
+
+        return await adminService.CreatePatientAccountAsync(input);
     }
 
     #endregion

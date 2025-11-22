@@ -1,9 +1,20 @@
+using CareSync.Handlers;
+
 var builder = WebApplication.CreateBuilder(args);
 
+// Register HTTP Context Accessor for accessing session in handlers
+builder.Services.AddHttpContextAccessor();
+
+// Register Authorization Handler
+builder.Services.AddTransient<AuthorizationMessageHandler>();
+
+// Register HttpClient with Authorization Handler
 builder.Services.AddHttpClient("ApiClient", client =>
 {
     client.BaseAddress = new Uri("http://localhost:5157/api/");
-});
+    client.Timeout = TimeSpan.FromSeconds(30);
+})
+.AddHttpMessageHandler<AuthorizationMessageHandler>();
 
 // Register API Services
 builder.Services.AddScoped<CareSync.Services.AdminApiService>();
