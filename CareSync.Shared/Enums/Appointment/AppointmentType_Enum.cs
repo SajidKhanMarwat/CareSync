@@ -10,5 +10,6 @@ public enum AppointmentType_Enum
     Emergency = 5,
     RoutineCheckup = 6,
     Vaccination = 7,
-    LabTest = 8
+    LabTest = 8,
+    Checkup=9,
 }

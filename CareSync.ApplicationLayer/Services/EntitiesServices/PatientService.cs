@@ -558,4 +558,337 @@ public sealed class PatientService(UserManager<T_Users> userManager,
     }
 
     #endregion
+
+    public async Task<Result<List<DoctorBooking_DTO>>> GetAvailableDoctorsAsync(string? specialization = null)
+    {
+        logger.LogInformation($"Getting available doctors. Specialization filter: {specialization ?? "All"}");
+
+        try
+        {
+            var query = uow.DoctorDetailsRepo.GetAllAsync(d => !d.IsDeleted);
+            var doctors = await query;
+
+            if (!string.IsNullOrEmpty(specialization))
+            {
+                doctors = doctors.Where(d => d.Specialization != null && 
+                    d.Specialization.Contains(specialization, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            var doctorDtos = new List<DoctorBooking_DTO>();
+
+            foreach (var doctor in doctors)
+            {
+                var user = await userManager.FindByIdAsync(doctor.UserID);
+                if (user == null || !user.IsActive) continue;
+
+                var availableDays = ParseAvailableDays(doctor.AvailableDays);
+                var timeSlots = GenerateTimeSlots(doctor.StartTime, doctor.EndTime);
+
+                doctorDtos.Add(new DoctorBooking_DTO
+                {
+                    DoctorID = doctor.DoctorID,
+                    DoctorName = $"{user.FirstName} {user.LastName}",
+                    Specialization = doctor.Specialization ?? "General",
+                    ExperienceYears = doctor.ExperienceYears ?? 0,
+                    ProfileImage = user.ProfileImage ?? "/theme/images/user.png",
+                    Rating = 4.5m,
+                    ReviewCount = 0,
+                    Location = doctor.ClinicAddress ?? "Not specified",
+                    ConsultationFee = "$120",
+                    AvailableDays = doctor.AvailableDays ?? "",
+                    StartTime = doctor.StartTime ?? "09:00",
+                    EndTime = doctor.EndTime ?? "17:00",
+                    AvailableDaysList = availableDays,
+                    AvailableTimeSlots = timeSlots,
+                    AvailabilityStatus = "Available",
+                    NextAvailableSlot = GetNextAvailableSlot(availableDays, timeSlots)
+                });
+            }
+
+            return Result<List<DoctorBooking_DTO>>.Success(doctorDtos);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting available doctors");
+            return Result<List<DoctorBooking_DTO>>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<DoctorBooking_DTO>> GetDoctorByIdAsync(int doctorId)
+    {
+        logger.LogInformation($"Getting doctor by ID: {doctorId}");
+
+        try
+        {
+            var doctors = await uow.DoctorDetailsRepo.GetAllAsync(d => d.DoctorID == doctorId && !d.IsDeleted);
+            var doctor = doctors.FirstOrDefault();
+
+            if (doctor == null)
+            {
+                return Result<DoctorBooking_DTO>.Failure(
+                    null!,
+                    "Doctor not found",
+                    System.Net.HttpStatusCode.NotFound);
+            }
+
+            var user = await userManager.FindByIdAsync(doctor.UserID);
+            if (user == null)
+            {
+                return Result<DoctorBooking_DTO>.Failure(
+                    null!,
+                    "Doctor user not found",
+                    System.Net.HttpStatusCode.NotFound);
+            }
+
+            var availableDays = ParseAvailableDays(doctor.AvailableDays);
+            var timeSlots = GenerateTimeSlots(doctor.StartTime, doctor.EndTime);
+
+            var doctorDto = new DoctorBooking_DTO
+            {
+                DoctorID = doctor.DoctorID,
+                DoctorName = $"{user.FirstName} {user.LastName}",
+                Specialization = doctor.Specialization ?? "General",
+                ExperienceYears = doctor.ExperienceYears ?? 0,
+                ProfileImage = user.ProfileImage ?? "/theme/images/user.png",
+                Rating = 4.5m,
+                ReviewCount = 0,
+                Location = doctor.ClinicAddress ?? "Not specified",
+                ConsultationFee = "$120",
+                AvailableDays = doctor.AvailableDays ?? "",
+                StartTime = doctor.StartTime ?? "09:00",
+                EndTime = doctor.EndTime ?? "17:00",
+                AvailableDaysList = availableDays,
+                AvailableTimeSlots = timeSlots,
+                AvailabilityStatus = "Available",
+                NextAvailableSlot = GetNextAvailableSlot(availableDays, timeSlots)
+            };
+
+            return Result<DoctorBooking_DTO>.Success(doctorDto);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting doctor by ID");
+            return Result<DoctorBooking_DTO>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<List<DoctorTimeSlot_DTO>>> GetDoctorTimeSlotsAsync(int doctorId, DateTime date)
+    {
+        logger.LogInformation($"Getting time slots for doctor {doctorId} on {date:yyyy-MM-dd}");
+
+        try
+        {
+            var doctors = await uow.DoctorDetailsRepo.GetAllAsync(d => d.DoctorID == doctorId && !d.IsDeleted);
+            var doctor = doctors.FirstOrDefault();
+
+            if (doctor == null)
+            {
+                return Result<List<DoctorTimeSlot_DTO>>.Failure(
+                    new List<DoctorTimeSlot_DTO>(),
+                    "Doctor not found");
+            }
+
+            var availableDays = ParseAvailableDays(doctor.AvailableDays);
+            //var dayOfWeek = date.DayOfWeek.ToString().Substring(0, 3);
+            
+            //if (!availableDays.Contains(dayOfWeek))
+            //{
+            //    return Result<List<DoctorTimeSlot_DTO>>.Success(new List<DoctorTimeSlot_DTO>());
+            //}
+
+            var timeSlots = GenerateTimeSlots(doctor.StartTime, doctor.EndTime);
+
+            var appointments = await uow.AppointmentsRepo.GetAllAsync(a => 
+                a.DoctorID == doctorId && 
+                a.AppointmentDate.Date == date.Date &&
+                !a.IsDeleted);
+
+            var bookedTimes = appointments.Select(a => a.AppointmentDate.ToString("HH:mm")).ToList();
+
+            var slots = timeSlots.Select(time => new DoctorTimeSlot_DTO
+            {
+                Time = time,
+                IsAvailable = !bookedTimes.Contains(time),
+                IsBooked = bookedTimes.Contains(time)
+            }).ToList();
+
+            return Result<List<DoctorTimeSlot_DTO>>.Success(slots);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting doctor time slots");
+            return Result<List<DoctorTimeSlot_DTO>>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<GeneralResponse>> BookAppointmentAsync(string userId, BookAppointmentRequest_DTO request)
+    {
+        logger.LogInformation($"Booking appointment for user {userId} with doctor {request.DoctorID}");
+
+        try
+        {
+            await uow.BeginTransactionAsync();
+
+            var patients = await uow.PatientDetailsRepo.GetAllAsync(p => p.UserID == userId && !p.IsDeleted);
+            var patient = patients.FirstOrDefault();
+
+            if (patient == null)
+            {
+                await uow.RollbackAsync();
+                return Result<GeneralResponse>.Failure(new GeneralResponse
+                {
+                    Success = false,
+                    Message = "Patient profile not found. Please complete your profile first."
+                });
+            }
+
+            var doctors = await uow.DoctorDetailsRepo.GetAllAsync(d => d.DoctorID == request.DoctorID && !d.IsDeleted);
+            var doctor = doctors.FirstOrDefault();
+
+            if (doctor == null)
+            {
+                await uow.RollbackAsync();
+                return Result<GeneralResponse>.Failure(new GeneralResponse
+                {
+                    Success = false,
+                    Message = "Doctor not found or not available."
+                });
+            }
+
+            var appointmentDateTime = DateTime.Parse($"{request.AppointmentDate:yyyy-MM-dd} {request.AppointmentTime}");
+
+            var existingAppointments = await uow.AppointmentsRepo.GetAllAsync(a =>
+                a.DoctorID == request.DoctorID &&
+                a.AppointmentDate == appointmentDateTime &&
+                !a.IsDeleted);
+
+            if (existingAppointments.Any())
+            {
+                await uow.RollbackAsync();
+                return Result<GeneralResponse>.Failure(new GeneralResponse
+                {
+                    Success = false,
+                    Message = "This time slot is already booked. Please select another time."
+                });
+            }
+
+            var appointmentType = request.AppointmentType.ToLower() switch
+            {
+                "consultation" => CareSync.Shared.Enums.Appointment.AppointmentType_Enum.Consultation,
+                "followup" => CareSync.Shared.Enums.Appointment.AppointmentType_Enum.FollowUp,
+                "checkup" => CareSync.Shared.Enums.Appointment.AppointmentType_Enum.Checkup,
+                "emergency" => CareSync.Shared.Enums.Appointment.AppointmentType_Enum.Emergency,
+                _ => CareSync.Shared.Enums.Appointment.AppointmentType_Enum.Consultation
+            };
+
+            var appointment = new T_Appointments
+            {
+                DoctorID = request.DoctorID,
+                PatientID = patient.PatientID,
+                AppointmentDate = appointmentDateTime,
+                AppointmentType = appointmentType,
+                Status = CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Scheduled,
+                Reason = request.Reason,
+                Notes = BuildAppointmentNotes(request),
+                CreatedBy = userId,
+                CreatedOn = DateTime.UtcNow
+            };
+
+            await uow.AppointmentsRepo.AddAsync(appointment);
+            await uow.SaveChangesAsync();
+            await uow.CommitAsync();
+
+            logger.LogInformation($"Appointment booked successfully. ID: {appointment.AppointmentID}");
+
+            return Result<GeneralResponse>.Success(new GeneralResponse
+            {
+                Success = true,
+                Message = "Appointment booked successfully! You will receive a confirmation email shortly."
+            });
+        }
+        catch (Exception ex)
+        {
+            await uow.RollbackAsync();
+            logger.LogError(ex, "Error booking appointment");
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    private List<string> ParseAvailableDays(string? availableDays)
+    {
+        if (string.IsNullOrEmpty(availableDays))
+            return new List<string>();
+
+        return availableDays.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(d => d.Trim())
+            .ToList();
+    }
+
+    private List<string> GenerateTimeSlots(string? startTime, string? endTime)
+    {
+        var slots = new List<string>();
+        
+        if (string.IsNullOrEmpty(startTime) || string.IsNullOrEmpty(endTime))
+            return slots;
+
+        try
+        {
+            var start = TimeSpan.Parse(startTime);
+            var end = TimeSpan.Parse(endTime);
+            var interval = TimeSpan.FromHours(1);
+
+            for (var time = start; time < end; time += interval)
+            {
+                slots.Add(time.ToString(@"hh\:mm"));
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error generating time slots");
+        }
+
+        return slots;
+    }
+
+    private string GetNextAvailableSlot(List<string> availableDays, List<string> timeSlots)
+    {
+        if (!availableDays.Any() || !timeSlots.Any())
+            return "Not available";
+
+        var today = DateTime.Now;
+        var daysOfWeek = new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+
+        for (int i = 0; i < 7; i++)
+        {
+            var checkDate = today.AddDays(i);
+            var dayAbbr = daysOfWeek[(int)checkDate.DayOfWeek];
+
+            if (availableDays.Contains(dayAbbr))
+            {
+                var dateStr = i == 0 ? "Today" : i == 1 ? "Tomorrow" : checkDate.ToString("MMM dd");
+                return $"{dateStr} {timeSlots.First()}";
+            }
+        }
+
+        return "Not available";
+    }
+
+    private string BuildAppointmentNotes(BookAppointmentRequest_DTO request)
+    {
+        var notes = new List<string>();
+
+        if (!string.IsNullOrEmpty(request.CurrentMedications))
+            notes.Add($"Current Medications: {request.CurrentMedications}");
+
+        if (!string.IsNullOrEmpty(request.Allergies))
+            notes.Add($"Allergies: {request.Allergies}");
+
+        if (request.UseInsurance)
+            notes.Add("Patient will use insurance");
+
+        if (request.SendReminders)
+            notes.Add("Send appointment reminders");
+
+        return string.Join(" | ", notes);
+    }
 }
