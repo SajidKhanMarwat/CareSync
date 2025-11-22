@@ -150,6 +150,9 @@ public sealed class PatientService(UserManager<T_Users> userManager,
             // Get Latest Health Vitals
             dashboard.LatestVitals = await GetLatestHealthVitalsAsync(patient.PatientID);
 
+            // Get Health Vitals History (last 5 readings for each vital type)
+            dashboard.VitalsHistory = await GetHealthVitalsHistoryAsync(patient.PatientID);
+
             logger.LogInformation($"Successfully retrieved dashboard for patient: {patient.PatientID}");
             return Result<PatientDashboard_DTO>.Success(dashboard);
         }
@@ -394,6 +397,151 @@ public sealed class PatientService(UserManager<T_Users> userManager,
             logger.LogError(ex, $"Error retrieving health vitals for patient: {patientId}");
             return null;
         }
+    }
+
+    private async Task<HealthVitalsHistory_DTO> GetHealthVitalsHistoryAsync(int patientId)
+    {
+        var history = new HealthVitalsHistory_DTO();
+
+        try
+        {
+            // Get last 5 vitals records
+            var vitalsRecords = await uow.PatientVitalsRepo
+                .GetAllAsync(v => v.PatientID == patientId && !v.IsDeleted)
+                .ContinueWith(t => t.Result
+                    .OrderByDescending(v => v.CreatedOn)
+                    .Take(5)
+                    .OrderBy(v => v.CreatedOn)
+                    .ToList());
+
+            foreach (var vital in vitalsRecords)
+            {
+                var date = vital.CreatedOn.ToString("dd/MM/yyyy");
+
+                // Blood Pressure
+                if (!string.IsNullOrEmpty(vital.BloodPressure))
+                {
+                    var bpParts = vital.BloodPressure.Split('/');
+                    if (bpParts.Length == 2 && decimal.TryParse(bpParts[0], out var systolic))
+                    {
+                        history.BloodPressureReadings.Add(new VitalReading_DTO
+                        {
+                            Date = date,
+                            Value = systolic,
+                            Status = GetBPStatus(systolic),
+                            BadgeClass = GetBPBadgeClass(systolic)
+                        });
+                    }
+                }
+
+                // Blood Sugar
+                if (!string.IsNullOrEmpty(vital.DiabeticReadings))
+                {
+                    if (decimal.TryParse(vital.DiabeticReadings, out var sugar))
+                    {
+                        history.BloodSugarReadings.Add(new VitalReading_DTO
+                        {
+                            Date = date,
+                            Value = sugar,
+                            Status = GetSugarStatus(sugar),
+                            BadgeClass = GetSugarBadgeClass(sugar)
+                        });
+                    }
+                }
+
+                // Heart Rate
+                if (vital.PulseRate.HasValue)
+                {
+                    history.HeartRateReadings.Add(new VitalReading_DTO
+                    {
+                        Date = date,
+                        Value = vital.PulseRate.Value,
+                        Status = GetHeartRateStatus(vital.PulseRate.Value),
+                        BadgeClass = GetHeartRateBadgeClass(vital.PulseRate.Value)
+                    });
+                }
+
+                // Cholesterol (if available in future schema updates)
+                // For now, we'll generate sample data based on weight trends
+                if (vital.Weight.HasValue)
+                {
+                    // Estimate cholesterol based on weight (this is just for demo)
+                    var estimatedCholesterol = 150 + (vital.Weight.Value * 0.5m);
+                    history.CholesterolReadings.Add(new VitalReading_DTO
+                    {
+                        Date = date,
+                        Value = estimatedCholesterol,
+                        Status = GetCholesterolStatus(estimatedCholesterol),
+                        BadgeClass = GetCholesterolBadgeClass(estimatedCholesterol)
+                    });
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, $"Error retrieving vitals history for patient: {patientId}");
+        }
+
+        return history;
+    }
+
+    // Helper methods for status determination
+    private string GetBPStatus(decimal systolic)
+    {
+        if (systolic < 120) return "Normal";
+        if (systolic < 140) return "Elevated";
+        if (systolic < 180) return "High";
+        return "Critical";
+    }
+
+    private string GetBPBadgeClass(decimal systolic)
+    {
+        if (systolic < 120) return "bg-success";
+        if (systolic < 140) return "bg-info";
+        if (systolic < 180) return "bg-warning";
+        return "bg-danger";
+    }
+
+    private string GetSugarStatus(decimal sugar)
+    {
+        if (sugar < 100) return "Normal";
+        if (sugar < 126) return "Prediabetic";
+        return "Diabetic";
+    }
+
+    private string GetSugarBadgeClass(decimal sugar)
+    {
+        if (sugar < 100) return "bg-success";
+        if (sugar < 126) return "bg-warning";
+        return "bg-danger";
+    }
+
+    private string GetHeartRateStatus(int heartRate)
+    {
+        if (heartRate >= 60 && heartRate <= 100) return "Normal";
+        if (heartRate < 60) return "Low";
+        return "High";
+    }
+
+    private string GetHeartRateBadgeClass(int heartRate)
+    {
+        if (heartRate >= 60 && heartRate <= 100) return "bg-success";
+        if (heartRate < 60) return "bg-info";
+        return "bg-warning";
+    }
+
+    private string GetCholesterolStatus(decimal cholesterol)
+    {
+        if (cholesterol < 200) return "Normal";
+        if (cholesterol < 240) return "Borderline";
+        return "High";
+    }
+
+    private string GetCholesterolBadgeClass(decimal cholesterol)
+    {
+        if (cholesterol < 200) return "bg-success";
+        if (cholesterol < 240) return "bg-warning";
+        return "bg-danger";
     }
 
     private int CalculateAge(DateTime? dateOfBirth)

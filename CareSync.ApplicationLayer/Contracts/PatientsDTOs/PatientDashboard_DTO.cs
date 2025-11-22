@@ -29,6 +29,11 @@ public class PatientDashboard_DTO
     /// Latest health vitals
     /// </summary>
     public HealthVitals_DTO? LatestVitals { get; set; }
+
+    /// <summary>
+    /// Health vitals history for tracking cards (last 5 readings)
+    /// </summary>
+    public HealthVitalsHistory_DTO VitalsHistory { get; set; } = new();
 }
 
 /// <summary>

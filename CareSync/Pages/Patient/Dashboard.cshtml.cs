@@ -45,6 +45,12 @@ public class DashboardModel : BasePageModel
     // Medical Reports
     public List<MedicalReport> MedicalReports { get; set; } = new();
 
+    // Health Vitals History
+    public List<VitalReading> BPReadings { get; set; } = new();
+    public List<VitalReading> SugarReadings { get; set; } = new();
+    public List<VitalReading> HeartRateReadings { get; set; } = new();
+    public List<VitalReading> CholesterolReadings { get; set; } = new();
+
     public async Task<IActionResult> OnGetAsync()
     {
         // Check if user is authenticated and has Patient role
@@ -106,6 +112,39 @@ public class DashboardModel : BasePageModel
                     CurrentCholesterol = dashboard.LatestVitals.Cholesterol ?? 0;
                 }
 
+                // Map Vitals History
+                BPReadings = dashboard.VitalsHistory.BloodPressureReadings.Select(v => new VitalReading
+                {
+                    Date = v.Date,
+                    Value = v.Value,
+                    Status = v.Status,
+                    BadgeClass = v.BadgeClass
+                }).ToList();
+
+                SugarReadings = dashboard.VitalsHistory.BloodSugarReadings.Select(v => new VitalReading
+                {
+                    Date = v.Date,
+                    Value = v.Value,
+                    Status = v.Status,
+                    BadgeClass = v.BadgeClass
+                }).ToList();
+
+                HeartRateReadings = dashboard.VitalsHistory.HeartRateReadings.Select(v => new VitalReading
+                {
+                    Date = v.Date,
+                    Value = v.Value,
+                    Status = v.Status,
+                    BadgeClass = v.BadgeClass
+                }).ToList();
+
+                CholesterolReadings = dashboard.VitalsHistory.CholesterolReadings.Select(v => new VitalReading
+                {
+                    Date = v.Date,
+                    Value = v.Value,
+                    Status = v.Status,
+                    BadgeClass = v.BadgeClass
+                }).ToList();
+
                 _logger.LogInformation("Successfully loaded patient dashboard data");
             }
             else
@@ -159,4 +198,12 @@ public class MedicalReport
     public string ReportTitle { get; set; } = string.Empty;
     public string ReportDate { get; set; } = string.Empty;
     public string ReportType { get; set; } = string.Empty;
+}
+
+public class VitalReading
+{
+    public string Date { get; set; } = string.Empty;
+    public decimal Value { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public string BadgeClass { get; set; } = string.Empty;
 }
