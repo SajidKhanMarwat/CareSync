@@ -2,14 +2,10 @@ using CareSync.DataLayer.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace CareSync.DataLayer;
 
-/// <summary>
-/// Database context for the CareSync medical management system.
-/// Extends IdentityDbContext to provide ASP.NET Core Identity integration with custom entities.
-/// Manages all medical entities including users, patients, doctors, appointments, and prescriptions.
-/// </summary>
 public class CareSyncDbContext : IdentityDbContext<T_Users, T_Roles, string, IdentityUserClaim<string>, T_UserRole, T_UserLogin, T_RoleClaim, T_UserToken>
 {
     public CareSyncDbContext(DbContextOptions<CareSyncDbContext> options) : base(options)
@@ -58,119 +54,6 @@ public class CareSyncDbContext : IdentityDbContext<T_Users, T_Roles, string, Ide
     {
         base.OnModelCreating(builder);
 
-        #region Identity Entity Configuration
-
-        builder.Entity<T_Users>().ToTable("T_Users");
-        builder.Entity<T_Roles>().ToTable("T_Roles");
-        builder.Entity<T_UserRole>().ToTable("T_UserRoles");
-        builder.Entity<T_UserLogin>().ToTable("T_UserLogins");
-        builder.Entity<T_UserToken>().ToTable("T_UserTokens");
-        builder.Entity<T_RoleClaim>().ToTable("T_RoleClaims");
-
-        builder.Entity<T_Users>().Property(x => x.Id).HasMaxLength(128);
-        builder.Entity<T_Users>().HasKey(x => x.Id);
-        builder.Entity<T_Roles>().Property(x => x.Id).HasMaxLength(128);
-        builder.Entity<T_UserRole>().Property(x => x.UserId).HasMaxLength(128);
-        builder.Entity<T_UserRole>().Property(x => x.RoleId).HasMaxLength(128);
-        builder.Entity<T_RoleClaim>().Property(x => x.Id).HasMaxLength(128);
-
-        builder.Entity<T_UserRole>(entity =>
-        {
-            entity.HasKey(ur => new { ur.UserId, ur.RoleId });
-
-            // Navigation to T_Users
-            entity.HasOne(ur => ur.User)
-                  .WithMany(u => u.UserRole)
-                  .HasForeignKey(ur => ur.UserId)
-                  .OnDelete(DeleteBehavior.Restrict);
-
-            // Navigation to T_Roles
-            entity.HasOne(ur => ur.Role)
-                  .WithMany(r => r.UserRoles)
-                  .HasForeignKey(ur => ur.RoleId)
-                  .OnDelete(DeleteBehavior.Restrict);
-        });
-
-        #endregion
-
-        #region Medical Entity Configuration
-
-        // Primary Keys
-        builder.Entity<T_PatientDetails>().HasKey(p => p.PatientID);
-        builder.Entity<T_DoctorDetails>().HasKey(d => d.DoctorID);
-        builder.Entity<T_Appointments>().HasKey(a => a.AppointmentID);
-        builder.Entity<T_Prescriptions>().HasKey(p => p.PrescriptionID);
-        builder.Entity<T_PrescriptionItems>().HasKey(pi => pi.PrescriptionItemID);
-        builder.Entity<T_AdditionalNotes>().HasKey(pi => pi.NoteID);
-        builder.Entity<T_ChronicDiseases>().HasKey(pi => pi.ChronicDiseaseID);
-        builder.Entity<T_Lab>().HasKey(pi => pi.LabID);
-        builder.Entity<T_LabReports>().HasKey(pi => pi.LabReportID);
-        builder.Entity<T_LabRequests>().HasKey(pi => pi.LabRequestID);
-        builder.Entity<T_LabServices>().HasKey(pi => pi.LabServiceID);
-        builder.Entity<T_LifestyleInfo>().HasKey(pi => pi.LifestyleID);
-        builder.Entity<T_MedicalFollowUp>().HasKey(pi => pi.FollowUpID);
-        builder.Entity<T_MedicalHistory>().HasKey(pi => pi.MedicalHistoryID);
-        builder.Entity<T_MedicationPlan>().HasKey(pi => pi.MedicationID);
-        builder.Entity<T_PatientReports>().HasKey(pi => pi.PatientReportID);
-        builder.Entity<T_PatientVitals>().HasKey(pi => pi.VitalID);
-        builder.Entity<T_Qualifications>().HasKey(pi => pi.QualificationID);
-
-        builder.Entity<T_Appointments>()
-            .HasOne(a => a.Doctor)
-            .WithMany(d => d.Appointments)
-            .HasForeignKey(a => a.DoctorID);
-
-        builder.Entity<T_Appointments>()
-            .HasOne(a => a.Patient)
-            .WithMany(p => p.Appointments)
-            .HasForeignKey(a => a.PatientID);
-
-        builder.Entity<T_Prescriptions>(entity =>
-        {
-            entity.HasKey(p => p.PrescriptionID);
-
-            entity.HasOne(p => p.Appointment)
-                  .WithMany(a => a.Prescriptions)
-                  .HasForeignKey(p => p.AppointmentID)
-                  .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasOne(p => p.Doctor)
-                  .WithMany(d => d.Prescriptions)
-                  .HasForeignKey(p => p.DoctorID)
-                  .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasOne(p => p.Patient)
-                  .WithMany(pat => pat.Prescriptions)
-                  .HasForeignKey(p => p.PatientID)
-                  .OnDelete(DeleteBehavior.Restrict);
-        });
-
-
-        builder.Entity<T_PrescriptionItems>()
-            .HasOne(pi => pi.Prescription)
-            .WithMany(p => p.PrescriptionItems)
-            .HasForeignKey(pi => pi.PrescriptionID);
-
-        #endregion
-
-        #region Global Query Filters for Soft Delete
-
-        builder.Entity<T_Users>().HasQueryFilter(e => !e.IsDeleted);
-        builder.Entity<T_Roles>().HasQueryFilter(e => !e.IsDeleted);
-        builder.Entity<T_PatientDetails>().HasQueryFilter(e => !e.IsDeleted);
-        builder.Entity<T_DoctorDetails>().HasQueryFilter(e => !e.IsDeleted);
-        builder.Entity<T_Appointments>().HasQueryFilter(e => !e.IsDeleted);
-        builder.Entity<T_Prescriptions>().HasQueryFilter(e => !e.IsDeleted);
-        builder.Entity<T_PrescriptionItems>().HasQueryFilter(e => !e.IsDeleted);
-        builder.Entity<T_AdditionalNotes>().HasQueryFilter(e => !e.IsDeleted);
-        builder.Entity<T_ChronicDiseases>().HasQueryFilter(e => !e.IsDeleted);
-        builder.Entity<T_LifestyleInfo>().HasQueryFilter(e => !e.IsDeleted);
-        builder.Entity<T_MedicalFollowUp>().HasQueryFilter(e => !e.IsDeleted);
-        builder.Entity<T_MedicalHistory>().HasQueryFilter(e => !e.IsDeleted);
-        builder.Entity<T_MedicationPlan>().HasQueryFilter(e => !e.IsDeleted);
-        builder.Entity<T_PatientVitals>().HasQueryFilter(e => !e.IsDeleted);
-        builder.Entity<T_Qualifications>().HasQueryFilter(e => !e.IsDeleted);
-
-        #endregion
+        builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 }
