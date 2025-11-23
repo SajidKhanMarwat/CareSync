@@ -481,6 +481,7 @@ public class AdminService(
                 RoleID = patientRole!.Id,
                 IsActive = true,
                 EmailConfirmed = true,
+                IsPasswordResetRequired = true,  // Require password reset on first login
                 CreatedBy = "Admin",
                 CreatedOn = DateTime.UtcNow,
                 ArabicUserName = input.FirstName,
@@ -565,6 +566,7 @@ public class AdminService(
                 RoleID = patientRole!.Id,
                 IsActive = true,
                 EmailConfirmed = true,
+                IsPasswordResetRequired = true,  // Require password reset on first login
                 CreatedBy = "Admin",
                 CreatedOn = DateTime.UtcNow,
                 ArabicUserName = input.FirstName,
