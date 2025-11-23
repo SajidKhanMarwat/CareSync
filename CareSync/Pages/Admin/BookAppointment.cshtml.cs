@@ -6,8 +6,10 @@ using CareSync.ApplicationLayer.ApiResult;
 using CareSync.ApplicationLayer.Contracts.AdminDTOs;
 using CareSync.ApplicationLayer.Contracts.DoctorsDTOs;
 using CareSync.ApplicationLayer.Contracts.PatientsDTOs;
+using CareSync.ApplicationLayer.Contracts.UsersDTOs;
 using CareSync.ApplicationLayer.Common;
 using CareSync.Shared.Enums;
+using CareSync.Shared.Enums.Patient;
 using CareSync.Shared.Enums.Appointment;
 
 namespace CareSync.Pages.Admin;
@@ -310,27 +312,40 @@ public class BookAppointmentModel : BasePageModel
                 return new JsonResult(new { success = false, message = "Invalid gender" });
             }
 
-            // Create DTO for quick patient creation
-            var quickPatientDto = new
+            // Create DTO for quick patient creation using the existing registration endpoint
+            var patientRegistration = new UserRegisteration_DTO
             {
                 FirstName = firstName,
                 LastName = lastName,
-                Username = username,
+                ArabicFirstName = firstName, // Default to English for now
+                ArabicLastName = lastName ?? "", // Default to English for now
+                UserName = username,
+                ArabicUserName = username, // Default to English for now
                 Email = email,
                 PhoneNumber = phoneNumber,
-                DateOfBirth = dob,
+                Password = "CareSync@123", // Default password
+                ConfirmPassword = "CareSync@123",
                 Gender = genderEnum,
-                BloodGroup = bloodGroup,
+                DateOfBirth = dob,
                 Address = address,
-                EmergencyContactName = emergencyContactName,
-                EmergencyContactPhone = emergencyContactPhone,
-                Password = "CareSync@123" // Default password
+                RoleType = RoleType.Patient,
+                IsActive = true,
+                
+                // Nested patient-specific details
+                RegisterPatient = new RegisterPatient_DTO
+                {
+                    BloodGroup = bloodGroup,
+                    MaritalStatus = MaritalStatusEnum.Single, // Default
+                    EmergencyContactName = emergencyContactName,
+                    EmergencyContactNumber = emergencyContactPhone,
+                    CreatedBy = GetCurrentUserId() ?? "admin"
+                }
             };
 
             _logger.LogInformation("Calling API to create patient account");
 
-            // Call API to create patient
-            var result = await _adminApiService.CreatePatientAsync<Result<GeneralResponse>>(quickPatientDto);
+            // Call API to create patient using the existing registration endpoint
+            var result = await _adminApiService.RegisterPatientAsync<Result<GeneralResponse>>(patientRegistration);
 
             _logger.LogInformation("API Result - IsSuccess: {IsSuccess}, Data: {Data}", result?.IsSuccess, result?.Data);
             
@@ -551,5 +566,10 @@ public class BookAppointmentModel : BasePageModel
         {
             _logger.LogError(ex, "Error loading dropdown data");
         }
+    }
+    
+    private string? GetCurrentUserId()
+    {
+        return User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
     }
 }

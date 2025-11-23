@@ -54,4 +54,37 @@ public class AccountController(IUserService userService, ILogger<AccountControll
     [HttpPost("refresh-token")]
     public async Task<Result<LoginResponse>> RefreshToken()
         => await userService.GenerateRefreshTokenAsync();
+
+    [HttpPost("verify-user")]
+    public async Task<Result<VerifyUserResponse>> VerifyUser([FromBody] VerifyUserRequest request, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(request.EmailOrUsername))
+            return Result<VerifyUserResponse>.Failure(new VerifyUserResponse(), 
+                "Email or username is required.");
+
+        var userResult = await userService.GetUserByEmailOrUsernameAsync(request.EmailOrUsername);
+        
+        if (userResult.IsSuccess && userResult.Data != null)
+        {
+            return Result<VerifyUserResponse>.Success(new VerifyUserResponse()
+            {
+                Email = userResult.Data.Email ?? string.Empty,
+                Username = userResult.Data.UserName ?? string.Empty
+            });
+        }
+        
+        return Result<VerifyUserResponse>.Failure(new VerifyUserResponse(), 
+            "No account found with the provided email or username.");
+    }
+}
+
+public class VerifyUserRequest
+{
+    public string EmailOrUsername { get; set; } = string.Empty;
+}
+
+public class VerifyUserResponse
+{
+    public string Email { get; set; } = string.Empty;
+    public string Username { get; set; } = string.Empty;
 }

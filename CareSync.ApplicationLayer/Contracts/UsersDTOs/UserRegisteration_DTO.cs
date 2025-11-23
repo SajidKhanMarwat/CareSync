@@ -51,6 +51,7 @@ public record UserRegisteration_DTO
     public RoleType RoleType { get; set; } = RoleType.Patient;
     public DateTime? LastLogin { get; set; }
     public bool TwoFactorEnabled { get; set; } = false;
+    public bool RequiresPasswordReset { get; set; } = false;  // Flag to indicate if password reset is required
     public RegisterPatient_DTO? RegisterPatient { get; set; }
     public RegisterDoctor_DTO? RegisterDoctor { get; set; }
     public RegisterLabAssistant_DTO? RegisterLabAssistant { get; set; }
