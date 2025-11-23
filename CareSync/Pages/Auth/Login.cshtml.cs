@@ -1,8 +1,11 @@
 using CareSync.Result;
 using CareSync.Shared.Models;
 using CareSync.Shared.ViewModels.Login;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Security.Claims;
 using System.Text.Json;
 
 namespace CareSync.Pages;
@@ -53,6 +56,8 @@ public class LoginModel : PageModel
                     HttpContext.Session.SetString("UserRole", result.Data.Role ?? "Patient");
                     HttpContext.Session.SetString("UserToken", result.Data.Token ?? "");
                     HttpContext.Session.SetString("RefreshToken", result.Data.RefreshToken ?? "");
+                    HttpContext.Session.SetString("UserEmail", LoginRequest.Email);
+                    HttpContext.Session.SetString("UserName", LoginRequest.Email);
 
                     // Store role rights as JSON
                     if (result.Data.RoleRights != null && result.Data.RoleRights.Any())
@@ -61,15 +66,52 @@ public class LoginModel : PageModel
                         HttpContext.Session.SetString("RoleRights", roleRightsJson);
                     }
 
-                    // Redirect based on role
-                    return result.Data.Role?.ToLower() switch
+                    // Create claims for authentication cookie
+                    var claims = new List<Claim>
                     {
-                        "admin" => RedirectToPage("/Admin/Dashboard"),
-                        "doctor" => RedirectToPage("/Doctor/Dashboard"),
-                        "patient" => RedirectToPage("/Patient/Dashboard"),
-                        "lab" => RedirectToPage("/Lab/Dashboard"),
-                        _ => RedirectToPage("/auth/login")
+                        new Claim(ClaimTypes.Email, LoginRequest.Email),
+                        new Claim(ClaimTypes.Name, LoginRequest.Email),
+                        new Claim(ClaimTypes.Role, result.Data.Role ?? "Patient"),
+                        new Claim("Token", result.Data.Token ?? ""),
+                        new Claim("RefreshToken", result.Data.RefreshToken ?? "")
                     };
+
+                    // Add role rights as claims if available
+                    if (result.Data.RoleRights != null)
+                    {
+                        foreach (var right in result.Data.RoleRights)
+                        {
+                            claims.Add(new Claim("RoleRight", right));
+                        }
+                    }
+
+                    // Create identity and principal
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var authProperties = new AuthenticationProperties
+                    {
+                        AllowRefresh = true,
+                        IsPersistent = true, // Remember me functionality
+                        ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60)
+                    };
+
+                    // Sign in the user
+                    await HttpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        new ClaimsPrincipal(claimsIdentity),
+                        authProperties);
+
+                    // Redirect based on role
+                    var redirectUrl = result.Data.Role?.ToLower() switch
+                    {
+                        "admin" => "/Admin/Dashboard",
+                        "doctor" => "/Doctor/Dashboard",
+                        "patient" => "/Patient/Dashboard",
+                        "lab" => "/Lab/Dashboard",
+                        _ => "/auth/login"
+                    };
+
+                    // Use explicit redirect to ensure proper navigation
+                    return Redirect(redirectUrl);
                 }
                 else
                 {

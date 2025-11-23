@@ -1659,8 +1659,12 @@ public class AdminService(
                 appointmentItems.Add(new TodayAppointmentItem
                 {
                     AppointmentID = appt.AppointmentID,
+                    PatientID = appt.PatientID,
                     PatientName = patientUser != null ? $"{patientUser.FirstName} {patientUser.LastName}".Trim() : "Unknown",
+                    DoctorID = appt.DoctorID,
                     DoctorName = doctorUser != null ? $"Dr. {doctorUser.FirstName} {doctorUser.LastName}".Trim() : "Unknown",
+                    DoctorSpecialization = doctorDetails?.Specialization,
+                    AppointmentDate = appt.AppointmentDate.Date,
                     AppointmentTime = appt.AppointmentDate,
                     Status = appt.Status.ToString(),
                     AppointmentType = appt.AppointmentType.ToString(),
@@ -1681,6 +1685,57 @@ public class AdminService(
         catch (Exception ex)
         {
             logger.LogError(ex, "Error getting today's appointments list");
+            return Result<TodaysAppointmentsList_DTO>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<TodaysAppointmentsList_DTO>> GetAllAppointmentsAsync()
+    {
+        logger.LogInformation("Executing: GetAllAppointmentsAsync");
+        try
+        {
+            // Get all appointments, not just today's
+            var allAppointments = await uow.AppointmentsRepo.GetAllAsync();
+
+            var appointmentItems = new List<TodayAppointmentItem>();
+
+            foreach (var appt in allAppointments.OrderByDescending(a => a.AppointmentDate))
+            {
+                var patientDetails = await uow.PatientDetailsRepo.GetByIdAsync(appt.PatientID);
+                var doctorDetails = await uow.DoctorDetailsRepo.GetByIdAsync(appt.DoctorID);
+
+                var patientUser = patientDetails != null ? await userManager.FindByIdAsync(patientDetails.UserID) : null;
+                var doctorUser = doctorDetails != null ? await userManager.FindByIdAsync(doctorDetails.UserID) : null;
+
+                appointmentItems.Add(new TodayAppointmentItem
+                {
+                    AppointmentID = appt.AppointmentID,
+                    PatientID = appt.PatientID,
+                    PatientName = patientUser != null ? $"{patientUser.FirstName} {patientUser.LastName}".Trim() : "Unknown",
+                    DoctorID = appt.DoctorID,
+                    DoctorName = doctorUser != null ? $"Dr. {doctorUser.FirstName} {doctorUser.LastName}".Trim() : "Unknown",
+                    DoctorSpecialization = doctorDetails?.Specialization,
+                    AppointmentDate = appt.AppointmentDate.Date,
+                    AppointmentTime = appt.AppointmentDate,
+                    Status = appt.Status.ToString(),
+                    AppointmentType = appt.AppointmentType.ToString(),
+                    Reason = appt.Reason
+                });
+            }
+
+            var list = new TodaysAppointmentsList_DTO
+            {
+                Appointments = appointmentItems,
+                TotalToday = appointmentItems.Count(a => a.AppointmentDate.Date == DateTime.UtcNow.Date),
+                CompletedToday = appointmentItems.Count(a => a.AppointmentDate.Date == DateTime.UtcNow.Date && a.Status == "Approved"),
+                PendingToday = appointmentItems.Count(a => a.AppointmentDate.Date == DateTime.UtcNow.Date && (a.Status == "Pending" || a.Status == "Created"))
+            };
+
+            return Result<TodaysAppointmentsList_DTO>.Success(list);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting all appointments list");
             return Result<TodaysAppointmentsList_DTO>.Exception(ex);
         }
     }

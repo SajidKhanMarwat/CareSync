@@ -362,11 +362,117 @@ public class AdminApiService
         }
     }
 
+    public async Task<T?> GetUserDistributionStatsAsync<T>()
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync("Admin/dashboard/user-distribution-stats");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting user distribution stats");
+            return default;
+        }
+    }
 
+    public async Task<T?> GetMonthlyStatisticsAsync<T>()
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync("Admin/dashboard/monthly-statistics");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting monthly statistics");
+            return default;
+        }
+    }
 
+    public async Task<T?> GetPatientRegistrationTrendsAsync<T>()
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync("Admin/dashboard/patient-registration-trends");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting patient registration trends");
+            return default;
+        }
+    }
 
+    public async Task<T?> GetAppointmentStatusBreakdownAsync<T>()
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync("Admin/dashboard/appointment-status-breakdown");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting appointment status breakdown");
+            return default;
+        }
+    }
 
+    public async Task<T?> GetTodaysAppointmentsListAsync<T>()
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync("Admin/dashboard/todays-appointments-list");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting today's appointments list");
+            return default;
+        }
+    }
 
+    public async Task<T?> GetAllAppointmentsAsync<T>()
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync("Admin/appointments/all");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting all appointments");
+            return default;
+        }
+    }
+
+    public async Task<T?> GetRecentLabResultsAsync<T>()
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync("Admin/dashboard/recent-lab-results");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting recent lab results");
+            return default;
+        }
+    }
 
     #endregion
 }
