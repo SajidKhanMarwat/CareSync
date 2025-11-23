@@ -180,6 +180,11 @@ public interface IAdminService
     Task<Result<TodaysAppointmentsList_DTO>> GetTodaysApptsListAsync();
 
     /// <summary>
+    /// Get all appointments with pagination support
+    /// </summary>
+    Task<Result<TodaysAppointmentsList_DTO>> GetAllAppointmentsAsync();
+
+    /// <summary>
     /// Get recent lab results list
     /// </summary>
     Task<Result<RecentLabResults_DTO>> GetRecentLabsAsync();

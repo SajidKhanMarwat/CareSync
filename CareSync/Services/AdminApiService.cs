@@ -442,6 +442,22 @@ public class AdminApiService
         }
     }
 
+    public async Task<T?> GetAllAppointmentsAsync<T>()
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync("Admin/appointments/all");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting all appointments");
+            return default;
+        }
+    }
+
     public async Task<T?> GetRecentLabResultsAsync<T>()
     {
         try

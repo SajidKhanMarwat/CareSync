@@ -136,6 +136,14 @@ public class AdminController(IAdminService adminService, IUserService userServic
         => await adminService.GetTodaysApptsListAsync();
 
     /// <summary>
+    /// Get all appointments
+    /// </summary>
+    [HttpGet("appointments/all")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<TodaysAppointmentsList_DTO>> GetAllAppointments()
+        => await adminService.GetAllAppointmentsAsync();
+
+    /// <summary>
     /// Get recent lab results list
     /// </summary>
     [HttpGet("dashboard/recent-lab-results")]
