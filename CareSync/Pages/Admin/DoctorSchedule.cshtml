@@ -1,0 +1,269 @@
+@page
+@model CareSync.Pages.Admin.DoctorScheduleModel
+@{
+    ViewData["Title"] = "Doctor Schedule";
+    Layout = "~/Pages/Shared/Layouts/_MainLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1">Doctor Schedule</h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="/Admin/Dashboard">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="/Admin/Doctors">Doctors</a></li>
+                            <li class="breadcrumb-item active">Schedule</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div>
+                    <a href="/Admin/Doctors" class="btn btn-secondary">
+                        <i class="ri-arrow-left-line me-2"></i>Back to Doctors
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Schedule != null)
+    {
+        <!-- Doctor Info Card -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <img src="/theme/images/default-doctor.png" 
+                                     alt="@Model.Schedule.DoctorName" 
+                                     class="rounded-circle" 
+                                     style="width: 60px; height: 60px; object-fit: cover;">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="mb-1">@Model.Schedule.DoctorName</h5>
+                                <p class="text-muted mb-0">
+                                    @(Model.Schedule.Specialization ?? "General Practitioner")
+                                </p>
+                            </div>
+                            <div>
+                                <a href="/Admin/DoctorProfile?id=@Model.Id" class="btn btn-outline-primary btn-sm">
+                                    <i class="ri-user-line me-1"></i>View Profile
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Schedule Information -->
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Working Hours</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="text-muted small">Available Days</label>
+                            <p class="mb-0">
+                                @if (!string.IsNullOrEmpty(Model.Schedule.AvailableDays))
+                                {
+                                    var days = Model.Schedule.AvailableDays.Split(',');
+                                    foreach (var day in days)
+                                    {
+                                        <span class="badge bg-primary me-1">@day.Trim()</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Not set</span>
+                                }
+                            </p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-muted small">Start Time</label>
+                            <p class="mb-0">@(Model.Schedule.StartTime ?? "Not set")</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-muted small">End Time</label>
+                            <p class="mb-0">@(Model.Schedule.EndTime ?? "Not set")</p>
+                        </div>
+                        <div>
+                            <label class="text-muted small">Status</label>
+                            <p class="mb-0">
+                                @if (Model.Schedule.IsAvailable)
+                                {
+                                    <span class="badge bg-success">Available</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Not Available</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics Card -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h6 class="mb-0">Schedule Statistics</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted">Appointments Booked</span>
+                            <span class="fw-bold">@Model.Schedule.AppointmentsBooked</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Slots Available</span>
+                            <span class="fw-bold">@Model.Schedule.SlotsAvailable</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Appointments -->
+            <div class="col-lg-8 mb-4">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">Today's Appointments</h6>
+                        <span class="badge bg-primary">@Model.Schedule.TodaySlots.Count appointments</span>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.Schedule.TodaySlots.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Time</th>
+                                            <th>Patient</th>
+                                            <th>Reason</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var slot in Model.Schedule.TodaySlots.OrderBy(s => s.SlotTime))
+                                        {
+                                            <tr>
+                                                <td>@slot.SlotTime.ToString("hh:mm tt")</td>
+                                                <td>@slot.PatientName</td>
+                                                <td>@(slot.Reason ?? "General Consultation")</td>
+                                                <td>
+                                                    @switch (slot.Status)
+                                                    {
+                                                        case "Scheduled":
+                                                            <span class="badge bg-info">Scheduled</span>
+                                                            break;
+                                                        case "Completed":
+                                                            <span class="badge bg-success">Completed</span>
+                                                            break;
+                                                        case "Cancelled":
+                                                            <span class="badge bg-danger">Cancelled</span>
+                                                            break;
+                                                        case "NoShow":
+                                                            <span class="badge bg-warning">No Show</span>
+                                                            break;
+                                                        default:
+                                                            <span class="badge bg-secondary">@slot.Status</span>
+                                                            break;
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-4">
+                                <i class="ri-calendar-check-line fs-1 text-muted mb-3 d-block"></i>
+                                <p class="text-muted">No appointments scheduled for today</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Week's Appointments -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">This Week's Appointments</h6>
+                        <span class="badge bg-primary">@Model.Schedule.WeekSlots.Count appointments</span>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.Schedule.WeekSlots.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Time</th>
+                                            <th>Patient</th>
+                                            <th>Reason</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var slot in Model.Schedule.WeekSlots.OrderBy(s => s.SlotTime))
+                                        {
+                                            <tr>
+                                                <td>@slot.SlotTime.ToString("MMM dd, yyyy")</td>
+                                                <td>@slot.SlotTime.ToString("hh:mm tt")</td>
+                                                <td>@slot.PatientName</td>
+                                                <td>@(slot.Reason ?? "General Consultation")</td>
+                                                <td>
+                                                    @switch (slot.Status)
+                                                    {
+                                                        case "Scheduled":
+                                                            <span class="badge bg-info">Scheduled</span>
+                                                            break;
+                                                        case "Completed":
+                                                            <span class="badge bg-success">Completed</span>
+                                                            break;
+                                                        case "Cancelled":
+                                                            <span class="badge bg-danger">Cancelled</span>
+                                                            break;
+                                                        case "NoShow":
+                                                            <span class="badge bg-warning">No Show</span>
+                                                            break;
+                                                        default:
+                                                            <span class="badge bg-secondary">@slot.Status</span>
+                                                            break;
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-4">
+                                <i class="ri-calendar-2-line fs-1 text-muted mb-3 d-block"></i>
+                                <p class="text-muted">No appointments scheduled for this week</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <i class="ri-alert-line me-2"></i>Doctor schedule not found.
+        </div>
+    }
+</div>

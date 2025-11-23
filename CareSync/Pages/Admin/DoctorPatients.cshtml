@@ -1,0 +1,205 @@
+@page
+@model CareSync.Pages.Admin.DoctorPatientsModel
+@{
+    ViewData["Title"] = "Doctor's Patients";
+    Layout = "~/Pages/Shared/Layouts/_MainLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1">Doctor's Patients</h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="/Admin/Dashboard">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="/Admin/Doctors">Doctors</a></li>
+                            <li class="breadcrumb-item active">Patients</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div>
+                    <a href="/Admin/Doctors" class="btn btn-secondary">
+                        <i class="ri-arrow-left-line me-2"></i>Back to Doctors
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.DoctorName != null)
+    {
+        <!-- Doctor Info -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <h5 class="mb-1">@Model.DoctorName</h5>
+                                <p class="text-muted mb-0">Viewing patients treated by this doctor</p>
+                            </div>
+                            <div>
+                                <span class="badge bg-primary fs-6">@Model.Patients.Count patients</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patients List -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">Patient List</h6>
+                            <div class="input-group" style="width: 300px;">
+                                <input type="text" class="form-control" placeholder="Search patients..." id="searchInput">
+                                <span class="input-group-text"><i class="ri-search-line"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.Patients.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="patientsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Patient</th>
+                                            <th>Age</th>
+                                            <th>Gender</th>
+                                            <th>Blood Group</th>
+                                            <th>Contact</th>
+                                            <th>Total Appointments</th>
+                                            <th>Last Visit</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var patient in Model.Patients)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="@patient.ProfileImage" 
+                                                             alt="@patient.FirstName" 
+                                                             class="rounded-circle me-2" 
+                                                             style="width: 40px; height: 40px; object-fit: cover;">
+                                                        <div>
+                                                            <div class="fw-semibold">@patient.FirstName @patient.LastName</div>
+                                                            <small class="text-muted">ID: @patient.PatientID</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>@patient.Age</td>
+                                                <td>@patient.Gender</td>
+                                                <td>
+                                                    @if (!string.IsNullOrEmpty(patient.BloodGroup))
+                                                    {
+                                                        <span class="badge bg-danger">@patient.BloodGroup</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">-</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <div>
+                                                        <small class="d-block">@patient.PhoneNumber</small>
+                                                        <small class="text-muted">@patient.Email</small>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-info">@patient.TotalAppointments</span>
+                                                </td>
+                                                <td>
+                                                    @if (patient.LastVisit.HasValue)
+                                                    {
+                                                        @patient.LastVisit.Value.ToString("MMM dd, yyyy")
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">No visits</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (patient.IsActive)
+                                                    {
+                                                        <span class="badge bg-success">Active</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-danger">Inactive</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                                            <i class="ri-more-2-line"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li>
+                                                                <a class="dropdown-item" href="/Admin/PatientProfile?id=@patient.UserID">
+                                                                    <i class="ri-user-line me-2"></i>View Profile
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="dropdown-item" href="/Admin/PatientHistory?id=@patient.UserID">
+                                                                    <i class="ri-history-line me-2"></i>Medical History
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="dropdown-item" href="/Admin/BookAppointment?patientId=@patient.PatientID">
+                                                                    <i class="ri-calendar-check-line me-2"></i>Book Appointment
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-5">
+                                <i class="ri-user-heart-line fs-1 text-muted mb-3 d-block"></i>
+                                <p class="text-muted">No patients found for this doctor</p>
+                                <p class="text-muted small">Patients will appear here once they have appointments with this doctor</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <i class="ri-alert-line me-2"></i>Doctor information not found.
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Search functionality
+        document.getElementById('searchInput')?.addEventListener('keyup', function() {
+            const searchValue = this.value.toLowerCase();
+            const tableRows = document.querySelectorAll('#patientsTable tbody tr');
+            
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchValue) ? '' : 'none';
+            });
+        });
+    </script>
+}

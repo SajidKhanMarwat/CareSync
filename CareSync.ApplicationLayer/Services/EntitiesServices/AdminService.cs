@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CareSync.ApplicationLayer.ApiResult;
+﻿using CareSync.ApplicationLayer.ApiResult;
 using CareSync.ApplicationLayer.Common;
 using CareSync.ApplicationLayer.Contracts.AdminDashboardDTOs;
 using CareSync.ApplicationLayer.Contracts.AdminDTOs;
@@ -22,7 +21,6 @@ public class AdminService(
     UserManager<T_Users> userManager,
     RoleManager<T_Roles> roleManager,
     IUnitOfWork uow,
-    IMapper mapper,
     ILogger<AdminService> logger) : IAdminService
 {
     public async Task<Result<AdminUser_DTO>> GetUserAdminAsync(string userId)
@@ -55,7 +53,7 @@ public class AdminService(
                 ProfileImage = user.ProfileImage,
                 Gender = user.Gender,
                 DateOfBirth = user.DateOfBirth,
-                Age = user.Age,
+                Age = user.Age ?? 0,
                 IsActive = user.IsActive,
                 RoleType = user.RoleType,
                 RoleName = role?.Name ?? user.RoleType.ToString(),
@@ -334,7 +332,7 @@ public class AdminService(
 
             var completedAppointments = await uow.AppointmentsRepo.GetCountAsync(a =>
                 a.AppointmentDate.Date == today &&
-                a.Status == AppointmentStatus_Enum.Approved);
+                a.Status == AppointmentStatus_Enum.Completed);
 
             var pendingAppointments = await uow.AppointmentsRepo.GetCountAsync(a =>
                 a.AppointmentDate.Date == today &&
@@ -645,6 +643,8 @@ public class AdminService(
 
     #endregion
 
+    #region Registration & Trends
+
     public async Task<Result<RegistrationTrends_DTO>> GetRegistrationTrendsAsync()
     {
         logger.LogInformation("Executing: GetRegistrationTrendsAsync");
@@ -712,10 +712,10 @@ public class AdminService(
         {
             var chart = new AppointmentStatusChart_DTO
             {
-                ConfirmedAppointments = await uow.AppointmentsRepo.GetCountAsync(a => a.Status == AppointmentStatus_Enum.Approved),
+                ConfirmedAppointments = await uow.AppointmentsRepo.GetCountAsync(a => a.Status == AppointmentStatus_Enum.Confirmed),
                 PendingAppointments = await uow.AppointmentsRepo.GetCountAsync(a => a.Status == AppointmentStatus_Enum.Pending),
-                CompletedAppointments = await uow.AppointmentsRepo.GetCountAsync(a => a.Status == AppointmentStatus_Enum.Approved),
-                CancelledAppointments = await uow.AppointmentsRepo.GetCountAsync(a => a.Status == AppointmentStatus_Enum.Rejected),
+                CompletedAppointments = await uow.AppointmentsRepo.GetCountAsync(a => a.Status == AppointmentStatus_Enum.Completed),
+                CancelledAppointments = await uow.AppointmentsRepo.GetCountAsync(a => a.Status == AppointmentStatus_Enum.Cancelled),
                 RejectedAppointments = await uow.AppointmentsRepo.GetCountAsync(a => a.Status == AppointmentStatus_Enum.Rejected)
             };
 
@@ -769,6 +769,8 @@ public class AdminService(
             return Result<List<TodayAppointment_DTO>>.Exception(ex);
         }
     }
+
+    #endregion
 
     #region Doctor Management
 
@@ -952,6 +954,460 @@ public class AdminService(
         }
     }
 
+    public async Task<Result<DoctorInsights_DTO>> GetDoctorInsightsAsync()
+    {
+        logger.LogInformation("Executing: GetDoctorInsightsAsync");
+        try
+        {
+            var insights = new DoctorInsights_DTO();
+
+            // Get statistics
+            var statsResult = await GetDoctorStatisticsSummaryAsync();
+            if (statsResult.IsSuccess && statsResult.Data != null)
+                insights.Statistics = statsResult.Data;
+
+            // Get top performers
+            var performanceResult = await GetDoctorPerformanceAsync(6);
+            if (performanceResult.IsSuccess && performanceResult.Data != null)
+                insights.TopPerformers = performanceResult.Data;
+
+            // Get specialization distribution
+            var specializationResult = await GetSpecializationDistributionAsync();
+            if (specializationResult.IsSuccess && specializationResult.Data != null)
+                insights.Specializations = specializationResult.Data;
+
+            // Get availability overview
+            var availabilityResult = await GetDoctorAvailabilityOverviewAsync();
+            if (availabilityResult.IsSuccess && availabilityResult.Data != null)
+                insights.Availability = availabilityResult.Data;
+
+            // Get recent activities
+            insights.RecentActivities = await GetRecentDoctorActivitiesAsync();
+
+            return Result<DoctorInsights_DTO>.Success(insights);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting doctor insights");
+            return Result<DoctorInsights_DTO>.Exception(ex);
+        }
+    }
+
+    private async Task<Result<DoctorStatisticsSummary_DTO>> GetDoctorStatisticsSummaryAsync()
+    {
+        try
+        {
+            var doctorRole = await roleManager.FindByNameAsync(RoleType.Doctor.ToString());
+            if (doctorRole == null)
+                return Result<DoctorStatisticsSummary_DTO>.Failure(null!, "Doctor role not found");
+
+            var now = DateTime.UtcNow;
+            var thisMonthStart = new DateTime(now.Year, now.Month, 1);
+            var lastMonthStart = thisMonthStart.AddMonths(-1);
+            var today = now.Date;
+
+            var allDoctors = await uow.UserRepo.GetAllAsync(u => u.RoleID == doctorRole.Id);
+            var doctorDetails = await uow.DoctorDetailsRepo.GetAllAsync();
+            var todayAppointments = await uow.AppointmentsRepo.GetAllAsync(a => a.AppointmentDate.Date == today);
+
+            var stats = new DoctorStatisticsSummary_DTO
+            {
+                TotalDoctors = allDoctors.Count(),
+                ActiveDoctors = allDoctors.Count(d => d.IsActive),
+                InactiveDoctors = allDoctors.Count(d => !d.IsActive),
+                OnLeave = 0, // TODO: Implement leave tracking
+                NewThisMonth = allDoctors.Count(d => d.CreatedOn >= thisMonthStart),
+                TotalAppointmentsToday = todayAppointments.Count(),
+                TotalPatientsToday = todayAppointments.Select(a => a.PatientID).Distinct().Count()
+            };
+
+            // Calculate average experience
+            var experiencedDoctors = doctorDetails.Where(d => d.ExperienceYears.HasValue).ToList();
+            stats.AverageExperience = experiencedDoctors.Any() 
+                ? (decimal)experiencedDoctors.Average(d => d.ExperienceYears!.Value) 
+                : 0;
+
+            // Calculate average rating (placeholder - implement rating system)
+            stats.AverageRating = 4.5m;
+
+            // Calculate growth percentage
+            var lastMonthCount = allDoctors.Count(d => d.CreatedOn >= lastMonthStart && d.CreatedOn < thisMonthStart);
+            stats.GrowthPercentage = lastMonthCount > 0 
+                ? ((stats.NewThisMonth - lastMonthCount) / (decimal)lastMonthCount) * 100 
+                : 0;
+
+            return Result<DoctorStatisticsSummary_DTO>.Success(stats);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting doctor statistics summary");
+            return Result<DoctorStatisticsSummary_DTO>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<List<DoctorPerformance_DTO>>> GetDoctorPerformanceAsync(int topCount = 6)
+    {
+        logger.LogInformation("Executing: GetDoctorPerformanceAsync");
+        try
+        {
+            var doctorRole = await roleManager.FindByNameAsync(RoleType.Doctor.ToString());
+            if (doctorRole == null)
+                return Result<List<DoctorPerformance_DTO>>.Success(new List<DoctorPerformance_DTO>());
+
+            var doctors = await uow.UserRepo.GetAllAsync(u => u.RoleID == doctorRole.Id && u.IsActive);
+            var doctorDetails = await uow.DoctorDetailsRepo.GetAllAsync();
+            var appointments = await uow.AppointmentsRepo.GetAllAsync();
+
+            var performanceList = new List<DoctorPerformance_DTO>();
+
+            foreach (var doctor in doctors.Take(topCount))
+            {
+                var detail = doctorDetails.FirstOrDefault(d => d.UserID == doctor.Id);
+                if (detail == null) continue;
+
+                var doctorAppointments = appointments.Where(a => a.DoctorID == detail.DoctorID).ToList();
+                var completedCount = doctorAppointments.Count(a => a.Status == AppointmentStatus_Enum.Completed);
+                var cancelledCount = doctorAppointments.Count(a => a.Status == AppointmentStatus_Enum.Cancelled);
+                var totalCount = doctorAppointments.Count;
+
+                performanceList.Add(new DoctorPerformance_DTO
+                {
+                    DoctorId = doctor.Id,
+                    DoctorName = $"Dr. {doctor.FirstName} {doctor.LastName}",
+                    Specialization = detail.Specialization ?? "General",
+                    ProfileImage = doctor.ProfileImage ?? "/theme/images/default-doctor.png",
+                    TotalPatientsTreated = doctorAppointments.Select(a => a.PatientID).Distinct().Count(),
+                    AppointmentsCompleted = completedCount,
+                    AppointmentsCancelled = cancelledCount,
+                    Rating = 4.5m + (decimal)(new Random().NextDouble() * 0.5), // Placeholder rating
+                    ReviewCount = new Random().Next(10, 100),
+                    CompletionRate = totalCount > 0 ? (completedCount * 100m / totalCount) : 0,
+                    PatientSatisfaction = 85 + new Random().Next(0, 15), // Placeholder
+                    ExperienceYears = detail.ExperienceYears ?? 0
+                });
+            }
+
+            return Result<List<DoctorPerformance_DTO>>.Success(
+                performanceList.OrderByDescending(p => p.TotalPatientsTreated).ToList()
+            );
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting doctor performance");
+            return Result<List<DoctorPerformance_DTO>>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<List<SpecializationDistribution_DTO>>> GetSpecializationDistributionAsync()
+    {
+        logger.LogInformation("Executing: GetSpecializationDistributionAsync");
+        try
+        {
+            var doctorDetails = await uow.DoctorDetailsRepo.GetAllAsync();
+            var appointments = await uow.AppointmentsRepo.GetAllAsync();
+            var today = DateTime.UtcNow.Date;
+
+            // Get unique specializations from database
+            var uniqueSpecializations = doctorDetails
+                .Where(d => !string.IsNullOrEmpty(d.Specialization))
+                .Select(d => d.Specialization!)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            // Add "General" if not present for doctors without specialization
+            if (doctorDetails.Any(d => string.IsNullOrEmpty(d.Specialization)) && !uniqueSpecializations.Contains("General"))
+            {
+                uniqueSpecializations.Add("General");
+            }
+
+            var distribution = new List<SpecializationDistribution_DTO>();
+            var totalDoctors = doctorDetails.Count();
+
+            foreach (var specialization in uniqueSpecializations)
+            {
+                var specDoctors = doctorDetails.Where(d => 
+                    string.IsNullOrEmpty(d.Specialization) ? specialization == "General" :
+                    d.Specialization!.Equals(specialization, StringComparison.OrdinalIgnoreCase)).ToList();
+                
+                var doctorIds = specDoctors.Select(d => d.DoctorID).ToList();
+                var specAppointments = appointments.Where(a => doctorIds.Contains(a.DoctorID)).ToList();
+                var todayAppointments = specAppointments.Where(a => a.AppointmentDate.Date == today).Count();
+
+                distribution.Add(new SpecializationDistribution_DTO
+                {
+                    Specialization = specialization,
+                    ArabicSpecialization = specialization, // TODO: Add Arabic translation when needed
+                    DoctorCount = specDoctors.Count,
+                    PatientCount = specAppointments.Select(a => a.PatientID).Distinct().Count(),
+                    AppointmentsToday = todayAppointments,
+                    Percentage = totalDoctors > 0 ? (specDoctors.Count * 100m / totalDoctors) : 0,
+                    IconClass = GetSpecializationIcon(specialization),
+                    ColorClass = GetSpecializationColor(specialization)
+                });
+            }
+
+            return Result<List<SpecializationDistribution_DTO>>.Success(
+                distribution.OrderByDescending(d => d.DoctorCount).ToList()
+            );
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting specialization distribution");
+            return Result<List<SpecializationDistribution_DTO>>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<List<string>>> GetAllSpecializationsAsync()
+    {
+        logger.LogInformation("Executing: GetAllSpecializationsAsync");
+        try
+        {
+            var doctorDetails = await uow.DoctorDetailsRepo.GetAllAsync();
+            
+            // Get unique specializations from database
+            var specializations = doctorDetails
+                .Where(d => !string.IsNullOrEmpty(d.Specialization))
+                .Select(d => d.Specialization!)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(s => s)
+                .ToList();
+
+            // Add "General" if there are doctors without specialization
+            if (doctorDetails.Any(d => string.IsNullOrEmpty(d.Specialization)) && !specializations.Contains("General"))
+            {
+                specializations.Insert(0, "General");
+            }
+
+            return Result<List<string>>.Success(specializations);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting all specializations");
+            return Result<List<string>>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<DoctorAvailabilityOverview_DTO>> GetDoctorAvailabilityOverviewAsync()
+    {
+        logger.LogInformation("Executing: GetDoctorAvailabilityOverviewAsync");
+        try
+        {
+            var doctorRole = await roleManager.FindByNameAsync(RoleType.Doctor.ToString());
+            if (doctorRole == null)
+                return Result<DoctorAvailabilityOverview_DTO>.Success(new DoctorAvailabilityOverview_DTO());
+
+            var doctors = await uow.UserRepo.GetAllAsync(u => u.RoleID == doctorRole.Id && u.IsActive);
+            var doctorDetails = await uow.DoctorDetailsRepo.GetAllAsync();
+            var todayAppointments = await uow.AppointmentsRepo.GetAllAsync(a => a.AppointmentDate.Date == DateTime.UtcNow.Date);
+
+            var overview = new DoctorAvailabilityOverview_DTO
+            {
+                AvailableNow = doctors.Count() / 3, // Placeholder logic
+                InConsultation = doctors.Count() / 4, // Placeholder logic
+                OnBreak = doctors.Count() / 6, // Placeholder logic
+                OffDuty = doctors.Count() - (doctors.Count() / 3 + doctors.Count() / 4 + doctors.Count() / 6)
+            };
+
+            // Get today's schedules
+            foreach (var doctor in doctors.Take(10)) // Limit to 10 for performance
+            {
+                var detail = doctorDetails.FirstOrDefault(d => d.UserID == doctor.Id);
+                if (detail == null) continue;
+
+                var doctorTodayAppointments = todayAppointments.Where(a => a.DoctorID == detail.DoctorID).ToList();
+
+                overview.TodaySchedules.Add(new DoctorSchedule_DTO
+                {
+                    DoctorId = doctor.Id,
+                    DoctorName = $"Dr. {doctor.FirstName} {doctor.LastName}",
+                    Specialization = detail.Specialization ?? "General",
+                    StartTime = detail.StartTime ?? "09:00",
+                    EndTime = detail.EndTime ?? "17:00",
+                    IsAvailable = true, // Placeholder
+                    AppointmentsBooked = doctorTodayAppointments.Count,
+                    SlotsAvailable = 20 - doctorTodayAppointments.Count // Assuming 20 slots per day
+                });
+            }
+
+            return Result<DoctorAvailabilityOverview_DTO>.Success(overview);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting doctor availability overview");
+            return Result<DoctorAvailabilityOverview_DTO>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<List<DoctorWorkload_DTO>>> GetDoctorWorkloadAsync()
+    {
+        logger.LogInformation("Executing: GetDoctorWorkloadAsync");
+        try
+        {
+            // Placeholder implementation - would need actual workload tracking
+            return Result<List<DoctorWorkload_DTO>>.Success(new List<DoctorWorkload_DTO>());
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting doctor workload");
+            return Result<List<DoctorWorkload_DTO>>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<List<DoctorGridItem_DTO>>> GetDoctorGridDataAsync(string? specialization = null, bool? isActive = null, int page = 1, int pageSize = 10)
+    {
+        logger.LogInformation("Executing: GetDoctorGridDataAsync");
+        try
+        {
+            var doctorRole = await roleManager.FindByNameAsync(RoleType.Doctor.ToString());
+            if (doctorRole == null)
+                return Result<List<DoctorGridItem_DTO>>.Success(new List<DoctorGridItem_DTO>());
+
+            var doctors = await uow.UserRepo.GetAllAsync(u => u.RoleID == doctorRole.Id);
+            var doctorDetails = await uow.DoctorDetailsRepo.GetAllAsync();
+            var appointments = await uow.AppointmentsRepo.GetAllAsync();
+
+            var gridItems = new List<DoctorGridItem_DTO>();
+
+            foreach (var doctor in doctors)
+            {
+                var detail = doctorDetails.FirstOrDefault(d => d.UserID == doctor.Id);
+                if (detail == null) continue;
+
+                // Apply filters
+                if (specialization != null && !detail.Specialization?.Contains(specialization, StringComparison.OrdinalIgnoreCase) == true)
+                    continue;
+                if (isActive.HasValue && doctor.IsActive != isActive.Value)
+                    continue;
+
+                var doctorAppointments = appointments.Where(a => a.DoctorID == detail.DoctorID).ToList();
+                var thisMonth = DateTime.UtcNow.Month;
+                var monthlyAppointments = doctorAppointments.Where(a => a.AppointmentDate.Month == thisMonth).ToList();
+
+                gridItems.Add(new DoctorGridItem_DTO
+                {
+                    DoctorID = detail.DoctorID,
+                    UserID = doctor.Id,
+                    FullName = $"Dr. {doctor.FirstName} {doctor.LastName}",
+                    Email = doctor.Email ?? string.Empty,
+                    PhoneNumber = doctor.PhoneNumber ?? string.Empty,
+                    Specialization = detail.Specialization ?? "General",
+                    Department = $"{detail.Specialization ?? "General"} Department",
+                    LicenseNumber = detail.LicenseNumber ?? "N/A",
+                    Qualifications = detail.QualificationSummary ?? "MBBS",
+                    ExperienceYears = detail.ExperienceYears ?? 0,
+                    JoinedDate = doctor.CreatedOn,
+                    HospitalAffiliation = detail.HospitalAffiliation ?? "CareSync Medical Center",
+                    AvailableDays = detail.AvailableDays ?? "Mon-Fri",
+                    WorkingHours = $"{detail.StartTime ?? "09:00"} - {detail.EndTime ?? "17:00"}",
+                    TotalPatients = doctorAppointments.Select(a => a.PatientID).Distinct().Count(),
+                    MonthlyPatients = monthlyAppointments.Select(a => a.PatientID).Distinct().Count(),
+                    Rating = 4.5m + (decimal)(new Random().NextDouble() * 0.5),
+                    ReviewCount = new Random().Next(10, 100),
+                    IsActive = doctor.IsActive,
+                    Status = doctor.IsActive ? "Active" : "Inactive",
+                    ProfileImage = doctor.ProfileImage ?? "/theme/images/default-doctor.png"
+                });
+            }
+
+            // Apply pagination
+            var paginatedItems = gridItems
+                .OrderBy(d => d.FullName)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return Result<List<DoctorGridItem_DTO>>.Success(paginatedItems);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting doctor grid data");
+            return Result<List<DoctorGridItem_DTO>>.Exception(ex);
+        }
+    }
+
+    private async Task<List<RecentDoctorActivity_DTO>> GetRecentDoctorActivitiesAsync()
+    {
+        try
+        {
+            var activities = new List<RecentDoctorActivity_DTO>();
+            var recentDoctors = await uow.UserRepo.GetAllAsync(u => 
+                u.RoleType == RoleType.Doctor && 
+                u.CreatedOn >= DateTime.UtcNow.AddDays(-7));
+
+            foreach (var doctor in recentDoctors.Take(5))
+            {
+                activities.Add(new RecentDoctorActivity_DTO
+                {
+                    ActivityType = "Joined",
+                    DoctorName = $"Dr. {doctor.FirstName} {doctor.LastName}",
+                    Description = "New doctor joined the team",
+                    ActivityDate = doctor.CreatedOn,
+                    IconClass = "ri-user-add-line",
+                    ColorClass = "success"
+                });
+            }
+
+            return activities.OrderByDescending(a => a.ActivityDate).ToList();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting recent doctor activities");
+            return new List<RecentDoctorActivity_DTO>();
+        }
+    }
+
+    private string GetSpecializationIcon(string specialization)
+    {
+        // Return specific icons for main specializations
+        return specialization?.ToLowerInvariant() switch
+        {
+            "cardiology" => "ri-heart-pulse-line",
+            "neurology" => "ri-brain-line",
+            "orthopedics" => "ri-bone-line",
+            "pediatrics" => "ri-baby-line",
+            "emergency" => "ri-emergency-line",
+            "general" => "ri-stethoscope-line",
+            "dermatology" => "ri-hand-sanitizer-line",
+            "psychiatry" => "ri-mental-health-line",
+            "surgery" => "ri-surgical-mask-line",
+            "pharmacy" => "ri-medicine-bottle-line",
+            "gynecology" => "ri-women-line",
+            "ophthalmology" => "ri-eye-line",
+            "ent" => "ri-voice-recognition-line",
+            "radiology" => "ri-scan-line",
+            "oncology" => "ri-capsule-line",
+            "pathology" => "ri-microscope-line",
+            "laboratory" => "ri-test-tube-line",
+            _ => "ri-hospital-line" // Default icon for unknown specializations
+        };
+    }
+
+    private string GetSpecializationColor(string specialization)
+    {
+        // Return specific colors for main specializations
+        return specialization?.ToLowerInvariant() switch
+        {
+            "cardiology" => "primary",     // Blue
+            "neurology" => "success",       // Green
+            "orthopedics" => "warning",     // Yellow/Orange
+            "pediatrics" => "info",         // Cyan
+            "emergency" => "danger",        // Red
+            "general" => "secondary",       // Gray
+            "dermatology" => "primary",
+            "psychiatry" => "info",
+            "surgery" => "danger",
+            "pharmacy" => "success",
+            "gynecology" => "warning",
+            "ophthalmology" => "primary",
+            "ent" => "secondary",
+            "radiology" => "info",
+            "oncology" => "danger",
+            "pathology" => "warning",
+            "laboratory" => "success",
+            _ => "secondary" // Default color for unknown specializations
+        };
+    }
+
     #endregion
 
     #region Patient Management
@@ -991,7 +1447,7 @@ public class AdminService(
                     PhoneNumber = user.PhoneNumber ?? string.Empty,
                     Gender = user.Gender.ToString(),
                     DateOfBirth = user.DateOfBirth,
-                    Age = user.Age,
+                    Age = user.Age ?? 0,
                     BloodGroup = patient.BloodGroup,
                     MaritalStatus = patient.MaritalStatus,
                     Occupation = patient.Occupation,
@@ -1089,7 +1545,7 @@ public class AdminService(
                 PhoneNumber = user.PhoneNumber ?? string.Empty,
                 Gender = user.Gender.ToString(),
                 DateOfBirth = user.DateOfBirth,
-                Age = user.Age,
+                Age = user.Age ?? 0,
                 BloodGroup = patient.BloodGroup,
                 MaritalStatus = patient.MaritalStatus,
                 Occupation = patient.Occupation,
@@ -1142,7 +1598,7 @@ public class AdminService(
                     FullName = $"{user.FirstName} {user.LastName}".Trim(),
                     Email = user.Email ?? string.Empty,
                     PhoneNumber = user.PhoneNumber ?? string.Empty,
-                    Age = user.Age,
+                    Age = user.Age ?? 0,
                     BloodGroup = patient.BloodGroup,
                     LastVisit = lastVisit
                 });
@@ -1222,7 +1678,7 @@ public class AdminService(
                     a.AppointmentDate.Date == today);
 
                 var completedToday = todaysAppointments.Count(a =>
-                    a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.Approved &&
+                    a.Status == AppointmentStatus_Enum.Completed &&
                     a.AppointmentDate < DateTime.UtcNow);
 
                 // Determine doctor status
@@ -1314,14 +1770,14 @@ public class AdminService(
             // Patient Check-ins
             var totalScheduledToday = todaysAppointments.Count;
             var checkedInToday = todaysAppointments.Count(a =>
-                a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.Approved);
+                a.Status == AppointmentStatus_Enum.Confirmed);
             var checkInPercentage = totalScheduledToday > 0
                 ? (decimal)checkedInToday / totalScheduledToday * 100
                 : 0;
 
-            // Appointments Completed (Approved status)
+            // Appointments Completed
             var completedAppointments = todaysAppointments.Count(a =>
-                a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.Approved);
+                a.Status == AppointmentStatus_Enum.Completed);
             var completionPercentage = totalScheduledToday > 0
                 ? (decimal)completedAppointments / totalScheduledToday * 100
                 : 0;
@@ -1355,7 +1811,7 @@ public class AdminService(
             
             // TODO: Implement revenue calculation when ConsultationFee field is added to T_DoctorDetails
             // For now, estimating based on completed appointments
-            revenueToday = todaysAppointments.Count(a => a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.Approved) * 100; // Placeholder: $100 per appointment
+            revenueToday = todaysAppointments.Count(a => a.Status == AppointmentStatus_Enum.Completed) * 100; // Placeholder: $100 per appointment
 
             // Active doctors today
             var currentDayName = DateTime.UtcNow.ToString("dddd");
@@ -1384,10 +1840,10 @@ public class AdminService(
 
             // Pending and cancelled appointments
             var pendingAppointments = todaysAppointments.Count(a =>
-                a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.Pending ||
-                a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.Created);
+                a.Status == AppointmentStatus_Enum.Pending ||
+                a.Status == AppointmentStatus_Enum.Created);
             var cancelledAppointmentsToday = todaysAppointments.Count(a =>
-                a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.Rejected);
+                a.Status == AppointmentStatus_Enum.Cancelled);
 
             var metrics = new TodayPerformanceMetrics_DTO
             {
@@ -1521,8 +1977,8 @@ public class AdminService(
             catch { logger.LogWarning("Lab services not available"); }
 
             // Revenue (Placeholder calculation - TODO: Add ConsultationFee to T_DoctorDetails)
-            decimal revenueThisMonth = apptThisMonth.Count(a => a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.Approved) * 100;
-            decimal revenueLastMonth = apptLastMonth.Count(a => a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.Approved) * 100;
+            decimal revenueThisMonth = apptThisMonth.Count(a => a.Status == AppointmentStatus_Enum.Completed) * 100;
+            decimal revenueLastMonth = apptLastMonth.Count(a => a.Status == AppointmentStatus_Enum.Completed) * 100;
             var revenueChange = revenueLastMonth > 0 ? ((revenueThisMonth - revenueLastMonth) / revenueLastMonth) * 100 : 0;
 
             var stats = new MonthlyStatistics_DTO
@@ -1608,24 +2064,26 @@ public class AdminService(
         {
             var allAppointments = await uow.AppointmentsRepo.GetAllAsync();
 
-            var created = allAppointments.Count(a => a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.Created);
-            var pending = allAppointments.Count(a => a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.Pending);
-            var approved = allAppointments.Count(a => a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.Approved);
-            var rejected = allAppointments.Count(a => a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.Rejected);
+            var created = allAppointments.Count(a => a.Status == AppointmentStatus_Enum.Created);
+            var pending = allAppointments.Count(a => a.Status == AppointmentStatus_Enum.Pending);
+            var approved = allAppointments.Count(a => a.Status == AppointmentStatus_Enum.Approved);
+            var rejected = allAppointments.Count(a => a.Status == AppointmentStatus_Enum.Rejected);
+            var completed = allAppointments.Count(a => a.Status == AppointmentStatus_Enum.Completed);
+            var cancelled = allAppointments.Count(a => a.Status == AppointmentStatus_Enum.Cancelled);
             var total = allAppointments.Count;
 
             var breakdown = new AppointmentStatusBreakdown_DTO
             {
                 ScheduledCount = created,
                 ApprovedCount = approved,
-                CompletedCount = approved, // Using approved as completed
-                CancelledCount = rejected,
+                CompletedCount = completed,
+                CancelledCount = cancelled,
                 PendingCount = pending,
                 TotalAppointments = total,
                 ScheduledPercentage = total > 0 ? Math.Round((decimal)created / total * 100, 1) : 0,
                 ApprovedPercentage = total > 0 ? Math.Round((decimal)approved / total * 100, 1) : 0,
-                CompletedPercentage = total > 0 ? Math.Round((decimal)approved / total * 100, 1) : 0,
-                CancelledPercentage = total > 0 ? Math.Round((decimal)rejected / total * 100, 1) : 0,
+                CompletedPercentage = total > 0 ? Math.Round((decimal)completed / total * 100, 1) : 0,
+                CancelledPercentage = total > 0 ? Math.Round((decimal)cancelled / total * 100, 1) : 0,
                 PendingPercentage = total > 0 ? Math.Round((decimal)pending / total * 100, 1) : 0
             };
 
@@ -1676,8 +2134,8 @@ public class AdminService(
             {
                 Appointments = appointmentItems,
                 TotalToday = todaysAppointments.Count,
-                CompletedToday = todaysAppointments.Count(a => a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.Approved),
-                PendingToday = todaysAppointments.Count(a => a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.Pending || a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.Created)
+                CompletedToday = todaysAppointments.Count(a => a.Status == AppointmentStatus_Enum.Completed),
+                PendingToday = todaysAppointments.Count(a => a.Status == AppointmentStatus_Enum.Pending || a.Status == AppointmentStatus_Enum.Created)
             };
 
             return Result<TodaysAppointmentsList_DTO>.Success(list);
@@ -1795,6 +2253,259 @@ public class AdminService(
         {
             logger.LogError(ex, "Error getting recent lab results");
             return Result<RecentLabResults_DTO>.Exception(ex);
+        }
+    }
+
+    #endregion
+
+    #region Doctor Profile Management
+
+    public async Task<Result<DoctorProfile_DTO>> GetDoctorProfileAsync(string userId)
+    {
+        logger.LogInformation("Executing: GetDoctorProfileAsync for {UserId}", userId);
+        try
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+                return Result<DoctorProfile_DTO>.Failure(null!, "Doctor not found", System.Net.HttpStatusCode.NotFound);
+
+            var doctorDetails = await uow.DoctorDetailsRepo.GetAsync(d => d.UserID == userId);
+            if (doctorDetails == null)
+                return Result<DoctorProfile_DTO>.Failure(null!, "Doctor details not found", System.Net.HttpStatusCode.NotFound);
+
+            var appointments = await uow.AppointmentsRepo.GetAllAsync(a => a.DoctorID == doctorDetails.DoctorID);
+            var today = DateTime.UtcNow.Date;
+            
+            var profile = new DoctorProfile_DTO
+            {
+                UserId = user.Id,
+                DoctorId = doctorDetails.DoctorID,
+                FirstName = user.FirstName,
+                LastName = user.LastName ?? string.Empty,
+                Email = user.Email ?? string.Empty,
+                PhoneNumber = user.PhoneNumber,
+                ProfileImage = user.ProfileImage ?? "/theme/images/default-doctor.png",
+                DateOfBirth = user.DateOfBirth,
+                Age = user.Age ?? 0,
+                Gender = user.Gender.ToString(),
+                Address = user.Address,
+                
+                // Professional Information
+                Specialization = doctorDetails.Specialization,
+                LicenseNumber = doctorDetails.LicenseNumber,
+                ExperienceYears = doctorDetails.ExperienceYears,
+                HospitalAffiliation = doctorDetails.HospitalAffiliation,
+                Qualifications = doctorDetails.QualificationSummary,
+                About = null, // Not available in current model
+                
+                // Schedule
+                AvailableDays = doctorDetails.AvailableDays,
+                StartTime = doctorDetails.StartTime,
+                EndTime = doctorDetails.EndTime,
+                ConsultationFee = null, // Not available in current model
+                
+                // Statistics
+                TotalPatients = appointments.Select(a => a.PatientID).Distinct().Count(),
+                TotalAppointments = appointments.Count,
+                CompletedAppointments = appointments.Count(a => a.Status == AppointmentStatus_Enum.Completed),
+                TodayAppointments = appointments.Count(a => a.AppointmentDate.Date == today),
+                Rating = 4.5m, // Placeholder
+                ReviewCount = 50, // Placeholder
+                
+                // Status
+                IsActive = user.IsActive,
+                CreatedOn = user.CreatedOn,
+                UpdatedOn = user.UpdatedOn
+            };
+
+            return Result<DoctorProfile_DTO>.Success(profile);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting doctor profile");
+            return Result<DoctorProfile_DTO>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<GeneralResponse>> UpdateDoctorAsync(string userId, UpdateDoctor_DTO updateDto)
+    {
+        logger.LogInformation("Executing: UpdateDoctorAsync for {UserId}", userId);
+        try
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+                return Result<GeneralResponse>.Failure(new GeneralResponse { Success = false, Message = "Doctor not found" });
+
+            // Update user information
+            user.FirstName = updateDto.FirstName;
+            user.LastName = updateDto.LastName;
+            user.Email = updateDto.Email;
+            user.PhoneNumber = updateDto.PhoneNumber;
+            user.DateOfBirth = updateDto.DateOfBirth;
+            user.Address = updateDto.Address;
+            user.UpdatedOn = DateTime.UtcNow;
+
+            var updateResult = await userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+                return Result<GeneralResponse>.Failure(new GeneralResponse { Success = false, Message = "Failed to update user information" });
+
+            // Update doctor details
+            var doctorDetails = await uow.DoctorDetailsRepo.GetAsync(d => d.UserID == userId);
+            if (doctorDetails != null)
+            {
+                doctorDetails.Specialization = updateDto.Specialization;
+                doctorDetails.LicenseNumber = updateDto.LicenseNumber;
+                doctorDetails.ExperienceYears = updateDto.ExperienceYears;
+                doctorDetails.HospitalAffiliation = updateDto.HospitalAffiliation;
+                doctorDetails.QualificationSummary = updateDto.Qualifications;
+                doctorDetails.AvailableDays = updateDto.AvailableDays ?? "Monday,Tuesday,Wednesday,Thursday,Friday";
+                doctorDetails.StartTime = updateDto.StartTime;
+                doctorDetails.EndTime = updateDto.EndTime;
+                // ConsultationFee not available in current model
+                doctorDetails.UpdatedOn = DateTime.UtcNow;
+
+                await uow.DoctorDetailsRepo.UpdateAsync(doctorDetails);
+                await uow.SaveChangesAsync();
+            }
+
+            return Result<GeneralResponse>.Success(new GeneralResponse { Success = true, Message = "Doctor updated successfully" });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error updating doctor");
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<DoctorSchedule_DTO>> GetDoctorScheduleAsync(string userId)
+    {
+        logger.LogInformation("Executing: GetDoctorScheduleAsync for {UserId}", userId);
+        try
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+                return Result<DoctorSchedule_DTO>.Failure(null!, "Doctor not found", System.Net.HttpStatusCode.NotFound);
+
+            var doctorDetails = await uow.DoctorDetailsRepo.GetAsync(d => d.UserID == userId);
+            if (doctorDetails == null)
+                return Result<DoctorSchedule_DTO>.Failure(null!, "Doctor details not found", System.Net.HttpStatusCode.NotFound);
+
+            var today = DateTime.UtcNow.Date;
+            var weekEnd = today.AddDays(7);
+            
+            var appointments = await uow.AppointmentsRepo.GetAllAsync(
+                a => a.DoctorID == doctorDetails.DoctorID && 
+                     a.AppointmentDate >= today && 
+                     a.AppointmentDate <= weekEnd);
+            
+            // Load patient data separately
+            var patientIds = appointments.Select(a => a.PatientID).Distinct().ToList();
+            var patients = await uow.PatientDetailsRepo.GetAllAsync(p => patientIds.Contains(p.PatientID));
+            var patientUsers = new Dictionary<int, T_Users>();
+            foreach (var patient in patients)
+            {
+                var patientUser = await userManager.FindByIdAsync(patient.UserID);
+                if (patientUser != null)
+                    patientUsers[patient.PatientID] = patientUser;
+            }
+
+            var schedule = new DoctorSchedule_DTO
+            {
+                UserId = userId,
+                DoctorName = $"Dr. {user.FirstName} {user.LastName}",
+                Specialization = doctorDetails.Specialization,
+                AvailableDays = doctorDetails.AvailableDays,
+                StartTime = doctorDetails.StartTime,
+                EndTime = doctorDetails.EndTime,
+                TodaySlots = appointments
+                    .Where(a => a.AppointmentDate.Date == today)
+                    .OrderBy(a => a.AppointmentDate)
+                    .Select(a => new DoctorAppointmentSlot
+                    {
+                        SlotTime = a.AppointmentDate,
+                        PatientName = patientUsers.ContainsKey(a.PatientID) ? 
+                            $"{patientUsers[a.PatientID].FirstName} {patientUsers[a.PatientID].LastName}" : "Unknown",
+                        Status = a.Status.ToString(),
+                        Reason = a.Reason
+                    }).ToList(),
+                WeekSlots = appointments
+                    .OrderBy(a => a.AppointmentDate)
+                    .Select(a => new DoctorAppointmentSlot
+                    {
+                        SlotTime = a.AppointmentDate,
+                        PatientName = patientUsers.ContainsKey(a.PatientID) ? 
+                            $"{patientUsers[a.PatientID].FirstName} {patientUsers[a.PatientID].LastName}" : "Unknown",
+                        Status = a.Status.ToString(),
+                        Reason = a.Reason
+                    }).ToList()
+            };
+
+            return Result<DoctorSchedule_DTO>.Success(schedule);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting doctor schedule");
+            return Result<DoctorSchedule_DTO>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<List<PatientList_DTO>>> GetDoctorPatientsAsync(string userId)
+    {
+        logger.LogInformation("Executing: GetDoctorPatientsAsync for {UserId}", userId);
+        try
+        {
+            var doctorDetails = await uow.DoctorDetailsRepo.GetAsync(d => d.UserID == userId);
+            if (doctorDetails == null)
+                return Result<List<PatientList_DTO>>.Failure(null!, "Doctor not found", System.Net.HttpStatusCode.NotFound);
+
+            var appointments = await uow.AppointmentsRepo.GetAllAsync(
+                a => a.DoctorID == doctorDetails.DoctorID);
+
+            var uniquePatientIds = appointments.Select(a => a.PatientID).Distinct().ToList();
+            var patients = await uow.PatientDetailsRepo.GetAllAsync(
+                p => uniquePatientIds.Contains(p.PatientID));
+
+            var result = new List<PatientList_DTO>();
+            
+            foreach (var patient in patients)
+            {
+                var user = await userManager.FindByIdAsync(patient.UserID);
+                if (user == null) continue;
+
+                var patientAppointments = appointments.Where(a => a.PatientID == patient.PatientID).ToList();
+                var lastVisit = patientAppointments
+                    .Where(a => a.Status == AppointmentStatus_Enum.Completed)
+                    .OrderByDescending(a => a.AppointmentDate)
+                    .FirstOrDefault()?.AppointmentDate;
+
+                result.Add(new PatientList_DTO
+                {
+                    PatientID = patient.PatientID,
+                    UserID = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName ?? string.Empty,
+                    Email = user.Email ?? string.Empty,
+                    PhoneNumber = user.PhoneNumber ?? string.Empty,
+                    Gender = user.Gender.ToString(),
+                    DateOfBirth = user.DateOfBirth,
+                    Age = user.Age ?? 0,
+                    BloodGroup = patient.BloodGroup,
+                    MaritalStatus = patient.MaritalStatus,
+                    Occupation = patient.Occupation,
+                    IsActive = user.IsActive,
+                    ProfileImage = user.ProfileImage ?? "/theme/images/default-patient.png",
+                    CreatedOn = user.CreatedOn,
+                    TotalAppointments = patientAppointments.Count,
+                    LastVisit = lastVisit
+                });
+            }
+
+            return Result<List<PatientList_DTO>>.Success(result.OrderBy(p => p.FirstName).ToList());
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting doctor patients");
+            return Result<List<PatientList_DTO>>.Exception(ex);
         }
     }
 
