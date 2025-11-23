@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using CareSync.Pages.Shared;
 using CareSync.Services;
 using CareSync.ApplicationLayer.ApiResult;
+using CareSync.ApplicationLayer.Common;
 using CareSync.ApplicationLayer.Contracts.PatientsDTOs;
 
 namespace CareSync.Pages.Admin;
@@ -74,21 +75,16 @@ public class PatientsModel : BasePageModel
 
             _logger.LogInformation("Toggling patient status: UserId={UserId}, NewStatus={IsActive}", userId, isActive);
 
-            var client = new HttpClient { BaseAddress = new Uri("http://localhost:5157/api/") };
-            var token = HttpContext.Session.GetString("UserToken");
-            if (!string.IsNullOrEmpty(token))
-                client.DefaultRequestHeaders.Authorization = 
-                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-            var response = await client.PatchAsync($"Admin/patients/{userId}/toggle-status?isActive={isActive}", null);
+            // Use AdminApiService to toggle status
+            var result = await _adminApiService.TogglePatientStatusAsync<Result<GeneralResponse>>(userId, isActive);
             
-            if (response.IsSuccessStatusCode)
+            if (result?.IsSuccess == true)
             {
                 TempData["SuccessMessage"] = "Patient status updated successfully.";
             }
             else
             {
-                TempData["ErrorMessage"] = "Failed to update patient status.";
+                TempData["ErrorMessage"] = result?.Data?.Message ?? "Failed to update patient status.";
             }
 
             return RedirectToPage();

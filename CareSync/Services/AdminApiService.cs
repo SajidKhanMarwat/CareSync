@@ -167,6 +167,124 @@ public class AdminApiService
         }
     }
 
+    public async Task<T?> GetDoctorInsightsAsync<T>()
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync("Admin/doctors/insights");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting doctor insights");
+            return default;
+        }
+    }
+
+    public async Task<T?> GetDoctorPerformanceAsync<T>(int topCount = 6)
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync($"Admin/doctors/performance?topCount={topCount}");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting doctor performance");
+            return default;
+        }
+    }
+
+    public async Task<T?> GetSpecializationDistributionAsync<T>()
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync("Admin/doctors/specialization-distribution");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting specialization distribution");
+            return default;
+        }
+    }
+
+    public async Task<T?> GetAllSpecializationsAsync<T>()
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync("Admin/doctors/specializations");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting all specializations");
+            return default;
+        }
+    }
+
+    public async Task<T?> GetDoctorAvailabilityOverviewAsync<T>()
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync("Admin/doctors/availability-overview");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting doctor availability overview");
+            return default;
+        }
+    }
+
+    public async Task<T?> GetDoctorGridDataAsync<T>(string? specialization = null, bool? isActive = null, int page = 1, int pageSize = 10)
+    {
+        try
+        {
+            var client = CreateClient();
+            var query = new List<string>();
+            if (specialization != null) query.Add($"specialization={Uri.EscapeDataString(specialization)}");
+            if (isActive.HasValue) query.Add($"isActive={isActive.Value}");
+            query.Add($"page={page}");
+            query.Add($"pageSize={pageSize}");
+            
+            var queryString = query.Any() ? "?" + string.Join("&", query) : "";
+            var response = await client.GetAsync($"Admin/doctors/grid{queryString}");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting doctor grid data");
+            return default;
+        }
+    }
+
+    public async Task<T?> ToggleDoctorStatusAsync<T>(string userId, bool isActive)
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.PatchAsync($"Admin/doctors/{userId}/toggle-status?isActive={isActive}", null);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error toggling doctor status");
+            return default;
+        }
+    }
 
     #endregion
 
@@ -225,6 +343,21 @@ public class AdminApiService
         }
     }
 
+    public async Task<T?> TogglePatientStatusAsync<T>(string userId, bool isActive)
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.PatchAsync($"Admin/patients/{userId}/toggle-status?isActive={isActive}", null);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error toggling patient status");
+            return default;
+        }
+    }
 
     #endregion
 

@@ -77,6 +77,41 @@ public interface IAdminService
     /// </summary>
     Task<Result<GeneralResponse>> ToggleDoctorStatusAsync(string userId, bool isActive);
 
+    /// <summary>
+    /// Get comprehensive doctor insights and analytics
+    /// </summary>
+    Task<Result<DoctorInsights_DTO>> GetDoctorInsightsAsync();
+
+    /// <summary>
+    /// Get doctor performance metrics
+    /// </summary>
+    Task<Result<List<DoctorPerformance_DTO>>> GetDoctorPerformanceAsync(int topCount = 6);
+
+    /// <summary>
+    /// Get specialization distribution statistics
+    /// </summary>
+    Task<Result<List<SpecializationDistribution_DTO>>> GetSpecializationDistributionAsync();
+
+    /// <summary>
+    /// Get all unique specializations from database
+    /// </summary>
+    Task<Result<List<string>>> GetAllSpecializationsAsync();
+
+    /// <summary>
+    /// Get doctor availability overview
+    /// </summary>
+    Task<Result<DoctorAvailabilityOverview_DTO>> GetDoctorAvailabilityOverviewAsync();
+
+    /// <summary>
+    /// Get doctor workload statistics
+    /// </summary>
+    Task<Result<List<DoctorWorkload_DTO>>> GetDoctorWorkloadAsync();
+
+    /// <summary>
+    /// Get doctors for grid display with extended details
+    /// </summary>
+    Task<Result<List<DoctorGridItem_DTO>>> GetDoctorGridDataAsync(string? specialization = null, bool? isActive = null, int page = 1, int pageSize = 10);
+
     // ========== Patient Management ==========
     
     /// <summary>
