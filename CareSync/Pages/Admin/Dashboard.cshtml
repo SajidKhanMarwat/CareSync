@@ -50,12 +50,12 @@
         <div class="welcome-header mb-3">
             <div class="d-flex align-items-center justify-content-between flex-wrap">
                 <div>
-                    <h3 class="mb-1 fw-bold">Welcome back, Dr. Admin! 👋</h3>
+                    <h3 class="mb-1 fw-bold">Welcome back, @User.Identity?.Name! 👋</h3>
                     <p class="text-muted mb-0">Here's what's happening at CareSync today.</p>
                 </div>
                 <div class="text-end">
-                    <small class="text-muted d-block">Last login</small>
-                    <span class="fw-semibold">Today at 9:42 AM</span>
+                    <small class="text-muted d-block">Current Time</small>
+                    <span class="fw-semibold">@DateTime.Now.ToString("MMM dd, yyyy h:mm tt")</span>
                 </div>
             </div>
         </div>
@@ -389,42 +389,64 @@
             </div>
             <div class="card-body p-4">
                 <div class="activity-timeline">
-                    <div class="activity-item">
-                        <div class="activity-icon bg-success-subtle">
-                            <i class="ri-user-add-line text-success"></i>
+                    @if (Model.TodayPerformanceMetrics != null)
+                    {
+                        @if (Model.TodayPerformanceMetrics.NewPatientsToday > 0)
+                        {
+                            <div class="activity-item">
+                                <div class="activity-icon bg-success-subtle">
+                                    <i class="ri-user-add-line text-success"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="mb-0"><strong>@Model.TodayPerformanceMetrics.NewPatientsToday New Patient(s)</strong> registered today</p>
+                                    <small class="text-muted">Latest registration @DateTime.Now.AddHours(-1).ToString("h:mm tt")</small>
+                                </div>
+                            </div>
+                        }
+                        @if (Model.TodayPerformanceMetrics.CompletedAppointments > 0)
+                        {
+                            <div class="activity-item">
+                                <div class="activity-icon bg-primary-subtle">
+                                    <i class="ri-calendar-check-line text-primary"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="mb-0"><strong>@Model.TodayPerformanceMetrics.CompletedAppointments Appointment(s)</strong> completed</p>
+                                    <small class="text-muted">@Model.TodayPerformanceMetrics.CompletionPercentage% completion rate today</small>
+                                </div>
+                            </div>
+                        }
+                        @if (Model.TodayPerformanceMetrics.LabReportsReady > 0)
+                        {
+                            <div class="activity-item">
+                                <div class="activity-icon bg-info-subtle">
+                                    <i class="ri-test-tube-line text-info"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="mb-0"><strong>@Model.TodayPerformanceMetrics.LabReportsReady Lab Report(s)</strong> ready</p>
+                                    <small class="text-muted">Out of @Model.TodayPerformanceMetrics.TotalLabReportsRequested requested today</small>
+                                </div>
+                            </div>
+                        }
+                        @if (Model.TodayPerformanceMetrics.PendingAppointments > 0)
+                        {
+                            <div class="activity-item">
+                                <div class="activity-icon bg-warning-subtle">
+                                    <i class="ri-time-line text-warning"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="mb-0"><strong>@Model.TodayPerformanceMetrics.PendingAppointments Appointment(s)</strong> pending</p>
+                                    <small class="text-muted">Awaiting confirmation</small>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="ri-time-line text-muted" style="font-size: 2rem;"></i>
+                            <p class="text-muted mb-0">No recent activity</p>
                         </div>
-                        <div class="activity-content">
-                            <p class="mb-0"><strong>New Patient</strong> registered</p>
-                            <small class="text-muted">Emma Thompson • 5 min ago</small>
-                        </div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon bg-primary-subtle">
-                            <i class="ri-calendar-check-line text-primary"></i>
-                        </div>
-                        <div class="activity-content">
-                            <p class="mb-0"><strong>Appointment</strong> completed</p>
-                            <small class="text-muted">John Doe with Dr. Smith • 15 min ago</small>
-                        </div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon bg-info-subtle">
-                            <i class="ri-test-tube-line text-info"></i>
-                        </div>
-                        <div class="activity-content">
-                            <p class="mb-0"><strong>Lab Report</strong> uploaded</p>
-                            <small class="text-muted">Blood Test - Sarah Johnson • 28 min ago</small>
-                        </div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon bg-warning-subtle">
-                            <i class="ri-file-edit-line text-warning"></i>
-                        </div>
-                        <div class="activity-content">
-                            <p class="mb-0"><strong>Prescription</strong> issued</p>
-                            <small class="text-muted">Dr. Wilson for Michael Brown • 1 hr ago</small>
-                        </div>
-                    </div>
+                    }
                 </div>
             </div>
         </div>
@@ -540,44 +562,63 @@
                 </h5>
             </div>
             <div class="card-body p-4">
-                <div class="row g-3">
-                    <div class="col-12">
-                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3">
-                            <div>
-                                <h6 class="mb-1">New Registrations</h6>
-                                <small class="text-muted">This Month</small>
+                @if (Model.MonthlyStatistics != null)
+                {
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3">
+                                <div>
+                                    <h6 class="mb-1">New Registrations</h6>
+                                    <small class="text-muted">This Month</small>
+                                </div>
+                                <div class="text-end">
+                                    <h4 class="text-primary mb-0">@Model.MonthlyStatistics.NewRegistrationsThisMonth</h4>
+                                    <small class="@(Model.MonthlyStatistics.RegistrationPercentageChange >= 0 ? "text-success" : "text-danger")">
+                                        @(Model.MonthlyStatistics.RegistrationPercentageChange >= 0 ? "+" : "")@Model.MonthlyStatistics.RegistrationPercentageChange.ToString("F1")% 
+                                        <i class="ri-arrow-@(Model.MonthlyStatistics.RegistrationPercentageChange >= 0 ? "up" : "down")-line"></i>
+                                    </small>
+                                </div>
                             </div>
-                            <div class="text-end">
-                                <h4 class="text-primary mb-0">89</h4>
-                                <small class="text-success">+15% <i class="ri-arrow-up-line"></i></small>
+                        </div>
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3">
+                                <div>
+                                    <h6 class="mb-1">Total Appointments</h6>
+                                    <small class="text-muted">This Month</small>
+                                </div>
+                                <div class="text-end">
+                                    <h4 class="text-success mb-0">@Model.MonthlyStatistics.TotalAppointmentsThisMonth</h4>
+                                    <small class="@(Model.MonthlyStatistics.AppointmentPercentageChange >= 0 ? "text-success" : "text-danger")">
+                                        @(Model.MonthlyStatistics.AppointmentPercentageChange >= 0 ? "+" : "")@Model.MonthlyStatistics.AppointmentPercentageChange.ToString("F1")% 
+                                        <i class="ri-arrow-@(Model.MonthlyStatistics.AppointmentPercentageChange >= 0 ? "up" : "down")-line"></i>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3">
+                                <div>
+                                    <h6 class="mb-1">Lab Tests Completed</h6>
+                                    <small class="text-muted">This Month</small>
+                                </div>
+                                <div class="text-end">
+                                    <h4 class="text-info mb-0">@Model.MonthlyStatistics.LabTestsCompletedThisMonth</h4>
+                                    <small class="@(Model.MonthlyStatistics.LabTestsPercentageChange >= 0 ? "text-success" : "text-danger")">
+                                        @(Model.MonthlyStatistics.LabTestsPercentageChange >= 0 ? "+" : "")@Model.MonthlyStatistics.LabTestsPercentageChange.ToString("F1")% 
+                                        <i class="ri-arrow-@(Model.MonthlyStatistics.LabTestsPercentageChange >= 0 ? "up" : "down")-line"></i>
+                                    </small>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-12">
-                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3">
-                            <div>
-                                <h6 class="mb-1">Total Appointments</h6>
-                                <small class="text-muted">This Month</small>
-                            </div>
-                            <div class="text-end">
-                                <h4 class="text-success mb-0">456</h4>
-                                <small class="text-success">+8% <i class="ri-arrow-up-line"></i></small>
-                            </div>
-                        </div>
+                }
+                else
+                {
+                    <div class="text-center text-muted py-4">
+                        <i class="ri-loader-4-line ri-spin" style="font-size: 2rem;"></i>
+                        <p class="mt-2">Loading monthly statistics...</p>
                     </div>
-                    <div class="col-12">
-                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3">
-                            <div>
-                                <h6 class="mb-1">Lab Tests Completed</h6>
-                                <small class="text-muted">This Month</small>
-                            </div>
-                            <div class="text-end">
-                                <h4 class="text-info mb-0">234</h4>
-                                <small class="text-success">+12% <i class="ri-arrow-up-line"></i></small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                }
             </div>
         </div>
     </div>
@@ -586,7 +627,7 @@
 <!-- Charts Row -->
 <div class="row mb-4">
     <!-- Patient Registration Trends -->
-    <div class="col-xl-8 col-lg-7 mb-3">
+    <div class="col-xl-7 col-lg-7 mb-3">
         <div class="card shadow-sm border-0 h-100">
             <div class="card-header bg-white border-bottom py-3">
                 <h5 class="card-title mb-0 fw-semibold">
@@ -601,27 +642,8 @@
         </div>
     </div>
     
-    <!-- Department Performance -->
-    <div class="col-xl-4 col-lg-5 mb-3">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-white border-bottom py-3">
-                <h5 class="card-title mb-0 fw-semibold">
-                    <i class="ri-pie-chart-line me-2 text-primary"></i>Department Performance
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="chart-height">
-                    <div id="departmentPerformance"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Second Charts Row -->
-<div class="row mb-4">
     <!-- Appointment Status Overview -->
-    <div class="col-xl-6 col-lg-6 mb-3">
+    <div class="col-xl-5 col-lg-5 mb-3">
         <div class="card shadow-sm border-0 h-100">
             <div class="card-header bg-white border-bottom py-3">
                 <h5 class="card-title mb-0 fw-semibold">
@@ -635,93 +657,9 @@
             </div>
         </div>
     </div>
-    
-    <!-- Revenue Trends -->
-    <div class="col-xl-6 col-lg-6 mb-3">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-white border-bottom py-3">
-                <h5 class="card-title mb-0 fw-semibold">
-                    <i class="ri-money-dollar-circle-line me-2 text-primary"></i>Monthly Revenue
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="chart-height">
-                    <div id="revenueTrends"></div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
-
-
-<!-- System Status & Quick Stats -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-4">
-                <div class="row g-4">
-                    <div class="col-lg-3 col-md-6">
-                        <div class="system-stat-item">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <div class="d-flex align-items-center">
-                                    <div class="stat-icon bg-success-subtle me-3">
-                                        <i class="ri-shield-check-line text-success"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-0">System Status</h6>
-                                        <small class="text-muted">All systems operational</small>
-                                    </div>
-                                </div>
-                                <span class="badge bg-success">Online</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="system-stat-item">
-                            <div class="d-flex align-items-center">
-                                <div class="stat-icon bg-primary-subtle me-3">
-                                    <i class="ri-user-line text-primary"></i>
-                                </div>
-                                <div>
-                                    <h6 class="mb-0">Active Users</h6>
-                                    <p class="mb-0 text-muted"><strong class="text-primary">47</strong> online now</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="system-stat-item">
-                            <div class="d-flex align-items-center">
-                                <div class="stat-icon bg-warning-subtle me-3">
-                                    <i class="ri-alarm-line text-warning"></i>
-                                </div>
-                                <div>
-                                    <h6 class="mb-0">Pending Tasks</h6>
-                                    <p class="mb-0 text-muted"><strong class="text-warning">8</strong> need review</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="system-stat-item">
-                            <div class="d-flex align-items-center">
-                                <div class="stat-icon bg-info-subtle me-3">
-                                    <i class="ri-time-line text-info"></i>
-                                </div>
-                                <div>
-                                    <h6 class="mb-0">Avg. Wait Time</h6>
-                                    <p class="mb-0 text-muted"><strong class="text-info">12 min</strong> today</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
+ 
 <!-- Main Content Row -->
 <div class="row mb-4">
     <!-- Today's Appointments -->
@@ -737,115 +675,93 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="list-group list-group-flush">
-                    <div class="list-group-item border-0 px-0 py-3">
-                        <div class="d-flex align-items-start">
-                            <div class="me-3">
-                                <div class="avatar-circle bg-primary-subtle">
-                                    <i class="ri-user-line text-primary"></i>
+                @if (Model.TodaysAppointmentsList != null && Model.TodaysAppointmentsList.Appointments.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var appointment in Model.TodaysAppointmentsList.Appointments.Take(5))
+                        {
+                            var statusBadgeClass = appointment.Status switch
+                            {
+                                "Approved" => "bg-success",
+                                "Pending" => "bg-warning",
+                                "Created" => "bg-info",
+                                "Rejected" => "bg-danger",
+                                _ => "bg-secondary"
+                            };
+                            var avatarClass = appointment.Status switch
+                            {
+                                "Approved" => "bg-success-subtle",
+                                "Pending" => "bg-warning-subtle",
+                                "Created" => "bg-info-subtle",
+                                "Rejected" => "bg-danger-subtle",
+                                _ => "bg-secondary-subtle"
+                            };
+                            var iconColor = appointment.Status switch
+                            {
+                                "Approved" => "text-success",
+                                "Pending" => "text-warning",
+                                "Created" => "text-info",
+                                "Rejected" => "text-danger",
+                                _ => "text-secondary"
+                            };
+
+                            <div class="list-group-item border-0 px-0 py-3">
+                                <div class="d-flex align-items-start">
+                                    <div class="me-3">
+                                        <div class="avatar-circle @avatarClass">
+                                            <i class="ri-user-line @iconColor"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div>
+                                                <h6 class="mb-1 fw-bold">@appointment.PatientName</h6>
+                                                <small class="text-muted">ID: #@appointment.AppointmentID</small>
+                                            </div>
+                                            <span class="badge @statusBadgeClass">@appointment.Status</span>
+                                        </div>
+                                        <div class="appointment-details">
+                                            <div class="d-flex flex-wrap gap-3 mb-2">
+                                                <div class="detail-item">
+                                                    <i class="ri-calendar-line text-primary me-1"></i>
+                                                    <span class="fw-semibold">@appointment.AppointmentTime.ToString("h:mm tt")</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <i class="ri-stethoscope-line text-success me-1"></i>
+                                                    <span>@appointment.DoctorName</span>
+                                                </div>
+                                            </div>
+                                            <div class="appointment-type">
+                                                <i class="ri-heart-pulse-line text-danger me-1"></i>
+                                                <span class="text-muted">@appointment.AppointmentType</span>
+                                            </div>
+                                            @if (!string.IsNullOrEmpty(appointment.Reason))
+                                            {
+                                                <small class="text-muted d-block mt-1">Reason: @appointment.Reason</small>
+                                            }
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <div>
-                                        <h6 class="mb-1 fw-bold">John Doe</h6>
-                                        <small class="text-muted">Patient ID: #PT-2401</small>
-                                    </div>
-                                    <span class="badge bg-success">Confirmed</span>
-                                </div>
-                                <div class="appointment-details">
-                                    <div class="d-flex flex-wrap gap-3 mb-2">
-                                        <div class="detail-item">
-                                            <i class="ri-calendar-line text-primary me-1"></i>
-                                            <span class="fw-semibold">09:00 AM</span>
-                                            <small class="text-muted ms-1">(30 min)</small>
-                                        </div>
-                                        <div class="detail-item">
-                                            <i class="ri-stethoscope-line text-success me-1"></i>
-                                            <span>Dr. Smith</span>
-                                        </div>
-                                    </div>
-                                    <div class="appointment-type">
-                                        <i class="ri-heart-pulse-line text-danger me-1"></i>
-                                        <span class="text-muted">Regular Checkup</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        }
                     </div>
-                    
-                    <div class="list-group-item border-0 px-0 py-3">
-                        <div class="d-flex align-items-start">
-                            <div class="me-3">
-                                <div class="avatar-circle bg-warning-subtle">
-                                    <i class="ri-user-line text-warning"></i>
-                                </div>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <div>
-                                        <h6 class="mb-1 fw-bold">Sarah Johnson</h6>
-                                        <small class="text-muted">Patient ID: #PT-2398</small>
-                                    </div>
-                                    <span class="badge bg-warning">Pending</span>
-                                </div>
-                                <div class="appointment-details">
-                                    <div class="d-flex flex-wrap gap-3 mb-2">
-                                        <div class="detail-item">
-                                            <i class="ri-calendar-line text-primary me-1"></i>
-                                            <span class="fw-semibold">10:30 AM</span>
-                                            <small class="text-muted ms-1">(45 min)</small>
-                                        </div>
-                                        <div class="detail-item">
-                                            <i class="ri-stethoscope-line text-success me-1"></i>
-                                            <span>Dr. Wilson</span>
-                                        </div>
-                                    </div>
-                                    <div class="appointment-type">
-                                        <i class="ri-file-list-line text-info me-1"></i>
-                                        <span class="text-muted">Follow-up Consultation</span>
-                                    </div>
-                                </div>
-                            </div>
+                    @if (Model.TodaysAppointmentsList.TotalToday > 5)
+                    {
+                        <div class="text-center mt-2">
+                            <small class="text-muted">Showing 5 of @Model.TodaysAppointmentsList.TotalToday appointments</small>
                         </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="ri-calendar-line text-muted" style="font-size: 3rem;"></i>
+                        <p class="text-muted mb-0">No appointments scheduled for today</p>
+                        <a href="~/Admin/BookAppointment" class="btn btn-sm btn-primary mt-2">
+                            <i class="ri-add-line me-1"></i>Schedule Appointment
+                        </a>
                     </div>
-                    
-                    <div class="list-group-item border-0 px-0 py-3">
-                        <div class="d-flex align-items-start">
-                            <div class="me-3">
-                                <div class="avatar-circle bg-info-subtle">
-                                    <i class="ri-user-line text-info"></i>
-                                </div>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <div>
-                                        <h6 class="mb-1 fw-bold">Michael Brown</h6>
-                                        <small class="text-muted">Patient ID: #PT-2405</small>
-                                    </div>
-                                    <span class="badge bg-info">In Progress</span>
-                                </div>
-                                <div class="appointment-details">
-                                    <div class="d-flex flex-wrap gap-3 mb-2">
-                                        <div class="detail-item">
-                                            <i class="ri-calendar-line text-primary me-1"></i>
-                                            <span class="fw-semibold">02:00 PM</span>
-                                            <small class="text-muted ms-1">(60 min)</small>
-                                        </div>
-                                        <div class="detail-item">
-                                            <i class="ri-stethoscope-line text-success me-1"></i>
-                                            <span>Dr. Davis</span>
-                                        </div>
-                                    </div>
-                                    <div class="appointment-type">
-                                        <i class="ri-hospital-line text-warning me-1"></i>
-                                        <span class="text-muted">Specialist Consultation</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                }
             </div>
         </div>
     </div>
@@ -863,31 +779,65 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="list-group list-group-flush">
-                    <div class="list-group-item d-flex align-items-center">
-                        <div class="me-3">
-                            <i class="ri-heart-pulse-line text-danger" style="font-size: 1.5rem;"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <h6 class="mb-1">Blood Test - Complete Panel</h6>
-                            <p class="text-muted mb-1">Patient: Emma Wilson</p>
-                            <small class="text-muted">Completed: 2 hours ago</small>
-                        </div>
-                        <span class="badge bg-success">Normal</span>
+                @if (Model.RecentLabResults != null && Model.RecentLabResults.Results.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var labResult in Model.RecentLabResults.Results.Take(5))
+                        {
+                            var statusBadgeClass = labResult.Status switch
+                            {
+                                "Completed" => "bg-success",
+                                "Pending" => "bg-warning",
+                                "InProgress" => "bg-info",
+                                "Active" => "bg-primary",
+                                _ => "bg-secondary"
+                            };
+                            var iconClass = labResult.IsUrgent ? "ri-alert-line text-danger" : "ri-test-tube-line text-info";
+
+                            <div class="list-group-item d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="@iconClass" style="font-size: 1.5rem;"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">@labResult.TestName</h6>
+                                    <p class="text-muted mb-1">@labResult.PatientName</p>
+                                    <small class="text-muted">
+                                        @if (labResult.CompletionDate.HasValue)
+                                        {
+                                            <text>Completed: @((DateTime.Now - labResult.CompletionDate.Value).TotalHours < 1 ? 
+                                                "Less than an hour ago" : 
+                                                $"{(int)(DateTime.Now - labResult.CompletionDate.Value).TotalHours} hours ago")</text>
+                                        }
+                                        else
+                                        {
+                                            <text>Requested: @labResult.RequestDate.ToString("MMM dd, h:mm tt")</text>
+                                        }
+                                    </small>
+                                    @if (!string.IsNullOrEmpty(labResult.Notes))
+                                    {
+                                        <small class="text-muted d-block">@labResult.Notes</small>
+                                    }
+                                </div>
+                                <span class="badge @statusBadgeClass">@labResult.Status</span>
+                            </div>
+                        }
                     </div>
-                    
-                    <div class="list-group-item d-flex align-items-center">
-                        <div class="me-3">
-                            <i class="ri-microscope-line text-info" style="font-size: 1.5rem;"></i>
+                    @if (Model.RecentLabResults.TotalPendingResults > 0)
+                    {
+                        <div class="text-center mt-2">
+                            <small class="text-warning">
+                                <i class="ri-time-line"></i> @Model.RecentLabResults.TotalPendingResults pending results
+                            </small>
                         </div>
-                        <div class="flex-grow-1">
-                            <h6 class="mb-1">Urine Analysis</h6>
-                            <p class="text-muted mb-1">Patient: Robert Taylor</p>
-                            <small class="text-muted">Completed: 4 hours ago</small>
-                        </div>
-                        <span class="badge bg-warning">Review Required</span>
+                    }
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="ri-test-tube-line text-muted" style="font-size: 3rem;"></i>
+                        <p class="text-muted mb-0">No recent lab results</p>
                     </div>
-                </div>
+                }
             </div>
         </div>
     </div>
@@ -1254,222 +1204,278 @@
     
     <script>
         // Patient Registration Trends Chart
-        var patientTrendsOptions = {
-            chart: {
-                height: 300,
-                type: "line",
-                toolbar: {
-                    show: false,
-                },
-            },
-            dataLabels: {
-                enabled: false,
-            },
-            fill: {
-                type: 'solid',
-                opacity: [0.1, 1],
-            },
-            stroke: {
-                curve: "smooth",
-                width: [0, 5]
-            },
-            series: [{
-                name: 'New Patients',
-                type: 'area',
-                data: [89, 95, 102, 87, 93, 98, 105, 112, 89, 95, 102, 108]
-            }, {
-                name: 'Return Patients',
-                type: 'line',
-                data: [156, 162, 148, 171, 165, 159, 174, 168, 156, 162, 148, 171]
-            }],
-            grid: {
-                borderColor: "#d8dee6",
-                strokeDashArray: 5,
-                xaxis: {
-                    lines: {
-                        show: true,
-                    },
-                },
-                yaxis: {
-                    lines: {
+        @if (Model.PatientRegistrationTrends != null && Model.PatientRegistrationTrends.MonthlyData != null)
+        {
+            <text>
+            var patientTrendsOptions = {
+                chart: {
+                    height: 300,
+                    type: "line",
+                    toolbar: {
                         show: false,
                     },
                 },
-                padding: {
-                    top: 0,
-                    right: 0,
-                    bottom: 0,
-                    left: 0,
+                dataLabels: {
+                    enabled: false,
                 },
-            },
-            xaxis: {
-                categories: [
-                    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-                ],
-            },
-            yaxis: {
-                labels: {
-                    show: true,
+                fill: {
+                    type: 'solid',
+                    opacity: [0.1, 1],
                 },
-            },
-            legend: {
-                position: 'top',
-                horizontalAlign: 'right',
-            },
-            colors: ["#0d6efd", "#198754"],
-            markers: {
-                size: 0,
-                opacity: 0.3,
-                colors: ["#0d6efd", "#198754"],
-                strokeColor: "#ffffff",
-                strokeWidth: 1,
-                hover: {
-                    size: 7,
+                stroke: {
+                    curve: "smooth",
+                    width: [5]
                 },
-            },
-            tooltip: {
-                y: {
-                    formatter: function (val) {
-                        return val + " patients";
+                series: [{
+                    name: 'New Patients',
+                    type: 'area',
+                    data: [@string.Join(", ", Model.PatientRegistrationTrends.MonthlyData.Select(m => m.Count))]
+                }],
+                grid: {
+                    borderColor: "#d8dee6",
+                    strokeDashArray: 5,
+                    xaxis: {
+                        lines: {
+                            show: true,
+                        },
+                    },
+                    yaxis: {
+                        lines: {
+                            show: false,
+                        },
+                    },
+                    padding: {
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        left: 0,
                     },
                 },
-            },
-        };
+                xaxis: {
+                    categories: [@Html.Raw(string.Join(", ", Model.PatientRegistrationTrends.MonthlyData.Select(m => $"\"{m.MonthName}\"")))],
+                },
+                yaxis: {
+                    labels: {
+                        show: true,
+                    },
+                },
+                legend: {
+                    position: 'top',
+                    horizontalAlign: 'right',
+                },
+                colors: ["#0d6efd"],
+                markers: {
+                    size: 0,
+                    opacity: 0.3,
+                    colors: ["#0d6efd"],
+                    strokeColor: "#ffffff",
+                    strokeWidth: 1,
+                    hover: {
+                        size: 7,
+                    },
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return val + " patients";
+                        },
+                    },
+                },
+                annotations: {
+                    yaxis: [{
+                        y: @Model.PatientRegistrationTrends.AveragePerMonth.ToString("F0"),
+                        borderColor: '#198754',
+                        label: {
+                            borderColor: '#198754',
+                            style: {
+                                color: '#fff',
+                                background: '#198754',
+                            },
+                            text: 'Average: @Model.PatientRegistrationTrends.AveragePerMonth.ToString("F0") per month',
+                        }
+                    }]
+                }
+            };
 
-        var patientTrendsChart = new ApexCharts(document.querySelector("#patientTrends"), patientTrendsOptions);
-        patientTrendsChart.render();
+            var patientTrendsChart = new ApexCharts(document.querySelector("#patientTrends"), patientTrendsOptions);
+            patientTrendsChart.render();
+            </text>
+        }
 
-        // Department Performance Chart (Donut)
-        var departmentOptions = {
-            chart: {
-                height: 300,
-                type: 'donut',
-            },
-            series: [24, 18, 12, 8, 6],
-            labels: ['Cardiology', 'Neurology', 'Orthopedics', 'Pediatrics', 'Emergency'],
-            colors: ['#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1'],
-            legend: {
-                position: 'bottom',
-                horizontalAlign: 'center',
-            },
-            plotOptions: {
-                pie: {
-                    donut: {
-                        size: '70%'
+        // User Distribution Chart (Donut)
+        @if (Model.UserDistributionStats != null)
+        {
+            <text>
+            var departmentOptions = {
+                chart: {
+                    height: 300,
+                    type: 'donut',
+                },
+                series: [@Model.UserDistributionStats.TotalPatients, @Model.UserDistributionStats.TotalDoctors, @Model.UserDistributionStats.TotalAdminStaff, @Model.UserDistributionStats.TotalLabStaff],
+                labels: ['Patients', 'Doctors', 'Admin Staff', 'Lab Staff'],
+                colors: ['#0d6efd', '#198754', '#ffc107', '#dc3545'],
+                legend: {
+                    position: 'bottom',
+                    horizontalAlign: 'center',
+                },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '70%',
+                            labels: {
+                                show: true,
+                                total: {
+                                    show: true,
+                                    label: 'Total Users',
+                                    formatter: function () {
+                                        return '@Model.UserDistributionStats.TotalUsers';
+                                    }
+                                }
+                            }
+                        }
                     }
-                }
-            },
-            dataLabels: {
-                enabled: true,
-                formatter: function (val) {
-                    return Math.round(val) + "%"
-                }
-            },
-            tooltip: {
-                y: {
+                },
+                dataLabels: {
+                    enabled: true,
                     formatter: function (val) {
-                        return val + " staff members"
+                        return Math.round(val) + "%"
+                    }
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return val + " users"
+                        }
                     }
                 }
-            }
-        };
+            };
 
-        var departmentChart = new ApexCharts(document.querySelector("#departmentPerformance"), departmentOptions);
-        departmentChart.render();
+            var departmentChart = new ApexCharts(document.querySelector("#departmentPerformance"), departmentOptions);
+            departmentChart.render();
+            </text>
+        }
 
         // Appointment Status Chart (Bar)
-        var appointmentStatusOptions = {
-            chart: {
-                height: 300,
-                type: 'bar',
-                toolbar: {
-                    show: false,
+        @if (Model.AppointmentStatusBreakdown != null)
+        {
+            <text>
+            var appointmentStatusOptions = {
+                chart: {
+                    height: 300,
+                    type: 'bar',
+                    toolbar: {
+                        show: false,
+                    },
                 },
-            },
-            series: [{
-                name: 'Appointments',
-                data: [156, 89, 23, 12, 8]
-            }],
-            xaxis: {
-                categories: ['Confirmed', 'Pending', 'Completed', 'Cancelled', 'Rescheduled'],
-            },
-            colors: ['#198754', '#ffc107', '#0d6efd', '#dc3545', '#6c757d'],
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: '55%',
-                    endingShape: 'rounded'
+                series: [{
+                    name: 'Appointments',
+                    data: [@Model.AppointmentStatusBreakdown.ApprovedCount, @Model.AppointmentStatusBreakdown.PendingCount, @Model.AppointmentStatusBreakdown.CompletedCount, @Model.AppointmentStatusBreakdown.CancelledCount, @Model.AppointmentStatusBreakdown.ScheduledCount]
+                }],
+                xaxis: {
+                    categories: ['Approved', 'Pending', 'Completed', 'Cancelled', 'Scheduled'],
                 },
-            },
-            dataLabels: {
-                enabled: false
-            },
-            grid: {
-                borderColor: "#d8dee6",
-                strokeDashArray: 5,
-            },
-            tooltip: {
-                y: {
+                colors: ['#198754'],
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '55%',
+                        endingShape: 'rounded',
+                        distributed: true,
+                        colors: {
+                            ranges: [{
+                                from: 0,
+                                to: 1000000,
+                                color: '#198754'
+                            }]
+                        }
+                    },
+                },
+                dataLabels: {
+                    enabled: true,
                     formatter: function (val) {
-                        return val + " appointments"
+                        return val;
+                    }
+                },
+                grid: {
+                    borderColor: "#d8dee6",
+                    strokeDashArray: 5,
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return val + " appointments"
+                        }
                     }
                 }
-            }
-        };
+            };
 
-        var appointmentStatusChart = new ApexCharts(document.querySelector("#appointmentStatus"), appointmentStatusOptions);
-        appointmentStatusChart.render();
+            var appointmentStatusChart = new ApexCharts(document.querySelector("#appointmentStatus"), appointmentStatusOptions);
+            appointmentStatusChart.render();
+            </text>
+        }
 
-        // Revenue Trends Chart (Area)
-        var revenueOptions = {
-            chart: {
-                height: 300,
-                type: 'area',
-                toolbar: {
-                    show: false,
+        // Monthly Revenue Chart (Area) - Using appointment counts as proxy
+        @if (Model.MonthlyStatistics != null)
+        {
+            <text>
+            var revenueOptions = {
+                chart: {
+                    height: 300,
+                    type: 'area',
+                    toolbar: {
+                        show: false,
+                    },
                 },
-            },
-            series: [{
-                name: 'Revenue',
-                data: [45000, 52000, 48000, 61000, 55000, 67000, 73000, 69000, 78000, 82000, 75000, 89000]
-            }],
-            xaxis: {
-                categories: [
-                    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-                ],
-            },
-            colors: ['#198754'],
-            fill: {
-                type: 'gradient',
-                gradient: {
-                    shadeIntensity: 1,
-                    opacityFrom: 0.7,
-                    opacityTo: 0.1,
-                }
-            },
-            stroke: {
-                curve: 'smooth',
-                width: 3
-            },
-            grid: {
-                borderColor: "#d8dee6",
-                strokeDashArray: 5,
-            },
-            dataLabels: {
-                enabled: false
-            },
-            tooltip: {
-                y: {
-                    formatter: function (val) {
-                        return "$" + val.toLocaleString()
+                series: [{
+                    name: 'Revenue',
+                    data: [@Model.MonthlyStatistics.RevenueThisMonth]
+                }],
+                xaxis: {
+                    categories: ["@DateTime.Now.ToString("MMMM")"],
+                },
+                colors: ['#198754'],
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.7,
+                        opacityTo: 0.1,
                     }
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 3
+                },
+                grid: {
+                    borderColor: "#d8dee6",
+                    strokeDashArray: 5,
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return "$" + val.toLocaleString()
+                        }
+                    }
+                },
+                annotations: {
+                    texts: [{
+                        x: '50%',
+                        y: '50%',
+                        text: 'Revenue: $@Model.MonthlyStatistics.RevenueThisMonth.ToString("N2")',
+                        textAnchor: 'middle',
+                        fontSize: '16px',
+                        fontWeight: 600,
+                        foreColor: '#198754'
+                    }]
                 }
-            }
-        };
+            };
 
-        var revenueChart = new ApexCharts(document.querySelector("#revenueTrends"), revenueOptions);
-        revenueChart.render();
+            var revenueChart = new ApexCharts(document.querySelector("#revenueTrends"), revenueOptions);
+            revenueChart.render();
+            </text>
+        }
     </script>
 }

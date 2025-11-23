@@ -87,6 +87,62 @@ public class AdminController(IAdminService adminService, IUserService userServic
     public async Task<Result<TodayPerformanceMetrics_DTO>> GetTodayPerformanceMetrics()
         => await adminService.GetTodayPerformanceMetricsAsync();
 
+    /// <summary>
+    /// Get complete dashboard summary with all widgets data in single call
+    /// </summary>
+    [HttpGet("dashboard/complete-summary")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<DashboardSummary_DTO>> GetCompleteDashboardSummary()
+        => await adminService.GetDashboardSummaryAsync();
+
+    /// <summary>
+    /// Get user distribution statistics with month-over-month comparison
+    /// </summary>
+    [HttpGet("dashboard/user-distribution-stats")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<UserDistributionStats_DTO>> GetUserDistributionStats()
+        => await adminService.GetUserDistributionStatsAsync();
+
+    /// <summary>
+    /// Get monthly statistics summary with comparisons
+    /// </summary>
+    [HttpGet("dashboard/monthly-statistics")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<MonthlyStatistics_DTO>> GetMonthlyStatistics()
+        => await adminService.GetMonthlyStatsAsync();
+
+    /// <summary>
+    /// Get patient registration trends over last 12 months
+    /// </summary>
+    [HttpGet("dashboard/patient-registration-trends")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<PatientRegistrationTrends_DTO>> GetPatientRegistrationTrends()
+        => await adminService.GetPatientRegTrendsAsync();
+
+    /// <summary>
+    /// Get appointment status breakdown with percentages
+    /// </summary>
+    [HttpGet("dashboard/appointment-status-breakdown")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<AppointmentStatusBreakdown_DTO>> GetAppointmentStatusBreakdown()
+        => await adminService.GetAppointmentStatusAsync();
+
+    /// <summary>
+    /// Get today's appointments detailed list
+    /// </summary>
+    [HttpGet("dashboard/todays-appointments-list")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<TodaysAppointmentsList_DTO>> GetTodaysAppointmentsList()
+        => await adminService.GetTodaysApptsListAsync();
+
+    /// <summary>
+    /// Get recent lab results list
+    /// </summary>
+    [HttpGet("dashboard/recent-lab-results")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<RecentLabResults_DTO>> GetRecentLabResults()
+        => await adminService.GetRecentLabsAsync();
+
     #endregion
 
     #region Doctor Management
