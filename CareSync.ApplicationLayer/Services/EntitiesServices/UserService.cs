@@ -91,11 +91,19 @@ public sealed class UserService(
         var passwordChanged = await userManager.ResetPasswordAsync(user, resetToken, input.NewPassword);
 
         if (passwordChanged.Succeeded)
+        {
+            // Clear the password reset flag after successful reset
+            user.IsPasswordResetRequired = false;
+            user.UpdatedOn = DateTime.UtcNow;
+            user.UpdatedBy = user.Id;
+            await userManager.UpdateAsync(user);
+            
             return Result<GeneralResponse>.Success(new GeneralResponse()
             {
                 Success = true,
                 Message = "password changed successfully.",
             });
+        }
         return Result<GeneralResponse>.Failure(new GeneralResponse()
         {
             Success = false,
@@ -146,10 +154,28 @@ public sealed class UserService(
             (string token, string refreshToken) = ("", "");
             if (response.Succeeded)
             {
+                // Check if password reset is required
+                if (user.IsPasswordResetRequired)
+                {
+                    return Result<LoginResponse>.Success(new LoginResponse()
+                    {
+                        Success = true,
+                        Message = "PasswordResetRequired",
+                        Token = string.Empty,
+                        RefreshToken = string.Empty,
+                        Role = user?.Role?.RoleName!,
+                        RequiresPasswordReset = true
+                    });
+                }
+
                 (token, refreshToken) = (await GenerateToken(user, userManager, roleManager), GenerateRefreshToken(user.Id.ToString()));
 
                 // Save refresh token in Identity
                 await userManager.SetAuthenticationTokenAsync(user, "CareSync", "RefreshToken", refreshToken);
+
+                // Update last login time
+                user.LastLogin = DateTime.UtcNow;
+                await userManager.UpdateAsync(user);
 
                 // Add RefreshToken to cookie here...
                 //await Set_RefreshToken_Cookies(refreshToken, 1);
@@ -163,6 +189,7 @@ public sealed class UserService(
                 Token = response.Succeeded ? token : string.Empty,
                 RefreshToken = refreshToken,
                 Role = user?.Role?.RoleName!,
+                RequiresPasswordReset = false
             });
         }
         catch (DbUpdateException ex)
@@ -197,6 +224,12 @@ public sealed class UserService(
 
             userEntity.RoleID = role.Id;
             userEntity.RoleType = Enum.Parse<RoleType>(roleName, true);
+            
+            // Set password reset flag if specified in the request
+            if (request.RequiresPasswordReset)
+            {
+                userEntity.IsPasswordResetRequired = true;
+            }
 
             // Create user account
             var userManagerResponse = await userManager.CreateAsync(userEntity, request.Password);

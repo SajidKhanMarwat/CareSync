@@ -38,6 +38,17 @@ public class LoginModel : PageModel
 
                 if (result.IsSuccess && result.Data != null)
                 {
+                    // Check if password reset is required
+                    if (result.Data.RequiresPasswordReset)
+                    {
+                        // Store temporary session data for password reset
+                        HttpContext.Session.SetString("ResetEmail", LoginRequest.Email);
+                        HttpContext.Session.SetString("IsFirstTimeReset", "true");
+                        
+                        // Redirect to password reset page
+                        return RedirectToPage("/Auth/ResetPassword", new { email = LoginRequest.Email, firstTime = true });
+                    }
+
                     // Store user information in session
                     HttpContext.Session.SetString("UserRole", result.Data.Role ?? "Patient");
                     HttpContext.Session.SetString("UserToken", result.Data.Token ?? "");

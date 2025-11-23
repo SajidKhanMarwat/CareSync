@@ -123,6 +123,7 @@ public class AdminController(IAdminService adminService, IUserService userServic
                 System.Net.HttpStatusCode.BadRequest);
 
         logger.LogInformation("Admin registering new doctor: {Email}", dto.Email);
+        dto.RequiresPasswordReset = true;  // Require password reset on first login
         return await userService.RegisterNewUserAsync(dto, "doctor");
     }
 
@@ -178,6 +179,7 @@ public class AdminController(IAdminService adminService, IUserService userServic
                 System.Net.HttpStatusCode.BadRequest);
 
         logger.LogInformation("Admin registering new patient: {Email}", dto.Email);
+        dto.RequiresPasswordReset = true;  // Require password reset on first login
         return await userService.RegisterNewUserAsync(dto, "patient");
     }
 
@@ -236,6 +238,7 @@ public class AdminController(IAdminService adminService, IUserService userServic
                 System.Net.HttpStatusCode.BadRequest);
 
         logger.LogInformation("Admin registering new lab: {Email}", dto.Email);
+        dto.RequiresPasswordReset = true;  // Require password reset on first login
         return await userService.RegisterNewUserAsync(dto, "lab");
     }
 

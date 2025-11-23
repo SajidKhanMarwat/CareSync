@@ -107,6 +107,13 @@ public class T_Users : IdentityUser<string>
     public int? Age { get; set; }
 
     /// <summary>
+    /// Indicates whether the user needs to reset their password on next login.
+    /// Set to true when admin creates a user account with a temporary password.
+    /// After successful password reset, this flag is set to false.
+    /// </summary>
+    public bool IsPasswordResetRequired { get; set; } = false;
+
+    /// <summary>
     /// Indicates whether this record has been soft deleted.
     /// When true, the record is considered deleted but remains in the database for audit purposes.
     /// Default value is false.
