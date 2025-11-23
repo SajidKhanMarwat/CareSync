@@ -167,6 +167,41 @@ public class AdminController(IAdminService adminService, IUserService userServic
         => await adminService.GetAllDoctorsAsync(specialization, isActive);
 
     /// <summary>
+    /// Toggle doctor active status
+    /// </summary>
+    [HttpPost("doctors/toggle-status")]
+    public async Task<Result<GeneralResponse>> ToggleDoctorStatus([FromBody] ToggleDoctorStatusRequest request)
+        => await adminService.ToggleDoctorStatusAsync(request.UserId, request.IsActive);
+
+    /// <summary>
+    /// Get doctor profile with complete details
+    /// </summary>
+    [HttpGet("doctor-profile/{userId}")]
+    public async Task<Result<DoctorProfile_DTO>> GetDoctorProfile(string userId)
+        => await adminService.GetDoctorProfileAsync(userId);
+
+    /// <summary>
+    /// Update doctor information
+    /// </summary>
+    [HttpPut("doctor/{userId}")]
+    public async Task<Result<GeneralResponse>> UpdateDoctor(string userId, [FromBody] UpdateDoctor_DTO updateDto)
+        => await adminService.UpdateDoctorAsync(userId, updateDto);
+
+    /// <summary>
+    /// Get doctor schedule
+    /// </summary>
+    [HttpGet("doctor-schedule/{userId}")]
+    public async Task<Result<DoctorSchedule_DTO>> GetDoctorSchedule(string userId)
+        => await adminService.GetDoctorScheduleAsync(userId);
+
+    /// <summary>
+    /// Get patients treated by a specific doctor
+    /// </summary>
+    [HttpGet("doctor-patients/{userId}")]
+    public async Task<Result<List<PatientList_DTO>>> GetDoctorPatients(string userId)
+        => await adminService.GetDoctorPatientsAsync(userId);
+
+    /// <summary>
     /// Get doctor statistics summary
     /// </summary>
     [HttpGet("doctors/stats")]

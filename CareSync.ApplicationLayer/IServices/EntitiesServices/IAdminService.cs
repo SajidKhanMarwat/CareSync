@@ -78,6 +78,26 @@ public interface IAdminService
     Task<Result<GeneralResponse>> ToggleDoctorStatusAsync(string userId, bool isActive);
 
     /// <summary>
+    /// Get doctor profile with complete details
+    /// </summary>
+    Task<Result<DoctorProfile_DTO>> GetDoctorProfileAsync(string userId);
+
+    /// <summary>
+    /// Update doctor information
+    /// </summary>
+    Task<Result<GeneralResponse>> UpdateDoctorAsync(string userId, UpdateDoctor_DTO updateDto);
+
+    /// <summary>
+    /// Get doctor schedule
+    /// </summary>
+    Task<Result<DoctorSchedule_DTO>> GetDoctorScheduleAsync(string userId);
+
+    /// <summary>
+    /// Get patients treated by a specific doctor
+    /// </summary>
+    Task<Result<List<PatientList_DTO>>> GetDoctorPatientsAsync(string userId);
+
+    /// <summary>
     /// Get comprehensive doctor insights and analytics
     /// </summary>
     Task<Result<DoctorInsights_DTO>> GetDoctorInsightsAsync();

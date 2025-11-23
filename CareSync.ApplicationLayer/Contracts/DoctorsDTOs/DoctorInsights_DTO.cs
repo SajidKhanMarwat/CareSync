@@ -91,14 +91,26 @@ public class DoctorAvailabilityOverview_DTO
 /// </summary>
 public class DoctorSchedule_DTO
 {
+    public string UserId { get; set; } = string.Empty;
     public string DoctorId { get; set; } = string.Empty;
     public string DoctorName { get; set; } = string.Empty;
-    public string Specialization { get; set; } = string.Empty;
-    public string StartTime { get; set; } = string.Empty;
-    public string EndTime { get; set; } = string.Empty;
+    public string? Specialization { get; set; }
+    public string? AvailableDays { get; set; }
+    public string? StartTime { get; set; }
+    public string? EndTime { get; set; }
     public bool IsAvailable { get; set; }
     public int AppointmentsBooked { get; set; }
     public int SlotsAvailable { get; set; }
+    public List<DoctorAppointmentSlot> TodaySlots { get; set; } = new();
+    public List<DoctorAppointmentSlot> WeekSlots { get; set; } = new();
+}
+
+public class DoctorAppointmentSlot
+{
+    public DateTime SlotTime { get; set; }
+    public string PatientName { get; set; } = string.Empty;
+    public string Status { get; set; } = string.Empty;
+    public string? Reason { get; set; }
 }
 
 /// <summary>

@@ -270,6 +270,70 @@ public class AdminApiService
         }
     }
 
+    public async Task<T?> GetDoctorProfileAsync<T>(string userId)
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync($"Admin/doctor-profile/{userId}");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting doctor profile");
+            return default;
+        }
+    }
+
+    public async Task<T?> UpdateDoctorAsync<T>(string userId, object updateDto)
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.PutAsJsonAsync($"Admin/doctor/{userId}", updateDto, _jsonOptions);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating doctor");
+            return default;
+        }
+    }
+
+    public async Task<T?> GetDoctorScheduleAsync<T>(string userId)
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync($"Admin/doctor-schedule/{userId}");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting doctor schedule");
+            return default;
+        }
+    }
+
+    public async Task<T?> GetDoctorPatientsAsync<T>(string userId)
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync($"Admin/doctor-patients/{userId}");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting doctor patients");
+            return default;
+        }
+    }
+
     public async Task<T?> ToggleDoctorStatusAsync<T>(string userId, bool isActive)
     {
         try

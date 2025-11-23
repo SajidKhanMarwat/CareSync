@@ -53,7 +53,7 @@ public class AdminService(
                 ProfileImage = user.ProfileImage,
                 Gender = user.Gender,
                 DateOfBirth = user.DateOfBirth,
-                Age = user.Age,
+                Age = user.Age ?? 0,
                 IsActive = user.IsActive,
                 RoleType = user.RoleType,
                 RoleName = role?.Name ?? user.RoleType.ToString(),
@@ -1447,7 +1447,7 @@ public class AdminService(
                     PhoneNumber = user.PhoneNumber ?? string.Empty,
                     Gender = user.Gender.ToString(),
                     DateOfBirth = user.DateOfBirth,
-                    Age = user.Age,
+                    Age = user.Age ?? 0,
                     BloodGroup = patient.BloodGroup,
                     MaritalStatus = patient.MaritalStatus,
                     Occupation = patient.Occupation,
@@ -1545,7 +1545,7 @@ public class AdminService(
                 PhoneNumber = user.PhoneNumber ?? string.Empty,
                 Gender = user.Gender.ToString(),
                 DateOfBirth = user.DateOfBirth,
-                Age = user.Age,
+                Age = user.Age ?? 0,
                 BloodGroup = patient.BloodGroup,
                 MaritalStatus = patient.MaritalStatus,
                 Occupation = patient.Occupation,
@@ -1598,7 +1598,7 @@ public class AdminService(
                     FullName = $"{user.FirstName} {user.LastName}".Trim(),
                     Email = user.Email ?? string.Empty,
                     PhoneNumber = user.PhoneNumber ?? string.Empty,
-                    Age = user.Age,
+                    Age = user.Age ?? 0,
                     BloodGroup = patient.BloodGroup,
                     LastVisit = lastVisit
                 });
@@ -2253,6 +2253,259 @@ public class AdminService(
         {
             logger.LogError(ex, "Error getting recent lab results");
             return Result<RecentLabResults_DTO>.Exception(ex);
+        }
+    }
+
+    #endregion
+
+    #region Doctor Profile Management
+
+    public async Task<Result<DoctorProfile_DTO>> GetDoctorProfileAsync(string userId)
+    {
+        logger.LogInformation("Executing: GetDoctorProfileAsync for {UserId}", userId);
+        try
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+                return Result<DoctorProfile_DTO>.Failure(null!, "Doctor not found", System.Net.HttpStatusCode.NotFound);
+
+            var doctorDetails = await uow.DoctorDetailsRepo.GetAsync(d => d.UserID == userId);
+            if (doctorDetails == null)
+                return Result<DoctorProfile_DTO>.Failure(null!, "Doctor details not found", System.Net.HttpStatusCode.NotFound);
+
+            var appointments = await uow.AppointmentsRepo.GetAllAsync(a => a.DoctorID == doctorDetails.DoctorID);
+            var today = DateTime.UtcNow.Date;
+            
+            var profile = new DoctorProfile_DTO
+            {
+                UserId = user.Id,
+                DoctorId = doctorDetails.DoctorID,
+                FirstName = user.FirstName,
+                LastName = user.LastName ?? string.Empty,
+                Email = user.Email ?? string.Empty,
+                PhoneNumber = user.PhoneNumber,
+                ProfileImage = user.ProfileImage ?? "/theme/images/default-doctor.png",
+                DateOfBirth = user.DateOfBirth,
+                Age = user.Age ?? 0,
+                Gender = user.Gender.ToString(),
+                Address = user.Address,
+                
+                // Professional Information
+                Specialization = doctorDetails.Specialization,
+                LicenseNumber = doctorDetails.LicenseNumber,
+                ExperienceYears = doctorDetails.ExperienceYears,
+                HospitalAffiliation = doctorDetails.HospitalAffiliation,
+                Qualifications = doctorDetails.QualificationSummary,
+                About = null, // Not available in current model
+                
+                // Schedule
+                AvailableDays = doctorDetails.AvailableDays,
+                StartTime = doctorDetails.StartTime,
+                EndTime = doctorDetails.EndTime,
+                ConsultationFee = null, // Not available in current model
+                
+                // Statistics
+                TotalPatients = appointments.Select(a => a.PatientID).Distinct().Count(),
+                TotalAppointments = appointments.Count,
+                CompletedAppointments = appointments.Count(a => a.Status == AppointmentStatus_Enum.Completed),
+                TodayAppointments = appointments.Count(a => a.AppointmentDate.Date == today),
+                Rating = 4.5m, // Placeholder
+                ReviewCount = 50, // Placeholder
+                
+                // Status
+                IsActive = user.IsActive,
+                CreatedOn = user.CreatedOn,
+                UpdatedOn = user.UpdatedOn
+            };
+
+            return Result<DoctorProfile_DTO>.Success(profile);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting doctor profile");
+            return Result<DoctorProfile_DTO>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<GeneralResponse>> UpdateDoctorAsync(string userId, UpdateDoctor_DTO updateDto)
+    {
+        logger.LogInformation("Executing: UpdateDoctorAsync for {UserId}", userId);
+        try
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+                return Result<GeneralResponse>.Failure(new GeneralResponse { Success = false, Message = "Doctor not found" });
+
+            // Update user information
+            user.FirstName = updateDto.FirstName;
+            user.LastName = updateDto.LastName;
+            user.Email = updateDto.Email;
+            user.PhoneNumber = updateDto.PhoneNumber;
+            user.DateOfBirth = updateDto.DateOfBirth;
+            user.Address = updateDto.Address;
+            user.UpdatedOn = DateTime.UtcNow;
+
+            var updateResult = await userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+                return Result<GeneralResponse>.Failure(new GeneralResponse { Success = false, Message = "Failed to update user information" });
+
+            // Update doctor details
+            var doctorDetails = await uow.DoctorDetailsRepo.GetAsync(d => d.UserID == userId);
+            if (doctorDetails != null)
+            {
+                doctorDetails.Specialization = updateDto.Specialization;
+                doctorDetails.LicenseNumber = updateDto.LicenseNumber;
+                doctorDetails.ExperienceYears = updateDto.ExperienceYears;
+                doctorDetails.HospitalAffiliation = updateDto.HospitalAffiliation;
+                doctorDetails.QualificationSummary = updateDto.Qualifications;
+                doctorDetails.AvailableDays = updateDto.AvailableDays ?? "Monday,Tuesday,Wednesday,Thursday,Friday";
+                doctorDetails.StartTime = updateDto.StartTime;
+                doctorDetails.EndTime = updateDto.EndTime;
+                // ConsultationFee not available in current model
+                doctorDetails.UpdatedOn = DateTime.UtcNow;
+
+                await uow.DoctorDetailsRepo.UpdateAsync(doctorDetails);
+                await uow.SaveChangesAsync();
+            }
+
+            return Result<GeneralResponse>.Success(new GeneralResponse { Success = true, Message = "Doctor updated successfully" });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error updating doctor");
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<DoctorSchedule_DTO>> GetDoctorScheduleAsync(string userId)
+    {
+        logger.LogInformation("Executing: GetDoctorScheduleAsync for {UserId}", userId);
+        try
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+                return Result<DoctorSchedule_DTO>.Failure(null!, "Doctor not found", System.Net.HttpStatusCode.NotFound);
+
+            var doctorDetails = await uow.DoctorDetailsRepo.GetAsync(d => d.UserID == userId);
+            if (doctorDetails == null)
+                return Result<DoctorSchedule_DTO>.Failure(null!, "Doctor details not found", System.Net.HttpStatusCode.NotFound);
+
+            var today = DateTime.UtcNow.Date;
+            var weekEnd = today.AddDays(7);
+            
+            var appointments = await uow.AppointmentsRepo.GetAllAsync(
+                a => a.DoctorID == doctorDetails.DoctorID && 
+                     a.AppointmentDate >= today && 
+                     a.AppointmentDate <= weekEnd);
+            
+            // Load patient data separately
+            var patientIds = appointments.Select(a => a.PatientID).Distinct().ToList();
+            var patients = await uow.PatientDetailsRepo.GetAllAsync(p => patientIds.Contains(p.PatientID));
+            var patientUsers = new Dictionary<int, T_Users>();
+            foreach (var patient in patients)
+            {
+                var patientUser = await userManager.FindByIdAsync(patient.UserID);
+                if (patientUser != null)
+                    patientUsers[patient.PatientID] = patientUser;
+            }
+
+            var schedule = new DoctorSchedule_DTO
+            {
+                UserId = userId,
+                DoctorName = $"Dr. {user.FirstName} {user.LastName}",
+                Specialization = doctorDetails.Specialization,
+                AvailableDays = doctorDetails.AvailableDays,
+                StartTime = doctorDetails.StartTime,
+                EndTime = doctorDetails.EndTime,
+                TodaySlots = appointments
+                    .Where(a => a.AppointmentDate.Date == today)
+                    .OrderBy(a => a.AppointmentDate)
+                    .Select(a => new DoctorAppointmentSlot
+                    {
+                        SlotTime = a.AppointmentDate,
+                        PatientName = patientUsers.ContainsKey(a.PatientID) ? 
+                            $"{patientUsers[a.PatientID].FirstName} {patientUsers[a.PatientID].LastName}" : "Unknown",
+                        Status = a.Status.ToString(),
+                        Reason = a.Reason
+                    }).ToList(),
+                WeekSlots = appointments
+                    .OrderBy(a => a.AppointmentDate)
+                    .Select(a => new DoctorAppointmentSlot
+                    {
+                        SlotTime = a.AppointmentDate,
+                        PatientName = patientUsers.ContainsKey(a.PatientID) ? 
+                            $"{patientUsers[a.PatientID].FirstName} {patientUsers[a.PatientID].LastName}" : "Unknown",
+                        Status = a.Status.ToString(),
+                        Reason = a.Reason
+                    }).ToList()
+            };
+
+            return Result<DoctorSchedule_DTO>.Success(schedule);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting doctor schedule");
+            return Result<DoctorSchedule_DTO>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<List<PatientList_DTO>>> GetDoctorPatientsAsync(string userId)
+    {
+        logger.LogInformation("Executing: GetDoctorPatientsAsync for {UserId}", userId);
+        try
+        {
+            var doctorDetails = await uow.DoctorDetailsRepo.GetAsync(d => d.UserID == userId);
+            if (doctorDetails == null)
+                return Result<List<PatientList_DTO>>.Failure(null!, "Doctor not found", System.Net.HttpStatusCode.NotFound);
+
+            var appointments = await uow.AppointmentsRepo.GetAllAsync(
+                a => a.DoctorID == doctorDetails.DoctorID);
+
+            var uniquePatientIds = appointments.Select(a => a.PatientID).Distinct().ToList();
+            var patients = await uow.PatientDetailsRepo.GetAllAsync(
+                p => uniquePatientIds.Contains(p.PatientID));
+
+            var result = new List<PatientList_DTO>();
+            
+            foreach (var patient in patients)
+            {
+                var user = await userManager.FindByIdAsync(patient.UserID);
+                if (user == null) continue;
+
+                var patientAppointments = appointments.Where(a => a.PatientID == patient.PatientID).ToList();
+                var lastVisit = patientAppointments
+                    .Where(a => a.Status == AppointmentStatus_Enum.Completed)
+                    .OrderByDescending(a => a.AppointmentDate)
+                    .FirstOrDefault()?.AppointmentDate;
+
+                result.Add(new PatientList_DTO
+                {
+                    PatientID = patient.PatientID,
+                    UserID = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName ?? string.Empty,
+                    Email = user.Email ?? string.Empty,
+                    PhoneNumber = user.PhoneNumber ?? string.Empty,
+                    Gender = user.Gender.ToString(),
+                    DateOfBirth = user.DateOfBirth,
+                    Age = user.Age ?? 0,
+                    BloodGroup = patient.BloodGroup,
+                    MaritalStatus = patient.MaritalStatus,
+                    Occupation = patient.Occupation,
+                    IsActive = user.IsActive,
+                    ProfileImage = user.ProfileImage ?? "/theme/images/default-patient.png",
+                    CreatedOn = user.CreatedOn,
+                    TotalAppointments = patientAppointments.Count,
+                    LastVisit = lastVisit
+                });
+            }
+
+            return Result<List<PatientList_DTO>>.Success(result.OrderBy(p => p.FirstName).ToList());
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting doctor patients");
+            return Result<List<PatientList_DTO>>.Exception(ex);
         }
     }
 
