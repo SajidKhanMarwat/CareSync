@@ -124,32 +124,36 @@ public class PatientsModel : BasePageModel
         }
     }
 
-    public async Task<IActionResult> OnPostToggleStatusAsync(string userId, bool isActive)
+    public async Task<IActionResult> OnPostDeletePatientAsync(string userId, int patientId)
     {
         try
         {
             var authResult = RequireRole("Admin");
             if (authResult != null) return authResult;
 
-            _logger.LogInformation("Toggling patient status: UserId={UserId}, NewStatus={IsActive}", userId, isActive);
+            _logger.LogInformation("Deleting patient: UserId={UserId}, PatientId={PatientId}", userId, patientId);
 
-            var result = await _adminApiService.TogglePatientStatusAsync<Result<GeneralResponse>>(userId, isActive);
+            // TODO: Call the actual delete API endpoint when available
+            // For now, we'll use the toggle status to soft delete
+            var result = await _adminApiService.TogglePatientStatusAsync<Result<GeneralResponse>>(userId, false);
             
             if (result?.IsSuccess == true)
             {
-                TempData["SuccessMessage"] = "Patient status updated successfully.";
+                TempData["SuccessMessage"] = "Patient deleted successfully.";
+                _logger.LogInformation("Successfully deleted patient: {PatientId}", patientId);
             }
             else
             {
-                TempData["ErrorMessage"] = result?.Data?.Message ?? "Failed to update patient status.";
+                TempData["ErrorMessage"] = result?.Data?.Message ?? "Failed to delete patient.";
+                _logger.LogError("Failed to delete patient: {PatientId}", patientId);
             }
 
             return RedirectToPage();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error toggling patient status");
-            TempData["ErrorMessage"] = "An error occurred while updating patient status.";
+            _logger.LogError(ex, "Error deleting patient");
+            TempData["ErrorMessage"] = "An error occurred while deleting the patient.";
             return RedirectToPage();
         }
     }

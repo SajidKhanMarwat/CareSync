@@ -1454,6 +1454,10 @@ public class AdminService(
                     IsActive = user.IsActive,
                     ProfileImage = user.ProfileImage ?? "/theme/images/default-patient.png",
                     CreatedOn = user.CreatedOn,
+                    Address = user.Address,
+                    EmergencyContactName = patient.EmergencyContactName,
+                    EmergencyContactNumber = patient.EmergencyContactNumber,
+                    RelationshipToEmergency = patient.RelationshipToEmergency,
                     TotalAppointments = appointmentCount,
                     LastVisit = lastVisit
                 });
@@ -1552,6 +1556,10 @@ public class AdminService(
                 IsActive = user.IsActive,
                 ProfileImage = user.ProfileImage ?? "/theme/images/default-patient.png",
                 CreatedOn = user.CreatedOn,
+                Address = user.Address,
+                EmergencyContactName = patient.EmergencyContactName,
+                EmergencyContactNumber = patient.EmergencyContactNumber,
+                RelationshipToEmergency = patient.RelationshipToEmergency,
                 TotalAppointments = appointmentCount,
                 LastVisit = lastVisit
             };
@@ -2593,6 +2601,10 @@ public class AdminService(
                     IsActive = user.IsActive,
                     ProfileImage = user.ProfileImage ?? "/theme/images/default-patient.png",
                     CreatedOn = user.CreatedOn,
+                    Address = user.Address,
+                    EmergencyContactName = patient.EmergencyContactName,
+                    EmergencyContactNumber = patient.EmergencyContactNumber,
+                    RelationshipToEmergency = patient.RelationshipToEmergency,
                     TotalAppointments = patientAppointments.Count,
                     LastVisit = lastVisit
                 });

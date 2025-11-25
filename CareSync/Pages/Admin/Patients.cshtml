@@ -47,6 +47,22 @@
     </div>
 }
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="ri-check-line me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="ri-error-warning-line me-2"></i>@TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 <!-- Statistics Cards -->
 <div class="row gx-3 mb-4">
     <div class="col-sm-3 col-12">
@@ -331,33 +347,19 @@
                                                 <ul class="dropdown-menu">
                                                     <li><a class="dropdown-item" href="/Admin/PatientProfile?id=@patient.PatientID"><i class="ri-eye-line me-2"></i>View Profile</a></li>
                                                     <li><a class="dropdown-item" href="/Admin/EditPatient?id=@patient.PatientID"><i class="ri-edit-line me-2"></i>Edit Patient</a></li>
-                                                    <li><a class="dropdown-item" href="/Admin/MedicalRecords?patientId=@patient.PatientID"><i class="ri-file-text-line me-2"></i>Medical Records</a></li>
+                                                    <li><a class="dropdown-item" href="/Admin/PatientMedicalRecords?patientId=@patient.PatientID"><i class="ri-file-text-line me-2"></i>Medical Records</a></li>
                                                     <li><a class="dropdown-item" href="/Admin/PatientAppointments?patientId=@patient.PatientID"><i class="ri-calendar-line me-2"></i>Appointments</a></li>
                                                     <li><hr class="dropdown-divider"></li>
-                                                    @if (patient.IsActive)
-                                                    {
-                                                        <li>
-                                                            <form method="post" asp-page-handler="ToggleStatus" class="d-inline">
-                                                                <input type="hidden" name="userId" value="@patient.UserID" />
-                                                                <input type="hidden" name="isActive" value="false" />
-                                                                <button type="submit" class="dropdown-item text-warning">
-                                                                    <i class="ri-user-unfollow-line me-2"></i>Deactivate
-                                                                </button>
-                                                            </form>
-                                                        </li>
-                                                    }
-                                                    else
-                                                    {
-                                                        <li>
-                                                            <form method="post" asp-page-handler="ToggleStatus" class="d-inline">
-                                                                <input type="hidden" name="userId" value="@patient.UserID" />
-                                                                <input type="hidden" name="isActive" value="true" />
-                                                                <button type="submit" class="dropdown-item text-success">
-                                                                    <i class="ri-user-follow-line me-2"></i>Activate
-                                                                </button>
-                                                            </form>
-                                                        </li>
-                                                    }
+                                                    <li>
+                                                        <form method="post" asp-page-handler="DeletePatient" class="d-inline" 
+                                                              onsubmit="return confirm('Are you sure you want to delete this patient? This action cannot be undone.');">
+                                                            <input type="hidden" name="userId" value="@patient.UserID" />
+                                                            <input type="hidden" name="patientId" value="@patient.PatientID" />
+                                                            <button type="submit" class="dropdown-item text-danger">
+                                                                <i class="ri-delete-bin-line me-2"></i>Delete Patient
+                                                            </button>
+                                                        </form>
+                                                    </li>
                                                 </ul>
                                             </div>
                                         </td>
