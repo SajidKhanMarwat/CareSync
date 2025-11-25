@@ -87,6 +87,70 @@ public class AdminController(IAdminService adminService, IUserService userServic
     public async Task<Result<TodayPerformanceMetrics_DTO>> GetTodayPerformanceMetrics()
         => await adminService.GetTodayPerformanceMetricsAsync();
 
+    /// <summary>
+    /// Get complete dashboard summary with all widgets data in single call
+    /// </summary>
+    [HttpGet("dashboard/complete-summary")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<DashboardSummary_DTO>> GetCompleteDashboardSummary()
+        => await adminService.GetDashboardSummaryAsync();
+
+    /// <summary>
+    /// Get user distribution statistics with month-over-month comparison
+    /// </summary>
+    [HttpGet("dashboard/user-distribution-stats")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<UserDistributionStats_DTO>> GetUserDistributionStats()
+        => await adminService.GetUserDistributionStatsAsync();
+
+    /// <summary>
+    /// Get monthly statistics summary with comparisons
+    /// </summary>
+    [HttpGet("dashboard/monthly-statistics")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<MonthlyStatistics_DTO>> GetMonthlyStatistics()
+        => await adminService.GetMonthlyStatsAsync();
+
+    /// <summary>
+    /// Get patient registration trends over last 12 months
+    /// </summary>
+    [HttpGet("dashboard/patient-registration-trends")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<PatientRegistrationTrends_DTO>> GetPatientRegistrationTrends()
+        => await adminService.GetPatientRegTrendsAsync();
+
+    /// <summary>
+    /// Get appointment status breakdown with percentages
+    /// </summary>
+    [HttpGet("dashboard/appointment-status-breakdown")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<AppointmentStatusBreakdown_DTO>> GetAppointmentStatusBreakdown()
+        => await adminService.GetAppointmentStatusAsync();
+
+    /// <summary>
+    /// Get today's appointments detailed list
+    /// </summary>
+    [HttpGet("dashboard/todays-appointments-list")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<TodaysAppointmentsList_DTO>> GetTodaysAppointmentsList()
+        => await adminService.GetTodaysApptsListAsync();
+
+    /// <summary>
+    /// Get all appointments
+    /// </summary>
+    [HttpGet("appointments/all")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<TodaysAppointmentsList_DTO>> GetAllAppointments()
+        => await adminService.GetAllAppointmentsAsync();
+
+    /// <summary>
+    /// Get recent lab results list
+    /// </summary>
+    [HttpGet("dashboard/recent-lab-results")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<RecentLabResults_DTO>> GetRecentLabResults()
+        => await adminService.GetRecentLabsAsync();
+
     #endregion
 
     #region Doctor Management
@@ -101,6 +165,41 @@ public class AdminController(IAdminService adminService, IUserService userServic
         [FromQuery] string? specialization = null,
         [FromQuery] bool? isActive = null)
         => await adminService.GetAllDoctorsAsync(specialization, isActive);
+
+    /// <summary>
+    /// Toggle doctor active status
+    /// </summary>
+    [HttpPost("doctors/toggle-status")]
+    public async Task<Result<GeneralResponse>> ToggleDoctorStatus([FromBody] ToggleDoctorStatusRequest request)
+        => await adminService.ToggleDoctorStatusAsync(request.UserId, request.IsActive);
+
+    /// <summary>
+    /// Get doctor profile with complete details
+    /// </summary>
+    [HttpGet("doctor-profile/{userId}")]
+    public async Task<Result<DoctorProfile_DTO>> GetDoctorProfile(string userId)
+        => await adminService.GetDoctorProfileAsync(userId);
+
+    /// <summary>
+    /// Update doctor information
+    /// </summary>
+    [HttpPut("doctor/{userId}")]
+    public async Task<Result<GeneralResponse>> UpdateDoctor(string userId, [FromBody] UpdateDoctor_DTO updateDto)
+        => await adminService.UpdateDoctorAsync(userId, updateDto);
+
+    /// <summary>
+    /// Get doctor schedule
+    /// </summary>
+    [HttpGet("doctor-schedule/{userId}")]
+    public async Task<Result<DoctorSchedule_DTO>> GetDoctorSchedule(string userId)
+        => await adminService.GetDoctorScheduleAsync(userId);
+
+    /// <summary>
+    /// Get patients treated by a specific doctor
+    /// </summary>
+    [HttpGet("doctor-patients/{userId}")]
+    public async Task<Result<List<PatientList_DTO>>> GetDoctorPatients(string userId)
+        => await adminService.GetDoctorPatientsAsync(userId);
 
     /// <summary>
     /// Get doctor statistics summary
@@ -126,6 +225,71 @@ public class AdminController(IAdminService adminService, IUserService userServic
         dto.RequiresPasswordReset = true;  // Require password reset on first login
         return await userService.RegisterNewUserAsync(dto, "doctor");
     }
+
+    /// <summary>
+    /// Get comprehensive doctor insights and analytics
+    /// </summary>
+    [HttpGet("doctors/insights")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<DoctorInsights_DTO>> GetDoctorInsights()
+        => await adminService.GetDoctorInsightsAsync();
+
+    /// <summary>
+    /// Get doctor performance metrics
+    /// </summary>
+    /// <param name="topCount">Number of top performers to return</param>
+    [HttpGet("doctors/performance")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<List<DoctorPerformance_DTO>>> GetDoctorPerformance([FromQuery] int topCount = 6)
+        => await adminService.GetDoctorPerformanceAsync(topCount);
+
+    /// <summary>
+    /// Get specialization distribution statistics
+    /// </summary>
+    [HttpGet("doctors/specialization-distribution")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<List<SpecializationDistribution_DTO>>> GetSpecializationDistribution()
+        => await adminService.GetSpecializationDistributionAsync();
+
+    /// <summary>
+    /// Get all unique specializations from database
+    /// </summary>
+    [HttpGet("doctors/specializations")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<List<string>>> GetAllSpecializations()
+        => await adminService.GetAllSpecializationsAsync();
+
+    /// <summary>
+    /// Get doctor availability overview
+    /// </summary>
+    [HttpGet("doctors/availability-overview")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<DoctorAvailabilityOverview_DTO>> GetDoctorAvailabilityOverview()
+        => await adminService.GetDoctorAvailabilityOverviewAsync();
+
+    /// <summary>
+    /// Get doctor workload statistics
+    /// </summary>
+    [HttpGet("doctors/workload")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<List<DoctorWorkload_DTO>>> GetDoctorWorkload()
+        => await adminService.GetDoctorWorkloadAsync();
+
+    /// <summary>
+    /// Get doctors for grid display with extended details
+    /// </summary>
+    /// <param name="specialization">Filter by specialization</param>
+    /// <param name="isActive">Filter by active status</param>
+    /// <param name="page">Page number (1-based)</param>
+    /// <param name="pageSize">Number of items per page</param>
+    [HttpGet("doctors/grid")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<List<DoctorGridItem_DTO>>> GetDoctorGridData(
+        [FromQuery] string? specialization = null,
+        [FromQuery] bool? isActive = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
+        => await adminService.GetDoctorGridDataAsync(specialization, isActive, page, pageSize);
 
     #endregion
 
