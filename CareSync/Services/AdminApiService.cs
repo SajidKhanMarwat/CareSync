@@ -423,6 +423,54 @@ public class AdminApiService
         }
     }
 
+    public async Task<T?> GetPatientRegistrationTrendsAsync<T>()
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync("Admin/patients/registration-trends");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting patient registration trends");
+            return default;
+        }
+    }
+
+    public async Task<T?> GetPatientAgeDistributionAsync<T>()
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync("Admin/patients/age-distribution");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting patient age distribution");
+            return default;
+        }
+    }
+
+    public async Task<T?> GetPatientDemographicsAsync<T>()
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync("Admin/patients/demographics");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting patient demographics");
+            return default;
+        }
+    }
+
     #endregion
 
     #region Appointment Management APIs
@@ -587,22 +635,6 @@ public class AdminApiService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting monthly statistics");
-            return default;
-        }
-    }
-
-    public async Task<T?> GetPatientRegistrationTrendsAsync<T>()
-    {
-        try
-        {
-            var client = CreateClient();
-            var response = await client.GetAsync("Admin/dashboard/patient-registration-trends");
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting patient registration trends");
             return default;
         }
     }

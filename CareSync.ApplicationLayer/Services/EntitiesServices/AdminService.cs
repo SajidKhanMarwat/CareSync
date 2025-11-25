@@ -1650,6 +1650,104 @@ public class AdminService(
         }
     }
 
+    public async Task<Result<Contracts.AdminDashboardDTOs.PatientRegistrationTrends_DTO>> GetPatientRegistrationTrendsAsync()
+    {
+        // This method delegates to GetPatientRegTrendsAsync for backward compatibility
+        return await GetPatientRegTrendsAsync();
+    }
+
+    public async Task<Result<PatientAgeDistribution_DTO>> GetPatientAgeDistributionAsync()
+    {
+        logger.LogInformation("Executing: GetPatientAgeDistributionAsync");
+        try
+        {
+            var distribution = new PatientAgeDistribution_DTO();
+
+            // Get patient role
+            var patientRole = await roleManager.FindByNameAsync(RoleType.Patient.ToString());
+            if (patientRole == null)
+            {
+                logger.LogWarning("Patient role not found");
+                return Result<PatientAgeDistribution_DTO>.Success(distribution);
+            }
+
+            var patients = await uow.UserRepo.GetAllAsync(u => 
+                u.RoleID == patientRole.Id && !u.IsDeleted);
+
+            foreach (var patient in patients)
+            {
+                var age = patient.Age ?? CalculateAge(patient.DateOfBirth);
+                if (age.HasValue)
+                {
+                    if (age < 18) distribution.Age0To18++;
+                    else if (age < 35) distribution.Age19To35++;
+                    else if (age < 50) distribution.Age36To50++;
+                    else if (age < 65) distribution.Age51To65++;
+                    else distribution.Age65Plus++;
+                }
+            }
+
+            return Result<PatientAgeDistribution_DTO>.Success(distribution);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting patient age distribution");
+            return Result<PatientAgeDistribution_DTO>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<PatientDemographics_DTO>> GetPatientDemographicsAsync()
+    {
+        logger.LogInformation("Executing: GetPatientDemographicsAsync");
+        try
+        {
+            var demographics = new PatientDemographics_DTO();
+
+            // Get patient role
+            var patientRole = await roleManager.FindByNameAsync(RoleType.Patient.ToString());
+            if (patientRole == null)
+            {
+                logger.LogWarning("Patient role not found");
+                return Result<PatientDemographics_DTO>.Success(demographics);
+            }
+
+            // Get gender distribution
+            var patients = await uow.UserRepo.GetAllAsync(u => 
+                u.RoleID == patientRole.Id && !u.IsDeleted);
+
+            demographics.FemaleCount = patients.Count(p => p.Gender == Shared.Enums.Gender_Enum.Female);
+            demographics.MaleCount = patients.Count(p => p.Gender == Shared.Enums.Gender_Enum.Male);
+
+            // Get marital status distribution from patient details
+            var patientDetails = await uow.PatientDetailsRepo.GetAllAsync(p => !p.IsDeleted);
+            
+            demographics.MarriedCount = patientDetails.Count(p => p.MaritalStatus == MaritalStatusEnum.Married);
+            demographics.SingleCount = patientDetails.Count(p => p.MaritalStatus == MaritalStatusEnum.Single);
+            demographics.DivorcedCount = patientDetails.Count(p => p.MaritalStatus == MaritalStatusEnum.Divorced);
+            demographics.WidowedCount = patientDetails.Count(p => p.MaritalStatus == MaritalStatusEnum.Widowed);
+
+            return Result<PatientDemographics_DTO>.Success(demographics);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting patient demographics");
+            return Result<PatientDemographics_DTO>.Exception(ex);
+        }
+    }
+
+    private int? CalculateAge(DateTime? dateOfBirth)
+    {
+        if (!dateOfBirth.HasValue)
+            return null;
+
+        var today = DateTime.Today;
+        var age = today.Year - dateOfBirth.Value.Year;
+        if (dateOfBirth.Value.Date > today.AddYears(-age))
+            age--;
+
+        return age;
+    }
+
     #endregion
 
     #region Doctor Availability
@@ -2002,14 +2100,14 @@ public class AdminService(
         }
     }
 
-    public async Task<Result<PatientRegistrationTrends_DTO>> GetPatientRegTrendsAsync()
+    public async Task<Result<Contracts.AdminDashboardDTOs.PatientRegistrationTrends_DTO>> GetPatientRegTrendsAsync()
     {
         logger.LogInformation("Executing: GetPatientRegistrationTrendsAsync");
         try
         {
             var patientRole = await roleManager.FindByNameAsync(RoleType.Patient.ToString());
             if (patientRole == null)
-                return Result<PatientRegistrationTrends_DTO>.Success(new PatientRegistrationTrends_DTO());
+                return Result<Contracts.AdminDashboardDTOs.PatientRegistrationTrends_DTO>.Success(new Contracts.AdminDashboardDTOs.PatientRegistrationTrends_DTO());
 
             var allPatients = await userManager.GetUsersInRoleAsync(patientRole.Name!);
             var today = DateTime.UtcNow;
@@ -2040,7 +2138,7 @@ public class AdminService(
             var trend = lastThree.Count >= 3 && lastThree[2] > lastThree[0] ? "Up" :
                        lastThree.Count >= 3 && lastThree[2] < lastThree[0] ? "Down" : "Stable";
 
-            var trends = new PatientRegistrationTrends_DTO
+            var trends = new Contracts.AdminDashboardDTOs.PatientRegistrationTrends_DTO
             {
                 MonthlyData = monthlyData,
                 TotalNewPatients = totalNewPatients,
@@ -2048,12 +2146,12 @@ public class AdminService(
                 TrendDirection = trend
             };
 
-            return Result<PatientRegistrationTrends_DTO>.Success(trends);
+            return Result<Contracts.AdminDashboardDTOs.PatientRegistrationTrends_DTO>.Success(trends);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error getting patient registration trends");
-            return Result<PatientRegistrationTrends_DTO>.Exception(ex);
+            return Result<Contracts.AdminDashboardDTOs.PatientRegistrationTrends_DTO>.Exception(ex);
         }
     }
 

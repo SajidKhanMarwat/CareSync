@@ -347,6 +347,33 @@ public class AdminController(IAdminService adminService, IUserService userServic
         return await userService.RegisterNewUserAsync(dto, "patient");
     }
 
+    /// <summary>
+    /// Toggle patient active status
+    /// </summary>
+    [HttpPatch("patients/{userId}/toggle-status")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<GeneralResponse>> TogglePatientStatus(string userId, [FromQuery] bool isActive)
+    {
+        logger.LogInformation("Toggling patient status: UserId={UserId}, IsActive={IsActive}", userId, isActive);
+        return await adminService.TogglePatientStatusAsync(userId, isActive);
+    }
+
+    /// <summary>
+    /// Get patient age distribution for charts
+    /// </summary>
+    [HttpGet("patients/age-distribution")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<PatientAgeDistribution_DTO>> GetPatientAgeDistribution()
+        => await adminService.GetPatientAgeDistributionAsync();
+
+    /// <summary>
+    /// Get patient demographics for charts
+    /// </summary>
+    [HttpGet("patients/demographics")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<PatientDemographics_DTO>> GetPatientDemographics()
+        => await adminService.GetPatientDemographicsAsync();
+
     #endregion
 
     #region Appointment Management

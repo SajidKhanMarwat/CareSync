@@ -158,6 +158,21 @@ public interface IAdminService
     /// Toggle patient active status
     /// </summary>
     Task<Result<GeneralResponse>> TogglePatientStatusAsync(string userId, bool isActive);
+    
+    /// <summary>
+    /// Get patient registration trends for charts
+    /// </summary>
+    Task<Result<Contracts.AdminDashboardDTOs.PatientRegistrationTrends_DTO>> GetPatientRegistrationTrendsAsync();
+    
+    /// <summary>
+    /// Get patient age distribution for charts
+    /// </summary>
+    Task<Result<PatientAgeDistribution_DTO>> GetPatientAgeDistributionAsync();
+    
+    /// <summary>
+    /// Get patient demographics (gender and marital status) for charts
+    /// </summary>
+    Task<Result<PatientDemographics_DTO>> GetPatientDemographicsAsync();
 
     // ========== Appointment Management ==========
     
@@ -222,7 +237,7 @@ public interface IAdminService
     /// <summary>
     /// Get patient registration trends over 12 months
     /// </summary>
-    Task<Result<PatientRegistrationTrends_DTO>> GetPatientRegTrendsAsync();
+    Task<Result<Contracts.AdminDashboardDTOs.PatientRegistrationTrends_DTO>> GetPatientRegTrendsAsync();
 
     /// <summary>
     /// Get appointment status breakdown with percentages
