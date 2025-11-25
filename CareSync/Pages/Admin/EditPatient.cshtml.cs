@@ -112,12 +112,20 @@ public class EditPatientModel : BasePageModel
                 RelationshipToEmergency = Patient.RelationshipToEmergency
             };
 
-            // TODO: Call the update API endpoint when available
-            // For now, we'll simulate success
-            await Task.Delay(100); // Simulate API call
-
-            TempData["SuccessMessage"] = "Patient information updated successfully";
-            _logger.LogInformation("Successfully updated patient: {PatientId}", Patient.PatientID);
+            // Call the update API endpoint
+            var result = await _adminApiService.UpdatePatientAsync<Result<GeneralResponse>>(updateDto);
+            
+            if (result?.IsSuccess == true)
+            {
+                TempData["SuccessMessage"] = "Patient information updated successfully";
+                _logger.LogInformation("Successfully updated patient: {PatientId}", Patient.PatientID);
+            }
+            else
+            {
+                TempData["ErrorMessage"] = result?.Data?.Message ?? "Failed to update patient information";
+                _logger.LogError("Failed to update patient: {PatientId}", Patient.PatientID);
+                return Page();
+            }
             
             return RedirectToPage("/Admin/PatientProfile", new { id = Patient.PatientID });
         }

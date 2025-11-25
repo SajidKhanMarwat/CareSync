@@ -148,6 +148,11 @@ public interface IAdminService
     /// Get patient by ID with full details
     /// </summary>
     Task<Result<PatientList_DTO>> GetPatientByIdAsync(int patientId);
+    
+    /// <summary>
+    /// Get comprehensive patient profile with all medical information
+    /// </summary>
+    Task<Result<PatientProfile_DTO>> GetPatientProfileAsync(int patientId);
 
     /// <summary>
     /// Search patients by name, email, or phone number
@@ -158,6 +163,16 @@ public interface IAdminService
     /// Toggle patient active status
     /// </summary>
     Task<Result<GeneralResponse>> TogglePatientStatusAsync(string userId, bool isActive);
+    
+    /// <summary>
+    /// Update patient information
+    /// </summary>
+    Task<Result<GeneralResponse>> UpdatePatientAsync(UserPatientProfileUpdate_DTO updateDto);
+    
+    /// <summary>
+    /// Delete patient (soft delete)
+    /// </summary>
+    Task<Result<GeneralResponse>> DeletePatientAsync(string userId, int patientId);
     
     /// <summary>
     /// Get patient registration trends for charts

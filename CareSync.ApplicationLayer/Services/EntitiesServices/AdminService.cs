@@ -2,6 +2,7 @@
 using CareSync.ApplicationLayer.Common;
 using CareSync.ApplicationLayer.Contracts.AdminDashboardDTOs;
 using CareSync.ApplicationLayer.Contracts.AdminDTOs;
+using CareSync.ApplicationLayer.Contracts.AppointmentsDTOs;
 using CareSync.ApplicationLayer.Contracts.DoctorsDTOs;
 using CareSync.ApplicationLayer.Contracts.PatientsDTOs;
 using CareSync.ApplicationLayer.Contracts.UsersDTOs;
@@ -1654,6 +1655,324 @@ public class AdminService(
         catch (Exception ex)
         {
             logger.LogError(ex, "Error toggling patient status");
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<GeneralResponse>> UpdatePatientAsync(UserPatientProfileUpdate_DTO updateDto)
+    {
+        logger.LogInformation("Executing: UpdatePatientAsync for {UserId}", updateDto.UserId);
+        try
+        {
+            // Update user information
+            var user = await userManager.FindByIdAsync(updateDto.UserId);
+            if (user == null)
+                return Result<GeneralResponse>.Failure(new GeneralResponse
+                {
+                    Success = false,
+                    Message = "Patient not found"
+                });
+
+            // Update user properties
+            user.FirstName = updateDto.FirstName;
+            user.LastName = updateDto.LastName;
+            user.Email = updateDto.Email;
+            user.PhoneNumber = updateDto.PhoneNumber;
+            user.Address = updateDto.Address;
+            user.UpdatedOn = DateTime.UtcNow;
+            
+            if (!string.IsNullOrEmpty(updateDto.Gender))
+            {
+                if (Enum.TryParse<Shared.Enums.Gender_Enum>(updateDto.Gender, out var gender))
+                    user.Gender = gender;
+            }
+            
+            if (updateDto.DateOfBirth.HasValue)
+            {
+                user.DateOfBirth = updateDto.DateOfBirth.Value;
+                user.Age = CalculateAge(updateDto.DateOfBirth.Value);
+            }
+
+            var userResult = await userManager.UpdateAsync(user);
+            if (!userResult.Succeeded)
+            {
+                return Result<GeneralResponse>.Failure(new GeneralResponse
+                {
+                    Success = false,
+                    Message = userResult.Errors.FirstOrDefault()?.Description ?? "Failed to update user information"
+                });
+            }
+
+            // Update patient details
+            var patientDetails = await uow.PatientDetailsRepo.GetAsync(p => p.UserID == updateDto.UserId);
+            if (patientDetails != null)
+            {
+                patientDetails.BloodGroup = updateDto.BloodGroup;
+                patientDetails.Occupation = updateDto.Occupation;
+                patientDetails.EmergencyContactName = updateDto.EmergencyContactName;
+                patientDetails.EmergencyContactNumber = updateDto.EmergencyContactNumber;
+                patientDetails.RelationshipToEmergency = updateDto.RelationshipToEmergency;
+                patientDetails.UpdatedOn = DateTime.UtcNow;
+                
+                if (!string.IsNullOrEmpty(updateDto.MaritalStatus))
+                {
+                    if (Enum.TryParse<MaritalStatusEnum>(updateDto.MaritalStatus, out var maritalStatus))
+                        patientDetails.MaritalStatus = maritalStatus;
+                }
+
+                await uow.PatientDetailsRepo.UpdateAsync(patientDetails);
+                await uow.SaveChangesAsync();
+            }
+
+            return Result<GeneralResponse>.Success(new GeneralResponse
+            {
+                Success = true,
+                Message = "Patient information updated successfully"
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error updating patient");
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<PatientProfile_DTO>> GetPatientProfileAsync(int patientId)
+    {
+        logger.LogInformation("Executing: GetPatientProfileAsync for {PatientId}", patientId);
+        try
+        {
+            var patient = await uow.PatientDetailsRepo.GetAsync(p => p.PatientID == patientId);
+            if (patient == null)
+                return Result<PatientProfile_DTO>.Failure(null!, "Patient not found", System.Net.HttpStatusCode.NotFound);
+
+            if (patient.UserID == null)
+                return Result<PatientProfile_DTO>.Failure(null!, "Patient user not found", System.Net.HttpStatusCode.NotFound);
+
+            var user = await userManager.FindByIdAsync(patient.UserID);
+            if (user == null)
+                return Result<PatientProfile_DTO>.Failure(null!, "User not found", System.Net.HttpStatusCode.NotFound);
+
+            // Get appointment statistics
+            var appointments = await uow.AppointmentsRepo.GetAllAsync(a => a.PatientID == patientId);
+            var now = DateTime.UtcNow;
+            var upcomingAppointments = appointments.Where(a => a.AppointmentDate > now && !a.IsDeleted).ToList();
+            var completedAppointments = appointments.Where(a => a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.Completed).ToList();
+            var missedAppointments = appointments.Where(a => a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.Cancelled || 
+                                                              a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.NoShow).ToList();
+
+            // Get recent appointments with doctor names
+            var recentAppointments = new List<Appointment_DTO>();
+            var recentAppts = appointments.OrderByDescending(a => a.AppointmentDate).Take(5).ToList();
+            foreach (var appt in recentAppts)
+            {
+                var doctor = await uow.DoctorDetailsRepo.GetAsync(d => d.DoctorID == appt.DoctorID);
+                var doctorUser = doctor?.UserID != null ? await userManager.FindByIdAsync(doctor.UserID) : null;
+                
+                recentAppointments.Add(new Appointment_DTO
+                {
+                    AppointmentID = appt.AppointmentID,
+                    DoctorID = appt.DoctorID,
+                    PatientID = appt.PatientID,
+                    AppointmentDate = appt.AppointmentDate,
+                    AppointmentType = appt.AppointmentType,
+                    Status = appt.Status,
+                    Reason = appt.Reason ?? string.Empty,
+                    Notes = appt.Notes,
+                    DoctorName = doctorUser != null ? $"Dr. {doctorUser.FirstName} {doctorUser.LastName}" : "Unknown",
+                    CreatedOn = appt.CreatedOn
+                });
+            }
+
+            // Get recent vitals
+            var vitals = await uow.PatientVitalsRepo.GetAllAsync(v => v.PatientID == patientId);
+            var recentVitals = vitals.OrderByDescending(v => v.CreatedOn).Take(5).Select(v => new PatientVital_DTO
+            {
+                VitalID = v.VitalID,
+                RecordedDate = v.CreatedOn, // Using CreatedOn as RecordedDate doesn't exist
+                Weight = v.Weight,
+                Height = v.Height,
+                BloodPressure = v.BloodPressure,
+                HeartRate = v.PulseRate, // Using PulseRate as HeartRate
+                Temperature = null, // Temperature not available in T_PatientVitals
+                RespiratoryRate = null, // RespiratoryRate not available in T_PatientVitals
+                BMI = null, // BMI not available in T_PatientVitals - would need to calculate from Height/Weight
+                RecordedBy = v.CreatedBy
+            }).ToList();
+
+            // TODO: Get chronic diseases when ChronicDiseasesRepo is available
+            // var chronicDiseases = await uow.ChronicDiseasesRepo.GetAllAsync(c => c.PatientID == patientId && !c.IsDeleted);
+            var diseaseList = new List<string>(); // Empty for now
+
+            // TODO: Get allergies from medical history when MedicalHistoryRepo is available
+            // var medicalHistory = await uow.MedicalHistoryRepo.GetAllAsync(m => m.PatientID == patientId && !m.IsDeleted);
+            var allergies = new List<string>(); // Empty for now
+
+            // TODO: Get active prescriptions when PrescriptionsRepo is available
+            var activePrescriptions = new List<Prescription_DTO>();
+            
+            // Commented out until repositories are available
+            /*
+            var prescriptions = await uow.PrescriptionsRepo.GetAllAsync(p => p.PatientID == patientId && !p.IsDeleted);
+            foreach (var prescription in prescriptions.Where(p => p.EndDate == null || p.EndDate > now))
+            {
+                var prescribingDoctor = await uow.DoctorDetailsRepo.GetAsync(d => d.DoctorID == prescription.DoctorID);
+                var prescribingUser = prescribingDoctor?.UserID != null ? await userManager.FindByIdAsync(prescribingDoctor.UserID) : null;
+                
+                // Get prescription items
+                var items = await uow.PrescriptionItemsRepo.GetAllAsync(pi => pi.PrescriptionID == prescription.PrescriptionID);
+                foreach (var item in items)
+                {
+                    activePrescriptions.Add(new Prescription_DTO
+                    {
+                        PrescriptionID = prescription.PrescriptionID,
+                        MedicationName = item.MedicationName ?? "Unknown",
+                        Dosage = item.Dosage ?? "N/A",
+                        Frequency = item.Frequency ?? "N/A",
+                        StartDate = prescription.PrescriptionDate,
+                        EndDate = prescription.EndDate,
+                        PrescribedBy = prescribingUser != null ? $"Dr. {prescribingUser.FirstName} {prescribingUser.LastName}" : "Unknown",
+                        Instructions = item.Instructions,
+                        IsActive = prescription.EndDate == null || prescription.EndDate > now
+                    });
+                }
+            }
+            */
+
+            // Get preferred doctor (most appointments with)
+            var doctorAppointments = appointments.GroupBy(a => a.DoctorID)
+                .OrderByDescending(g => g.Count())
+                .FirstOrDefault();
+            
+            string? preferredDoctor = null;
+            if (doctorAppointments != null)
+            {
+                var prefDoctor = await uow.DoctorDetailsRepo.GetAsync(d => d.DoctorID == doctorAppointments.Key);
+                if (prefDoctor?.UserID != null)
+                {
+                    var prefDoctorUser = await userManager.FindByIdAsync(prefDoctor.UserID);
+                    if (prefDoctorUser != null)
+                        preferredDoctor = $"Dr. {prefDoctorUser.FirstName} {prefDoctorUser.LastName}";
+                }
+            }
+
+            var profile = new PatientProfile_DTO
+            {
+                // Basic Information
+                PatientID = patient.PatientID,
+                UserID = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName ?? string.Empty,
+                Email = user.Email ?? string.Empty,
+                PhoneNumber = user.PhoneNumber ?? string.Empty,
+                Gender = user.Gender.ToString(),
+                DateOfBirth = user.DateOfBirth,
+                Age = user.Age,
+                ProfileImage = user.ProfileImage ?? "/theme/images/default-patient.png",
+                IsActive = user.IsActive,
+                CreatedOn = user.CreatedOn,
+                UpdatedOn = user.UpdatedOn,
+                
+                // Address Information
+                Address = user.Address,
+                
+                // Medical Information
+                BloodGroup = patient.BloodGroup,
+                MaritalStatus = patient.MaritalStatus,
+                Occupation = patient.Occupation,
+                
+                // Emergency Contact
+                EmergencyContactName = patient.EmergencyContactName,
+                EmergencyContactNumber = patient.EmergencyContactNumber,
+                RelationshipToEmergency = patient.RelationshipToEmergency,
+                
+                // Medical History Summary
+                Allergies = allergies,
+                ChronicDiseases = diseaseList,
+                CurrentMedications = activePrescriptions.Select(p => p.MedicationName).Distinct().ToList(),
+                
+                // Statistics
+                TotalAppointments = appointments.Count,
+                CompletedAppointments = completedAppointments.Count,
+                UpcomingAppointments = upcomingAppointments.Count,
+                MissedAppointments = missedAppointments.Count,
+                LastVisit = appointments.OrderByDescending(a => a.AppointmentDate).FirstOrDefault()?.AppointmentDate,
+                NextAppointment = upcomingAppointments.OrderBy(a => a.AppointmentDate).FirstOrDefault()?.AppointmentDate,
+                PreferredDoctor = preferredDoctor,
+                
+                // Recent Activity
+                RecentAppointments = recentAppointments,
+                RecentVitals = recentVitals,
+                ActivePrescriptions = activePrescriptions
+            };
+
+            return Result<PatientProfile_DTO>.Success(profile);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting patient profile");
+            return Result<PatientProfile_DTO>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<GeneralResponse>> DeletePatientAsync(string userId, int patientId)
+    {
+        logger.LogInformation("Executing: DeletePatientAsync for UserId: {UserId}, PatientId: {PatientId}", userId, patientId);
+        try
+        {
+            // Get the user
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+                return Result<GeneralResponse>.Failure(new GeneralResponse
+                {
+                    Success = false,
+                    Message = "Patient not found"
+                });
+
+            // Soft delete the user
+            user.IsDeleted = true;
+            user.IsActive = false;
+            user.UpdatedOn = DateTime.UtcNow;
+
+            var userResult = await userManager.UpdateAsync(user);
+            if (!userResult.Succeeded)
+            {
+                return Result<GeneralResponse>.Failure(new GeneralResponse
+                {
+                    Success = false,
+                    Message = userResult.Errors.FirstOrDefault()?.Description ?? "Failed to delete user"
+                });
+            }
+
+            // Soft delete patient details
+            var patientDetails = await uow.PatientDetailsRepo.GetAsync(p => p.PatientID == patientId);
+            if (patientDetails != null)
+            {
+                patientDetails.IsDeleted = true;
+                patientDetails.UpdatedOn = DateTime.UtcNow;
+                await uow.PatientDetailsRepo.UpdateAsync(patientDetails);
+            }
+
+            // Soft delete all appointments
+            var appointments = await uow.AppointmentsRepo.GetAllAsync(a => a.PatientID == patientId);
+            foreach (var appointment in appointments)
+            {
+                appointment.IsDeleted = true;
+                appointment.UpdatedOn = DateTime.UtcNow;
+                await uow.AppointmentsRepo.UpdateAsync(appointment);
+            }
+
+            await uow.SaveChangesAsync();
+
+            return Result<GeneralResponse>.Success(new GeneralResponse
+            {
+                Success = true,
+                Message = "Patient deleted successfully"
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error deleting patient");
             return Result<GeneralResponse>.Exception(ex);
         }
     }

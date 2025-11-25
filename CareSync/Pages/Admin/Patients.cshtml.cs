@@ -133,9 +133,8 @@ public class PatientsModel : BasePageModel
 
             _logger.LogInformation("Deleting patient: UserId={UserId}, PatientId={PatientId}", userId, patientId);
 
-            // TODO: Call the actual delete API endpoint when available
-            // For now, we'll use the toggle status to soft delete
-            var result = await _adminApiService.TogglePatientStatusAsync<Result<GeneralResponse>>(userId, false);
+            // Call the delete API endpoint
+            var result = await _adminApiService.DeletePatientAsync<Result<GeneralResponse>>(userId, patientId);
             
             if (result?.IsSuccess == true)
             {

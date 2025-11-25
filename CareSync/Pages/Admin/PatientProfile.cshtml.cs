@@ -20,10 +20,8 @@ public class PatientProfileModel : BasePageModel
         _adminApiService = adminApiService;
     }
 
-    public PatientList_DTO? Patient { get; set; }
-    public List<Appointment_DTO> RecentAppointments { get; set; } = new();
-    public string? NextAppointment { get; set; }
-    public string? ErrorMessage { get; set; }
+    public PatientProfile_DTO? Patient { get; set; }
+    public string ErrorMessage { get; set; } = string.Empty;
     public bool HasError { get; set; }
 
     public async Task<IActionResult> OnGetAsync(int? id)
@@ -42,36 +40,19 @@ public class PatientProfileModel : BasePageModel
 
             _logger.LogInformation("Loading patient profile for ID: {PatientId}", id.Value);
 
-            // Load all patients and find the specific one
-            var patientsResult = await _adminApiService.GetAllPatientsAsync<Result<List<PatientList_DTO>>>(null, null);
+            // Load comprehensive patient profile
+            var profileResult = await _adminApiService.GetPatientProfileAsync<Result<PatientProfile_DTO>>(id.Value);
             
-            if (patientsResult?.IsSuccess == true && patientsResult.Data != null)
+            if (profileResult?.IsSuccess == true && profileResult.Data != null)
             {
-                Patient = patientsResult.Data.FirstOrDefault(p => p.PatientID == id.Value);
-                
-                if (Patient == null)
-                {
-                    ErrorMessage = "Patient not found";
-                    HasError = true;
-                    _logger.LogWarning("Patient with ID {PatientId} not found", id.Value);
-                }
-                else
-                {
-                    _logger.LogInformation("Successfully loaded patient profile for {PatientName}", Patient.FullName);
-                    
-                    // TODO: Load recent appointments when the endpoint is available
-                    // For now, create sample data structure
-                    RecentAppointments = new List<Appointment_DTO>();
-                    
-                    // TODO: Get next appointment date when available
-                    NextAppointment = null;
-                }
+                Patient = profileResult.Data;
+                _logger.LogInformation("Successfully loaded comprehensive patient profile for {PatientName}", Patient.FullName);
             }
             else
             {
-                ErrorMessage = patientsResult?.GetError() ?? "Failed to load patient data";
+                ErrorMessage = profileResult?.GetError() ?? "Failed to load patient profile";
                 HasError = true;
-                _logger.LogError("Failed to load patients: {Error}", ErrorMessage);
+                _logger.LogError("Failed to load patient profile: {Error}", ErrorMessage);
             }
 
             return Page();

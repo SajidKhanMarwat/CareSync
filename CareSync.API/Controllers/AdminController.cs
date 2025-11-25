@@ -434,4 +434,58 @@ public class AdminController(IAdminService adminService, IUserService userServic
     }
 
     #endregion
+
+    #region Patient Management Extended
+
+    /// <summary>
+    /// Update patient information
+    /// </summary>
+    [HttpPut("patients/update")]
+    [Authorize(Roles = "Admin")]
+    public async Task<Result<GeneralResponse>> UpdatePatient([FromBody] UserPatientProfileUpdate_DTO updateDto)
+    {
+        if (!ModelState.IsValid)
+            return Result<GeneralResponse>.Failure(
+                new GeneralResponse { Success = false, Message = "Invalid update data" },
+                "Validation failed",
+                System.Net.HttpStatusCode.BadRequest);
+
+        logger.LogInformation("Updating patient: {UserId}", updateDto.UserId);
+        return await adminService.UpdatePatientAsync(updateDto);
+    }
+
+    /// <summary>
+    /// Delete patient (soft delete)
+    /// </summary>
+    [HttpDelete("patients/{userId}/{patientId}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<Result<GeneralResponse>> DeletePatient(string userId, int patientId)
+    {
+        logger.LogInformation("Deleting patient: UserId={UserId}, PatientId={PatientId}", userId, patientId);
+        return await adminService.DeletePatientAsync(userId, patientId);
+    }
+
+    /// <summary>
+    /// Get patient by ID
+    /// </summary>
+    [HttpGet("patients/{patientId}")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<PatientList_DTO>> GetPatientById(int patientId)
+    {
+        logger.LogInformation("Getting patient by ID: {PatientId}", patientId);
+        return await adminService.GetPatientByIdAsync(patientId);
+    }
+
+    /// <summary>
+    /// Get comprehensive patient profile
+    /// </summary>
+    [HttpGet("patients/{patientId}/profile")]
+    [Authorize(Roles = "Admin")]
+    public async Task<Result<PatientProfile_DTO>> GetPatientProfile(int patientId)
+    {
+        logger.LogInformation("Getting patient profile: {PatientId}", patientId);
+        return await adminService.GetPatientProfileAsync(patientId);
+    }
+
+    #endregion
 }

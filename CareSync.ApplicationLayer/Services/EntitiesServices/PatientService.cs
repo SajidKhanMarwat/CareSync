@@ -165,9 +165,9 @@ public sealed class PatientService(UserManager<T_Users> userManager,
 
     #region Private Helper Methods
 
-    private async Task<PatientProfile_DTO> BuildPatientProfileAsync(T_Users user, T_PatientDetails patient)
+    private async Task<PatientDashboardProfile_DTO> BuildPatientProfileAsync(T_Users user, T_PatientDetails patient)
     {
-        var profile = new PatientProfile_DTO
+        var profile = new PatientDashboardProfile_DTO
         {
             PatientName = $"{user.FirstName} {user.LastName}".Trim(),
             Gender = user.Gender.ToString(),

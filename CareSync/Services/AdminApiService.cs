@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using System.Text.Json;
+using CareSync.ApplicationLayer.Contracts.UsersDTOs;
 
 namespace CareSync.Services;
 
@@ -419,6 +420,54 @@ public class AdminApiService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error toggling patient status");
+            return default;
+        }
+    }
+
+    public async Task<T?> UpdatePatientAsync<T>(UserPatientProfileUpdate_DTO updateDto)
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.PutAsJsonAsync("Admin/patients/update", updateDto, _jsonOptions);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating patient");
+            return default;
+        }
+    }
+
+    public async Task<T?> DeletePatientAsync<T>(string userId, int patientId)
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.DeleteAsync($"Admin/patients/{userId}/{patientId}");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting patient");
+            return default;
+        }
+    }
+
+    public async Task<T?> GetPatientProfileAsync<T>(int patientId)
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync($"Admin/patients/{patientId}/profile");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting patient profile");
             return default;
         }
     }
