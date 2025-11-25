@@ -1574,6 +1574,242 @@ public class AdminService(
         }
     }
 
+    public async Task<Result<PatientSearchResult_DTO>> SearchPatientsComprehensiveAsync(PatientSearchRequest_DTO request)
+    {
+        logger.LogInformation("Executing: SearchPatientsComprehensiveAsync with filters");
+        try
+        {
+            // Get all patients first
+            var allPatients = await uow.PatientDetailsRepo.GetAllAsync(p => !p.IsDeleted);
+            
+            // Load related data
+            var patientIds = allPatients.Select(p => p.PatientID).ToList();
+            var userIds = allPatients.Where(p => p.UserID != null).Select(p => p.UserID!).ToList();
+            
+            // Get users
+            var users = new Dictionary<string, T_Users>();
+            foreach (var userId in userIds)
+            {
+                var user = await userManager.FindByIdAsync(userId);
+                if (user != null)
+                    users[userId] = user;
+            }
+            
+            // Get appointments
+            var appointments = await uow.AppointmentsRepo.GetAllAsync(a => patientIds.Contains(a.PatientID));
+            var appointmentsByPatient = appointments.GroupBy(a => a.PatientID).ToDictionary(g => g.Key, g => g.ToList());
+            
+            // Create enriched patient list
+            var enrichedPatients = allPatients
+                .Where(p => p.UserID != null && users.ContainsKey(p.UserID))
+                .Select(p => new 
+                {
+                    Patient = p,
+                    User = users[p.UserID!],
+                    Appointments = appointmentsByPatient.ContainsKey(p.PatientID) ? appointmentsByPatient[p.PatientID] : new List<T_Appointments>()
+                })
+                .ToList();
+
+            // Apply filters
+            var filteredPatients = enrichedPatients.AsEnumerable();
+            
+            // Apply text search
+            if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+            {
+                var term = request.SearchTerm.ToLower();
+                filteredPatients = filteredPatients.Where(ep => 
+                    ep.User.FirstName.ToLower().Contains(term) ||
+                    (ep.User.LastName != null && ep.User.LastName.ToLower().Contains(term)) ||
+                    (ep.User.Email != null && ep.User.Email.ToLower().Contains(term)) ||
+                    (ep.User.PhoneNumber != null && ep.User.PhoneNumber.Contains(term)) ||
+                    ep.Patient.PatientID.ToString().Contains(term)
+                );
+            }
+
+            // Apply demographic filters
+            if (!string.IsNullOrWhiteSpace(request.Gender))
+            {
+                filteredPatients = filteredPatients.Where(ep => ep.User.Gender.ToString() == request.Gender);
+            }
+
+            if (request.MinAge.HasValue)
+            {
+                filteredPatients = filteredPatients.Where(ep => ep.User.Age >= request.MinAge.Value);
+            }
+
+            if (request.MaxAge.HasValue)
+            {
+                filteredPatients = filteredPatients.Where(ep => ep.User.Age <= request.MaxAge.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.BloodGroup))
+            {
+                filteredPatients = filteredPatients.Where(ep => ep.Patient.BloodGroup == request.BloodGroup);
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.MaritalStatus))
+            {
+                filteredPatients = filteredPatients.Where(ep => ep.Patient.MaritalStatus.ToString() == request.MaritalStatus);
+            }
+
+            // Apply location filter
+            if (!string.IsNullOrWhiteSpace(request.City))
+            {
+                filteredPatients = filteredPatients.Where(ep => 
+                    ep.User.Address != null && ep.User.Address.ToLower().Contains(request.City.ToLower()));
+            }
+
+            // Apply status filter
+            if (request.IsActive.HasValue)
+            {
+                filteredPatients = filteredPatients.Where(ep => ep.User.IsActive == request.IsActive.Value);
+            }
+
+            // Apply last visit filter
+            if (request.LastVisitFrom.HasValue || request.LastVisitTo.HasValue)
+            {
+                if (request.LastVisitFrom.HasValue)
+                {
+                    filteredPatients = filteredPatients.Where(ep => 
+                    {
+                        var lastVisit = ep.Appointments.OrderByDescending(a => a.AppointmentDate).FirstOrDefault();
+                        return lastVisit != null && lastVisit.AppointmentDate >= request.LastVisitFrom.Value;
+                    });
+                }
+                
+                if (request.LastVisitTo.HasValue)
+                {
+                    filteredPatients = filteredPatients.Where(ep => 
+                    {
+                        var lastVisit = ep.Appointments.OrderByDescending(a => a.AppointmentDate).FirstOrDefault();
+                        return lastVisit != null && lastVisit.AppointmentDate <= request.LastVisitTo.Value;
+                    });
+                }
+            }
+
+            // Get total count before pagination
+            var totalCount = filteredPatients.Count();
+
+            // Apply sorting
+            filteredPatients = request.SortBy?.ToLower() switch
+            {
+                "age" => request.SortDescending 
+                    ? filteredPatients.OrderByDescending(ep => ep.User.Age ?? 0) 
+                    : filteredPatients.OrderBy(ep => ep.User.Age ?? 0),
+                "lastvisit" => request.SortDescending 
+                    ? filteredPatients.OrderByDescending(ep => ep.Appointments.Any() 
+                        ? ep.Appointments.Max(a => a.AppointmentDate) : DateTime.MinValue) 
+                    : filteredPatients.OrderBy(ep => ep.Appointments.Any() 
+                        ? ep.Appointments.Max(a => a.AppointmentDate) : DateTime.MinValue),
+                "createddate" => request.SortDescending 
+                    ? filteredPatients.OrderByDescending(ep => ep.Patient.CreatedOn) 
+                    : filteredPatients.OrderBy(ep => ep.Patient.CreatedOn),
+                _ => request.SortDescending 
+                    ? filteredPatients.OrderByDescending(ep => ep.User.FirstName)
+                           .ThenByDescending(ep => ep.User.LastName ?? "") 
+                    : filteredPatients.OrderBy(ep => ep.User.FirstName)
+                           .ThenBy(ep => ep.User.LastName ?? "")
+            };
+
+            // Apply pagination
+            var paginatedPatients = filteredPatients
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToList();
+
+            // Map to DTOs
+            var patientCards = new List<PatientSearchCard_DTO>();
+            foreach (var ep in paginatedPatients)
+            {
+                var patient = ep.Patient;
+                var user = ep.User;
+                var patientAppointments = ep.Appointments;
+
+                // Get doctor assignments (most frequent doctor from appointments)
+                var assignedDoctor = "";
+                if (patientAppointments.Any())
+                {
+                    var mostFrequentDoctorId = patientAppointments
+                        .Where(a => !a.IsDeleted)
+                        .GroupBy(a => a.DoctorID)
+                        .OrderByDescending(g => g.Count())
+                        .FirstOrDefault()?.Key;
+
+                    if (mostFrequentDoctorId.HasValue)
+                    {
+                        var doctor = await uow.DoctorDetailsRepo.GetAsync(d => d.DoctorID == mostFrequentDoctorId.Value);
+                        if (doctor?.UserID != null)
+                        {
+                            var doctorUser = await userManager.FindByIdAsync(doctor.UserID);
+                            if (doctorUser != null)
+                                assignedDoctor = $"Dr. {doctorUser.FirstName} {doctorUser.LastName}";
+                        }
+                    }
+                }
+
+                var now = DateTime.UtcNow;
+                var upcomingAppointments = patientAppointments?
+                    .Where(a => !a.IsDeleted && a.AppointmentDate > now)
+                    .Count() ?? 0;
+
+                patientCards.Add(new PatientSearchCard_DTO
+                {
+                    PatientID = patient.PatientID,
+                    UserID = user.Id,
+                    FullName = $"{user.FirstName} {user.LastName}".Trim(),
+                    Email = user.Email ?? string.Empty,
+                    PhoneNumber = user.PhoneNumber ?? string.Empty,
+                    Gender = user.Gender.ToString(),
+                    Age = user.Age,
+                    ProfileImage = user.ProfileImage ?? "/theme/images/default-patient.png",
+                    BloodGroup = patient.BloodGroup,
+                    Address = user.Address,
+                    City = ExtractCity(user.Address),
+                    IsActive = user.IsActive,
+                    DateOfBirth = user.DateOfBirth,
+                    CreatedOn = patient.CreatedOn,
+                    LastVisit = patientAppointments?
+                        .Where(a => !a.IsDeleted && a.Status == AppointmentStatus_Enum.Completed)
+                        .OrderByDescending(a => a.AppointmentDate)
+                        .FirstOrDefault()?.AppointmentDate,
+                    TotalAppointments = patientAppointments?.Count(a => !a.IsDeleted) ?? 0,
+                    UpcomingAppointments = upcomingAppointments,
+                    AssignedDoctor = assignedDoctor,
+                    EmergencyContact = patient.EmergencyContactName,
+                    ChronicConditions = "" // TODO: Add when chronic diseases repo is available
+                });
+            }
+
+            var result = new PatientSearchResult_DTO
+            {
+                Patients = patientCards,
+                TotalCount = totalCount,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize
+            };
+
+            return Result<PatientSearchResult_DTO>.Success(result);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error searching patients");
+            return Result<PatientSearchResult_DTO>.Exception(ex);
+        }
+    }
+
+    private string? ExtractCity(string? address)
+    {
+        if (string.IsNullOrWhiteSpace(address))
+            return null;
+        
+        // Simple extraction - in real app, would use proper address parsing
+        var parts = address.Split(',');
+        if (parts.Length >= 2)
+            return parts[^2].Trim(); // Second to last part often contains city
+        
+        return null;
+    }
+
     public async Task<Result<List<PatientSearch_DTO>>> SearchPatientsAsync(string searchTerm)
     {
         logger.LogInformation("Executing: SearchPatientsAsync for {SearchTerm}", searchTerm);

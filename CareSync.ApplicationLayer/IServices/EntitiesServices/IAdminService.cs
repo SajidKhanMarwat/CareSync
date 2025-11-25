@@ -158,6 +158,11 @@ public interface IAdminService
     /// Search patients by name, email, or phone number
     /// </summary>
     Task<Result<List<PatientSearch_DTO>>> SearchPatientsAsync(string searchTerm);
+    
+    /// <summary>
+    /// Comprehensive patient search with multiple filters and pagination
+    /// </summary>
+    Task<Result<PatientSearchResult_DTO>> SearchPatientsComprehensiveAsync(PatientSearchRequest_DTO request);
 
     /// <summary>
     /// Toggle patient active status

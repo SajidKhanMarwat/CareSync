@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using CareSync.ApplicationLayer.Contracts.UsersDTOs;
+using CareSync.ApplicationLayer.Contracts.PatientsDTOs;
 
 namespace CareSync.Services;
 
@@ -468,6 +469,22 @@ public class AdminApiService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting patient profile");
+            return default;
+        }
+    }
+
+    public async Task<T?> SearchPatientsComprehensiveAsync<T>(PatientSearchRequest_DTO request)
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.PostAsJsonAsync("Admin/patients/search/comprehensive", request, _jsonOptions);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error searching patients");
             return default;
         }
     }

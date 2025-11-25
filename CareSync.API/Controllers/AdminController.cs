@@ -330,6 +330,22 @@ public class AdminController(IAdminService adminService, IUserService userServic
     }
 
     /// <summary>
+    /// Comprehensive patient search with multiple filters
+    /// </summary>
+    [HttpPost("patients/search/comprehensive")]
+    [Authorize(Roles = "Admin")]
+    public async Task<Result<PatientSearchResult_DTO>> SearchPatientsComprehensive([FromBody] PatientSearchRequest_DTO request)
+    {
+        if (!ModelState.IsValid)
+            return Result<PatientSearchResult_DTO>.Failure(
+                null!,
+                "Invalid search parameters",
+                System.Net.HttpStatusCode.BadRequest);
+
+        return await adminService.SearchPatientsComprehensiveAsync(request);
+    }
+
+    /// <summary>
     /// Register patient (admin-initiated)
     /// </summary>
     [HttpPost("patient-registration")]
