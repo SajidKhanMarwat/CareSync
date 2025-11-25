@@ -8,7 +8,7 @@ public class PatientDashboard_DTO
     /// <summary>
     /// Patient profile information
     /// </summary>
-    public PatientProfile_DTO Profile { get; set; } = new();
+    public PatientDashboardProfile_DTO Profile { get; set; } = new();
 
     /// <summary>
     /// Dashboard statistics and counts
@@ -39,7 +39,7 @@ public class PatientDashboard_DTO
 /// <summary>
 /// Patient profile information for dashboard header
 /// </summary>
-public class PatientProfile_DTO
+public class PatientDashboardProfile_DTO
 {
     public string PatientName { get; set; } = string.Empty;
     public string Gender { get; set; } = string.Empty;

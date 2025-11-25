@@ -2,6 +2,7 @@
 using CareSync.ApplicationLayer.Common;
 using CareSync.ApplicationLayer.Contracts.AdminDashboardDTOs;
 using CareSync.ApplicationLayer.Contracts.AdminDTOs;
+using CareSync.ApplicationLayer.Contracts.AppointmentsDTOs;
 using CareSync.ApplicationLayer.Contracts.DoctorsDTOs;
 using CareSync.ApplicationLayer.Contracts.PatientsDTOs;
 using CareSync.ApplicationLayer.Contracts.UsersDTOs;
@@ -1454,6 +1455,10 @@ public class AdminService(
                     IsActive = user.IsActive,
                     ProfileImage = user.ProfileImage ?? "/theme/images/default-patient.png",
                     CreatedOn = user.CreatedOn,
+                    Address = user.Address,
+                    EmergencyContactName = patient.EmergencyContactName,
+                    EmergencyContactNumber = patient.EmergencyContactNumber,
+                    RelationshipToEmergency = patient.RelationshipToEmergency,
                     TotalAppointments = appointmentCount,
                     LastVisit = lastVisit
                 });
@@ -1552,6 +1557,10 @@ public class AdminService(
                 IsActive = user.IsActive,
                 ProfileImage = user.ProfileImage ?? "/theme/images/default-patient.png",
                 CreatedOn = user.CreatedOn,
+                Address = user.Address,
+                EmergencyContactName = patient.EmergencyContactName,
+                EmergencyContactNumber = patient.EmergencyContactNumber,
+                RelationshipToEmergency = patient.RelationshipToEmergency,
                 TotalAppointments = appointmentCount,
                 LastVisit = lastVisit
             };
@@ -1563,6 +1572,242 @@ public class AdminService(
             logger.LogError(ex, "Error getting patient by ID");
             return Result<PatientList_DTO>.Exception(ex);
         }
+    }
+
+    public async Task<Result<PatientSearchResult_DTO>> SearchPatientsComprehensiveAsync(PatientSearchRequest_DTO request)
+    {
+        logger.LogInformation("Executing: SearchPatientsComprehensiveAsync with filters");
+        try
+        {
+            // Get all patients first
+            var allPatients = await uow.PatientDetailsRepo.GetAllAsync(p => !p.IsDeleted);
+            
+            // Load related data
+            var patientIds = allPatients.Select(p => p.PatientID).ToList();
+            var userIds = allPatients.Where(p => p.UserID != null).Select(p => p.UserID!).ToList();
+            
+            // Get users
+            var users = new Dictionary<string, T_Users>();
+            foreach (var userId in userIds)
+            {
+                var user = await userManager.FindByIdAsync(userId);
+                if (user != null)
+                    users[userId] = user;
+            }
+            
+            // Get appointments
+            var appointments = await uow.AppointmentsRepo.GetAllAsync(a => patientIds.Contains(a.PatientID));
+            var appointmentsByPatient = appointments.GroupBy(a => a.PatientID).ToDictionary(g => g.Key, g => g.ToList());
+            
+            // Create enriched patient list
+            var enrichedPatients = allPatients
+                .Where(p => p.UserID != null && users.ContainsKey(p.UserID))
+                .Select(p => new 
+                {
+                    Patient = p,
+                    User = users[p.UserID!],
+                    Appointments = appointmentsByPatient.ContainsKey(p.PatientID) ? appointmentsByPatient[p.PatientID] : new List<T_Appointments>()
+                })
+                .ToList();
+
+            // Apply filters
+            var filteredPatients = enrichedPatients.AsEnumerable();
+            
+            // Apply text search
+            if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+            {
+                var term = request.SearchTerm.ToLower();
+                filteredPatients = filteredPatients.Where(ep => 
+                    ep.User.FirstName.ToLower().Contains(term) ||
+                    (ep.User.LastName != null && ep.User.LastName.ToLower().Contains(term)) ||
+                    (ep.User.Email != null && ep.User.Email.ToLower().Contains(term)) ||
+                    (ep.User.PhoneNumber != null && ep.User.PhoneNumber.Contains(term)) ||
+                    ep.Patient.PatientID.ToString().Contains(term)
+                );
+            }
+
+            // Apply demographic filters
+            if (!string.IsNullOrWhiteSpace(request.Gender))
+            {
+                filteredPatients = filteredPatients.Where(ep => ep.User.Gender.ToString() == request.Gender);
+            }
+
+            if (request.MinAge.HasValue)
+            {
+                filteredPatients = filteredPatients.Where(ep => ep.User.Age >= request.MinAge.Value);
+            }
+
+            if (request.MaxAge.HasValue)
+            {
+                filteredPatients = filteredPatients.Where(ep => ep.User.Age <= request.MaxAge.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.BloodGroup))
+            {
+                filteredPatients = filteredPatients.Where(ep => ep.Patient.BloodGroup == request.BloodGroup);
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.MaritalStatus))
+            {
+                filteredPatients = filteredPatients.Where(ep => ep.Patient.MaritalStatus.ToString() == request.MaritalStatus);
+            }
+
+            // Apply location filter
+            if (!string.IsNullOrWhiteSpace(request.City))
+            {
+                filteredPatients = filteredPatients.Where(ep => 
+                    ep.User.Address != null && ep.User.Address.ToLower().Contains(request.City.ToLower()));
+            }
+
+            // Apply status filter
+            if (request.IsActive.HasValue)
+            {
+                filteredPatients = filteredPatients.Where(ep => ep.User.IsActive == request.IsActive.Value);
+            }
+
+            // Apply last visit filter
+            if (request.LastVisitFrom.HasValue || request.LastVisitTo.HasValue)
+            {
+                if (request.LastVisitFrom.HasValue)
+                {
+                    filteredPatients = filteredPatients.Where(ep => 
+                    {
+                        var lastVisit = ep.Appointments.OrderByDescending(a => a.AppointmentDate).FirstOrDefault();
+                        return lastVisit != null && lastVisit.AppointmentDate >= request.LastVisitFrom.Value;
+                    });
+                }
+                
+                if (request.LastVisitTo.HasValue)
+                {
+                    filteredPatients = filteredPatients.Where(ep => 
+                    {
+                        var lastVisit = ep.Appointments.OrderByDescending(a => a.AppointmentDate).FirstOrDefault();
+                        return lastVisit != null && lastVisit.AppointmentDate <= request.LastVisitTo.Value;
+                    });
+                }
+            }
+
+            // Get total count before pagination
+            var totalCount = filteredPatients.Count();
+
+            // Apply sorting
+            filteredPatients = request.SortBy?.ToLower() switch
+            {
+                "age" => request.SortDescending 
+                    ? filteredPatients.OrderByDescending(ep => ep.User.Age ?? 0) 
+                    : filteredPatients.OrderBy(ep => ep.User.Age ?? 0),
+                "lastvisit" => request.SortDescending 
+                    ? filteredPatients.OrderByDescending(ep => ep.Appointments.Any() 
+                        ? ep.Appointments.Max(a => a.AppointmentDate) : DateTime.MinValue) 
+                    : filteredPatients.OrderBy(ep => ep.Appointments.Any() 
+                        ? ep.Appointments.Max(a => a.AppointmentDate) : DateTime.MinValue),
+                "createddate" => request.SortDescending 
+                    ? filteredPatients.OrderByDescending(ep => ep.Patient.CreatedOn) 
+                    : filteredPatients.OrderBy(ep => ep.Patient.CreatedOn),
+                _ => request.SortDescending 
+                    ? filteredPatients.OrderByDescending(ep => ep.User.FirstName)
+                           .ThenByDescending(ep => ep.User.LastName ?? "") 
+                    : filteredPatients.OrderBy(ep => ep.User.FirstName)
+                           .ThenBy(ep => ep.User.LastName ?? "")
+            };
+
+            // Apply pagination
+            var paginatedPatients = filteredPatients
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToList();
+
+            // Map to DTOs
+            var patientCards = new List<PatientSearchCard_DTO>();
+            foreach (var ep in paginatedPatients)
+            {
+                var patient = ep.Patient;
+                var user = ep.User;
+                var patientAppointments = ep.Appointments;
+
+                // Get doctor assignments (most frequent doctor from appointments)
+                var assignedDoctor = "";
+                if (patientAppointments.Any())
+                {
+                    var mostFrequentDoctorId = patientAppointments
+                        .Where(a => !a.IsDeleted)
+                        .GroupBy(a => a.DoctorID)
+                        .OrderByDescending(g => g.Count())
+                        .FirstOrDefault()?.Key;
+
+                    if (mostFrequentDoctorId.HasValue)
+                    {
+                        var doctor = await uow.DoctorDetailsRepo.GetAsync(d => d.DoctorID == mostFrequentDoctorId.Value);
+                        if (doctor?.UserID != null)
+                        {
+                            var doctorUser = await userManager.FindByIdAsync(doctor.UserID);
+                            if (doctorUser != null)
+                                assignedDoctor = $"Dr. {doctorUser.FirstName} {doctorUser.LastName}";
+                        }
+                    }
+                }
+
+                var now = DateTime.UtcNow;
+                var upcomingAppointments = patientAppointments?
+                    .Where(a => !a.IsDeleted && a.AppointmentDate > now)
+                    .Count() ?? 0;
+
+                patientCards.Add(new PatientSearchCard_DTO
+                {
+                    PatientID = patient.PatientID,
+                    UserID = user.Id,
+                    FullName = $"{user.FirstName} {user.LastName}".Trim(),
+                    Email = user.Email ?? string.Empty,
+                    PhoneNumber = user.PhoneNumber ?? string.Empty,
+                    Gender = user.Gender.ToString(),
+                    Age = user.Age,
+                    ProfileImage = user.ProfileImage ?? "/theme/images/default-patient.png",
+                    BloodGroup = patient.BloodGroup,
+                    Address = user.Address,
+                    City = ExtractCity(user.Address),
+                    IsActive = user.IsActive,
+                    DateOfBirth = user.DateOfBirth,
+                    CreatedOn = patient.CreatedOn,
+                    LastVisit = patientAppointments?
+                        .Where(a => !a.IsDeleted && a.Status == AppointmentStatus_Enum.Completed)
+                        .OrderByDescending(a => a.AppointmentDate)
+                        .FirstOrDefault()?.AppointmentDate,
+                    TotalAppointments = patientAppointments?.Count(a => !a.IsDeleted) ?? 0,
+                    UpcomingAppointments = upcomingAppointments,
+                    AssignedDoctor = assignedDoctor,
+                    EmergencyContact = patient.EmergencyContactName,
+                    ChronicConditions = "" // TODO: Add when chronic diseases repo is available
+                });
+            }
+
+            var result = new PatientSearchResult_DTO
+            {
+                Patients = patientCards,
+                TotalCount = totalCount,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize
+            };
+
+            return Result<PatientSearchResult_DTO>.Success(result);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error searching patients");
+            return Result<PatientSearchResult_DTO>.Exception(ex);
+        }
+    }
+
+    private string? ExtractCity(string? address)
+    {
+        if (string.IsNullOrWhiteSpace(address))
+            return null;
+        
+        // Simple extraction - in real app, would use proper address parsing
+        var parts = address.Split(',');
+        if (parts.Length >= 2)
+            return parts[^2].Trim(); // Second to last part often contains city
+        
+        return null;
     }
 
     public async Task<Result<List<PatientSearch_DTO>>> SearchPatientsAsync(string searchTerm)
@@ -1648,6 +1893,422 @@ public class AdminService(
             logger.LogError(ex, "Error toggling patient status");
             return Result<GeneralResponse>.Exception(ex);
         }
+    }
+
+    public async Task<Result<GeneralResponse>> UpdatePatientAsync(UserPatientProfileUpdate_DTO updateDto)
+    {
+        logger.LogInformation("Executing: UpdatePatientAsync for {UserId}", updateDto.UserId);
+        try
+        {
+            // Update user information
+            var user = await userManager.FindByIdAsync(updateDto.UserId);
+            if (user == null)
+                return Result<GeneralResponse>.Failure(new GeneralResponse
+                {
+                    Success = false,
+                    Message = "Patient not found"
+                });
+
+            // Update user properties
+            user.FirstName = updateDto.FirstName;
+            user.LastName = updateDto.LastName;
+            user.Email = updateDto.Email;
+            user.PhoneNumber = updateDto.PhoneNumber;
+            user.Address = updateDto.Address;
+            user.UpdatedOn = DateTime.UtcNow;
+            
+            if (!string.IsNullOrEmpty(updateDto.Gender))
+            {
+                if (Enum.TryParse<Shared.Enums.Gender_Enum>(updateDto.Gender, out var gender))
+                    user.Gender = gender;
+            }
+            
+            if (updateDto.DateOfBirth.HasValue)
+            {
+                user.DateOfBirth = updateDto.DateOfBirth.Value;
+                user.Age = CalculateAge(updateDto.DateOfBirth.Value);
+            }
+
+            var userResult = await userManager.UpdateAsync(user);
+            if (!userResult.Succeeded)
+            {
+                return Result<GeneralResponse>.Failure(new GeneralResponse
+                {
+                    Success = false,
+                    Message = userResult.Errors.FirstOrDefault()?.Description ?? "Failed to update user information"
+                });
+            }
+
+            // Update patient details
+            var patientDetails = await uow.PatientDetailsRepo.GetAsync(p => p.UserID == updateDto.UserId);
+            if (patientDetails != null)
+            {
+                patientDetails.BloodGroup = updateDto.BloodGroup;
+                patientDetails.Occupation = updateDto.Occupation;
+                patientDetails.EmergencyContactName = updateDto.EmergencyContactName;
+                patientDetails.EmergencyContactNumber = updateDto.EmergencyContactNumber;
+                patientDetails.RelationshipToEmergency = updateDto.RelationshipToEmergency;
+                patientDetails.UpdatedOn = DateTime.UtcNow;
+                
+                if (!string.IsNullOrEmpty(updateDto.MaritalStatus))
+                {
+                    if (Enum.TryParse<MaritalStatusEnum>(updateDto.MaritalStatus, out var maritalStatus))
+                        patientDetails.MaritalStatus = maritalStatus;
+                }
+
+                await uow.PatientDetailsRepo.UpdateAsync(patientDetails);
+                await uow.SaveChangesAsync();
+            }
+
+            return Result<GeneralResponse>.Success(new GeneralResponse
+            {
+                Success = true,
+                Message = "Patient information updated successfully"
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error updating patient");
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<PatientProfile_DTO>> GetPatientProfileAsync(int patientId)
+    {
+        logger.LogInformation("Executing: GetPatientProfileAsync for {PatientId}", patientId);
+        try
+        {
+            var patient = await uow.PatientDetailsRepo.GetAsync(p => p.PatientID == patientId);
+            if (patient == null)
+                return Result<PatientProfile_DTO>.Failure(null!, "Patient not found", System.Net.HttpStatusCode.NotFound);
+
+            if (patient.UserID == null)
+                return Result<PatientProfile_DTO>.Failure(null!, "Patient user not found", System.Net.HttpStatusCode.NotFound);
+
+            var user = await userManager.FindByIdAsync(patient.UserID);
+            if (user == null)
+                return Result<PatientProfile_DTO>.Failure(null!, "User not found", System.Net.HttpStatusCode.NotFound);
+
+            // Get appointment statistics
+            var appointments = await uow.AppointmentsRepo.GetAllAsync(a => a.PatientID == patientId);
+            var now = DateTime.UtcNow;
+            var upcomingAppointments = appointments.Where(a => a.AppointmentDate > now && !a.IsDeleted).ToList();
+            var completedAppointments = appointments.Where(a => a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.Completed).ToList();
+            var missedAppointments = appointments.Where(a => a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.Cancelled || 
+                                                              a.Status == Shared.Enums.Appointment.AppointmentStatus_Enum.NoShow).ToList();
+
+            // Get recent appointments with doctor names
+            var recentAppointments = new List<Appointment_DTO>();
+            var recentAppts = appointments.OrderByDescending(a => a.AppointmentDate).Take(5).ToList();
+            foreach (var appt in recentAppts)
+            {
+                var doctor = await uow.DoctorDetailsRepo.GetAsync(d => d.DoctorID == appt.DoctorID);
+                var doctorUser = doctor?.UserID != null ? await userManager.FindByIdAsync(doctor.UserID) : null;
+                
+                recentAppointments.Add(new Appointment_DTO
+                {
+                    AppointmentID = appt.AppointmentID,
+                    DoctorID = appt.DoctorID,
+                    PatientID = appt.PatientID,
+                    AppointmentDate = appt.AppointmentDate,
+                    AppointmentType = appt.AppointmentType,
+                    Status = appt.Status,
+                    Reason = appt.Reason ?? string.Empty,
+                    Notes = appt.Notes,
+                    DoctorName = doctorUser != null ? $"Dr. {doctorUser.FirstName} {doctorUser.LastName}" : "Unknown",
+                    CreatedOn = appt.CreatedOn
+                });
+            }
+
+            // Get recent vitals
+            var vitals = await uow.PatientVitalsRepo.GetAllAsync(v => v.PatientID == patientId);
+            var recentVitals = vitals.OrderByDescending(v => v.CreatedOn).Take(5).Select(v => new PatientVital_DTO
+            {
+                VitalID = v.VitalID,
+                RecordedDate = v.CreatedOn, // Using CreatedOn as RecordedDate doesn't exist
+                Weight = v.Weight,
+                Height = v.Height,
+                BloodPressure = v.BloodPressure,
+                HeartRate = v.PulseRate, // Using PulseRate as HeartRate
+                Temperature = null, // Temperature not available in T_PatientVitals
+                RespiratoryRate = null, // RespiratoryRate not available in T_PatientVitals
+                BMI = null, // BMI not available in T_PatientVitals - would need to calculate from Height/Weight
+                RecordedBy = v.CreatedBy
+            }).ToList();
+
+            // TODO: Get chronic diseases when ChronicDiseasesRepo is available
+            // var chronicDiseases = await uow.ChronicDiseasesRepo.GetAllAsync(c => c.PatientID == patientId && !c.IsDeleted);
+            var diseaseList = new List<string>(); // Empty for now
+
+            // TODO: Get allergies from medical history when MedicalHistoryRepo is available
+            // var medicalHistory = await uow.MedicalHistoryRepo.GetAllAsync(m => m.PatientID == patientId && !m.IsDeleted);
+            var allergies = new List<string>(); // Empty for now
+
+            // TODO: Get active prescriptions when PrescriptionsRepo is available
+            var activePrescriptions = new List<Prescription_DTO>();
+            
+            // Commented out until repositories are available
+            /*
+            var prescriptions = await uow.PrescriptionsRepo.GetAllAsync(p => p.PatientID == patientId && !p.IsDeleted);
+            foreach (var prescription in prescriptions.Where(p => p.EndDate == null || p.EndDate > now))
+            {
+                var prescribingDoctor = await uow.DoctorDetailsRepo.GetAsync(d => d.DoctorID == prescription.DoctorID);
+                var prescribingUser = prescribingDoctor?.UserID != null ? await userManager.FindByIdAsync(prescribingDoctor.UserID) : null;
+                
+                // Get prescription items
+                var items = await uow.PrescriptionItemsRepo.GetAllAsync(pi => pi.PrescriptionID == prescription.PrescriptionID);
+                foreach (var item in items)
+                {
+                    activePrescriptions.Add(new Prescription_DTO
+                    {
+                        PrescriptionID = prescription.PrescriptionID,
+                        MedicationName = item.MedicationName ?? "Unknown",
+                        Dosage = item.Dosage ?? "N/A",
+                        Frequency = item.Frequency ?? "N/A",
+                        StartDate = prescription.PrescriptionDate,
+                        EndDate = prescription.EndDate,
+                        PrescribedBy = prescribingUser != null ? $"Dr. {prescribingUser.FirstName} {prescribingUser.LastName}" : "Unknown",
+                        Instructions = item.Instructions,
+                        IsActive = prescription.EndDate == null || prescription.EndDate > now
+                    });
+                }
+            }
+            */
+
+            // Get preferred doctor (most appointments with)
+            var doctorAppointments = appointments.GroupBy(a => a.DoctorID)
+                .OrderByDescending(g => g.Count())
+                .FirstOrDefault();
+            
+            string? preferredDoctor = null;
+            if (doctorAppointments != null)
+            {
+                var prefDoctor = await uow.DoctorDetailsRepo.GetAsync(d => d.DoctorID == doctorAppointments.Key);
+                if (prefDoctor?.UserID != null)
+                {
+                    var prefDoctorUser = await userManager.FindByIdAsync(prefDoctor.UserID);
+                    if (prefDoctorUser != null)
+                        preferredDoctor = $"Dr. {prefDoctorUser.FirstName} {prefDoctorUser.LastName}";
+                }
+            }
+
+            var profile = new PatientProfile_DTO
+            {
+                // Basic Information
+                PatientID = patient.PatientID,
+                UserID = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName ?? string.Empty,
+                Email = user.Email ?? string.Empty,
+                PhoneNumber = user.PhoneNumber ?? string.Empty,
+                Gender = user.Gender.ToString(),
+                DateOfBirth = user.DateOfBirth,
+                Age = user.Age,
+                ProfileImage = user.ProfileImage ?? "/theme/images/default-patient.png",
+                IsActive = user.IsActive,
+                CreatedOn = user.CreatedOn,
+                UpdatedOn = user.UpdatedOn,
+                
+                // Address Information
+                Address = user.Address,
+                
+                // Medical Information
+                BloodGroup = patient.BloodGroup,
+                MaritalStatus = patient.MaritalStatus,
+                Occupation = patient.Occupation,
+                
+                // Emergency Contact
+                EmergencyContactName = patient.EmergencyContactName,
+                EmergencyContactNumber = patient.EmergencyContactNumber,
+                RelationshipToEmergency = patient.RelationshipToEmergency,
+                
+                // Medical History Summary
+                Allergies = allergies,
+                ChronicDiseases = diseaseList,
+                CurrentMedications = activePrescriptions.Select(p => p.MedicationName).Distinct().ToList(),
+                
+                // Statistics
+                TotalAppointments = appointments.Count,
+                CompletedAppointments = completedAppointments.Count,
+                UpcomingAppointments = upcomingAppointments.Count,
+                MissedAppointments = missedAppointments.Count,
+                LastVisit = appointments.OrderByDescending(a => a.AppointmentDate).FirstOrDefault()?.AppointmentDate,
+                NextAppointment = upcomingAppointments.OrderBy(a => a.AppointmentDate).FirstOrDefault()?.AppointmentDate,
+                PreferredDoctor = preferredDoctor,
+                
+                // Recent Activity
+                RecentAppointments = recentAppointments,
+                RecentVitals = recentVitals,
+                ActivePrescriptions = activePrescriptions
+            };
+
+            return Result<PatientProfile_DTO>.Success(profile);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting patient profile");
+            return Result<PatientProfile_DTO>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<GeneralResponse>> DeletePatientAsync(string userId, int patientId)
+    {
+        logger.LogInformation("Executing: DeletePatientAsync for UserId: {UserId}, PatientId: {PatientId}", userId, patientId);
+        try
+        {
+            // Get the user
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+                return Result<GeneralResponse>.Failure(new GeneralResponse
+                {
+                    Success = false,
+                    Message = "Patient not found"
+                });
+
+            // Soft delete the user
+            user.IsDeleted = true;
+            user.IsActive = false;
+            user.UpdatedOn = DateTime.UtcNow;
+
+            var userResult = await userManager.UpdateAsync(user);
+            if (!userResult.Succeeded)
+            {
+                return Result<GeneralResponse>.Failure(new GeneralResponse
+                {
+                    Success = false,
+                    Message = userResult.Errors.FirstOrDefault()?.Description ?? "Failed to delete user"
+                });
+            }
+
+            // Soft delete patient details
+            var patientDetails = await uow.PatientDetailsRepo.GetAsync(p => p.PatientID == patientId);
+            if (patientDetails != null)
+            {
+                patientDetails.IsDeleted = true;
+                patientDetails.UpdatedOn = DateTime.UtcNow;
+                await uow.PatientDetailsRepo.UpdateAsync(patientDetails);
+            }
+
+            // Soft delete all appointments
+            var appointments = await uow.AppointmentsRepo.GetAllAsync(a => a.PatientID == patientId);
+            foreach (var appointment in appointments)
+            {
+                appointment.IsDeleted = true;
+                appointment.UpdatedOn = DateTime.UtcNow;
+                await uow.AppointmentsRepo.UpdateAsync(appointment);
+            }
+
+            await uow.SaveChangesAsync();
+
+            return Result<GeneralResponse>.Success(new GeneralResponse
+            {
+                Success = true,
+                Message = "Patient deleted successfully"
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error deleting patient");
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<Contracts.AdminDashboardDTOs.PatientRegistrationTrends_DTO>> GetPatientRegistrationTrendsAsync()
+    {
+        // This method delegates to GetPatientRegTrendsAsync for backward compatibility
+        return await GetPatientRegTrendsAsync();
+    }
+
+    public async Task<Result<PatientAgeDistribution_DTO>> GetPatientAgeDistributionAsync()
+    {
+        logger.LogInformation("Executing: GetPatientAgeDistributionAsync");
+        try
+        {
+            var distribution = new PatientAgeDistribution_DTO();
+
+            // Get patient role
+            var patientRole = await roleManager.FindByNameAsync(RoleType.Patient.ToString());
+            if (patientRole == null)
+            {
+                logger.LogWarning("Patient role not found");
+                return Result<PatientAgeDistribution_DTO>.Success(distribution);
+            }
+
+            var patients = await uow.UserRepo.GetAllAsync(u => 
+                u.RoleID == patientRole.Id && !u.IsDeleted);
+
+            foreach (var patient in patients)
+            {
+                var age = patient.Age ?? CalculateAge(patient.DateOfBirth);
+                if (age.HasValue)
+                {
+                    if (age < 18) distribution.Age0To18++;
+                    else if (age < 35) distribution.Age19To35++;
+                    else if (age < 50) distribution.Age36To50++;
+                    else if (age < 65) distribution.Age51To65++;
+                    else distribution.Age65Plus++;
+                }
+            }
+
+            return Result<PatientAgeDistribution_DTO>.Success(distribution);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting patient age distribution");
+            return Result<PatientAgeDistribution_DTO>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<PatientDemographics_DTO>> GetPatientDemographicsAsync()
+    {
+        logger.LogInformation("Executing: GetPatientDemographicsAsync");
+        try
+        {
+            var demographics = new PatientDemographics_DTO();
+
+            // Get patient role
+            var patientRole = await roleManager.FindByNameAsync(RoleType.Patient.ToString());
+            if (patientRole == null)
+            {
+                logger.LogWarning("Patient role not found");
+                return Result<PatientDemographics_DTO>.Success(demographics);
+            }
+
+            // Get gender distribution
+            var patients = await uow.UserRepo.GetAllAsync(u => 
+                u.RoleID == patientRole.Id && !u.IsDeleted);
+
+            demographics.FemaleCount = patients.Count(p => p.Gender == Shared.Enums.Gender_Enum.Female);
+            demographics.MaleCount = patients.Count(p => p.Gender == Shared.Enums.Gender_Enum.Male);
+
+            // Get marital status distribution from patient details
+            var patientDetails = await uow.PatientDetailsRepo.GetAllAsync(p => !p.IsDeleted);
+            
+            demographics.MarriedCount = patientDetails.Count(p => p.MaritalStatus == MaritalStatusEnum.Married);
+            demographics.SingleCount = patientDetails.Count(p => p.MaritalStatus == MaritalStatusEnum.Single);
+            demographics.DivorcedCount = patientDetails.Count(p => p.MaritalStatus == MaritalStatusEnum.Divorced);
+            demographics.WidowedCount = patientDetails.Count(p => p.MaritalStatus == MaritalStatusEnum.Widowed);
+
+            return Result<PatientDemographics_DTO>.Success(demographics);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting patient demographics");
+            return Result<PatientDemographics_DTO>.Exception(ex);
+        }
+    }
+
+    private int? CalculateAge(DateTime? dateOfBirth)
+    {
+        if (!dateOfBirth.HasValue)
+            return null;
+
+        var today = DateTime.Today;
+        var age = today.Year - dateOfBirth.Value.Year;
+        if (dateOfBirth.Value.Date > today.AddYears(-age))
+            age--;
+
+        return age;
     }
 
     #endregion
@@ -2002,14 +2663,14 @@ public class AdminService(
         }
     }
 
-    public async Task<Result<PatientRegistrationTrends_DTO>> GetPatientRegTrendsAsync()
+    public async Task<Result<Contracts.AdminDashboardDTOs.PatientRegistrationTrends_DTO>> GetPatientRegTrendsAsync()
     {
         logger.LogInformation("Executing: GetPatientRegistrationTrendsAsync");
         try
         {
             var patientRole = await roleManager.FindByNameAsync(RoleType.Patient.ToString());
             if (patientRole == null)
-                return Result<PatientRegistrationTrends_DTO>.Success(new PatientRegistrationTrends_DTO());
+                return Result<Contracts.AdminDashboardDTOs.PatientRegistrationTrends_DTO>.Success(new Contracts.AdminDashboardDTOs.PatientRegistrationTrends_DTO());
 
             var allPatients = await userManager.GetUsersInRoleAsync(patientRole.Name!);
             var today = DateTime.UtcNow;
@@ -2040,7 +2701,7 @@ public class AdminService(
             var trend = lastThree.Count >= 3 && lastThree[2] > lastThree[0] ? "Up" :
                        lastThree.Count >= 3 && lastThree[2] < lastThree[0] ? "Down" : "Stable";
 
-            var trends = new PatientRegistrationTrends_DTO
+            var trends = new Contracts.AdminDashboardDTOs.PatientRegistrationTrends_DTO
             {
                 MonthlyData = monthlyData,
                 TotalNewPatients = totalNewPatients,
@@ -2048,12 +2709,12 @@ public class AdminService(
                 TrendDirection = trend
             };
 
-            return Result<PatientRegistrationTrends_DTO>.Success(trends);
+            return Result<Contracts.AdminDashboardDTOs.PatientRegistrationTrends_DTO>.Success(trends);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error getting patient registration trends");
-            return Result<PatientRegistrationTrends_DTO>.Exception(ex);
+            return Result<Contracts.AdminDashboardDTOs.PatientRegistrationTrends_DTO>.Exception(ex);
         }
     }
 
@@ -2495,6 +3156,10 @@ public class AdminService(
                     IsActive = user.IsActive,
                     ProfileImage = user.ProfileImage ?? "/theme/images/default-patient.png",
                     CreatedOn = user.CreatedOn,
+                    Address = user.Address,
+                    EmergencyContactName = patient.EmergencyContactName,
+                    EmergencyContactNumber = patient.EmergencyContactNumber,
+                    RelationshipToEmergency = patient.RelationshipToEmergency,
                     TotalAppointments = patientAppointments.Count,
                     LastVisit = lastVisit
                 });

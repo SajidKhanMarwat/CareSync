@@ -33,17 +33,33 @@
                 <i class="ri-filter-line me-2"></i>Filter
             </button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="filterByStatus('all')">All Patients</a></li>
-                <li><a class="dropdown-item" href="#" onclick="filterByStatus('active')">Active</a></li>
-                <li><a class="dropdown-item" href="#" onclick="filterByStatus('inactive')">Inactive</a></li>
-                <li><a class="dropdown-item" href="#" onclick="filterByBloodGroup('all')">All Blood Groups</a></li>
+                <li><a class="dropdown-item" href="?searchTerm=@Model.SearchTerm">All Patients</a></li>
+                <li><a class="dropdown-item" href="?isActive=true&searchTerm=@Model.SearchTerm&bloodGroup=@Model.BloodGroup">Active</a></li>
+                <li><a class="dropdown-item" href="?isActive=false&searchTerm=@Model.SearchTerm&bloodGroup=@Model.BloodGroup">Inactive</a></li>
+                <li><a class="dropdown-item" href="?searchTerm=@Model.SearchTerm&isActive=@Model.IsActive">All Blood Groups</a></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#" onclick="filterByBloodGroup('O+')">O+</a></li>
-                <li><a class="dropdown-item" href="#" onclick="filterByBloodGroup('A+')">A+</a></li>
-                <li><a class="dropdown-item" href="#" onclick="filterByBloodGroup('B+')">B+</a></li>
-                <li><a class="dropdown-item" href="#" onclick="filterByBloodGroup('AB+')">AB+</a></li>
+                <li><a class="dropdown-item" href="?bloodGroup=O%2B&searchTerm=@Model.SearchTerm&isActive=@Model.IsActive">O+</a></li>
+                <li><a class="dropdown-item" href="?bloodGroup=A%2B&searchTerm=@Model.SearchTerm&isActive=@Model.IsActive">A+</a></li>
+                <li><a class="dropdown-item" href="?bloodGroup=B%2B&searchTerm=@Model.SearchTerm&isActive=@Model.IsActive">B+</a></li>
+                <li><a class="dropdown-item" href="?bloodGroup=AB%2B&searchTerm=@Model.SearchTerm&isActive=@Model.IsActive">AB+</a></li>
             </ul>
         </div>
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="ri-check-line me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="ri-error-warning-line me-2"></i>@TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
 
@@ -59,7 +75,7 @@
                         </div>
                     </div>
                     <div class="d-flex flex-column">
-                        <h1 class="lh-1">980</h1>
+                        <h1 class="lh-1">@(Model.PatientStats?.TotalPatients ?? 0)</h1>
                         <p class="m-0">Total Patients</p>
                     </div>
                 </div>
@@ -76,7 +92,7 @@
                         </div>
                     </div>
                     <div class="d-flex flex-column">
-                        <h1 class="lh-1">945</h1>
+                        <h1 class="lh-1">@(Model.PatientStats?.ActivePatients ?? 0)</h1>
                         <p class="m-0">Active</p>
                     </div>
                 </div>
@@ -93,7 +109,7 @@
                         </div>
                     </div>
                     <div class="d-flex flex-column">
-                        <h1 class="lh-1">89</h1>
+                        <h1 class="lh-1">@(Model.PatientStats?.NewPatientsThisMonth ?? 0)</h1>
                         <p class="m-0">New This Month</p>
                     </div>
                 </div>
@@ -110,7 +126,7 @@
                         </div>
                     </div>
                     <div class="d-flex flex-column">
-                        <h1 class="lh-1">156</h1>
+                        <h1 class="lh-1">@(Model.PatientStats?.AppointmentsToday ?? 0)</h1>
                         <p class="m-0">Appointments Today</p>
                     </div>
                 </div>
@@ -165,42 +181,35 @@
             </div>
             <div class="card-body">
                 <div class="row g-3">
-                    <div class="col-3">
-                        <div class="text-center p-3 border rounded">
-                            <div class="icon-box md bg-danger-lighten rounded-circle mx-auto mb-2">
-                                <i class="ri-drop-fill text-danger"></i>
+                    @if (Model.PatientStats?.PatientsByBloodGroup != null)
+                    {
+                        var bloodGroups = new[] { "O+", "A+", "B+", "AB+" };
+                        var colors = new[] { "danger", "primary", "success", "warning" };
+                        
+                        @for (int i = 0; i < bloodGroups.Length; i++)
+                        {
+                            var bloodGroup = bloodGroups[i];
+                            var color = colors[i];
+                            var count = Model.PatientStats.PatientsByBloodGroup.ContainsKey(bloodGroup) 
+                                ? Model.PatientStats.PatientsByBloodGroup[bloodGroup] : 0;
+                            
+                            <div class="col-3">
+                                <div class="text-center p-3 border rounded">
+                                    <div class="icon-box md bg-@(color)-lighten rounded-circle mx-auto mb-2">
+                                        <i class="ri-drop-fill text-@color"></i>
+                                    </div>
+                                    <h4 class="text-@color">@count</h4>
+                                    <p class="mb-0">@bloodGroup</p>
+                                </div>
                             </div>
-                            <h4 class="text-danger">245</h4>
-                            <p class="mb-0">O+</p>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-12 text-center">
+                            <p class="text-muted">No blood group data available</p>
                         </div>
-                    </div>
-                    <div class="col-3">
-                        <div class="text-center p-3 border rounded">
-                            <div class="icon-box md bg-primary-lighten rounded-circle mx-auto mb-2">
-                                <i class="ri-drop-fill text-primary"></i>
-                            </div>
-                            <h4 class="text-primary">189</h4>
-                            <p class="mb-0">A+</p>
-                        </div>
-                    </div>
-                    <div class="col-3">
-                        <div class="text-center p-3 border rounded">
-                            <div class="icon-box md bg-success-lighten rounded-circle mx-auto mb-2">
-                                <i class="ri-drop-fill text-success"></i>
-                            </div>
-                            <h4 class="text-success">156</h4>
-                            <p class="mb-0">B+</p>
-                        </div>
-                    </div>
-                    <div class="col-3">
-                        <div class="text-center p-3 border rounded">
-                            <div class="icon-box md bg-warning-lighten rounded-circle mx-auto mb-2">
-                                <i class="ri-drop-fill text-warning"></i>
-                            </div>
-                            <h4 class="text-warning">89</h4>
-                            <p class="mb-0">AB+</p>
-                        </div>
-                    </div>
+                    }
                 </div>
             </div>
         </div>
@@ -231,12 +240,15 @@
                     <i class="ri-team-line me-2"></i>All Patients
                 </h5>
                 <div class="d-flex gap-2">
-                    <div class="input-group" style="width: 250px;">
-                        <input type="text" class="form-control" placeholder="Search patients..." id="searchInput">
-                        <button class="btn btn-outline-secondary" type="button">
+                    <form method="get" class="input-group" style="width: 250px;">
+                        <input type="text" class="form-control" placeholder="Search patients..." 
+                               name="searchTerm" value="@Model.SearchTerm" id="searchInput">
+                        <input type="hidden" name="bloodGroup" value="@Model.BloodGroup" />
+                        <input type="hidden" name="isActive" value="@Model.IsActive" />
+                        <button class="btn btn-outline-secondary" type="submit">
                             <i class="ri-search-line"></i>
                         </button>
-                    </div>
+                    </form>
                 </div>
             </div>
             <div class="card-body">
@@ -254,120 +266,115 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="~/theme/images/patient1.png" class="rounded-circle me-3" width="40" height="40" alt="Patient">
-                                        <div>
-                                            <h6 class="mb-0">Emily Johnson</h6>
-                                            <small class="text-muted">ID: P001</small>
-                                            <br><small class="text-primary">Age: 28, Female</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div>
-                                        <span class="fw-bold">emily.johnson@email.com</span><br>
-                                        <small class="text-muted">+1 234 567 8903</small><br>
-                                        <small class="text-muted">123 Main St, City</small>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div>
-                                        <span class="badge bg-danger-light text-danger mb-1">O+</span><br>
-                                        <small class="text-muted">Married</small><br>
-                                        <small class="text-info">Insurance: Active</small>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div>
-                                        <span class="fw-bold">Nov 12, 2024</span><br>
-                                        <small class="text-muted">Cardiology</small>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="~/theme/images/doctor1.png" class="rounded-circle me-2" width="24" height="24" alt="Doctor">
-                                        <div>
-                                            <small class="fw-bold">Dr. Sarah Wilson</small><br>
-                                            <small class="text-muted">Cardiologist</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td><span class="badge bg-success">Active</span></td>
-                                <td>
-                                    <div class="dropdown">
-                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                                            <i class="ri-more-2-line"></i>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#"><i class="ri-eye-line me-2"></i>View Profile</a></li>
-                                            <li><a class="dropdown-item" href="#"><i class="ri-edit-line me-2"></i>Edit Patient</a></li>
-                                            <li><a class="dropdown-item" href="#"><i class="ri-file-text-line me-2"></i>Medical Records</a></li>
-                                            <li><a class="dropdown-item" href="#"><i class="ri-calendar-line me-2"></i>Appointments</a></li>
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li><a class="dropdown-item text-warning" href="#"><i class="ri-user-unfollow-line me-2"></i>Deactivate</a></li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="~/theme/images/patient2.png" class="rounded-circle me-3" width="40" height="40" alt="Patient">
-                                        <div>
-                                            <h6 class="mb-0">Michael Brown</h6>
-                                            <small class="text-muted">ID: P002</small>
-                                            <br><small class="text-primary">Age: 45, Male</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div>
-                                        <span class="fw-bold">michael.brown@email.com</span><br>
-                                        <small class="text-muted">+1 234 567 8904</small><br>
-                                        <small class="text-muted">456 Oak Ave, City</small>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div>
-                                        <span class="badge bg-primary-light text-primary mb-1">A+</span><br>
-                                        <small class="text-muted">Single</small><br>
-                                        <small class="text-info">Insurance: Active</small>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div>
-                                        <span class="fw-bold">Nov 10, 2024</span><br>
-                                        <small class="text-muted">Neurology</small>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="~/theme/images/doctor2.png" class="rounded-circle me-2" width="24" height="24" alt="Doctor">
-                                        <div>
-                                            <small class="fw-bold">Dr. James Chen</small><br>
-                                            <small class="text-muted">Neurologist</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td><span class="badge bg-success">Active</span></td>
-                                <td>
-                                    <div class="dropdown">
-                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                                            <i class="ri-more-2-line"></i>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#"><i class="ri-eye-line me-2"></i>View Profile</a></li>
-                                            <li><a class="dropdown-item" href="#"><i class="ri-edit-line me-2"></i>Edit Patient</a></li>
-                                            <li><a class="dropdown-item" href="#"><i class="ri-file-text-line me-2"></i>Medical Records</a></li>
-                                            <li><a class="dropdown-item" href="#"><i class="ri-calendar-line me-2"></i>Appointments</a></li>
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li><a class="dropdown-item text-warning" href="#"><i class="ri-user-unfollow-line me-2"></i>Deactivate</a></li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
+                            @if (Model.Patients.Any())
+                            {
+                                @foreach (var patient in Model.Patients)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                @if (!string.IsNullOrEmpty(patient.ProfileImage))
+                                                {
+                                                    <img src="@patient.ProfileImage" class="rounded-circle me-3" width="40" height="40" alt="Patient">
+                                                }
+                                                else
+                                                {
+                                                    <div class="rounded-circle bg-primary-light d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                        <i class="ri-user-line text-primary"></i>
+                                                    </div>
+                                                }
+                                                <div>
+                                                    <h6 class="mb-0">@patient.FullName</h6>
+                                                    <small class="text-muted">ID: P@patient.PatientID.ToString("D3")</small>
+                                                    <br><small class="text-primary">Age: @(patient.Age ?? 0), @patient.Gender</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <span class="fw-bold">@patient.Email</span><br>
+                                                <small class="text-muted">@patient.PhoneNumber</small><br>
+                                                <small class="text-muted">Member Since: @patient.CreatedOn.ToString("MMM dd, yyyy")</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                @if (!string.IsNullOrEmpty(patient.BloodGroup))
+                                                {
+                                                    <span class="badge bg-danger-light text-danger mb-1">@patient.BloodGroup</span><br>
+                                                }
+                                                <small class="text-muted">@patient.MaritalStatus</small><br>
+                                                @if (!string.IsNullOrEmpty(patient.Occupation))
+                                                {
+                                                    <small class="text-info">@patient.Occupation</small>
+                                                }
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                @if (patient.LastVisit.HasValue)
+                                                {
+                                                    <span class="fw-bold">@patient.LastVisit.Value.ToString("MMM dd, yyyy")</span><br>
+                                                    <small class="text-muted">@((DateTime.Now - patient.LastVisit.Value).Days) days ago</small>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">No visits yet</span>
+                                                }
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <small class="text-muted">Total Appointments</small><br>
+                                                <span class="fw-bold">@patient.TotalAppointments</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @if (patient.IsActive)
+                                            {
+                                                <span class="badge bg-success">Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Inactive</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="dropdown">
+                                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                                    <i class="ri-more-2-line"></i>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li><a class="dropdown-item" href="/Admin/PatientProfile?id=@patient.PatientID"><i class="ri-eye-line me-2"></i>View Profile</a></li>
+                                                    <li><a class="dropdown-item" href="/Admin/EditPatient?id=@patient.PatientID"><i class="ri-edit-line me-2"></i>Edit Patient</a></li>
+                                                    <li><a class="dropdown-item" href="/Admin/PatientMedicalRecords?patientId=@patient.PatientID"><i class="ri-file-text-line me-2"></i>Medical Records</a></li>
+                                                    <li><a class="dropdown-item" href="/Admin/PatientAppointments?patientId=@patient.PatientID"><i class="ri-calendar-line me-2"></i>Appointments</a></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li>
+                                                        <form method="post" asp-page-handler="DeletePatient" class="d-inline" 
+                                                              onsubmit="return confirm('Are you sure you want to delete this patient? This action cannot be undone.');">
+                                                            <input type="hidden" name="userId" value="@patient.UserID" />
+                                                            <input type="hidden" name="patientId" value="@patient.PatientID" />
+                                                            <button type="submit" class="dropdown-item text-danger">
+                                                                <i class="ri-delete-bin-line me-2"></i>Delete Patient
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <i class="ri-user-line fs-1 text-muted"></i>
+                                        <p class="text-muted mt-2">No patients found</p>
+                                    </td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -375,24 +382,29 @@
                 <!-- Pagination -->
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <div>
-                        <span class="text-muted">Showing 1 to 2 of 980 patients</span>
+                        @{
+                            var startIndex = (Model.CurrentPage - 1) * Model.PageSize + 1;
+                            var endIndex = Math.Min(Model.CurrentPage * Model.PageSize, Model.PatientStats?.TotalPatients ?? 0);
+                        }
+                        <span class="text-muted">Showing @startIndex to @endIndex of @(Model.PatientStats?.TotalPatients ?? 0) patients</span>
                     </div>
                     <nav>
                         <ul class="pagination pagination-sm mb-0">
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#"><i class="ri-arrow-left-s-line"></i></a>
+                            <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                                <a class="page-link" href="?page=@(Model.CurrentPage - 1)&bloodGroup=@Model.BloodGroup&isActive=@Model.IsActive&searchTerm=@Model.SearchTerm">
+                                    <i class="ri-arrow-left-s-line"></i>
+                                </a>
                             </li>
-                            <li class="page-item active">
-                                <a class="page-link" href="#">1</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">2</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">3</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#"><i class="ri-arrow-right-s-line"></i></a>
+                            @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
+                            {
+                                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                    <a class="page-link" href="?page=@i&bloodGroup=@Model.BloodGroup&isActive=@Model.IsActive&searchTerm=@Model.SearchTerm">@i</a>
+                                </li>
+                            }
+                            <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                                <a class="page-link" href="?page=@(Model.CurrentPage + 1)&bloodGroup=@Model.BloodGroup&isActive=@Model.IsActive&searchTerm=@Model.SearchTerm">
+                                    <i class="ri-arrow-right-s-line"></i>
+                                </a>
                             </li>
                         </ul>
                     </nav>
@@ -430,21 +442,18 @@
             series: [{
                 name: 'New Patients',
                 type: 'area',
-                data: [89, 95, 102, 87, 93, 98, 105, 112, 89, 95, 102, 108]
+                data: [@Html.Raw(Model.RegistrationTrends?.MonthlyData != null ? string.Join(", ", Model.RegistrationTrends.MonthlyData.Select(m => m.Count)) : "0")]
             }, {
                 name: 'Return Patients',
                 type: 'line',
-                data: [156, 162, 148, 171, 165, 159, 174, 168, 156, 162, 148, 171]
+                data: [@Html.Raw(Model.RegistrationTrends?.MonthlyData != null ? string.Join(", ", Model.RegistrationTrends.MonthlyData.Select(m => "0")) : "0")]
             }],
             grid: {
                 borderColor: "#d8dee6",
                 strokeDashArray: 5,
             },
             xaxis: {
-                categories: [
-                    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-                ],
+                categories: [@Html.Raw(Model.RegistrationTrends?.MonthlyData != null ? string.Join(", ", Model.RegistrationTrends.MonthlyData.Select(m => $"\"{m.MonthName}\"")) : "\"\"")],
             },
             colors: ["#0d6efd", "#198754"],
             tooltip: {
@@ -465,7 +474,7 @@
                 height: 250,
                 type: 'donut',
             },
-            series: [25, 35, 20, 15, 5],
+            series: [@Html.Raw(Model.AgeDistribution != null ? string.Join(", ", Model.AgeDistribution.GetSeriesData()) : "0, 0, 0, 0, 0")],
             labels: ['0-18', '19-35', '36-50', '51-65', '65+'],
             colors: ['#0d6efd', '#198754', '#ffc107', '#fd7e14', '#dc3545'],
             legend: {
@@ -501,7 +510,7 @@
             },
             series: [{
                 name: 'Count',
-                data: [520, 460, 345, 289, 156, 89]
+                data: [@Html.Raw(Model.Demographics != null ? string.Join(", ", Model.Demographics.GetGenderMaritalData()) : "0, 0, 0, 0, 0, 0")]
             }],
             xaxis: {
                 categories: ['Female', 'Male', 'Married', 'Single', 'Divorced', 'Widowed'],
@@ -526,17 +535,11 @@
         var genderChart = new ApexCharts(document.querySelector("#genderChart"), genderOptions);
         genderChart.render();
 
-        // Filter functions
-        function filterByStatus(status) {
-            console.log('Filtering by status:', status);
-        }
-
-        function filterByBloodGroup(bloodGroup) {
-            console.log('Filtering by blood group:', bloodGroup);
-        }
-
+        // Export function - implement actual export logic
         function exportPatients() {
-            alert('Exporting patients data...');
+            // TODO: Implement actual export functionality
+            console.log('Export functionality to be implemented');
+            alert('Export functionality will be available soon!');
         }
     </script>
 

@@ -24,6 +24,12 @@ public class PatientList_DTO
     public string ProfileImage { get; set; } = string.Empty;
     public DateTime CreatedOn { get; set; }
     
+    // Additional patient information
+    public string? Address { get; set; }
+    public string? EmergencyContactName { get; set; }
+    public string? EmergencyContactNumber { get; set; }
+    public string? RelationshipToEmergency { get; set; }
+    
     // Statistics
     public int TotalAppointments { get; set; }
     public DateTime? LastVisit { get; set; }
