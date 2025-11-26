@@ -98,7 +98,8 @@ public class UsersModel : PageModel
                 Page = CurrentPage,
                 PageSize = PageSize,
                 SortBy = "RegisteredDate",
-                SortDescending = true
+                SortDescending = true,
+                ExcludeDeleted = true  // Filter out deleted users
             };
 
             // Parse role filter

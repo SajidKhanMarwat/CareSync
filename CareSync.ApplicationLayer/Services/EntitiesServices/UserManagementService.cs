@@ -151,6 +151,12 @@ public class UserManagementService : IUserManagementService
         {
             var query = _userManager.Users.AsQueryable();
 
+            // Filter out deleted users if requested (default is true)
+            if (filter.ExcludeDeleted)
+            {
+                query = query.Where(u => !u.IsDeleted);
+            }
+
             // Apply filters
             if (!string.IsNullOrEmpty(filter.SearchTerm))
             {

@@ -194,6 +194,7 @@ public class UserFilter_DTO
     public int PageSize { get; set; } = 10;
     public string SortBy { get; set; } = "RegisteredDate";
     public bool SortDescending { get; set; } = true;
+    public bool ExcludeDeleted { get; set; } = true; // Filter out soft-deleted users
 }
 
 // Bulk Action DTO

@@ -102,6 +102,11 @@
     </div>
 </div>
 
+<!-- CSRF Token for POST requests -->
+<form method="post" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>
+
 <!-- Filters -->
 <form method="get" id="filterForm">
 <div class="row mb-4">
@@ -329,42 +334,12 @@
                                                         <i class="ri-eye-line me-2"></i>View Profile</a></li>
                                                     <li><a class="dropdown-item" href="javascript:void(0)" onclick="editUser('@user.UserId')">
                                                         <i class="ri-edit-line me-2"></i>Edit User</a></li>
+                                                    <li><hr class="dropdown-divider"></li>
                                                     <li><a class="dropdown-item" href="javascript:void(0)" onclick="resetPassword('@user.UserId')">
                                                         <i class="ri-key-line me-2"></i>Reset Password</a></li>
-                                                    
-                                                    @if (user.RoleType == CareSync.Shared.Enums.RoleType.Doctor)
-                                                    {
-                                                        <li><a class="dropdown-item" href="/Admin/Doctors/Profile?userId=@user.UserId">
-                                                            <i class="ri-calendar-line me-2"></i>View Schedule</a></li>
-                                                        <li><a class="dropdown-item" href="/Admin/Doctors/Patients?userId=@user.UserId">
-                                                            <i class="ri-user-heart-line me-2"></i>View Patients</a></li>
-                                                    }
-                                                    else if (user.RoleType == CareSync.Shared.Enums.RoleType.Patient)
-                                                    {
-                                                        <li><a class="dropdown-item" href="/Admin/Patients/Profile?userId=@user.UserId">
-                                                            <i class="ri-file-text-line me-2"></i>Medical Records</a></li>
-                                                        <li><a class="dropdown-item" href="/Admin/Appointments?patientId=@user.UserId">
-                                                            <i class="ri-calendar-line me-2"></i>Appointments</a></li>
-                                                    }
-                                                    
-                                                    <li><hr class="dropdown-divider"></li>
-                                                    
-                                                    @if (user.IsActive)
-                                                    {
-                                                        <li><a class="dropdown-item text-warning" href="javascript:void(0)" 
-                                                            onclick="toggleUserStatus('@user.UserId', false)">
-                                                            <i class="ri-user-unfollow-line me-2"></i>Deactivate</a></li>
-                                                    }
-                                                    else
-                                                    {
-                                                        <li><a class="dropdown-item text-success" href="javascript:void(0)" 
-                                                            onclick="toggleUserStatus('@user.UserId', true)">
-                                                            <i class="ri-user-follow-line me-2"></i>Activate</a></li>
-                                                    }
-                                                    
                                                     <li><a class="dropdown-item text-danger" href="javascript:void(0)" 
                                                         onclick="deleteUser('@user.UserId', '@user.FullName')">
-                                                        <i class="ri-delete-bin-line me-2"></i>Delete</a></li>
+                                                        <i class="ri-delete-bin-line me-2"></i>Delete User</a></li>
                                                 </ul>
                                             </div>
                                         </td>
@@ -795,7 +770,91 @@
             }
         }
 
-        });
+        // View user profile
+        function viewUserDetails(userId) {
+            window.location.href = `/Admin/ViewUserProfile/${userId}`;
+        }
+
+        // Edit user
+        function editUser(userId) {
+            window.location.href = `/Admin/EditUser/${userId}`;
+        }
+
+        // Reset password - Navigate to reset password page
+        function resetPassword(userId) {
+            window.location.href = `/Admin/ResetPassword/${userId}`;
+        }
+
+        // Delete user
+        function deleteUser(userId, userName) {
+            if (confirm(`Are you sure you want to delete user: ${userName}?\n\nThis action cannot be undone!`)) {
+                // Create form and submit
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/Admin/Users?handler=Delete';
+                
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '__RequestVerificationToken';
+                const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (tokenElement) {
+                    tokenInput.value = tokenElement.value;
+                }
+                
+                const userIdInput = document.createElement('input');
+                userIdInput.type = 'hidden';
+                userIdInput.name = 'userId';
+                userIdInput.value = userId;
+                
+                form.appendChild(tokenInput);
+                form.appendChild(userIdInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        // Toggle user status
+        function toggleUserStatus(userId, isActive) {
+            const action = isActive ? 'activate' : 'deactivate';
+            if (confirm(`Are you sure you want to ${action} this user?`)) {
+                // Create form and submit
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/Admin/Users?handler=ToggleStatus';
+                
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '__RequestVerificationToken';
+                const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (tokenElement) {
+                    tokenInput.value = tokenElement.value;
+                }
+                
+                const userIdInput = document.createElement('input');
+                userIdInput.type = 'hidden';
+                userIdInput.name = 'userId';
+                userIdInput.value = userId;
+                
+                const statusInput = document.createElement('input');
+                statusInput.type = 'hidden';
+                statusInput.name = 'isActive';
+                statusInput.value = isActive;
+                
+                form.appendChild(tokenInput);
+                form.appendChild(userIdInput);
+                form.appendChild(statusInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        // Change page size
+        function changePageSize(newSize) {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('PageSize', newSize);
+            urlParams.set('Page', '1'); // Reset to first page when changing page size
+            window.location.search = urlParams.toString();
+        }
 
         // Modal and User Creation Functions
         function toggleRoleSpecificFields() {
@@ -897,14 +956,6 @@
             if (/[0-9]/.test(password)) strength++;
             if (/[^A-Za-z0-9]/.test(password)) strength++;
             return strength;
-        }
-        
-        // Function to change page size
-        function changePageSize(newSize) {
-            const urlParams = new URLSearchParams(window.location.search);
-            urlParams.set('PageSize', newSize);
-            urlParams.set('Page', '1'); // Reset to first page when changing page size
-            window.location.search = urlParams.toString();
         }
     </script>
 
