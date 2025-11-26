@@ -44,6 +44,7 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<ILabService, LabService>();
+builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 #endregion
 
 var app = builder.Build();
