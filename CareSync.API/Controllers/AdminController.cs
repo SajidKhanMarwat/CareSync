@@ -5,7 +5,9 @@ using CareSync.ApplicationLayer.Contracts.AdminDTOs;
 using CareSync.ApplicationLayer.Contracts.DoctorsDTOs;
 using CareSync.ApplicationLayer.Contracts.PatientsDTOs;
 using CareSync.ApplicationLayer.Contracts.UsersDTOs;
+using CareSync.ApplicationLayer.Contracts.UserManagementDTOs;
 using CareSync.ApplicationLayer.IServices.EntitiesServices;
+using CareSync.ApplicationLayer.Services.EntitiesServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,7 +19,7 @@ namespace CareSync.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize(Roles = "Admin")]
-public class AdminController(IAdminService adminService, IUserService userService, ILogger<AdminController> logger) : ControllerBase
+public class AdminController(IAdminService adminService, IUserService userService, IUserManagementService userManagementService, ILogger<AdminController> logger) : ControllerBase
 {
     #region Dashboard & Analytics
 
@@ -501,6 +503,155 @@ public class AdminController(IAdminService adminService, IUserService userServic
     {
         logger.LogInformation("Getting patient profile: {PatientId}", patientId);
         return await adminService.GetPatientProfileAsync(patientId);
+    }
+
+    #endregion
+
+    #region User Management
+
+    /// <summary>
+    /// Get user statistics for dashboard cards
+    /// </summary>
+    [HttpGet("users/statistics")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<UserStatistics_DTO>> GetUserStatistics()
+    {
+        logger.LogInformation("Getting user statistics");
+        return await userManagementService.GetUserStatisticsAsync();
+    }
+
+    /// <summary>
+    /// Get all users with filters and pagination
+    /// </summary>
+    [HttpPost("users/list")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<PagedResult<UserList_DTO>>> GetAllUsers([FromBody] UserFilter_DTO filter)
+    {
+        logger.LogInformation("Getting all users with filters");
+        return await userManagementService.GetAllUsersAsync(filter);
+    }
+
+    /// <summary>
+    /// Get user details by ID
+    /// </summary>
+    [HttpGet("users/{userId}")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<UserDetail_DTO>> GetUserById(string userId)
+    {
+        logger.LogInformation("Getting user details for: {UserId}", userId);
+        return await userManagementService.GetUserByIdAsync(userId);
+    }
+
+    /// <summary>
+    /// Create a new user
+    /// </summary>
+    [HttpPost("users")]
+    public async Task<Result<GeneralResponse>> CreateUser([FromBody] CreateUpdateUser_DTO dto)
+    {
+        logger.LogInformation("Creating new user: {Email}", dto.Email);
+        return await userManagementService.CreateUserAsync(dto);
+    }
+
+    /// <summary>
+    /// Update user information
+    /// </summary>
+    [HttpPut("users/{userId}")]
+    public async Task<Result<GeneralResponse>> UpdateUser(string userId, [FromBody] CreateUpdateUser_DTO dto)
+    {
+        logger.LogInformation("Updating user: {UserId}", userId);
+        return await userManagementService.UpdateUserAsync(userId, dto);
+    }
+
+    /// <summary>
+    /// Delete a user
+    /// </summary>
+    [HttpDelete("users/{userId}")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<GeneralResponse>> DeleteUser(string userId)
+    {
+        logger.LogInformation("Deleting user: {UserId}", userId);
+        return await userManagementService.DeleteUserAsync(userId);
+    }
+
+    /// <summary>
+    /// Toggle user active status
+    /// </summary>
+    [HttpPatch("users/{userId}/toggle-status")]
+    [AllowAnonymous] // TODO: Remove after testing
+    public async Task<Result<GeneralResponse>> ToggleUserStatus(string userId, [FromQuery] bool isActive)
+    {
+        logger.LogInformation("Toggling user status: {UserId} to {IsActive}", userId, isActive);
+        return await userManagementService.ToggleUserStatusAsync(userId, isActive);
+    }
+
+    /// <summary>
+    /// Suspend a user
+    /// </summary>
+    [HttpPost("users/{userId}/suspend")]
+    public async Task<Result<GeneralResponse>> SuspendUser(string userId, [FromBody] string reason)
+    {
+        logger.LogInformation("Suspending user: {UserId}", userId);
+        return await userManagementService.SuspendUserAsync(userId, reason);
+    }
+
+    /// <summary>
+    /// Reset user password (admin action)
+    /// </summary>
+    [HttpPost("users/reset-password")]
+    public async Task<Result<GeneralResponse>> ResetUserPassword([FromBody] AdminPasswordReset_DTO dto)
+    {
+        logger.LogInformation("Resetting password for user: {UserId}", dto.UserId);
+        return await userManagementService.ResetPasswordAsync(dto);
+    }
+
+    /// <summary>
+    /// Perform bulk actions on multiple users
+    /// </summary>
+    [HttpPost("users/bulk-action")]
+    public async Task<Result<GeneralResponse>> BulkUserAction([FromBody] BulkUserAction_DTO dto)
+    {
+        logger.LogInformation("Performing bulk action: {Action} on {Count} users", dto.Action, dto.UserIds?.Count ?? 0);
+        return await userManagementService.BulkActionAsync(dto);
+    }
+
+    /// <summary>
+    /// Get user activities
+    /// </summary>
+    [HttpGet("users/activities")]
+    public async Task<Result<List<UserActivity_DTO>>> GetUserActivities()
+    {
+        logger.LogInformation("Getting user activities");
+        return await userManagementService.GetUserActivitiesAsync();
+    }
+
+    /// <summary>
+    /// Update user permissions
+    /// </summary>
+    [HttpPost("users/permissions")]
+    public async Task<Result<GeneralResponse>> UpdateUserPermissions([FromBody] UserPermission_DTO dto)
+    {
+        logger.LogInformation("Updating permissions for user: {UserId}", dto.UserId);
+        return await userManagementService.UpdateUserPermissionsAsync(dto);
+    }
+
+    /// <summary>
+    /// Get all departments
+    /// </summary>
+    [HttpGet("users/departments")]
+    public async Task<Result<List<string>>> GetDepartments()
+    {
+        logger.LogInformation("Getting all departments");
+        return await userManagementService.GetDepartmentsAsync();
+    }
+
+    /// <summary>
+    /// Get all roles
+    /// </summary>
+    [HttpGet("users/roles")]
+    public async Task<Result<List<string>>> GetRoles()
+    {
+        logger.LogInformation("Getting all roles");
+        return await userManagementService.GetRolesAsync();
     }
 
     #endregion

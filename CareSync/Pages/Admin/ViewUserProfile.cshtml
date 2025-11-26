@@ -1,0 +1,400 @@
+@page "/Admin/ViewUserProfile/{userId}"
+@model CareSync.Pages.Admin.ViewUserProfileModel
+@{
+    ViewData["Title"] = "User Profile";
+}
+
+@section Breadcrumb {
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="~/Admin/Dashboard">
+                <i class="ri-home-3-line"></i>
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="~/Admin/Users">User Management</a>
+        </li>
+        <li class="breadcrumb-item text-primary" aria-current="page">
+            User Profile
+        </li>
+    </ol>
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <a href="/Admin/EditUser/@Model.UserDetail.UserId" class="btn btn-primary">
+            <i class="ri-edit-line me-2"></i>Edit User
+        </a>
+        <button class="btn btn-outline-secondary" onclick="printProfile()">
+            <i class="ri-printer-line me-2"></i>Print
+        </button>
+        <a href="/Admin/Users" class="btn btn-outline-secondary">
+            <i class="ri-arrow-left-line me-2"></i>Back to List
+        </a>
+    </div>
+}
+
+@if (Model.UserDetail != null)
+{
+    <!-- User Overview -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            @{
+                                var avatarImage = Model.UserDetail.RoleType switch
+                                {
+                                    CareSync.Shared.Enums.RoleType.Admin => "~/theme/images/admin.png",
+                                    CareSync.Shared.Enums.RoleType.Doctor => "~/theme/images/doctor1.png",
+                                    CareSync.Shared.Enums.RoleType.Patient => "~/theme/images/patient1.png",
+                                    CareSync.Shared.Enums.RoleType.Lab or CareSync.Shared.Enums.RoleType.LabAssistant => "~/theme/images/lab-tech.png",
+                                    _ => "~/theme/images/default-user.png"
+                                };
+                            }
+                            <img src="@(string.IsNullOrEmpty(Model.UserDetail.ProfilePicture) ? avatarImage : Model.UserDetail.ProfilePicture)" 
+                                 class="rounded-circle" width="100" height="100" alt="Profile">
+                        </div>
+                        <div class="col">
+                            <h3 class="mb-1">@Model.UserDetail.FirstName @Model.UserDetail.LastName</h3>
+                            <p class="text-muted mb-2">
+                                <span class="badge bg-primary">@Model.UserDetail.RoleName</span>
+                                @if (!string.IsNullOrEmpty(Model.UserDetail.UserCode))
+                                {
+                                    <span class="ms-2">ID: #@Model.UserDetail.UserCode</span>
+                                }
+                            </p>
+                            <div class="d-flex gap-3 text-muted">
+                                <span><i class="ri-mail-line me-1"></i>@Model.UserDetail.Email</span>
+                                <span><i class="ri-phone-line me-1"></i>@(Model.UserDetail.PhoneNumber ?? "N/A")</span>
+                                @if (Model.UserDetail.Gender.HasValue)
+                                {
+                                    <span><i class="ri-user-line me-1"></i>@Model.UserDetail.Gender</span>
+                                }
+                                @if (Model.UserDetail.Age.HasValue)
+                                {
+                                    <span><i class="ri-calendar-line me-1"></i>@Model.UserDetail.Age years</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            @{
+                                var statusBadgeClass = Model.UserDetail.Status switch
+                                {
+                                    "Active" => "bg-success",
+                                    "Inactive" => "bg-secondary",
+                                    "Suspended" => "bg-danger",
+                                    _ => "bg-secondary"
+                                };
+                            }
+                            <span class="badge @statusBadgeClass fs-6">@Model.UserDetail.Status</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Information Tabs -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#personal">
+                                <i class="ri-user-line me-2"></i>Personal Information
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#professional">
+                                <i class="ri-briefcase-line me-2"></i>Professional Details
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#account">
+                                <i class="ri-shield-user-line me-2"></i>Account Settings
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#activity">
+                                <i class="ri-history-line me-2"></i>Activity Log
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <!-- Personal Information Tab -->
+                        <div class="tab-pane fade show active" id="personal">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Full Name</label>
+                                    <p class="fw-bold">@Model.UserDetail.FirstName @Model.UserDetail.LastName</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Username</label>
+                                    <p class="fw-bold">@(Model.UserDetail.UserName ?? "N/A")</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Email Address</label>
+                                    <p class="fw-bold">
+                                        @Model.UserDetail.Email
+                                        @if (Model.UserDetail.EmailConfirmed)
+                                        {
+                                            <span class="badge bg-success ms-2">Verified</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning ms-2">Unverified</span>
+                                        }
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Phone Number</label>
+                                    <p class="fw-bold">
+                                        @(Model.UserDetail.PhoneNumber ?? "N/A")
+                                        @if (Model.UserDetail.PhoneNumberConfirmed)
+                                        {
+                                            <span class="badge bg-success ms-2">Verified</span>
+                                        }
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Date of Birth</label>
+                                    <p class="fw-bold">
+                                        @if (Model.UserDetail.DateOfBirth.HasValue)
+                                        {
+                                            @Model.UserDetail.DateOfBirth.Value.ToString("MMM dd, yyyy")
+                                        }
+                                        else
+                                        {
+                                            <text>N/A</text>
+                                        }
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Gender</label>
+                                    <p class="fw-bold">@(Model.UserDetail.Gender?.ToString() ?? "N/A")</p>
+                                </div>
+                                <div class="col-12">
+                                    <label class="text-muted small">Address</label>
+                                    <p class="fw-bold">@(Model.UserDetail.Address ?? "N/A")</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Professional Details Tab -->
+                        <div class="tab-pane fade" id="professional">
+                            @if (Model.UserDetail.RoleType == CareSync.Shared.Enums.RoleType.Doctor && Model.UserDetail.DoctorInfo != null)
+                            {
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="text-muted small">Specialization</label>
+                                        <p class="fw-bold">@Model.UserDetail.DoctorInfo.Specialization</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-muted small">License Number</label>
+                                        <p class="fw-bold">@Model.UserDetail.DoctorInfo.LicenseNumber</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-muted small">Years of Experience</label>
+                                        <p class="fw-bold">@Model.UserDetail.DoctorInfo.YearsOfExperience years</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-muted small">Department</label>
+                                        <p class="fw-bold">@(Model.UserDetail.DoctorInfo.Department ?? "N/A")</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-muted small">Consultation Fee</label>
+                                        <p class="fw-bold">$@Model.UserDetail.DoctorInfo.ConsultationFee</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-muted small">Schedule</label>
+                                        <p class="fw-bold">@(Model.UserDetail.DoctorInfo.Schedule ?? "N/A")</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-muted small">Total Patients</label>
+                                        <p class="fw-bold">@Model.UserDetail.DoctorInfo.TotalPatients</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-muted small">Completed Appointments</label>
+                                        <p class="fw-bold">@Model.UserDetail.DoctorInfo.CompletedAppointments</p>
+                                    </div>
+                                </div>
+                            }
+                            else if (Model.UserDetail.RoleType == CareSync.Shared.Enums.RoleType.Patient && Model.UserDetail.PatientInfo != null)
+                            {
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="text-muted small">Patient ID</label>
+                                        <p class="fw-bold">#@Model.UserDetail.PatientInfo.PatientId</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-muted small">Blood Group</label>
+                                        <p class="fw-bold">@(Model.UserDetail.PatientInfo.BloodGroup ?? "N/A")</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-muted small">Marital Status</label>
+                                        <p class="fw-bold">@(Model.UserDetail.PatientInfo.MaritalStatus ?? "N/A")</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-muted small">Total Appointments</label>
+                                        <p class="fw-bold">@Model.UserDetail.PatientInfo.TotalAppointments</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-muted small">Emergency Contact</label>
+                                        <p class="fw-bold">@(Model.UserDetail.PatientInfo.EmergencyContact ?? "N/A")</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-muted small">Emergency Phone</label>
+                                        <p class="fw-bold">@(Model.UserDetail.PatientInfo.EmergencyContactPhone ?? "N/A")</p>
+                                    </div>
+                                    @if (Model.UserDetail.PatientInfo.LastVisitDate.HasValue)
+                                    {
+                                        <div class="col-md-6">
+                                            <label class="text-muted small">Last Visit</label>
+                                            <p class="fw-bold">@Model.UserDetail.PatientInfo.LastVisitDate.Value.ToString("MMM dd, yyyy")</p>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No professional details available for this user role.</p>
+                            }
+                        </div>
+
+                        <!-- Account Settings Tab -->
+                        <div class="tab-pane fade" id="account">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="text-muted small">User ID</label>
+                                    <p class="fw-bold">@Model.UserDetail.UserId</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">User Code</label>
+                                    <p class="fw-bold">#@Model.UserDetail.UserCode</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Primary Role</label>
+                                    <p class="fw-bold">@Model.UserDetail.RoleName</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">All Roles</label>
+                                    <p class="fw-bold">
+                                        @if (Model.UserDetail.Roles?.Any() == true)
+                                        {
+                                            @string.Join(", ", Model.UserDetail.Roles)
+                                        }
+                                        else
+                                        {
+                                            <text>N/A</text>
+                                        }
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Account Status</label>
+                                    <p class="fw-bold">
+                                        @if (Model.UserDetail.IsActive)
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Inactive</span>
+                                        }
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Two-Factor Authentication</label>
+                                    <p class="fw-bold">
+                                        @if (Model.UserDetail.TwoFactorEnabled)
+                                        {
+                                            <span class="badge bg-success">Enabled</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Disabled</span>
+                                        }
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Lockout Status</label>
+                                    <p class="fw-bold">
+                                        @if (Model.UserDetail.LockoutEnd.HasValue && Model.UserDetail.LockoutEnd > DateTimeOffset.Now)
+                                        {
+                                            <span class="badge bg-danger">Locked until @Model.UserDetail.LockoutEnd.Value.ToString("MMM dd, yyyy HH:mm")</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success">Not Locked</span>
+                                        }
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Failed Login Attempts</label>
+                                    <p class="fw-bold">@Model.UserDetail.AccessFailedCount</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Activity Log Tab -->
+                        <div class="tab-pane fade" id="activity">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Registration Date</label>
+                                    <p class="fw-bold">@Model.UserDetail.RegisteredDate.ToString("MMM dd, yyyy HH:mm")</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Last Login</label>
+                                    <p class="fw-bold">
+                                        @if (Model.UserDetail.LastLoginDate.HasValue)
+                                        {
+                                            @Model.UserDetail.LastLoginDate.Value.ToString("MMM dd, yyyy HH:mm")
+                                        }
+                                        else
+                                        {
+                                            <text>Never logged in</text>
+                                        }
+                                    </p>
+                                </div>
+                                <div class="col-12">
+                                    <label class="text-muted small">Permissions</label>
+                                    <div>
+                                        @if (Model.UserDetail.Permissions?.Any() == true)
+                                        {
+                                            @foreach (var permission in Model.UserDetail.Permissions)
+                                            {
+                                                <span class="badge bg-info me-2 mb-2">@permission</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <p class="fw-bold">Default role permissions apply</p>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">
+        <i class="ri-alert-line me-2"></i>User not found or you don't have permission to view this profile.
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function printProfile() {
+            window.print();
+        }
+    </script>
+}
