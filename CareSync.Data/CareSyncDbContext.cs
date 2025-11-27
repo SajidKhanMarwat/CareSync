@@ -1,4 +1,6 @@
 using CareSync.DataLayer.Entities;
+using CareSync.DataLayer.Entities.Doctor_Entities;
+using CareSync.DataLayer.Entities.Lab_Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -41,12 +43,14 @@ public class CareSyncDbContext : IdentityDbContext<T_Users, T_Roles, string, Ide
 
     // Doctor-related entities
     public DbSet<T_Qualifications> T_Qualifications { get; set; }
+    public DbSet<T_UserDocterAssistant> T_UserDocterAssistant { get; set; }
 
     // Lab entities
     public DbSet<T_Lab> T_Labs { get; set; }
     public DbSet<T_LabServices> T_LabServices { get; set; }
     public DbSet<T_LabRequests> T_LabRequests { get; set; }
     public DbSet<T_LabReports> T_LabReports { get; set; }
+    public DbSet<T_UserLabAssistant> T_UserLabAssistant { get; set; }
 
     #endregion
 
