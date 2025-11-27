@@ -44,9 +44,9 @@
                         <i class="ri-team-line"></i>
                     </div>
                     <div>
-                        <h5 class="mb-1">1,283</h5>
+                        <h5 class="mb-1">@Model.UserStatistics.TotalUsers.ToString("N0")</h5>
                         <p class="mb-0 text-muted">Total Users</p>
-                        <small class="text-success">+7.2% this month</small>
+                        <small class="@(Model.UserStatistics.UsersGrowthPercentage >= 0 ? "text-success" : "text-danger")">@(Model.UserStatistics.UsersGrowthPercentage >= 0 ? "+" : "")@Model.UserStatistics.UsersGrowthPercentage.ToString("F1")% this month</small>
                     </div>
                 </div>
             </div>
@@ -60,9 +60,9 @@
                         <i class="ri-stethoscope-line"></i>
                     </div>
                     <div>
-                        <h5 class="mb-1">24</h5>
+                        <h5 class="mb-1">@Model.UserStatistics.TotalDoctors</h5>
                         <p class="mb-0 text-muted">Doctors</p>
-                        <small class="text-success">+2 this month</small>
+                        <small class="@(Model.UserStatistics.NewDoctorsThisMonth > 0 ? "text-success" : "text-muted")">+@Model.UserStatistics.NewDoctorsThisMonth this month</small>
                     </div>
                 </div>
             </div>
@@ -76,9 +76,9 @@
                         <i class="ri-user-heart-line"></i>
                     </div>
                     <div>
-                        <h5 class="mb-1">1,247</h5>
+                        <h5 class="mb-1">@Model.UserStatistics.TotalPatients.ToString("N0")</h5>
                         <p class="mb-0 text-muted">Patients</p>
-                        <small class="text-success">+5.2% this month</small>
+                        <small class="@(Model.UserStatistics.PatientsGrowthPercentage >= 0 ? "text-success" : "text-danger")">@(Model.UserStatistics.PatientsGrowthPercentage >= 0 ? "+" : "")@Model.UserStatistics.PatientsGrowthPercentage.ToString("F1")% this month</small>
                     </div>
                 </div>
             </div>
@@ -92,9 +92,9 @@
                         <i class="ri-test-tube-line"></i>
                     </div>
                     <div>
-                        <h5 class="mb-1">12</h5>
+                        <h5 class="mb-1">@Model.UserStatistics.TotalLabStaff</h5>
                         <p class="mb-0 text-muted">Lab Staff</p>
-                        <small class="text-success">+1 this month</small>
+                        <small class="@(Model.UserStatistics.NewLabStaffThisMonth > 0 ? "text-success" : "text-muted")">+@Model.UserStatistics.NewLabStaffThisMonth this month</small>
                     </div>
                 </div>
             </div>
@@ -102,7 +102,13 @@
     </div>
 </div>
 
+<!-- CSRF Token for POST requests -->
+<form method="post" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>
+
 <!-- Filters -->
+<form method="get" id="filterForm">
 <div class="row mb-4">
     <div class="col-12">
         <div class="card">
@@ -116,55 +122,61 @@
                     <div class="col-md-3">
                         <label class="form-label">Search Users</label>
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Name, Email, ID..." id="searchInput">
-                            <button class="btn btn-outline-secondary" type="button">
+                            <input type="text" class="form-control" placeholder="Name, Email, ID..." 
+                                   name="SearchTerm" value="@Model.SearchTerm" id="searchInput">
+                            <button class="btn btn-outline-secondary" type="submit">
                                 <i class="ri-search-line"></i>
                             </button>
                         </div>
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Role</label>
-                        <select class="form-select" id="roleFilter">
+                        <select class="form-select" id="roleFilter" name="RoleFilter" asp-for="RoleFilter">
                             <option value="">All Roles</option>
-                            <option value="Admin">Admin</option>
-                            <option value="Doctor">Doctor</option>
-                            <option value="Patient">Patient</option>
-                            <option value="Lab">Lab Staff</option>
+                            @foreach (var role in Model.Roles)
+                            {
+                                <option value="@role" selected="@(Model.RoleFilter == role)">@role</option>
+                            }
                         </select>
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Status</label>
-                        <select class="form-select" id="statusFilter">
+                        <select class="form-select" name="StatusFilter" value="@Model.StatusFilter" id="statusFilter">
                             <option value="">All Status</option>
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                            <option value="Suspended">Suspended</option>
+                            <option value="Active" selected="@(Model.StatusFilter == "Active")">Active</option>
+                            <option value="Inactive" selected="@(Model.StatusFilter == "Inactive")">Inactive</option>
+                            <option value="Suspended" selected="@(Model.StatusFilter == "Suspended")">Suspended</option>
                         </select>
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Registration Date</label>
-                        <select class="form-select" id="dateFilter">
+                        <select class="form-select" name="DateFilter" value="@Model.DateFilter" id="dateFilter">
                             <option value="">All Time</option>
-                            <option value="today">Today</option>
-                            <option value="week">This Week</option>
+                            <option value="today" selected="@(Model.DateFilter == "today")">Today</option>
+                            <option value="week" selected="@(Model.DateFilter == "week")">This Week</option>
                             <option value="month">This Month</option>
                             <option value="year">This Year</option>
                         </select>
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Department</label>
-                        <select class="form-select" id="departmentFilter">
+                        <select class="form-select" id="departmentFilter" name="DepartmentFilter" asp-for="DepartmentFilter">
                             <option value="">All Departments</option>
-                            <option value="Cardiology">Cardiology</option>
-                            <option value="Neurology">Neurology</option>
-                            <option value="Orthopedics">Orthopedics</option>
-                            <option value="Pediatrics">Pediatrics</option>
-                            <option value="Emergency">Emergency</option>
+                            @foreach (var dept in Model.Departments)
+                            {
+                                <option value="@dept" selected="@(Model.DepartmentFilter == dept)">@dept</option>
+                            }
                         </select>
                     </div>
                     <div class="col-md-1">
                         <label class="form-label">&nbsp;</label>
-                        <button class="btn btn-outline-secondary d-block w-100" onclick="clearFilters()">
+                        <button class="btn btn-primary d-block w-100" type="submit">
+                            <i class="ri-search-line"></i>
+                        </button>
+                    </div>
+                    <div class="col-md-1">
+                        <label class="form-label">&nbsp;</label>
+                        <button class="btn btn-outline-secondary d-block w-100" type="button" onclick="clearFilters()">
                             <i class="ri-refresh-line"></i>
                         </button>
                     </div>
@@ -173,6 +185,7 @@
         </div>
     </div>
 </div>
+</form>
 
 <!-- All Users Table -->
 <div class="row">
@@ -209,230 +222,234 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Admin Users -->
-                            <tr>
-                                <td>
-                                    <input type="checkbox" class="form-check-input user-checkbox">
-                                </td>
-                                <td>
-                                    <span class="fw-bold text-primary">#A001</span>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="~/theme/images/admin.png" class="rounded-circle me-2" width="40" height="40" alt="Admin">
-                                        <div>
-                                            <h6 class="mb-0">John Admin</h6>
-                                            <small class="text-muted">System Administrator</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge bg-danger mb-1">Admin</span><br>
-                                    <small class="text-muted">System Management</small>
-                                </td>
-                                <td>
-                                    <span>john.admin@caresync.com</span>
-                                    <small class="text-muted d-block">+1 234 567 8901</small>
-                                </td>
-                                <td>
-                                    <span class="badge bg-success mb-1">Active</span><br>
-                                    <small class="text-muted">Last: Nov 15, 2024</small>
-                                </td>
-                                <td>
-                                    <small class="text-muted">Full System Access</small><br>
-                                    <small class="text-success">All Permissions</small>
-                                </td>
-                                <td>
-                                    <div class="dropdown">
-                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                                            <i class="ri-more-2-line"></i>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#"><i class="ri-eye-line me-2"></i>View Profile</a></li>
-                                            <li><a class="dropdown-item" href="#"><i class="ri-edit-line me-2"></i>Edit User</a></li>
-                                            <li><a class="dropdown-item" href="#"><i class="ri-key-line me-2"></i>Reset Password</a></li>
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li><a class="dropdown-item text-warning" href="#"><i class="ri-user-unfollow-line me-2"></i>Suspend</a></li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Doctor Users -->
-                            <tr>
-                                <td>
-                                    <input type="checkbox" class="form-check-input user-checkbox">
-                                </td>
-                                <td>
-                                    <span class="fw-bold text-primary">#D001</span>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="~/theme/images/doctor1.png" class="rounded-circle me-2" width="40" height="40" alt="Doctor">
-                                        <div>
-                                            <h6 class="mb-0">Dr. Sarah Wilson</h6>
-                                            <small class="text-muted">MBBS, MD Cardiology</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge bg-primary mb-1">Doctor</span><br>
-                                    <small class="text-muted">Cardiology Dept.</small>
-                                </td>
-                                <td>
-                                    <span>sarah.wilson@caresync.com</span>
-                                    <small class="text-muted d-block">+1 234 567 8902</small>
-                                </td>
-                                <td>
-                                    <span class="badge bg-success mb-1">Active</span><br>
-                                    <small class="text-muted">Last: Nov 14, 2024</small>
-                                </td>
-                                <td>
-                                    <small class="text-muted">12 years experience</small><br>
-                                    <small class="text-success">License: MD12345</small>
-                                </td>
-                                <td>
-                                    <div class="dropdown">
-                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                                            <i class="ri-more-2-line"></i>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#"><i class="ri-eye-line me-2"></i>View Profile</a></li>
-                                            <li><a class="dropdown-item" href="#"><i class="ri-edit-line me-2"></i>Edit Doctor</a></li>
-                                            <li><a class="dropdown-item" href="#"><i class="ri-calendar-line me-2"></i>View Schedule</a></li>
-                                            <li><a class="dropdown-item" href="#"><i class="ri-user-heart-line me-2"></i>View Patients</a></li>
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li><a class="dropdown-item text-warning" href="#"><i class="ri-user-unfollow-line me-2"></i>Suspend</a></li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Patient Users -->
-                            <tr>
-                                <td>
-                                    <input type="checkbox" class="form-check-input user-checkbox">
-                                </td>
-                                <td>
-                                    <span class="fw-bold text-primary">#P001</span>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="~/theme/images/patient1.png" class="rounded-circle me-2" width="40" height="40" alt="Patient">
-                                        <div>
-                                            <h6 class="mb-0">Emily Johnson</h6>
-                                            <small class="text-muted">Patient ID: P001</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge bg-info mb-1">Patient</span><br>
-                                    <small class="text-muted">General Care</small>
-                                </td>
-                                <td>
-                                    <span>emily.johnson@email.com</span>
-                                    <small class="text-muted d-block">+1 234 567 8903</small>
-                                </td>
-                                <td>
-                                    <span class="badge bg-success mb-1">Active</span><br>
-                                    <small class="text-muted">Last: Nov 12, 2024</small>
-                                </td>
-                                <td>
-                                    <small class="text-muted">Blood Type: O+</small><br>
-                                    <small class="text-info">Insurance: Active</small>
-                                </td>
-                                <td>
-                                    <div class="dropdown">
-                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                                            <i class="ri-more-2-line"></i>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#"><i class="ri-eye-line me-2"></i>View Profile</a></li>
-                                            <li><a class="dropdown-item" href="#"><i class="ri-edit-line me-2"></i>Edit Patient</a></li>
-                                            <li><a class="dropdown-item" href="#"><i class="ri-file-text-line me-2"></i>Medical Records</a></li>
-                                            <li><a class="dropdown-item" href="#"><i class="ri-calendar-line me-2"></i>Appointments</a></li>
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li><a class="dropdown-item text-warning" href="#"><i class="ri-user-unfollow-line me-2"></i>Suspend</a></li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Lab Staff Users -->
-                            <tr>
-                                <td>
-                                    <input type="checkbox" class="form-check-input user-checkbox">
-                                </td>
-                                <td>
-                                    <span class="fw-bold text-primary">#L001</span>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="~/theme/images/lab-tech.png" class="rounded-circle me-2" width="40" height="40" alt="Lab Staff">
-                                        <div>
-                                            <h6 class="mb-0">James Chen</h6>
-                                            <small class="text-muted">Senior Lab Technician</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge bg-warning mb-1">Lab Staff</span><br>
-                                    <small class="text-muted">Hematology Dept.</small>
-                                </td>
-                                <td>
-                                    <span>james.chen@caresync.com</span>
-                                    <small class="text-muted d-block">+1 234 567 8904</small>
-                                </td>
-                                <td>
-                                    <span class="badge bg-success mb-1">Active</span><br>
-                                    <small class="text-muted">Last: Nov 15, 2024</small>
-                                </td>
-                                <td>
-                                    <small class="text-muted">BSc MLT, 8 years exp</small><br>
-                                    <small class="text-success">Morning Shift</small>
-                                </td>
-                                <td>
-                                    <div class="dropdown">
-                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                                            <i class="ri-more-2-line"></i>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#"><i class="ri-eye-line me-2"></i>View Profile</a></li>
-                                            <li><a class="dropdown-item" href="#"><i class="ri-edit-line me-2"></i>Edit Staff</a></li>
-                                            <li><a class="dropdown-item" href="#"><i class="ri-calendar-line me-2"></i>View Schedule</a></li>
-                                            <li><a class="dropdown-item" href="#"><i class="ri-flask-line me-2"></i>Lab Tests</a></li>
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li><a class="dropdown-item text-warning" href="#"><i class="ri-user-unfollow-line me-2"></i>Suspend</a></li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
+                            @if (Model.UsersList?.Items?.Any() == true)
+                            {
+                                @foreach (var user in Model.UsersList.Items)
+                                {
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" class="form-check-input user-checkbox" value="@user.UserId">
+                                        </td>
+                                        <td>
+                                            <span class="fw-bold text-primary">#@user.UserCode</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                @{
+                                                    var avatarImage = user.RoleType switch
+                                                    {
+                                                        CareSync.Shared.Enums.RoleType.Admin => "~/theme/images/admin.png",
+                                                        CareSync.Shared.Enums.RoleType.Doctor => "~/theme/images/doctor1.png",
+                                                        CareSync.Shared.Enums.RoleType.Patient => "~/theme/images/patient1.png",
+                                                        CareSync.Shared.Enums.RoleType.Lab or CareSync.Shared.Enums.RoleType.LabAssistant => "~/theme/images/lab-tech.png",
+                                                        _ => "~/theme/images/default-user.png"
+                                                    };
+                                                }
+                                                <img src="@(string.IsNullOrEmpty(user.ProfilePicture) ? avatarImage : user.ProfilePicture)" 
+                                                     class="rounded-circle me-2" width="40" height="40" alt="@user.RoleName">
+                                                <div>
+                                                    <h6 class="mb-0">@user.FullName</h6>
+                                                    <small class="text-muted">
+                                                        @if (user.RoleType == CareSync.Shared.Enums.RoleType.Doctor && !string.IsNullOrEmpty(user.Specialization))
+                                                        {
+                                                            @user.Specialization
+                                                        }
+                                                        else
+                                                        {
+                                                            @user.RoleName
+                                                        }
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @{
+                                                var badgeClass = user.RoleType switch
+                                                {
+                                                    CareSync.Shared.Enums.RoleType.Admin => "bg-danger",
+                                                    CareSync.Shared.Enums.RoleType.Doctor => "bg-primary",
+                                                    CareSync.Shared.Enums.RoleType.Patient => "bg-info",
+                                                    CareSync.Shared.Enums.RoleType.Lab or CareSync.Shared.Enums.RoleType.LabAssistant => "bg-warning",
+                                                    _ => "bg-secondary"
+                                                };
+                                            }
+                                            <span class="badge @badgeClass mb-1">@user.RoleName</span><br>
+                                            <small class="text-muted">@(user.Department ?? "N/A")</small>
+                                        </td>
+                                        <td>
+                                            <span>@user.Email</span>
+                                            <small class="text-muted d-block">@(user.PhoneNumber ?? "N/A")</small>
+                                        </td>
+                                        <td>
+                                            @{
+                                                var statusBadgeClass = user.Status switch
+                                                {
+                                                    "Active" => "bg-success",
+                                                    "Inactive" => "bg-secondary",
+                                                    "Suspended" => "bg-danger",
+                                                    _ => "bg-secondary"
+                                                };
+                                            }
+                                            <span class="badge @statusBadgeClass mb-1">@user.Status</span><br>
+                                            <small class="text-muted">
+                                                @if (user.LastLoginDate.HasValue)
+                                                {
+                                                    <text>Last: @user.LastLoginDate.Value.ToString("MMM dd, yyyy")</text>
+                                                }
+                                                else
+                                                {
+                                                    <text>Never logged in</text>
+                                                }
+                                            </small>
+                                        </td>
+                                        <td>
+                                            @if (user.RoleType == CareSync.Shared.Enums.RoleType.Doctor)
+                                            {
+                                                <small class="text-muted">@(user.YearsOfExperience?.ToString() ?? "0") years exp</small><br>
+                                                <small class="text-success">License: @(user.LicenseNumber ?? "N/A")</small>
+                                            }
+                                            else if (user.RoleType == CareSync.Shared.Enums.RoleType.Patient)
+                                            {
+                                                <small class="text-muted">Blood: @(user.BloodGroup ?? "N/A")</small><br>
+                                                <small class="text-info">Visits: @(user.TotalAppointments?.ToString() ?? "0")</small>
+                                            }
+                                            else if (user.RoleType == CareSync.Shared.Enums.RoleType.Admin)
+                                            {
+                                                <small class="text-muted">Full System Access</small><br>
+                                                <small class="text-success">All Permissions</small>
+                                            }
+                                            else
+                                            {
+                                                <small class="text-muted">@user.RoleName</small><br>
+                                                <small class="text-info">Active</small>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="dropdown">
+                                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                                    <i class="ri-more-2-line"></i>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="viewUserDetails('@user.UserId')">
+                                                        <i class="ri-eye-line me-2"></i>View Profile</a></li>
+                                                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="editUser('@user.UserId')">
+                                                        <i class="ri-edit-line me-2"></i>Edit User</a></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="resetPassword('@user.UserId')">
+                                                        <i class="ri-key-line me-2"></i>Reset Password</a></li>
+                                                    <li><a class="dropdown-item text-danger" href="javascript:void(0)" 
+                                                        onclick="deleteUser('@user.UserId', '@user.FullName')">
+                                                        <i class="ri-delete-bin-line me-2"></i>Delete User</a></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="8" class="text-center py-4">
+                                        <i class="ri-user-line display-4 text-muted"></i>
+                                        <p class="text-muted mt-2">No users found matching your criteria.</p>
+                                    </td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>
                 
                 <!-- Pagination -->
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <div>
-                        <span class="text-muted">Showing 1 to 4 of 1,283 users</span>
+                @if (Model.UsersList?.TotalCount > 0)
+                {
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div class="d-flex align-items-center">
+                            @{
+                                var startItem = ((Model.CurrentPage - 1) * Model.PageSize) + 1;
+                                var endItem = Math.Min(Model.CurrentPage * Model.PageSize, Model.UsersList.TotalCount);
+                            }
+                            <span class="text-muted me-3">Showing @startItem to @endItem of @Model.UsersList.TotalCount users</span>
+                            <select class="form-select form-select-sm" style="width: auto;" onchange="changePageSize(this.value)">
+                                <option value="10" selected="@(Model.PageSize == 10)">10 per page</option>
+                                <option value="25" selected="@(Model.PageSize == 25)">25 per page</option>
+                                <option value="50" selected="@(Model.PageSize == 50)">50 per page</option>
+                                <option value="100" selected="@(Model.PageSize == 100)">100 per page</option>
+                            </select>
+                        </div>
+                        @if (Model.UsersList?.TotalPages > 1)
+                        {
+                            <nav>
+                                <ul class="pagination pagination-sm mb-0">
+                                <!-- First Page -->
+                                <li class="page-item @(Model.CurrentPage <= 1 ? "disabled" : "")">
+                                    <a class="page-link" href="?Page=1&PageSize=@Model.PageSize&SearchTerm=@Model.SearchTerm&RoleFilter=@Model.RoleFilter&StatusFilter=@Model.StatusFilter&DepartmentFilter=@Model.DepartmentFilter&DateFilter=@Model.DateFilter" title="First Page">
+                                        <i class="ri-arrow-left-double-line"></i>
+                                    </a>
+                                </li>
+                                
+                                <!-- Previous Page -->
+                                <li class="page-item @(Model.CurrentPage <= 1 ? "disabled" : "")">
+                                    <a class="page-link" href="?Page=@(Model.CurrentPage - 1)&PageSize=@Model.PageSize&SearchTerm=@Model.SearchTerm&RoleFilter=@Model.RoleFilter&StatusFilter=@Model.StatusFilter&DepartmentFilter=@Model.DepartmentFilter&DateFilter=@Model.DateFilter" title="Previous Page">
+                                        <i class="ri-arrow-left-s-line"></i>
+                                    </a>
+                                </li>
+                                
+                                <!-- Page Numbers -->
+                                @{
+                                    var startPage = Math.Max(1, Model.CurrentPage - 2);
+                                    var endPage = Math.Min(Model.UsersList.TotalPages, Model.CurrentPage + 2);
+                                    
+                                    // Show first page if not in range
+                                    if (startPage > 1)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link" href="?Page=1&PageSize=@Model.PageSize&SearchTerm=@Model.SearchTerm&RoleFilter=@Model.RoleFilter&StatusFilter=@Model.StatusFilter&DepartmentFilter=@Model.DepartmentFilter&DateFilter=@Model.DateFilter">1</a>
+                                        </li>
+                                        if (startPage > 2)
+                                        {
+                                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                                        }
+                                    }
+                                    
+                                    // Show page numbers
+                                    for (int i = startPage; i <= endPage; i++)
+                                    {
+                                        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                            <a class="page-link" href="?Page=@i&PageSize=@Model.PageSize&SearchTerm=@Model.SearchTerm&RoleFilter=@Model.RoleFilter&StatusFilter=@Model.StatusFilter&DepartmentFilter=@Model.DepartmentFilter&DateFilter=@Model.DateFilter">@i</a>
+                                        </li>
+                                    }
+                                    
+                                    // Show last page if not in range
+                                    if (endPage < Model.UsersList.TotalPages)
+                                    {
+                                        if (endPage < Model.UsersList.TotalPages - 1)
+                                        {
+                                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                                        }
+                                        <li class="page-item">
+                                            <a class="page-link" href="?Page=@Model.UsersList.TotalPages&PageSize=@Model.PageSize&SearchTerm=@Model.SearchTerm&RoleFilter=@Model.RoleFilter&StatusFilter=@Model.StatusFilter&DepartmentFilter=@Model.DepartmentFilter&DateFilter=@Model.DateFilter">@Model.UsersList.TotalPages</a>
+                                        </li>
+                                    }
+                                }
+                                
+                                <!-- Next Page -->
+                                <li class="page-item @(Model.CurrentPage >= Model.UsersList.TotalPages ? "disabled" : "")">
+                                    <a class="page-link" href="?Page=@(Model.CurrentPage + 1)&PageSize=@Model.PageSize&SearchTerm=@Model.SearchTerm&RoleFilter=@Model.RoleFilter&StatusFilter=@Model.StatusFilter&DepartmentFilter=@Model.DepartmentFilter&DateFilter=@Model.DateFilter" title="Next Page">
+                                        <i class="ri-arrow-right-s-line"></i>
+                                    </a>
+                                </li>
+                                
+                                <!-- Last Page -->
+                                <li class="page-item @(Model.CurrentPage >= Model.UsersList.TotalPages ? "disabled" : "")">
+                                    <a class="page-link" href="?Page=@Model.UsersList.TotalPages&PageSize=@Model.PageSize&SearchTerm=@Model.SearchTerm&RoleFilter=@Model.RoleFilter&StatusFilter=@Model.StatusFilter&DepartmentFilter=@Model.DepartmentFilter&DateFilter=@Model.DateFilter" title="Last Page">
+                                        <i class="ri-arrow-right-double-line"></i>
+                                    </a>
+                                </li>
+                                </ul>
+                            </nav>
+                        }
                     </div>
-                    <nav>
-                        <ul class="pagination pagination-sm mb-0">
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#"><i class="ri-arrow-left-s-line"></i></a>
-                            </li>
-                            <li class="page-item active">
-                                <a class="page-link" href="#">1</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">2</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">3</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#"><i class="ri-arrow-right-s-line"></i></a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
+                }
             </div>
         </div>
     </div>
@@ -476,7 +493,6 @@
                                     <option value="">Select Gender</option>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
-                                    <option value="Other">Other</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
@@ -605,6 +621,10 @@
                         <h6 class="mb-3 text-warning">Lab Staff Information</h6>
                         <div class="row g-3">
                             <div class="col-md-6">
+                                <label class="form-label">Lab Name</label>
+                                <input type="text" class="form-control" name="labName" placeholder="e.g., City Medical Lab">
+                            </div>
+                            <div class="col-md-6">
                                 <label class="form-label">Position</label>
                                 <select class="form-select" name="position">
                                     <option value="">Select Position</option>
@@ -639,7 +659,15 @@
                                 <label class="form-label">Years of Experience</label>
                                 <input type="number" class="form-control" name="labExperience" min="0" max="40">
                             </div>
-                            <div class="col-md-12">
+                            <div class="col-md-6">
+                                <label class="form-label">License Number</label>
+                                <input type="text" class="form-control" name="labLicenseNumber" placeholder="e.g., LAB-12345">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Certification</label>
+                                <input type="text" class="form-control" name="labCertification" placeholder="e.g., ASCP, AMT">
+                            </div>
+                            <div class="col-md-6">
                                 <label class="form-label">Qualifications</label>
                                 <input type="text" class="form-control" name="labQualifications" placeholder="e.g., BSc MLT, MSc Microbiology">
                             </div>
@@ -724,11 +752,15 @@
 
         // Filter functions
         function clearFilters() {
+            // Clear all filter inputs
             document.getElementById('searchInput').value = '';
             document.getElementById('roleFilter').value = '';
             document.getElementById('statusFilter').value = '';
             document.getElementById('dateFilter').value = '';
             document.getElementById('departmentFilter').value = '';
+            
+            // Reset to page 1 and submit the form
+            window.location.href = '?Page=1';
         }
 
         function exportUsers() {
@@ -749,22 +781,91 @@
             }
         }
 
-        // Filter change handlers
-        document.getElementById('roleFilter').addEventListener('change', function() {
-            console.log('Role filter changed:', this.value);
-        });
+        // View user profile
+        function viewUserDetails(userId) {
+            window.location.href = `/Admin/ViewUserProfile/${userId}`;
+        }
 
-        document.getElementById('statusFilter').addEventListener('change', function() {
-            console.log('Status filter changed:', this.value);
-        });
+        // Edit user
+        function editUser(userId) {
+            window.location.href = `/Admin/EditUser/${userId}`;
+        }
 
-        document.getElementById('dateFilter').addEventListener('change', function() {
-            console.log('Date filter changed:', this.value);
-        });
+        // Reset password - Navigate to reset password page
+        function resetPassword(userId) {
+            window.location.href = `/Admin/ResetPassword/${userId}`;
+        }
 
-        document.getElementById('departmentFilter').addEventListener('change', function() {
-            console.log('Department filter changed:', this.value);
-        });
+        // Delete user
+        function deleteUser(userId, userName) {
+            if (confirm(`Are you sure you want to delete user: ${userName}?\n\nThis action cannot be undone!`)) {
+                // Create form and submit
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/Admin/Users?handler=Delete';
+                
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '__RequestVerificationToken';
+                const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (tokenElement) {
+                    tokenInput.value = tokenElement.value;
+                }
+                
+                const userIdInput = document.createElement('input');
+                userIdInput.type = 'hidden';
+                userIdInput.name = 'userId';
+                userIdInput.value = userId;
+                
+                form.appendChild(tokenInput);
+                form.appendChild(userIdInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        // Toggle user status
+        function toggleUserStatus(userId, isActive) {
+            const action = isActive ? 'activate' : 'deactivate';
+            if (confirm(`Are you sure you want to ${action} this user?`)) {
+                // Create form and submit
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/Admin/Users?handler=ToggleStatus';
+                
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '__RequestVerificationToken';
+                const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (tokenElement) {
+                    tokenInput.value = tokenElement.value;
+                }
+                
+                const userIdInput = document.createElement('input');
+                userIdInput.type = 'hidden';
+                userIdInput.name = 'userId';
+                userIdInput.value = userId;
+                
+                const statusInput = document.createElement('input');
+                statusInput.type = 'hidden';
+                statusInput.name = 'isActive';
+                statusInput.value = isActive;
+                
+                form.appendChild(tokenInput);
+                form.appendChild(userIdInput);
+                form.appendChild(statusInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        // Change page size
+        function changePageSize(newSize) {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('PageSize', newSize);
+            urlParams.set('Page', '1'); // Reset to first page when changing page size
+            window.location.search = urlParams.toString();
+        }
 
         // Modal and User Creation Functions
         function toggleRoleSpecificFields() {
@@ -787,7 +888,7 @@
             }
         }
 
-        function saveUser() {
+        async function saveUser() {
             const form = document.getElementById('addUserForm');
             const formData = new FormData(form);
             
@@ -814,31 +915,143 @@
                 return;
             }
             
+            // Password strength validation
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@@$!%*?&])[A-Za-z\d@@$!%*?&]{6,}$/;
+            if (!passwordRegex.test(password)) {
+                document.getElementById('password').classList.add('is-invalid');
+                alert('Password must be at least 6 characters and contain uppercase, lowercase, number, and special character!');
+                return;
+            }
+            
             if (!isValid) {
                 alert('Please fill in all required fields.');
                 return;
             }
             
-            // Collect form data
-            const userData = {};
-            for (let [key, value] of formData.entries()) {
-                userData[key] = value;
+            // Prepare user data based on role
+            const userRole = formData.get('userRole');
+            
+            // Get gender value directly as string - the API will handle enum conversion
+            const genderValue = formData.get('gender');
+            
+            // Get role value directly as string - the API will handle enum conversion
+            
+            const userData = {
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                email: formData.get('email'),
+                userName: formData.get('email'), // Use email as username
+                phoneNumber: formData.get('phoneNumber'),
+                gender: genderValue,  // Send as string, let API handle conversion
+                dateOfBirth: formData.get('dateOfBirth'),
+                address: formData.get('address') || '',
+                city: '',  // Add default empty values for optional fields
+                state: '',
+                country: '',
+                zipCode: '',
+                password: formData.get('password'),
+                roleType: userRole,  // Send as string, let API handle conversion
+                role: userRole,  // Single role, not array
+                isActive: true,
+                emailConfirmed: false,
+                phoneNumberConfirmed: false,
+                twoFactorEnabled: false,
+                sendNotification: formData.get('sendWelcomeEmail') === 'on'
+            };
+            
+            // Add role-specific data
+            if (userRole === 'Doctor') {
+                userData.doctorInfo = {
+                    licenseNumber: formData.get('licenseNumber') || '',
+                    yearsOfExperience: parseInt(formData.get('experience')) || 0,
+                    specialization: formData.get('specialization') || '',
+                    department: formData.get('department') || '',
+                    qualifications: formData.get('qualifications') || '',
+                    consultationFee: parseFloat(formData.get('consultationFee')) || 0
+                };
+            } else if (userRole === 'Patient') {
+                userData.patientInfo = {
+                    bloodGroup: formData.get('bloodGroup') || '',
+                    maritalStatus: formData.get('maritalStatus') || '',
+                    occupation: formData.get('occupation') || '',
+                    emergencyContact: formData.get('emergencyContactName') || '',
+                    emergencyContactPhone: formData.get('emergencyContactNumber') || '',
+                    relationshipToEmergency: formData.get('relationshipToEmergency') || ''
+                };
+            } else if (userRole === 'Lab') {
+                userData.labInfo = {
+                    labName: formData.get('labName') || '',
+                    position: formData.get('position') || '',
+                    department: formData.get('labDepartment') || '',
+                    shift: formData.get('shift') || '',
+                    yearsOfExperience: parseInt(formData.get('labExperience')) || 0,
+                    qualifications: formData.get('labQualifications') || '',
+                    licenseNumber: formData.get('labLicenseNumber') || '',
+                    certification: formData.get('labCertification') || ''
+                };
+            } else if (userRole === 'Admin') {
+                userData.adminInfo = {
+                    adminLevel: formData.get('adminLevel') || '',
+                    accessLevel: formData.get('accessLevel') || ''
+                };
             }
             
-            console.log('Creating user:', userData);
-            
-            // Here you would typically send the data to the server
-            // For now, we'll just show a success message
-            alert('User created successfully!');
-            
-            // Close modal and reset form
-            const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
-            modal.hide();
-            form.reset();
-            toggleRoleSpecificFields(); // Hide role-specific fields
-            
-            // Optionally refresh the user list
-            // location.reload();
+            try {
+                // Log the data being sent for debugging
+                console.log('Sending user data:', userData);
+                
+                // Show loading state
+                const saveButton = event.target || document.querySelector('#addUserModal .btn-primary');
+                if (saveButton) {
+                    saveButton.disabled = true;
+                    saveButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating...';
+                }
+                
+                // Get CSRF token
+                const token = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (!token) {
+                    alert('Security token not found. Please refresh the page.');
+                    return;
+                }
+                
+                // Submit via form POST to backend
+                const response = await fetch('/Admin/Users?handler=CreateUser', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token.value
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Show success message
+                    alert('User created successfully!');
+                    
+                    // Close modal and reset form
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
+                    modal.hide();
+                    form.reset();
+                    toggleRoleSpecificFields();
+                    
+                    // Refresh the page to show new user
+                    location.reload();
+                } else {
+                    alert('Error: ' + (result.message || 'Failed to create user'));
+                }
+            } catch (error) {
+                console.error('Error creating user:', error);
+                alert('An error occurred while creating the user. Please try again.');
+            } finally {
+                // Reset button state
+                const saveButton = document.querySelector('.modal-footer .btn-primary');
+                if (saveButton) {
+                    saveButton.disabled = false;
+                    saveButton.innerHTML = '<i class="ri-save-line me-2"></i>Create User';
+                }
+            }
         }
 
         // Reset modal when it's closed

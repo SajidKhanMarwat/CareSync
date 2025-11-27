@@ -108,3 +108,5 @@ public class T_DoctorDetails : BaseEntity
     /// </summary>
     public virtual ICollection<T_Qualifications> Qualifications { get; set; } = new List<T_Qualifications>();
 }
+
+

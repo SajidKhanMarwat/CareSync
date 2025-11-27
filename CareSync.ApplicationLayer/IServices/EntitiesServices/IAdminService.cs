@@ -148,16 +148,51 @@ public interface IAdminService
     /// Get patient by ID with full details
     /// </summary>
     Task<Result<PatientList_DTO>> GetPatientByIdAsync(int patientId);
+    
+    /// <summary>
+    /// Get comprehensive patient profile with all medical information
+    /// </summary>
+    Task<Result<PatientProfile_DTO>> GetPatientProfileAsync(int patientId);
 
     /// <summary>
     /// Search patients by name, email, or phone number
     /// </summary>
     Task<Result<List<PatientSearch_DTO>>> SearchPatientsAsync(string searchTerm);
+    
+    /// <summary>
+    /// Comprehensive patient search with multiple filters and pagination
+    /// </summary>
+    Task<Result<PatientSearchResult_DTO>> SearchPatientsComprehensiveAsync(PatientSearchRequest_DTO request);
 
     /// <summary>
     /// Toggle patient active status
     /// </summary>
     Task<Result<GeneralResponse>> TogglePatientStatusAsync(string userId, bool isActive);
+    
+    /// <summary>
+    /// Update patient information
+    /// </summary>
+    Task<Result<GeneralResponse>> UpdatePatientAsync(UserPatientProfileUpdate_DTO updateDto);
+    
+    /// <summary>
+    /// Delete patient (soft delete)
+    /// </summary>
+    Task<Result<GeneralResponse>> DeletePatientAsync(string userId, int patientId);
+    
+    /// <summary>
+    /// Get patient registration trends for charts
+    /// </summary>
+    Task<Result<Contracts.AdminDashboardDTOs.PatientRegistrationTrends_DTO>> GetPatientRegistrationTrendsAsync();
+    
+    /// <summary>
+    /// Get patient age distribution for charts
+    /// </summary>
+    Task<Result<PatientAgeDistribution_DTO>> GetPatientAgeDistributionAsync();
+    
+    /// <summary>
+    /// Get patient demographics (gender and marital status) for charts
+    /// </summary>
+    Task<Result<PatientDemographics_DTO>> GetPatientDemographicsAsync();
 
     // ========== Appointment Management ==========
     
@@ -222,7 +257,7 @@ public interface IAdminService
     /// <summary>
     /// Get patient registration trends over 12 months
     /// </summary>
-    Task<Result<PatientRegistrationTrends_DTO>> GetPatientRegTrendsAsync();
+    Task<Result<Contracts.AdminDashboardDTOs.PatientRegistrationTrends_DTO>> GetPatientRegTrendsAsync();
 
     /// <summary>
     /// Get appointment status breakdown with percentages

@@ -514,42 +514,68 @@
                     
                     switch(true) {
                         case icon.includes('eye'):
-                            alert(`Viewing profile for ${userName}...`);
+                            toast.info(`Viewing profile for ${userName}...`, 'Profile');
                             break;
                         case icon.includes('edit'):
-                            alert(`Editing user ${userName}...`);
+                            toast.info(`Editing user ${userName}...`, 'Edit User');
                             break;
                         case icon.includes('key'):
-                            if (confirm(`Reset password for ${userName}?`)) {
-                                alert('Password reset email sent.');
-                            }
+                            toast.confirm({
+                                title: 'Reset Password',
+                                message: `Reset password for ${userName}?`,
+                                type: 'warning'
+                            }).then(confirmed => {
+                                if (confirmed) {
+                                    toast.success('Password reset email sent successfully!', 'Success');
+                                }
+                            });
                             break;
                         case icon.includes('forbid'):
-                            if (confirm(`Suspend user ${userName}?`)) {
-                                alert('User suspended successfully.');
-                            }
+                            toast.confirm({
+                                title: 'Suspend User',
+                                message: `Suspend user ${userName}?`,
+                                type: 'warning'
+                            }).then(confirmed => {
+                                if (confirmed) {
+                                    toast.success('User suspended successfully.', 'Success');
+                                }
+                            });
                             break;
                         case icon.includes('user-add'):
-                            if (confirm(`Reactivate user ${userName}?`)) {
-                                alert('User reactivated successfully.');
-                            }
+                            toast.confirm({
+                                title: 'Reactivate User',
+                                message: `Reactivate user ${userName}?`,
+                                type: 'info'
+                            }).then(confirmed => {
+                                if (confirmed) {
+                                    toast.success('User reactivated successfully.', 'Success');
+                                }
+                            });
                             break;
                         case icon.includes('delete'):
-                            if (confirm(`Delete user ${userName}? This action cannot be undone.`)) {
-                                alert('User deleted successfully.');
-                            }
+                            toast.confirm({
+                                title: 'Delete User',
+                                message: `Delete user ${userName}? This action cannot be undone.`,
+                                type: 'error',
+                                confirmText: 'Delete',
+                                cancelText: 'Cancel'
+                            }).then(confirmed => {
+                                if (confirmed) {
+                                    toast.success('User deleted successfully.', 'Success');
+                                }
+                            });
                             break;
                         case icon.includes('file-text'):
-                            alert(`Opening medical records for ${userName}...`);
+                            toast.info(`Opening medical records for ${userName}...`, 'Medical Records');
                             break;
                         case icon.includes('bar-chart'):
-                            alert(`Viewing workload for ${userName}...`);
+                            toast.info(`Viewing workload for ${userName}...`, 'Workload');
                             break;
                         case icon.includes('calendar'):
-                            alert(`Opening schedule for ${userName}...`);
+                            toast.info(`Opening schedule for ${userName}...`, 'Schedule');
                             break;
                         case icon.includes('history'):
-                            alert(`Viewing audit log for ${userName}...`);
+                            toast.info(`Viewing audit log for ${userName}...`, 'Audit Log');
                             break;
                     }
                 });
@@ -559,7 +585,7 @@
             document.querySelectorAll('.filter-section button').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const filter = this.textContent.trim();
-                    alert(`Filtering by: ${filter}`);
+                    toast.info(`Filtering by: ${filter}`, 'Filter Applied');
                 });
             });
             
@@ -567,9 +593,9 @@
             document.querySelector('.input-group button').addEventListener('click', function() {
                 const searchTerm = this.previousElementSibling.value;
                 if (searchTerm) {
-                    alert(`Searching for: ${searchTerm}`);
+                    toast.info(`Searching for: ${searchTerm}`, 'Search');
                 } else {
-                    alert('Please enter a search term.');
+                    toast.warning('Please enter a search term.', 'Search Required');
                 }
             });
             
@@ -578,14 +604,20 @@
                 btn.addEventListener('click', function() {
                     const selectedUsers = document.querySelectorAll('tbody input[type="checkbox"]:checked').length;
                     if (selectedUsers === 0) {
-                        alert('Please select users first.');
+                        toast.warning('Please select users first.', 'No Selection');
                         return;
                     }
                     
                     const action = this.textContent.trim();
-                    if (confirm(`${action} for ${selectedUsers} selected users?`)) {
-                        alert(`${action} completed for ${selectedUsers} users.`);
-                    }
+                    toast.confirm({
+                        title: 'Bulk Action',
+                        message: `${action} for ${selectedUsers} selected users?`,
+                        type: 'warning'
+                    }).then(confirmed => {
+                        if (confirmed) {
+                            toast.success(`${action} completed for ${selectedUsers} users.`, 'Success');
+                        }
+                    });
                 });
             });
             
@@ -597,11 +629,11 @@
                 const role = form.querySelector('select').value;
                 
                 if (!firstName || !email || !role) {
-                    alert('Please fill in all required fields.');
+                    toast.warning('Please fill in all required fields.', 'Validation Error');
                     return;
                 }
                 
-                alert('User created successfully!');
+                toast.success('User created successfully!', 'User Added');
                 bootstrap.Modal.getInstance(document.getElementById('addUserModal')).hide();
                 form.reset();
             });

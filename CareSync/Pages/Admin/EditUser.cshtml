@@ -1,0 +1,304 @@
+@page "/Admin/EditUser/{userId}"
+@model CareSync.Pages.Admin.EditUserModel
+@{
+    ViewData["Title"] = "Edit User";
+}
+
+@section Breadcrumb {
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="~/Admin/Dashboard">
+                <i class="ri-home-3-line"></i>
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="~/Admin/Users">User Management</a>
+        </li>
+        <li class="breadcrumb-item text-primary" aria-current="page">
+            Edit User
+        </li>
+    </ol>
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <a href="/Admin/Users" class="btn btn-outline-secondary">
+            <i class="ri-arrow-left-line me-2"></i>Back to List
+        </a>
+    </div>
+}
+
+@if (Model.UserDetail != null)
+{
+    <form method="post" id="editUserForm">
+        <input type="hidden" asp-for="UserId" />
+        
+        <div class="row">
+            <!-- Basic Information -->
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="ri-user-line me-2"></i>Basic Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" asp-for="Input.FirstName" required>
+                                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-control" asp-for="Input.LastName">
+                                <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" asp-for="Input.Email" readonly>
+                                <small class="text-muted">Email cannot be changed</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" asp-for="Input.PhoneNumber">
+                                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control" asp-for="Input.DateOfBirth">
+                                <span asp-validation-for="Input.DateOfBirth" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Gender</label>
+                                <select class="form-select" asp-for="Input.Gender">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <span asp-validation-for="Input.Gender" class="text-danger"></span>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Address</label>
+                                <textarea class="form-control" rows="2" asp-for="Input.Address"></textarea>
+                                <span asp-validation-for="Input.Address" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Professional Information (for Doctors) -->
+                @if (Model.UserDetail.RoleType == CareSync.Shared.Enums.RoleType.Doctor)
+                {
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="ri-briefcase-line me-2"></i>Professional Information
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Specialization</label>
+                                    <input type="text" class="form-control" asp-for="Input.DoctorInfo.Specialization">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">License Number</label>
+                                    <input type="text" class="form-control" asp-for="Input.DoctorInfo.LicenseNumber">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Years of Experience</label>
+                                    <input type="number" class="form-control" asp-for="Input.DoctorInfo.YearsOfExperience" min="0">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Department</label>
+                                    <select class="form-select" asp-for="Input.DoctorInfo.Department">
+                                        <option value="">Select Department</option>
+                                        @foreach (var dept in Model.Departments)
+                                        {
+                                            <option value="@dept">@dept</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Consultation Fee</label>
+                                    <input type="number" class="form-control" asp-for="Input.DoctorInfo.ConsultationFee" min="0" step="0.01">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Schedule</label>
+                                    <input type="text" class="form-control" asp-for="Input.DoctorInfo.Schedule" placeholder="e.g., Mon-Fri 9:00-17:00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Patient Information (for Patients) -->
+                @if (Model.UserDetail.RoleType == CareSync.Shared.Enums.RoleType.Patient)
+                {
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="ri-heart-pulse-line me-2"></i>Medical Information
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Blood Group</label>
+                                    <select class="form-select" asp-for="Input.PatientInfo.BloodGroup">
+                                        <option value="">Select Blood Group</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Marital Status</label>
+                                    <select class="form-select" asp-for="Input.PatientInfo.MaritalStatus">
+                                        <option value="">Select Status</option>
+                                        <option value="Single">Single</option>
+                                        <option value="Married">Married</option>
+                                        <option value="Divorced">Divorced</option>
+                                        <option value="Widowed">Widowed</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Emergency Contact Name</label>
+                                    <input type="text" class="form-control" asp-for="Input.PatientInfo.EmergencyContact">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Emergency Contact Phone</label>
+                                    <input type="tel" class="form-control" asp-for="Input.PatientInfo.EmergencyContactPhone">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Account Settings -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="ri-settings-line me-2"></i>Account Settings
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" asp-for="Input.UserName" readonly>
+                            <small class="text-muted">Username cannot be changed</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Role <span class="text-danger">*</span></label>
+                            <select class="form-select" asp-for="Input.Role" required>
+                                <option value="">Select Role</option>
+                                @foreach (var role in Model.Roles)
+                                {
+                                    <option value="@role">@role</option>
+                                }
+                            </select>
+                            <span asp-validation-for="Input.Role" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" asp-for="Input.IsActive">
+                                <label class="form-check-label" asp-for="Input.IsActive">
+                                    Account Active
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" asp-for="Input.EmailConfirmed">
+                                <label class="form-check-label" asp-for="Input.EmailConfirmed">
+                                    Email Verified
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Status -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="ri-information-line me-2"></i>User Status
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">User ID:</span>
+                            <span class="fw-bold">#@Model.UserDetail.UserCode</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Registered:</span>
+                            <span>@Model.UserDetail.RegisteredDate.ToString("MMM dd, yyyy")</span>
+                        </div>
+                        @if (Model.UserDetail.LastLoginDate.HasValue)
+                        {
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Last Login:</span>
+                                <span>@Model.UserDetail.LastLoginDate.Value.ToString("MMM dd, yyyy")</span>
+                            </div>
+                        }
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Status:</span>
+                            @{
+                                var statusBadgeClass = Model.UserDetail.Status switch
+                                {
+                                    "Active" => "bg-success",
+                                    "Inactive" => "bg-secondary",
+                                    "Suspended" => "bg-danger",
+                                    _ => "bg-secondary"
+                                };
+                            }
+                            <span class="badge @statusBadgeClass">@Model.UserDetail.Status</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="card">
+                    <div class="card-body">
+                        <button type="submit" class="btn btn-primary w-100 mb-2">
+                            <i class="ri-save-line me-2"></i>Save Changes
+                        </button>
+                        <a href="/Admin/Users" class="btn btn-outline-secondary w-100">
+                            <i class="ri-close-line me-2"></i>Cancel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+}
+else
+{
+    <div class="alert alert-warning">
+        <i class="ri-alert-line me-2"></i>User not found or you don't have permission to edit this user.
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Form validation
+        document.getElementById('editUserForm').addEventListener('submit', function(e) {
+            if (!this.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            this.classList.add('was-validated');
+        });
+    </script>
+}
