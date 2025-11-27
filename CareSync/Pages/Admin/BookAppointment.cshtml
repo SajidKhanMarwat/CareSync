@@ -585,7 +585,7 @@
             const searchInput = document.getElementById('patientSearchInput').value.trim();
             
             if (!searchInput) {
-                alert('Please enter a search term (name, email, or phone number).');
+                toast.warning('Please enter a search term (name, email, or phone number).', 'Search Required');
                 return;
             }
             
@@ -627,7 +627,7 @@
                     const errorText = await response.text();
                     console.error('Server error response:', errorText);
                     console.error('Response headers:', [...response.headers.entries()]);
-                    alert(`Server error (${response.status})\n\nCheck application logs and browser console for details.`);
+                    toast.error(`Server error (${response.status}). Check application logs and browser console for details.`, 'Server Error');
                     throw new Error(`Server returned ${response.status}`);
                 }
                 
@@ -647,7 +647,7 @@
                 console.error('Error type:', error.constructor.name);
                 console.error('Error message:', error.message);
                 console.error('Error stack:', error.stack);
-                alert('An error occurred while searching.\n\nCheck the browser console (F12) for detailed error information.');
+                toast.error('An error occurred while searching. Check the browser console (F12) for detailed error information.', 'Search Error');
             } finally {
                 // Restore button
                 searchButton.disabled = false;
@@ -691,7 +691,7 @@
         
         function proceedWithPatient() {
             if (!selectedPatient) {
-                alert('No patient selected');
+                toast.warning('No patient selected', 'Selection Required');
                 return;
             }
             
@@ -741,19 +741,19 @@
             
             // Check if all required fields are filled
             if (!firstName || !lastName || !dob || !gender || !phone || !username || !email) {
-                alert('Please fill in all required fields (marked with *).');
+                toast.warning('Please fill in all required fields (marked with *).', 'Validation Error');
                 return;
             }
             
             // Validate email format
             const emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
             if (!emailRegex.test(email)) {
-                alert('Please enter a valid email address.');
+                toast.warning('Please enter a valid email address.', 'Invalid Email');
                 return;
             }
 
             if (!selectedDoctor) {
-                alert('Missing doctor information. Please start over.');
+                toast.error('Missing doctor information. Please start over.', 'Error');
                 return;
             }
 
@@ -814,7 +814,7 @@
                     
                     // Verify we have a valid patient ID
                     if (!result.patient.patientId || result.patient.patientId === 0) {
-                        alert('Patient was created but ID is missing. Please search for the patient and book appointment manually.');
+                        toast.error('Patient was created but ID is missing. Please search for the patient and book appointment manually.', 'Error');
                         window.location.reload();
                         return;
                     }
@@ -844,7 +844,7 @@
                     console.log('Selected Patient ID:', selectedPatient.patientId);
                     
                     // Show success toast notification
-                    alert(`✓ Patient account created successfully!\n\nPatient: ${result.patientName}\nEmail: ${email}\nDefault Password: ${result.defaultPassword}\n\nNote: The patient should change their password after first login.\n\nNow proceeding to book appointment...`);
+                    toast.success(`Patient account created successfully! Patient: ${result.patientName}, Email: ${email}, Default Password: ${result.defaultPassword}. The patient should change their password after first login.`, 'Patient Created', 8000);
                     
                     // Hide registration modal
                     modalInstances.quickRegistration.hide();
@@ -858,13 +858,13 @@
                     
                 } else {
                     console.error('Server returned error:', result.message);
-                    alert(`Failed to create patient account.\n\nError: ${result.message}\n\nPlease check the form and try again.`);
+                    toast.error(`Failed to create patient account. Error: ${result.message}. Please check the form and try again.`, 'Creation Failed');
                     throw new Error(result.message || 'Failed to create patient account');
                 }
             } catch (error) {
                 console.error('=== Patient Creation Error ===');
                 console.error('Error:', error);
-                alert(`Failed to create patient account.\n\n${error.message}\n\nCheck console for details.`);
+                toast.error(`Failed to create patient account. ${error.message}. Check console for details.`, 'Error');
             } finally {
                 // Restore button
                 submitButton.disabled = false;
@@ -875,7 +875,7 @@
         // ========== STEP 4: APPOINTMENT BOOKING ==========
         function showAppointmentBookingModal() {
             if (!selectedPatient || !selectedDoctor) {
-                alert('Missing patient or doctor information');
+                toast.error('Missing patient or doctor information', 'Error');
                 return;
             }
             
@@ -928,12 +928,12 @@
             const notes = document.getElementById('appointmentPriority').value; // Using priority as notes for now
             
             if (!appointmentDate || !appointmentTime || !appointmentType) {
-                alert('Please fill in all required fields.');
+                toast.warning('Please fill in all required fields.', 'Validation Error');
                 return;
             }
 
             if (!selectedDoctor || !selectedPatient) {
-                alert('Missing doctor or patient information. Please start over.');
+                toast.error('Missing doctor or patient information. Please start over.', 'Error');
                 return;
             }
 
@@ -987,14 +987,9 @@
                 if (result.success) {
                     // Show success message
                     const patientName = selectedPatient.fullName || `${selectedPatient.firstName} ${selectedPatient.lastName}`;
-                    let successMessage = `✓ Appointment booked successfully!\n\n`;
-                    successMessage += `Doctor: ${selectedDoctor.name}\n`;
-                    successMessage += `Patient: ${patientName}\n`;
-                    successMessage += `Date: ${result.appointmentDate}\n`;
-                    successMessage += `Time: ${result.appointmentTime}\n`;
-                    successMessage += `Type: ${appointmentType}`;
+                    const successMessage = `Appointment booked successfully! Doctor: ${selectedDoctor.name}, Patient: ${patientName}, Date: ${result.appointmentDate}, Time: ${result.appointmentTime}, Type: ${appointmentType}`;
                     
-                    alert(successMessage);
+                    toast.success(successMessage, 'Appointment Booked', 6000);
                     
                     // Close modal and reset
                     modalInstances.appointment.hide();
@@ -1014,7 +1009,7 @@
             } catch (error) {
                 console.error('=== Appointment Booking Error ===');
                 console.error('Error:', error);
-                alert(`Failed to book appointment.\n\n${error.message}\n\nCheck console for details.`);
+                toast.error(`Failed to book appointment. ${error.message}. Check console for details.`, 'Booking Failed');
             } finally {
                 // Restore button
                 submitButton.disabled = false;

@@ -342,7 +342,7 @@
             for (let field of requiredFields) {
                 if (!field.value.trim()) {
                     field.focus();
-                    alert('Please fill in all required fields before proceeding.');
+                    toast.warning('Please fill in all required fields before proceeding.', 'Validation Error');
                     return false;
                 }
             }
@@ -351,7 +351,7 @@
             if (currentStep === 3) {
                 const workingDays = document.querySelectorAll('input[name="workingDays"]:checked');
                 if (workingDays.length === 0) {
-                    alert('Please select at least one working day.');
+                    toast.warning('Please select at least one working day.', 'Validation Error');
                     return false;
                 }
                 
@@ -364,7 +364,7 @@
                     const end = new Date('1970-01-01T' + endTime);
                     
                     if (end <= start) {
-                        alert('End time must be after start time!');
+                        toast.warning('End time must be after start time!', 'Invalid Time');
                         document.getElementById('endTime').focus();
                         return false;
                     }
@@ -375,7 +375,7 @@
         }
 
         function saveDraft() {
-            alert('Doctor information saved as draft!');
+            toast.success('Doctor information saved as draft!', 'Draft Saved');
         }
 
         // Form submission
@@ -428,18 +428,20 @@ The doctor should change their password on first login.
                     `;
                     
                     console.log(summary);
-                    alert(result.message || 'Doctor created successfully!');
+                    toast.success(result.message || 'Doctor created successfully!', 'Success', 6000);
                     
-                    // Redirect to doctors list
-                    window.location.href = '/Admin/Doctors';
+                    // Redirect to doctors list after a short delay
+                    setTimeout(() => {
+                        window.location.href = '/Admin/Doctors';
+                    }, 1500);
                 } else {
-                    alert('Error: ' + (result.message || 'Failed to create doctor. Please try again.'));
+                    toast.error(result.message || 'Failed to create doctor. Please try again.', 'Error');
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalText;
                 }
             } catch (error) {
                 console.error('Error creating doctor:', error);
-                alert('An error occurred while creating the doctor. Please check the console for details.');
+                toast.error('An error occurred while creating the doctor. Please check the console for details.', 'Error');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
             }
