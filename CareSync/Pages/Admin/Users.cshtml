@@ -493,7 +493,6 @@
                                     <option value="">Select Gender</option>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
-                                    <option value="Other">Other</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
@@ -622,6 +621,10 @@
                         <h6 class="mb-3 text-warning">Lab Staff Information</h6>
                         <div class="row g-3">
                             <div class="col-md-6">
+                                <label class="form-label">Lab Name</label>
+                                <input type="text" class="form-control" name="labName" placeholder="e.g., City Medical Lab">
+                            </div>
+                            <div class="col-md-6">
                                 <label class="form-label">Position</label>
                                 <select class="form-select" name="position">
                                     <option value="">Select Position</option>
@@ -656,7 +659,15 @@
                                 <label class="form-label">Years of Experience</label>
                                 <input type="number" class="form-control" name="labExperience" min="0" max="40">
                             </div>
-                            <div class="col-md-12">
+                            <div class="col-md-6">
+                                <label class="form-label">License Number</label>
+                                <input type="text" class="form-control" name="labLicenseNumber" placeholder="e.g., LAB-12345">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Certification</label>
+                                <input type="text" class="form-control" name="labCertification" placeholder="e.g., ASCP, AMT">
+                            </div>
+                            <div class="col-md-6">
                                 <label class="form-label">Qualifications</label>
                                 <input type="text" class="form-control" name="labQualifications" placeholder="e.g., BSc MLT, MSc Microbiology">
                             </div>
@@ -877,7 +888,7 @@
             }
         }
 
-        function saveUser() {
+        async function saveUser() {
             const form = document.getElementById('addUserForm');
             const formData = new FormData(form);
             
@@ -904,31 +915,143 @@
                 return;
             }
             
+            // Password strength validation
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@@$!%*?&])[A-Za-z\d@@$!%*?&]{6,}$/;
+            if (!passwordRegex.test(password)) {
+                document.getElementById('password').classList.add('is-invalid');
+                alert('Password must be at least 6 characters and contain uppercase, lowercase, number, and special character!');
+                return;
+            }
+            
             if (!isValid) {
                 alert('Please fill in all required fields.');
                 return;
             }
             
-            // Collect form data
-            const userData = {};
-            for (let [key, value] of formData.entries()) {
-                userData[key] = value;
+            // Prepare user data based on role
+            const userRole = formData.get('userRole');
+            
+            // Get gender value directly as string - the API will handle enum conversion
+            const genderValue = formData.get('gender');
+            
+            // Get role value directly as string - the API will handle enum conversion
+            
+            const userData = {
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                email: formData.get('email'),
+                userName: formData.get('email'), // Use email as username
+                phoneNumber: formData.get('phoneNumber'),
+                gender: genderValue,  // Send as string, let API handle conversion
+                dateOfBirth: formData.get('dateOfBirth'),
+                address: formData.get('address') || '',
+                city: '',  // Add default empty values for optional fields
+                state: '',
+                country: '',
+                zipCode: '',
+                password: formData.get('password'),
+                roleType: userRole,  // Send as string, let API handle conversion
+                role: userRole,  // Single role, not array
+                isActive: true,
+                emailConfirmed: false,
+                phoneNumberConfirmed: false,
+                twoFactorEnabled: false,
+                sendNotification: formData.get('sendWelcomeEmail') === 'on'
+            };
+            
+            // Add role-specific data
+            if (userRole === 'Doctor') {
+                userData.doctorInfo = {
+                    licenseNumber: formData.get('licenseNumber') || '',
+                    yearsOfExperience: parseInt(formData.get('experience')) || 0,
+                    specialization: formData.get('specialization') || '',
+                    department: formData.get('department') || '',
+                    qualifications: formData.get('qualifications') || '',
+                    consultationFee: parseFloat(formData.get('consultationFee')) || 0
+                };
+            } else if (userRole === 'Patient') {
+                userData.patientInfo = {
+                    bloodGroup: formData.get('bloodGroup') || '',
+                    maritalStatus: formData.get('maritalStatus') || '',
+                    occupation: formData.get('occupation') || '',
+                    emergencyContact: formData.get('emergencyContactName') || '',
+                    emergencyContactPhone: formData.get('emergencyContactNumber') || '',
+                    relationshipToEmergency: formData.get('relationshipToEmergency') || ''
+                };
+            } else if (userRole === 'Lab') {
+                userData.labInfo = {
+                    labName: formData.get('labName') || '',
+                    position: formData.get('position') || '',
+                    department: formData.get('labDepartment') || '',
+                    shift: formData.get('shift') || '',
+                    yearsOfExperience: parseInt(formData.get('labExperience')) || 0,
+                    qualifications: formData.get('labQualifications') || '',
+                    licenseNumber: formData.get('labLicenseNumber') || '',
+                    certification: formData.get('labCertification') || ''
+                };
+            } else if (userRole === 'Admin') {
+                userData.adminInfo = {
+                    adminLevel: formData.get('adminLevel') || '',
+                    accessLevel: formData.get('accessLevel') || ''
+                };
             }
             
-            console.log('Creating user:', userData);
-            
-            // Here you would typically send the data to the server
-            // For now, we'll just show a success message
-            alert('User created successfully!');
-            
-            // Close modal and reset form
-            const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
-            modal.hide();
-            form.reset();
-            toggleRoleSpecificFields(); // Hide role-specific fields
-            
-            // Optionally refresh the user list
-            // location.reload();
+            try {
+                // Log the data being sent for debugging
+                console.log('Sending user data:', userData);
+                
+                // Show loading state
+                const saveButton = event.target || document.querySelector('#addUserModal .btn-primary');
+                if (saveButton) {
+                    saveButton.disabled = true;
+                    saveButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating...';
+                }
+                
+                // Get CSRF token
+                const token = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (!token) {
+                    alert('Security token not found. Please refresh the page.');
+                    return;
+                }
+                
+                // Submit via form POST to backend
+                const response = await fetch('/Admin/Users?handler=CreateUser', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token.value
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Show success message
+                    alert('User created successfully!');
+                    
+                    // Close modal and reset form
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
+                    modal.hide();
+                    form.reset();
+                    toggleRoleSpecificFields();
+                    
+                    // Refresh the page to show new user
+                    location.reload();
+                } else {
+                    alert('Error: ' + (result.message || 'Failed to create user'));
+                }
+            } catch (error) {
+                console.error('Error creating user:', error);
+                alert('An error occurred while creating the user. Please try again.');
+            } finally {
+                // Reset button state
+                const saveButton = document.querySelector('.modal-footer .btn-primary');
+                if (saveButton) {
+                    saveButton.disabled = false;
+                    saveButton.innerHTML = '<i class="ri-save-line me-2"></i>Create User';
+                }
+            }
         }
 
         // Reset modal when it's closed

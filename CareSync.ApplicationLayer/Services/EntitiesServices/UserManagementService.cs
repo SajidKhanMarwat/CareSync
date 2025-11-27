@@ -556,35 +556,75 @@ public class UserManagementService : IUserManagementService
             if (existingUser != null)
                 return Result<GeneralResponse>.Failure(new GeneralResponse { Success = false, Message = "User with this email already exists" });
 
-            // Create new user
+            // Look up the role from database based on RoleType
+            var role = await _roleManager.Roles
+                .FirstOrDefaultAsync(r => r.RoleType == dto.RoleType && !r.IsDeleted);
+            
+            if (role == null)
+                return Result<GeneralResponse>.Failure(new GeneralResponse 
+                { 
+                    Success = false, 
+                    Message = $"Role for RoleType '{dto.RoleType}' not found in the system" 
+                });
+
+            // Generate unique ID for the user
+            var userId = Guid.NewGuid().ToString();
+            
+            // Generate unique LoginID from timestamp
+            var loginId = Math.Abs(DateTime.UtcNow.Ticks.GetHashCode());
+
+            // Create new user with all required fields properly initialized
             var user = new T_Users
             {
+                // Identity fields
+                Id = userId, // Explicitly set the primary key
                 UserName = dto.UserName,
                 Email = dto.Email,
-                FirstName = dto.FirstName,
-                LastName = dto.LastName,
+                NormalizedUserName = dto.UserName.ToUpperInvariant(),
+                NormalizedEmail = dto.Email.ToUpperInvariant(),
+                EmailConfirmed = dto.EmailConfirmed,
                 PhoneNumber = dto.PhoneNumber,
-                Gender = dto.Gender ?? Gender_Enum.Male,
+                PhoneNumberConfirmed = dto.PhoneNumberConfirmed,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                ConcurrencyStamp = Guid.NewGuid().ToString(),
+                
+                // Required personal information fields
+                FirstName = dto.FirstName,
+                LastName = dto.LastName ?? string.Empty,
+                ArabicFirstName = dto.FirstName, // Default to English name
+                ArabicLastName = dto.LastName ?? string.Empty,
+                ArabicUserName = dto.UserName,
+                
+                // Required system fields
+                Gender = dto.Gender,
                 DateOfBirth = dto.DateOfBirth,
-                Address = dto.Address,
+                Address = dto.Address ?? string.Empty,
                 RoleType = dto.RoleType,
                 IsActive = dto.IsActive,
-                EmailConfirmed = dto.EmailConfirmed,
-                CreatedBy = "System", // Should be current user
+                
+                // Required audit fields - dynamically assigned from database role
+                RoleID = role.Id, // Get actual RoleID from database based on RoleType
+                LoginID = loginId, // Generate unique login ID from timestamp
+                CreatedBy = "System", // Should be current user in production
                 CreatedOn = DateTime.UtcNow,
-                // Required fields
-                RoleID = "1", // Default role ID (string)
-                LoginID = 1, // Default login ID (int)
-                ArabicUserName = dto.UserName ?? "", // Default to same as username
-                ArabicFirstName = dto.FirstName ?? "" // Default to same as first name
+                
+                // Optional fields
+                ProfileImage = null,
+                LastLogin = null,
+                IsPasswordResetRequired = false,
+                IsDeleted = false,
+                UpdatedBy = null,
+                UpdatedOn = null
             };
 
-            // Calculate age if DateOfBirth is provided
-            if (dto.DateOfBirth.HasValue)
+            // Calculate age from DateOfBirth
+            user.Age = DateTime.Now.Year - dto.DateOfBirth.Year;
+            if (DateTime.Now.DayOfYear < dto.DateOfBirth.DayOfYear)
             {
-                user.Age = DateTime.Now.Year - dto.DateOfBirth.Value.Year;
+                user.Age--; // Adjust if birthday hasn't occurred this year
             }
 
+            // Create user with password using Identity framework
             var result = await _userManager.CreateAsync(user, dto.Password);
             if (!result.Succeeded)
             {
@@ -595,10 +635,17 @@ public class UserManagementService : IUserManagementService
                 });
             }
 
-            // Assign roles
-            if (dto.Roles != null && dto.Roles.Any())
+            // Assign role using Identity framework
+            var roleResult = await _userManager.AddToRoleAsync(user, role.Name);
+            if (!roleResult.Succeeded)
             {
-                await _userManager.AddToRolesAsync(user, dto.Roles);
+                // Rollback user creation if role assignment fails
+                await _userManager.DeleteAsync(user);
+                return Result<GeneralResponse>.Failure(new GeneralResponse
+                {
+                    Success = false,
+                    Message = $"Failed to assign role: {string.Join(", ", roleResult.Errors.Select(e => e.Description))}"
+                });
             }
 
             // Create role-specific records
@@ -634,11 +681,31 @@ public class UserManagementService : IUserManagementService
                 await _patientRepo.AddAsync(patient);
                 await _unitOfWork.SaveChangesAsync();
             }
+            else if (dto.RoleType == RoleType.Lab && dto.LabInfo != null)
+            {
+                var lab = new T_Lab
+                {
+                    UserID = Guid.Parse(user.Id),
+                    LabName = dto.LabInfo.LabName,
+                    ArabicLabName = dto.LabInfo.LabName, // Default to English name
+                    LabAddress = user.Address,
+                    Location = user.Address,
+                    ContactNumber = user.PhoneNumber,
+                    Email = user.Email,
+                    LicenseNumber = dto.LabInfo.LicenseNumber,
+                    OpeningTime = new TimeSpan(8, 0, 0), // Default 8 AM
+                    ClosingTime = new TimeSpan(18, 0, 0), // Default 6 PM
+                    CreatedBy = "System",
+                    CreatedOn = DateTime.UtcNow
+                };
+                await _labRepo.AddAsync(lab);
+                await _unitOfWork.SaveChangesAsync();
+            }
 
             return Result<GeneralResponse>.Success(new GeneralResponse
             {
                 Success = true,
-                Message = "User created successfully"
+                Message = $"User created successfully with role '{role.RoleName}'"
             });
         }
         catch (Exception ex)
@@ -659,16 +726,17 @@ public class UserManagementService : IUserManagementService
             user.FirstName = dto.FirstName;
             user.LastName = dto.LastName;
             user.PhoneNumber = dto.PhoneNumber;
-            user.Gender = dto.Gender ?? user.Gender;
+            user.Gender = dto.Gender;  // No longer nullable
             user.DateOfBirth = dto.DateOfBirth;
             user.Address = dto.Address;
             user.UpdatedBy = "System"; // Should be current user
             user.UpdatedOn = DateTime.UtcNow;
 
-            // Calculate age if DateOfBirth is provided
-            if (dto.DateOfBirth.HasValue)
+            // Calculate age from DateOfBirth (no longer nullable)
+            user.Age = DateTime.Now.Year - dto.DateOfBirth.Year;
+            if (DateTime.Now.DayOfYear < dto.DateOfBirth.DayOfYear)
             {
-                user.Age = DateTime.Now.Year - dto.DateOfBirth.Value.Year;
+                user.Age--; // Adjust if birthday hasn't occurred this year
             }
 
             var result = await _userManager.UpdateAsync(user);
@@ -681,12 +749,15 @@ public class UserManagementService : IUserManagementService
                 });
             }
 
-            // Update roles if provided
-            if (dto.Roles != null && dto.Roles.Any())
+            // Update role if provided
+            if (!string.IsNullOrEmpty(dto.Role))
             {
                 var currentRoles = await _userManager.GetRolesAsync(user);
-                await _userManager.RemoveFromRolesAsync(user, currentRoles);
-                await _userManager.AddToRolesAsync(user, dto.Roles);
+                if (currentRoles.Any())
+                {
+                    await _userManager.RemoveFromRolesAsync(user, currentRoles);
+                }
+                await _userManager.AddToRoleAsync(user, dto.Role);
             }
 
             return Result<GeneralResponse>.Success(new GeneralResponse

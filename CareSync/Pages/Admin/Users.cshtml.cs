@@ -271,4 +271,55 @@ public class UsersModel : PageModel
             return new JsonResult(new { success = false, message = "An error occurred." });
         }
     }
+
+    // AJAX endpoint for creating a new user
+    public async Task<IActionResult> OnPostCreateUserAsync([FromBody] CreateUpdateUser_DTO dto)
+    {
+        try
+        {
+            // Log the incoming request for debugging
+            _logger.LogInformation("CreateUser request received");
+            
+            if (dto == null)
+            {
+                _logger.LogError("CreateUpdateUser_DTO is null");
+                return new JsonResult(new { success = false, message = "Invalid user data. DTO is null." });
+            }
+
+            // Log the received data
+            _logger.LogInformation("User data received: Email={Email}, FirstName={FirstName}, LastName={LastName}, RoleType={RoleType}", 
+                dto.Email, dto.FirstName, dto.LastName, dto.RoleType);
+
+            // Validate required fields
+            if (string.IsNullOrEmpty(dto.Email) || string.IsNullOrEmpty(dto.FirstName) || string.IsNullOrEmpty(dto.LastName))
+            {
+                return new JsonResult(new { success = false, message = "Required fields are missing." });
+            }
+
+            // Set username from email if not provided
+            if (string.IsNullOrEmpty(dto.UserName))
+            {
+                dto.UserName = dto.Email;
+            }
+
+            // Call the service to create the user
+            var result = await _userManagementService.CreateUserAsync(dto);
+            
+            if (result.IsSuccess)
+            {
+                _logger.LogInformation("User created successfully: {Email}", dto.Email);
+                return new JsonResult(new { success = true, message = "User created successfully." });
+            }
+            else
+            {
+                _logger.LogWarning("Failed to create user: {Error}", result.Error);
+                return new JsonResult(new { success = false, message = result.Error ?? "Failed to create user." });
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating user");
+            return new JsonResult(new { success = false, message = "An error occurred while creating the user." });
+        }
+    }
 }

@@ -199,14 +199,15 @@
                             <small class="text-muted">Username cannot be changed</small>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Role</label>
-                            <select class="form-select" asp-for="Input.Roles" multiple>
+                            <label class="form-label">Role <span class="text-danger">*</span></label>
+                            <select class="form-select" asp-for="Input.Role" required>
+                                <option value="">Select Role</option>
                                 @foreach (var role in Model.Roles)
                                 {
-                                    <option value="@role" selected="@(Model.UserDetail.Roles?.Contains(role) == true)">@role</option>
+                                    <option value="@role">@role</option>
                                 }
                             </select>
-                            <small class="text-muted">Hold Ctrl to select multiple roles</small>
+                            <span asp-validation-for="Input.Role" class="text-danger"></span>
                         </div>
                         <div class="mb-3">
                             <div class="form-check form-switch">

@@ -546,6 +546,7 @@ public class AdminController(IAdminService adminService, IUserService userServic
     /// Create a new user
     /// </summary>
     [HttpPost("users")]
+    [AllowAnonymous]
     public async Task<Result<GeneralResponse>> CreateUser([FromBody] CreateUpdateUser_DTO dto)
     {
         logger.LogInformation("Creating new user: {Email}", dto.Email);
