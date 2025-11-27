@@ -63,7 +63,9 @@ public class EditUserModel : PageModel
         [Display(Name = "Email Confirmed")]
         public bool EmailConfirmed { get; set; }
 
-        public List<string>? Roles { get; set; }
+        [Required(ErrorMessage = "Role is required")]
+        [Display(Name = "Role")]
+        public string Role { get; set; } = string.Empty;
 
         // Doctor-specific fields
         public DoctorInfoInput DoctorInfo { get; set; } = new();
@@ -135,7 +137,7 @@ public class EditUserModel : PageModel
                     Address = UserDetail.Address,
                     IsActive = UserDetail.IsActive,
                     EmailConfirmed = UserDetail.EmailConfirmed,
-                    Roles = UserDetail.Roles
+                    Role = UserDetail.Roles?.FirstOrDefault() ?? string.Empty
                 };
 
                 // Populate doctor info if applicable
@@ -198,13 +200,13 @@ public class EditUserModel : PageModel
                 Email = Input.Email,
                 UserName = Input.UserName,
                 PhoneNumber = Input.PhoneNumber,
-                DateOfBirth = Input.DateOfBirth,
-                Gender = Input.Gender,
-                Address = Input.Address,
+                DateOfBirth = Input.DateOfBirth ?? DateTime.Now.AddYears(-30), // Default to 30 years ago if not set
+                Gender = Input.Gender ?? Gender_Enum.Male, // Default to Male if not set
+                Address = Input.Address ?? string.Empty,
                 IsActive = Input.IsActive,
                 EmailConfirmed = Input.EmailConfirmed,
-                Roles = Input.Roles,
-                RoleType = UserDetail.RoleType // Keep existing role type
+                Role = Input.Role,  // Use single role
+                RoleType = GetRoleTypeFromRoleName(Input.Role) // Update role type based on selected role
             };
 
             // Add doctor info if applicable
@@ -277,5 +279,19 @@ public class EditUserModel : PageModel
         {
             UserDetail = result.Data;
         }
+    }
+
+    private RoleType GetRoleTypeFromRoleName(string roleName)
+    {
+        return roleName?.ToLower() switch
+        {
+            "admin" => RoleType.Admin,
+            "doctor" => RoleType.Doctor,
+            "patient" => RoleType.Patient,
+            "lab" => RoleType.Lab,
+            "labassistant" => RoleType.LabAssistant,
+            "doctorassistant" => RoleType.DoctorAssistant,
+            _ => RoleType.Patient // Default to Patient if unknown
+        };
     }
 }

@@ -1,6 +1,7 @@
 using CareSync.ApplicationLayer.ApiResult;
 using CareSync.ApplicationLayer.Common;
 using CareSync.ApplicationLayer.Contracts.UserManagementDTOs;
+using CareSync.Shared.Enums;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -26,7 +27,9 @@ public class UserManagementApiService
         _jsonOptions = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true,
-            Converters = { new JsonStringEnumConverter() }
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
+            WriteIndented = true
         };
     }
 
@@ -358,8 +361,21 @@ public class UserManagementApiService
     {
         try
         {
+            // Clean up DTO - only send role-specific data that's needed
+            if (dto.RoleType != RoleType.Doctor) dto.DoctorInfo = null;
+            if (dto.RoleType != RoleType.Patient) dto.PatientInfo = null;
+            if (dto.RoleType != RoleType.Lab) dto.LabInfo = null;
+            if (dto.RoleType != RoleType.Admin) dto.AdminInfo = null;
+
+            // Log the DTO for debugging
+            _logger.LogInformation($"Creating user with email: {dto.Email}, Gender: {dto.Gender}, RoleType: {dto.RoleType}");
+
             var client = _httpClientFactory.CreateClient("ApiClient");
             var json = JsonSerializer.Serialize(dto, _jsonOptions);
+            
+            // Log the JSON being sent for debugging
+            _logger.LogInformation($"JSON payload: {json}");
+            
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             
             var response = await client.PostAsync("admin/users", content);

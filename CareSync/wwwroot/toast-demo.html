@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toast Notification System - Demo</title>
+    
+    <!-- RemixIcon -->
+    <link rel="stylesheet" href="/theme/fonts/remix/remixicon.css">
+    
+    <!-- Toast CSS -->
+    <link rel="stylesheet" href="/theme/css/toast.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .demo-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .demo-card h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .demo-card h3 i {
+            font-size: 24px;
+        }
+        
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .demo-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .demo-btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-error {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #000;
+        }
+        
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .code-example {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #495057;
+            overflow-x: auto;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 32px;
+            }
+            
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Toast Notification System</h1>
+            <p>Modern, lightweight notification system for CareSync</p>
+        </div>
+        
+        <div class="demo-grid">
+            <!-- Basic Toasts -->
+            <div class="demo-card">
+                <h3><i class="ri-notification-line"></i> Basic Toasts</h3>
+                <div class="btn-group">
+                    <button class="demo-btn btn-success" onclick="toast.success('Operation completed successfully!', 'Success')">
+                        <i class="ri-check-line"></i> Success Toast
+                    </button>
+                    <button class="demo-btn btn-error" onclick="toast.error('Something went wrong!', 'Error')">
+                        <i class="ri-close-line"></i> Error Toast
+                    </button>
+                    <button class="demo-btn btn-warning" onclick="toast.warning('Please check your input.', 'Warning')">
+                        <i class="ri-error-warning-line"></i> Warning Toast
+                    </button>
+                    <button class="demo-btn btn-info" onclick="toast.info('Processing your request...', 'Info')">
+                        <i class="ri-information-line"></i> Info Toast
+                    </button>
+                </div>
+                <div class="code-example">
+toast.success('Message', 'Title');
+toast.error('Message', 'Title');
+toast.warning('Message', 'Title');
+toast.info('Message', 'Title');
+                </div>
+            </div>
+            
+            <!-- Custom Duration -->
+            <div class="demo-card">
+                <h3><i class="ri-timer-line"></i> Custom Duration</h3>
+                <div class="btn-group">
+                    <button class="demo-btn btn-info" onclick="toast.info('Quick message (2s)', 'Fast', 2000)">
+                        <i class="ri-timer-flash-line"></i> 2 Seconds
+                    </button>
+                    <button class="demo-btn btn-success" onclick="toast.success('Normal message (5s)', 'Normal', 5000)">
+                        <i class="ri-time-line"></i> 5 Seconds (Default)
+                    </button>
+                    <button class="demo-btn btn-warning" onclick="toast.warning('Long message (10s)', 'Long', 10000)">
+                        <i class="ri-timer-line"></i> 10 Seconds
+                    </button>
+                    <button class="demo-btn btn-error" onclick="toast.error('Permanent (0s) - Click X to close', 'Permanent', 0)">
+                        <i class="ri-infinity-line"></i> Permanent (0 = no auto-close)
+                    </button>
+                </div>
+                <div class="code-example">
+toast.info('Message', 'Title', 2000);
+toast.success('Message', 'Title', 5000);
+toast.warning('Message', 'Title', 10000);
+toast.error('Message', 'Title', 0);
+                </div>
+            </div>
+            
+            <!-- Confirm Dialogs -->
+            <div class="demo-card">
+                <h3><i class="ri-question-line"></i> Confirm Dialogs</h3>
+                <div class="btn-group">
+                    <button class="demo-btn btn-success" onclick="showSuccessConfirm()">
+                        <i class="ri-check-double-line"></i> Success Confirm
+                    </button>
+                    <button class="demo-btn btn-error" onclick="showDeleteConfirm()">
+                        <i class="ri-delete-bin-line"></i> Delete Confirm
+                    </button>
+                    <button class="demo-btn btn-warning" onclick="showWarningConfirm()">
+                        <i class="ri-alert-line"></i> Warning Confirm
+                    </button>
+                    <button class="demo-btn btn-info" onclick="showInfoConfirm()">
+                        <i class="ri-information-line"></i> Info Confirm
+                    </button>
+                </div>
+                <div class="code-example">
+toast.confirm({
+    title: 'Confirm',
+    message: 'Are you sure?',
+    type: 'warning'
+}).then(result => {
+    if (result) {
+        // Confirmed
+    }
+});
+                </div>
+            </div>
+            
+            <!-- Prompt Dialogs -->
+            <div class="demo-card">
+                <h3><i class="ri-chat-3-line"></i> Prompt Dialogs</h3>
+                <div class="btn-group">
+                    <button class="demo-btn btn-primary" onclick="showNamePrompt()">
+                        <i class="ri-user-line"></i> Text Input
+                    </button>
+                    <button class="demo-btn btn-info" onclick="showEmailPrompt()">
+                        <i class="ri-mail-line"></i> Email Input
+                    </button>
+                    <button class="demo-btn btn-warning" onclick="showPasswordPrompt()">
+                        <i class="ri-lock-password-line"></i> Password Input
+                    </button>
+                    <button class="demo-btn btn-success" onclick="showNumberPrompt()">
+                        <i class="ri-hashtag"></i> Number Input
+                    </button>
+                </div>
+                <div class="code-example">
+toast.prompt({
+    title: 'Input',
+    message: 'Enter value:',
+    placeholder: 'Type here...',
+    type: 'info'
+}).then(value => {
+    if (value !== null) {
+        // User entered: value
+    }
+});
+                </div>
+            </div>
+            
+            <!-- Multiple Toasts -->
+            <div class="demo-card">
+                <h3><i class="ri-stack-line"></i> Multiple Toasts</h3>
+                <div class="btn-group">
+                    <button class="demo-btn btn-primary" onclick="showMultiple()">
+                        <i class="ri-notification-badge-line"></i> Show 3 Toasts
+                    </button>
+                    <button class="demo-btn btn-warning" onclick="showSequence()">
+                        <i class="ri-timer-2-line"></i> Sequence (Delayed)
+                    </button>
+                    <button class="demo-btn btn-error" onclick="toast.clear()">
+                        <i class="ri-close-circle-line"></i> Clear All Toasts
+                    </button>
+                </div>
+                <div class="code-example">
+// Show multiple
+toast.success('First', 'Success');
+toast.info('Second', 'Info');
+toast.warning('Third', 'Warning');
+
+// Clear all
+toast.clear();
+                </div>
+            </div>
+            
+            <!-- Real-World Examples -->
+            <div class="demo-card">
+                <h3><i class="ri-shield-check-line"></i> Real-World Examples</h3>
+                <div class="btn-group">
+                    <button class="demo-btn btn-success" onclick="simulateFormSubmit()">
+                        <i class="ri-file-list-3-line"></i> Form Submission
+                    </button>
+                    <button class="demo-btn btn-info" onclick="simulateApiCall()">
+                        <i class="ri-cloud-line"></i> API Call
+                    </button>
+                    <button class="demo-btn btn-warning" onclick="simulateValidation()">
+                        <i class="ri-error-warning-line"></i> Validation Error
+                    </button>
+                    <button class="demo-btn btn-error" onclick="simulateDeleteUser()">
+                        <i class="ri-user-unfollow-line"></i> Delete User
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Toast Notification System v1.0</strong></p>
+            <p>CareSync Medical Management System</p>
+            <p style="margin-top: 10px; opacity: 0.8;">
+                <i class="ri-code-line"></i> Pure JavaScript • 
+                <i class="ri-palette-line"></i> Customizable • 
+                <i class="ri-smartphone-line"></i> Responsive
+            </p>
+        </div>
+    </div>
+    
+    <!-- Toast JS -->
+    <script src="/theme/js/toast.js"></script>
+    
+    <script>
+        // Confirm Dialog Examples
+        function showSuccessConfirm() {
+            toast.confirm({
+                title: 'Approve Action',
+                message: 'Do you want to approve this request?',
+                type: 'success',
+                confirmText: 'Approve',
+                cancelText: 'Cancel'
+            }).then(result => {
+                if (result) {
+                    toast.success('Request approved successfully!', 'Approved');
+                } else {
+                    toast.info('Action cancelled', 'Cancelled');
+                }
+            });
+        }
+        
+        function showDeleteConfirm() {
+            toast.confirm({
+                title: 'Delete User',
+                message: 'Delete this user? This action cannot be undone.',
+                type: 'error',
+                confirmText: 'Delete',
+                cancelText: 'Cancel'
+            }).then(result => {
+                if (result) {
+                    toast.success('User deleted successfully', 'Deleted');
+                }
+            });
+        }
+        
+        function showWarningConfirm() {
+            toast.confirm({
+                title: 'Unsaved Changes',
+                message: 'You have unsaved changes. Do you want to leave without saving?',
+                type: 'warning',
+                confirmText: 'Leave',
+                cancelText: 'Stay'
+            }).then(result => {
+                if (result) {
+                    toast.info('Changes discarded', 'Left Page');
+                }
+            });
+        }
+        
+        function showInfoConfirm() {
+            toast.confirm({
+                title: 'Send Notification',
+                message: 'Send email notification to all users?',
+                type: 'info',
+                confirmText: 'Send',
+                cancelText: 'Cancel'
+            }).then(result => {
+                if (result) {
+                    toast.success('Notifications sent successfully', 'Sent');
+                }
+            });
+        }
+        
+        // Prompt Dialog Examples
+        function showNamePrompt() {
+            toast.prompt({
+                title: 'Enter Name',
+                message: 'What is your name?',
+                placeholder: 'Your name',
+                type: 'info',
+                inputType: 'text'
+            }).then(name => {
+                if (name !== null && name.trim()) {
+                    toast.success(`Hello, ${name}!`, 'Welcome');
+                }
+            });
+        }
+        
+        function showEmailPrompt() {
+            toast.prompt({
+                title: 'Email Address',
+                message: 'Enter your email address:',
+                placeholder: 'email@example.com',
+                type: 'info',
+                inputType: 'email'
+            }).then(email => {
+                if (email !== null && email.trim()) {
+                    toast.success(`Email saved: ${email}`, 'Success');
+                }
+            });
+        }
+        
+        function showPasswordPrompt() {
+            toast.prompt({
+                title: 'Change Password',
+                message: 'Enter new password:',
+                placeholder: 'Password',
+                type: 'warning',
+                inputType: 'password'
+            }).then(password => {
+                if (password !== null && password.length >= 6) {
+                    toast.success('Password changed successfully!', 'Success');
+                } else if (password !== null) {
+                    toast.error('Password too short (min 6 characters)', 'Error');
+                }
+            });
+        }
+        
+        function showNumberPrompt() {
+            toast.prompt({
+                title: 'Enter Age',
+                message: 'How old are you?',
+                placeholder: '18',
+                type: 'info',
+                inputType: 'number'
+            }).then(age => {
+                if (age !== null && age > 0) {
+                    toast.success(`You are ${age} years old`, 'Success');
+                }
+            });
+        }
+        
+        // Multiple Toasts
+        function showMultiple() {
+            toast.success('First notification', 'Success');
+            setTimeout(() => toast.info('Second notification', 'Info'), 300);
+            setTimeout(() => toast.warning('Third notification', 'Warning'), 600);
+        }
+        
+        function showSequence() {
+            toast.info('Starting process...', 'Step 1');
+            setTimeout(() => toast.info('Processing data...', 'Step 2'), 2000);
+            setTimeout(() => toast.success('Process completed!', 'Step 3'), 4000);
+        }
+        
+        // Real-World Examples
+        function simulateFormSubmit() {
+            toast.info('Validating form...', 'Please Wait');
+            
+            setTimeout(() => {
+                toast.success('Form submitted successfully! Redirecting...', 'Success', 3000);
+            }, 1500);
+        }
+        
+        async function simulateApiCall() {
+            toast.info('Calling API...', 'Loading', 2000);
+            
+            setTimeout(() => {
+                const success = Math.random() > 0.3;
+                if (success) {
+                    toast.success('Data loaded successfully!', 'Success');
+                } else {
+                    toast.error('Failed to load data. Please try again.', 'API Error');
+                }
+            }, 2000);
+        }
+        
+        function simulateValidation() {
+            const fields = ['Email', 'Password', 'Phone Number'];
+            const randomField = fields[Math.floor(Math.random() * fields.length)];
+            
+            toast.warning(`Please enter a valid ${randomField}`, 'Validation Error');
+        }
+        
+        function simulateDeleteUser() {
+            toast.confirm({
+                title: 'Delete User Account',
+                message: 'Are you sure you want to delete "John Doe"? This action cannot be undone.',
+                type: 'error',
+                confirmText: 'Delete Account',
+                cancelText: 'Cancel'
+            }).then(result => {
+                if (result) {
+                    toast.info('Deleting user...', 'Please Wait', 1500);
+                    setTimeout(() => {
+                        toast.success('User "John Doe" has been deleted successfully', 'Deleted', 5000);
+                    }, 1500);
+                }
+            });
+        }
+        
+        // Show welcome message
+        setTimeout(() => {
+            toast.info('Click any button to test the toast notifications!', 'Welcome', 8000);
+        }, 500);
+    </script>
+</body>
+</html>
