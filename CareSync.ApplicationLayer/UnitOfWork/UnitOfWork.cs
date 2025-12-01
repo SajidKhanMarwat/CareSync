@@ -15,6 +15,7 @@ public sealed class UnitOfWork : IUnitOfWork
     public IRepository<T_DoctorDetails> DoctorDetailsRepo { get; }
     public IRepository<T_Lab> LabRepo { get; }
     public IRepository<T_UserLabAssistant> UserLabAssistantRepo { get; }
+    public IRepository<T_LabServices> LabServicesRepo { get; }
     public IRepository<T_Appointments> AppointmentsRepo { get; }
     public IRepository<T_PatientVitals> PatientVitalsRepo { get; }
     public IRepository<T_PatientReports> PatientReportsRepo { get; }
@@ -26,6 +27,7 @@ public sealed class UnitOfWork : IUnitOfWork
         IRepository<T_DoctorDetails> doctorRepo,
         IRepository<T_Lab> labRepo,
         IRepository<T_UserLabAssistant> userLabAssistantRepo,
+        IRepository<T_LabServices> labServicesRepo,
         IRepository<T_Appointments> appointmentRepo,
         IRepository<T_PatientVitals> patientVitalsRepo,
         IRepository<T_PatientReports> patientReportsRepo)
@@ -36,6 +38,7 @@ public sealed class UnitOfWork : IUnitOfWork
         DoctorDetailsRepo = doctorRepo;
         LabRepo = labRepo;
         UserLabAssistantRepo = userLabAssistantRepo;
+        LabServicesRepo = labServicesRepo;
         AppointmentsRepo = appointmentRepo;
         PatientVitalsRepo = patientVitalsRepo;
         PatientReportsRepo = patientReportsRepo;

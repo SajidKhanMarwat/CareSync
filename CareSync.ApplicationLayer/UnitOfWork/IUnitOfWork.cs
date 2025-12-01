@@ -12,6 +12,7 @@ public interface IUnitOfWork : IDisposable
     IRepository<T_DoctorDetails> DoctorDetailsRepo { get; }
     IRepository<T_Lab> LabRepo { get; }
     IRepository<T_UserLabAssistant> UserLabAssistantRepo { get; }
+    IRepository<T_LabServices> LabServicesRepo { get; }
     IRepository<T_Appointments> AppointmentsRepo { get; }
     IRepository<T_PatientVitals> PatientVitalsRepo { get; }
     IRepository<T_PatientReports> PatientReportsRepo { get; }

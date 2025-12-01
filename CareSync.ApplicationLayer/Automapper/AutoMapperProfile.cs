@@ -149,6 +149,39 @@ public class AutoMapperProfile : Profile
             .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(src => DateTime.UtcNow))
             .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => false));
 
+        // Lab Management Mappings
+        CreateMap<CreateLab_DTO, T_Lab>()
+            .ForMember(dest => dest.LabID, opt => opt.Ignore()) // Auto-incremented
+            .ForMember(dest => dest.UserID, opt => opt.Ignore()) // Set separately if needed
+            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(src => DateTime.UtcNow))
+            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => false))
+            .ForMember(dest => dest.LabServices, opt => opt.Ignore());
+
+        CreateMap<UpdateLab_DTO, T_Lab>()
+            .ForMember(dest => dest.LabID, opt => opt.MapFrom(src => src.LabId))
+            .ForMember(dest => dest.UpdatedOn, opt => opt.MapFrom(src => DateTime.UtcNow))
+            .ForMember(dest => dest.LabServices, opt => opt.Ignore());
+
+        CreateMap<T_Lab, LabDetails_DTO>()
+            .ForMember(dest => dest.LabId, opt => opt.MapFrom(src => src.LabID))
+            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserID))
+            .ForMember(dest => dest.ServicesCount, opt => opt.Ignore())
+            .ForMember(dest => dest.AssistantsCount, opt => opt.Ignore())
+            .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => !src.IsDeleted));
+
+        // Lab Services Mappings
+        CreateMap<LabService_DTO, T_LabServices>()
+            .ForMember(dest => dest.LabServiceID, opt => opt.MapFrom(src => src.LabServiceId))
+            .ForMember(dest => dest.LabID, opt => opt.MapFrom(src => src.LabId))
+            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(src => DateTime.UtcNow))
+            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => false));
+
+        CreateMap<T_LabServices, LabService_DTO>()
+            .ForMember(dest => dest.LabServiceId, opt => opt.MapFrom(src => src.LabServiceID))
+            .ForMember(dest => dest.LabId, opt => opt.MapFrom(src => src.LabID))
+            .ForMember(dest => dest.LabName, opt => opt.Ignore())
+            .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => !src.IsDeleted));
+
         // User Profile Mappings (Entity to DTO - for safe API exposure)
         CreateMap<T_Users, UserProfile_DTO>()
             .ForMember(dest => dest.RoleName, opt => opt.Ignore()); // Set manually with role lookup
