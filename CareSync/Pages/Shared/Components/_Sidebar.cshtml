@@ -72,49 +72,49 @@
         </li>
         
         <!-- Appointments Management -->
-        <li class="treeview @(currentPath.Contains("/Admin/Appointments") || currentPath.Contains("/Admin/BookAppointment") ? "active" : "")">
+        <li class="treeview @(currentPath.Contains("/Admin/Appointments") ? "active" : "")">
           <a href="#!">
             <i class="ri-calendar-line"></i>
             <span class="menu-text">Appointments</span>
           </a>
           <ul class="treeview-menu">
-            <li class="@(currentPath.Equals("/Admin/Appointments", StringComparison.OrdinalIgnoreCase) ? "active current-page" : "")">
-              <a href="~/Admin/Appointments">All Appointments</a>
+            <li class="@(currentPath.Contains("/Admin/Appointments/AppointmentsList") ? "active current-page" : "")">
+              <a href="~/Admin/Appointments/AppointmentsList">All Appointments</a>
             </li>
-            <li class="@(currentPath.Contains("/Admin/BookAppointment") ? "active current-page" : "")">
-              <a href="~/Admin/BookAppointment">Book Appointment</a>
+            <li class="@(currentPath.Contains("/Admin/Appointments/Book") ? "active current-page" : "")">
+              <a href="~/Admin/Appointments/Book">Book Appointment</a>
             </li>
           </ul>
         </li>
         
         <!-- Doctors Management -->
-        <li class="treeview @(currentPath.Contains("/Admin/Doctors") || currentPath.Contains("/Admin/CreateDoctor") ? "active" : "")">
+        <li class="treeview @(currentPath.Contains("/Admin/Doctors") ? "active" : "")">
           <a href="#!">
             <i class="ri-stethoscope-line"></i>
             <span class="menu-text">Doctors</span>
           </a>
           <ul class="treeview-menu">
-            <li class="@(currentPath.Contains("/Admin/Doctors") && !currentPath.Contains("/CreateDoctor") ? "active current-page" : "")">
-              <a href="~/Admin/Doctors">All Doctors</a>
+            <li class="@(currentPath.Contains("/Admin/Doctors/DoctorsList") ? "active current-page" : "")">
+              <a href="~/Admin/Doctors/DoctorsList">All Doctors</a>
             </li>
-            <li class="@(currentPath.Contains("/Admin/CreateDoctor") ? "active current-page" : "")">
-              <a href="~/Admin/CreateDoctor">Add Doctor</a>
+            <li class="@(currentPath.Contains("/Admin/Doctors/Create") ? "active current-page" : "")">
+              <a href="~/Admin/Doctors/Create">Add Doctor</a>
             </li>
           </ul>
         </li>
         
         <!-- Patients Management -->
-        <li class="treeview @(currentPath.Contains("/Admin/Patients") || currentPath.Contains("/Admin/CreatePatient") || currentPath.Contains("/Admin/Patients/Search") ? "active" : "")">
+        <li class="treeview @(currentPath.Contains("/Admin/Patients") ? "active" : "")">
           <a href="#!">
             <i class="ri-user-heart-line"></i>
             <span class="menu-text">Patients</span>
           </a>
           <ul class="treeview-menu">
-            <li class="@(currentPath.Equals("/Admin/Patients", StringComparison.OrdinalIgnoreCase) ? "active current-page" : "")">
-              <a href="~/Admin/Patients">All Patients</a>
+            <li class="@(currentPath.Contains("/Admin/Patients/PatientsList") ? "active current-page" : "")">
+              <a href="~/Admin/Patients/PatientsList">All Patients</a>
             </li>
-            <li class="@(currentPath.Contains("/Admin/CreatePatient") ? "active current-page" : "")">
-              <a href="~/Admin/CreatePatient">Add Patient</a>
+            <li class="@(currentPath.Contains("/Admin/Patients/Create") ? "active current-page" : "")">
+              <a href="~/Admin/Patients/Create">Add Patient</a>
             </li>
             <li class="@(currentPath.Contains("/Admin/Patients/Search") ? "active current-page" : "")">
               <a href="~/Admin/Patients/Search">Search Patients</a>
@@ -123,7 +123,7 @@
         </li>
         
         <!-- Lab Management -->
-        <li class="treeview @(currentPath.Contains("/Admin/Labs") || currentPath.Contains("/Admin/CreateLabStaff") ? "active" : "")">
+        <li class="treeview @(currentPath.Contains("/Admin/Labs") ? "active" : "")">
           <a href="#!">
             <i class="ri-test-tube-line"></i>
             <span class="menu-text">Lab Management</span>
@@ -141,8 +141,8 @@
                 Add New Lab
               </a>
             </li>
-            <li class="@(currentPath.Contains("/Admin/CreateLabStaff") ? "active current-page" : "")">
-              <a href="~/Admin/CreateLabStaff">
+            <li class="@(currentPath.Contains("/Admin/Labs/CreateLabStaff") ? "active current-page" : "")">
+              <a href="~/Admin/Labs/CreateLabStaff">
                 <i class="ri-user-add-line"></i>
                 Add Lab Staff
               </a>
@@ -163,27 +163,27 @@
             <span class="menu-text">User Management</span>
           </a>
           <ul class="treeview-menu">
-            <li class="@(currentPath.Contains("/Admin/Users") && !currentPath.Contains("/Roles") ? "active current-page" : "")">
-              <a href="~/Admin/Users">All Users</a>
+            <li class="@(currentPath.Contains("/Admin/Users/UsersList") ? "active current-page" : "")">
+              <a href="~/Admin/Users/UsersList">All Users</a>
             </li>
-            <li class="@(currentPath.Contains("/Admin/Roles") && !currentPath.Contains("/RoleRights") ? "active current-page" : "")">
-              <a href="~/Admin/Roles">Roles & Permissions</a>
+            <li class="@(currentPath.Contains("/Admin/Roles/RolesList") ? "active current-page" : "")">
+              <a href="~/Admin/Roles/RolesList">Roles & Permissions</a>
             </li>
-            <li class="@(currentPath.Contains("/Admin/RoleRights") ? "active current-page" : "")">
-              <a href="~/Admin/RoleRights">Role Rights Mapping</a>
+            <li class="@(currentPath.Contains("/Admin/Roles/Rights") ? "active current-page" : "")">
+              <a href="~/Admin/Roles/Rights">Role Rights Mapping</a>
             </li>
           </ul>
         </li>
         
         <!-- Reports & Analytics -->
-        <li class="treeview @(currentPath.Contains("/Admin/UserReports") ? "active" : "")">
+        <li class="treeview @(currentPath.Contains("/Admin/Users/Reports") ? "active" : "")">
           <a href="#!">
             <i class="ri-file-chart-line"></i>
             <span class="menu-text">Reports & Analytics</span>
           </a>
           <ul class="treeview-menu">
-            <li class="@(currentPath.Contains("/Admin/UserReports") ? "active current-page" : "")">
-              <a href="~/Admin/UserReports">User Reports</a>
+            <li class="@(currentPath.Contains("/Admin/Users/Reports") ? "active current-page" : "")">
+              <a href="~/Admin/Users/Reports">User Reports</a>
             </li>
           </ul>
         </li>
