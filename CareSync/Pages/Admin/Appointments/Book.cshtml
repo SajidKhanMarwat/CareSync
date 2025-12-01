@@ -1,0 +1,1188 @@
+@page "/Admin/Appointments/Book"
+@model CareSync.Pages.Admin.Appointments.BookAppointmentModel
+@{
+    ViewData["Title"] = "Book Appointment";
+}
+
+@section Breadcrumb {
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="~/Admin/Dashboard">
+                <i class="ri-home-3-line"></i>
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="~/Admin/Appointments">Appointments</a>
+        </li>
+        <li class="breadcrumb-item text-primary" aria-current="page">
+            Book Appointment
+        </li>
+    </ol>
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <a href="~/Admin/Appointments/AppointmentsList" class="btn btn-outline-secondary">
+            <i class="ri-arrow-left-line me-2"></i>Back to Appointments
+        </a>
+    </div>
+}
+
+<!-- Page Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-white bg-opacity-20 rounded-circle me-3">
+                        <i class="ri-calendar-event-line fs-2 text-white"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-white mb-1">Book New Appointment</h4>
+                        <p class="text-white-50 mb-0">Select a doctor and schedule your appointment</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="get" id="filterForm">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Search doctors by name..." id="searchDoctors">
+                                <button class="btn btn-outline-secondary" type="button" onclick="searchDoctors()">
+                                    <i class="ri-search-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" name="SpecializationFilter" id="filterSpecialty" onchange="this.form.submit()">
+                                <option value="">All Specialties</option>
+                                @foreach (var spec in Model.AvailableDoctors.Select(d => d.Specialization).Distinct().OrderBy(s => s))
+                                {
+                                    <option value="@spec" selected="@(Model.SpecializationFilter == spec)">@spec</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" name="ActiveOnlyFilter" id="filterAvailability" onchange="this.form.submit()">
+                                <option value="">All Doctors</option>
+                                <option value="true" selected="@(Model.ActiveOnlyFilter == true)">Active Only</option>
+                                <option value="false" selected="@(Model.ActiveOnlyFilter == false)">Inactive Only</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                                <i class="ri-refresh-line me-2"></i>Clear
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Doctors Cards -->
+<div class="row" id="doctorsContainer">
+    @if (Model.AvailableDoctors != null && Model.AvailableDoctors.Any())
+    {
+        @foreach (var doctor in Model.AvailableDoctors)
+        {
+            <div class="col-xl-4 col-lg-6 col-md-6 mb-4 doctor-item" data-name="@doctor.FullName.ToLower()" data-specialization="@doctor.Specialization.ToLower()">
+                <div class="card doctor-card h-100">
+                    <div class="card-body">
+                        <div class="text-center mb-3">
+                            <img src="@(!string.IsNullOrEmpty(doctor.ProfileImage) ? doctor.ProfileImage : "~/theme/images/doctor1.png")" 
+                                 class="rounded-circle mb-3" width="80" height="80" alt="@doctor.FullName">
+                            <h5 class="card-title mb-1">Dr. @doctor.FullName</h5>
+                            <p class="text-muted mb-2">@doctor.Specialization</p>
+                            <div class="d-flex justify-content-center align-items-center mb-2">
+                                @if (doctor.ExperienceYears.HasValue)
+                                {
+                                    <span class="badge bg-primary-light text-primary me-2">@doctor.ExperienceYears Years Experience</span>
+                                }
+                                @if (doctor.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inactive</span>
+                                }
+                            </div>
+                        </div>
+                        
+                        <div class="doctor-details mb-3">
+                            <div class="row g-2">
+                                <div class="col-12">
+                                    <div class="p-2 bg-light rounded">
+                                        <i class="ri-phone-line text-primary"></i>
+                                        <small class="d-block text-muted">Phone</small>
+                                        <strong>@doctor.PhoneNumber</strong>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="p-2 bg-light rounded">
+                                        <i class="ri-mail-line text-info"></i>
+                                        <small class="d-block text-muted">Email</small>
+                                        <strong class="small">@doctor.Email</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="working-hours mb-3">
+                            <h6 class="mb-2"><i class="ri-time-line me-2"></i>Available Days</h6>
+                            <p class="small text-muted mb-0">@doctor.AvailableDays</p>
+                        </div>
+                        
+                        @if (!string.IsNullOrEmpty(doctor.HospitalAffiliation))
+                        {
+                            <div class="hospital mb-3">
+                                <h6 class="mb-2"><i class="ri-hospital-line me-2"></i>Hospital</h6>
+                                <p class="small text-muted mb-0">@doctor.HospitalAffiliation</p>
+                            </div>
+                        }
+                        
+                        <div class="appointments-info mb-3">
+                            <div class="d-flex justify-content-between small">
+                                <span class="text-muted">Total Appointments:</span>
+                                <strong class="text-primary">@doctor.TotalAppointments</strong>
+                            </div>
+                            <div class="d-flex justify-content-between small">
+                                <span class="text-muted">Today's Appointments:</span>
+                                <strong class="text-success">@doctor.TodaysAppointments</strong>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary w-100" 
+                                onclick="bookAppointment(@doctor.DoctorID, '@doctor.FullName', '@doctor.Specialization')"
+                                @(!doctor.IsActive ? "disabled" : "")>
+                            <i class="ri-calendar-event-line me-2"></i>@(doctor.IsActive ? "Book Appointment" : "Not Available")
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="ri-information-line me-2"></i>
+                @if (!string.IsNullOrEmpty(Model.SpecializationFilter))
+                {
+                    <strong>No doctors found with specialization "@Model.SpecializationFilter".</strong>
+                    <br>
+                    @* Try selecting a different specialty or clear the filter. *@
+                }
+                else
+                {
+                    <strong>No doctors available at the moment.</strong>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Step 1: Patient Search/Verification Modal -->
+<div class="modal fade" id="patientSearchModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="ri-user-search-line me-2"></i>Verify Patient Account
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="ri-information-line me-2"></i>
+                    <strong>Walk-in Appointment:</strong> Please verify if the patient has an existing account by searching with their LoginId, Username, or Email.
+                </div>
+
+                <form id="patientSearchForm">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label class="form-label">Search Patient *</label>
+                        <input type="text" class="form-control form-control-lg" id="patientSearchInput" 
+                               placeholder="Enter Name, Email, or Phone Number" 
+                               onkeypress="if(event.key === 'Enter') { event.preventDefault(); searchPatient(); }"
+                               required>
+                        <small class="text-muted">Search by patient name, email address, or phone number</small>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-primary btn-lg" onclick="searchPatient()">
+                            <i class="ri-search-line me-2"></i>Search Patient
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            <i class="ri-arrow-left-line me-2"></i>Cancel
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Search Results -->
+                <div id="patientSearchResults" class="mt-4" style="display: none;">
+                    <!-- Patient Found -->
+                    <div id="patientFoundSection" style="display: none;">
+                        <div class="alert alert-success">
+                            <i class="ri-checkbox-circle-line me-2"></i>Patient account found!
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="avatar-circle bg-primary text-white me-3">
+                                        <i class="ri-user-line fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0" id="foundPatientName"></h6>
+                                        <small class="text-muted" id="foundPatientEmail"></small>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row g-2 small">
+                                    <div class="col-6">
+                                        <strong>Patient ID:</strong>
+                                        <div id="foundPatientId" class="text-muted"></div>
+                                    </div>
+                                    <div class="col-6">
+                                        <strong>Age:</strong>
+                                        <div id="foundPatientAge" class="text-muted"></div>
+                                    </div>
+                                    <div class="col-6">
+                                        <strong>Phone:</strong>
+                                        <div id="foundPatientPhone" class="text-muted"></div>
+                                    </div>
+                                    <div class="col-6">
+                                        <strong>Blood Group:</strong>
+                                        <div id="foundPatientBloodGroup" class="text-muted"></div>
+                                    </div>
+                                    <div class="col-12">
+                                        <strong>Last Visit:</strong>
+                                        <div id="foundPatientLastVisit" class="text-muted"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2 mt-3">
+                            <button type="button" class="btn btn-success btn-lg" onclick="proceedWithPatient()">
+                                <i class="ri-calendar-event-line me-2"></i>Proceed to Book Appointment
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="resetPatientSearch()">
+                                <i class="ri-search-line me-2"></i>Search Another Patient
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Patient Not Found -->
+                    <div id="patientNotFoundSection" style="display: none;">
+                        <div class="alert alert-warning">
+                            <i class="ri-error-warning-line me-2"></i>No patient account found with this information.
+                        </div>
+                        <div class="text-center py-3">
+                            <i class="ri-user-add-line display-1 text-muted mb-3"></i>
+                            <h6>Patient needs to be registered first</h6>
+                            <p class="text-muted">Create a quick account for this patient to proceed with the appointment.</p>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="showQuickRegistration()">
+                                <i class="ri-user-add-line me-2"></i>Create Patient Account
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="resetPatientSearch()">
+                                <i class="ri-search-line me-2"></i>Search Again
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Step 2: Quick Patient Registration Modal -->
+<div class="modal fade" id="quickRegistrationModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="ri-user-add-line me-2"></i>Quick Patient Registration
+                </h5>
+                <button type="button" class="btn-close btn-close-white" onclick="cancelQuickRegistration()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="ri-information-line me-2"></i>
+                    This account will be created for the patient. They can verify and activate it later by verifying their email.
+                </div>
+
+                <form id="quickRegistrationForm">
+                    <!-- Personal Information -->
+                    <div class="border-bottom pb-3 mb-4">
+                        <h6 class="text-primary mb-3">
+                            <i class="ri-user-line me-2"></i>Personal Information
+                        </h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">First Name *</label>
+                                <input type="text" class="form-control" id="regFirstName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Last Name *</label>
+                                <input type="text" class="form-control" id="regLastName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Date of Birth *</label>
+                                <input type="date" class="form-control" id="regDOB" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Gender *</label>
+                                <select class="form-select" id="regGender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone Number *</label>
+                                <input type="tel" class="form-control" id="regPhone" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Blood Group</label>
+                                <select class="form-select" id="regBloodGroup">
+                                    <option value="">Select Blood Group</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Information -->
+                    <div class="border-bottom pb-3 mb-4">
+                        <h6 class="text-primary mb-3">
+                            <i class="ri-shield-user-line me-2"></i>Account Information
+                        </h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Username *</label>
+                                <input type="text" class="form-control" id="regUsername" required>
+                                <small class="text-muted">Will be used for login</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="regEmail" required>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="regAutoGeneratePassword" checked>
+                                    <label class="form-check-label" for="regAutoGeneratePassword">
+                                        Auto-generate temporary password (will be sent via email)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address Information -->
+                    <div class="border-bottom pb-3 mb-4">
+                        <h6 class="text-primary mb-3">
+                            <i class="ri-map-pin-line me-2"></i>Contact Information
+                        </h6>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label">Address</label>
+                                <textarea class="form-control" id="regAddress" rows="2"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Emergency Contact Name</label>
+                                <input type="text" class="form-control" id="regEmergencyName">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Emergency Contact Phone</label>
+                                <input type="tel" class="form-control" id="regEmergencyPhone">
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="cancelQuickRegistration()">
+                    <i class="ri-arrow-left-line me-2"></i>Back to Search
+                </button>
+                <button type="button" class="btn btn-success" onclick="submitQuickRegistration()">
+                    <i class="ri-user-add-line me-2"></i>Create Account & Continue
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Step 3: Appointment Booking Modal -->
+<div class="modal fade" id="appointmentModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="ri-calendar-event-line me-2"></i>Book Appointment
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Linked Patient & Doctor Info -->
+                <div class="row mb-4">
+                    <!-- Patient Info -->
+                    <div class="col-md-6 mb-3">
+                        <div class="card border-success">
+                            <div class="card-header bg-success text-white">
+                                <small><i class="ri-user-line me-2"></i>Patient Information</small>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle bg-success text-white me-3">
+                                        <i class="ri-user-line fs-5"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-0" id="linkedPatientName"></h6>
+                                        <small class="text-muted" id="linkedPatientEmail"></small>
+                                        <div class="small text-muted mt-1">
+                                            <i class="ri-phone-line me-1"></i><span id="linkedPatientPhone"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Doctor Info -->
+                    <div class="col-md-6 mb-3">
+                        <div class="card border-primary">
+                            <div class="card-header bg-primary text-white">
+                                <small><i class="ri-stethoscope-line me-2"></i>Doctor Information</small>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <img id="modalDoctorImage" src="" class="rounded-circle me-3" width="50" height="50" alt="Doctor">
+                                    <div class="flex-grow-1">
+                                        <h6 id="modalDoctorName" class="mb-0"></h6>
+                                        <small id="modalDoctorSpecialty" class="text-muted"></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="appointmentForm">
+                    <div class="row">
+                        <!-- Appointment Details -->
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Appointment Date *</label>
+                                    <input type="date" class="form-control" id="appointmentDate" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Appointment Time *</label>
+                                    <select class="form-select" id="appointmentTime" required>
+                                        <option value="">Select Time</option>
+                                        <option value="09:00">9:00 AM</option>
+                                        <option value="10:00">10:00 AM</option>
+                                        <option value="11:00">11:00 AM</option>
+                                        <option value="14:00">2:00 PM</option>
+                                        <option value="15:00">3:00 PM</option>
+                                        <option value="16:00">4:00 PM</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">Appointment Type *</label>
+                                    <select class="form-select" id="appointmentType" required>
+                                        <option value="">Select Type</option>
+                                        <option value="WalkIn" selected>Walk-In</option>
+                                        <option value="Consultation">Consultation</option>
+                                        <option value="FollowUp">Follow-up</option>
+                                        <option value="Emergency">Emergency</option>
+                                        <option value="Routine">Routine Check-up</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">Reason for Visit</label>
+                                    <textarea class="form-control" id="reasonForVisit" rows="3" placeholder="Describe the reason for the appointment..."></textarea>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">Priority</label>
+                                    <select class="form-select" id="appointmentPriority">
+                                        <option value="Normal" selected>Normal</option>
+                                        <option value="Urgent">Urgent</option>
+                                        <option value="Emergency">Emergency</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="cancelAppointment()">
+                    <i class="ri-arrow-left-line me-2"></i>Back
+                </button>
+                <button type="button" class="btn btn-primary" onclick="submitAppointment()">
+                    <i class="ri-calendar-check-line me-2"></i>Book Appointment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        // Global variables to store workflow state
+        let selectedDoctor = null;
+        let selectedPatient = null;
+        let modalInstances = {};
+        
+        // Initialize modal instances on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            modalInstances.patientSearch = new bootstrap.Modal(document.getElementById('patientSearchModal'));
+            modalInstances.quickRegistration = new bootstrap.Modal(document.getElementById('quickRegistrationModal'));
+            modalInstances.appointment = new bootstrap.Modal(document.getElementById('appointmentModal'));
+        });
+        
+        // ========== STEP 1: DOCTOR SELECTION ==========
+        function bookAppointment(doctorId, doctorName, specialty) {
+            selectedDoctor = { id: doctorId, name: doctorName, specialty: specialty };
+            
+            // Reset patient data
+            selectedPatient = null;
+            
+            // Show patient search modal
+            modalInstances.patientSearch.show();
+            
+            // Reset search form
+            resetPatientSearch();
+        }
+        
+        // ========== STEP 2: PATIENT SEARCH/VERIFICATION ==========
+        async function searchPatient(event) {
+            if (event) event.preventDefault();
+            
+            const searchInput = document.getElementById('patientSearchInput').value.trim();
+            
+            if (!searchInput) {
+                toast.warning('Please enter a search term (name, email, or phone number).', 'Search Required');
+                return;
+            }
+            
+            // Get the search button
+            const searchButton = document.querySelector('#patientSearchForm button[onclick="searchPatient()"]');
+            const originalText = searchButton.innerHTML;
+            searchButton.disabled = true;
+            searchButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Searching...';
+            
+            try {
+                console.log('=== Patient Search Started ===');
+                console.log('Search term:', searchInput);
+                
+                // Get anti-forgery token
+                const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (!tokenInput) {
+                    throw new Error('Anti-forgery token not found on page');
+                }
+                const token = tokenInput.value;
+                console.log('Anti-forgery token found:', token ? 'Yes' : 'No');
+                
+                // Create form data
+                const formData = new FormData();
+                formData.append('searchTerm', searchInput);
+                formData.append('__RequestVerificationToken', token);
+                
+                console.log('FormData created with searchTerm and token');
+                
+                // Call the search API
+                console.log('Calling API:', '/Admin/Appointments/Book?handler=SearchPatient');
+                const response = await fetch('/Admin/Appointments/Book?handler=SearchPatient', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                console.log('Response received - Status:', response.status, 'OK:', response.ok);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Server error response:', errorText);
+                    console.error('Response headers:', [...response.headers.entries()]);
+                    toast.error(`Server error (${response.status}). Check application logs and browser console for details.`, 'Server Error');
+                    throw new Error(`Server returned ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('Search result:', result);
+                console.log('=== Patient Search Completed ===');
+                
+                if (result.success && result.patient) {
+                    console.log('Patient found:', result.patient.fullName);
+                    displayFoundPatient(result.patient);
+                } else {
+                    console.log('Patient not found:', result.message);
+                    displayPatientNotFound();
+                }
+            } catch (error) {
+                console.error('=== Patient Search Error ===');
+                console.error('Error type:', error.constructor.name);
+                console.error('Error message:', error.message);
+                console.error('Error stack:', error.stack);
+                toast.error('An error occurred while searching. Check the browser console (F12) for detailed error information.', 'Search Error');
+            } finally {
+                // Restore button
+                searchButton.disabled = false;
+                searchButton.innerHTML = originalText;
+            }
+        }
+        
+        function displayFoundPatient(patient) {
+            selectedPatient = patient;
+            
+            // Populate patient details
+            document.getElementById('foundPatientName').textContent = patient.fullName;
+            document.getElementById('foundPatientEmail').textContent = patient.email;
+            document.getElementById('foundPatientId').textContent = `#${patient.patientId}`;
+            document.getElementById('foundPatientAge').textContent = patient.age ? `${patient.age} years` : 'N/A';
+            document.getElementById('foundPatientPhone').textContent = patient.phoneNumber || 'N/A';
+            document.getElementById('foundPatientBloodGroup').textContent = patient.bloodGroup || 'N/A';
+            document.getElementById('foundPatientLastVisit').textContent = patient.lastVisit || 'No previous visits';
+            
+            // Show found section
+            document.getElementById('patientSearchResults').style.display = 'block';
+            document.getElementById('patientFoundSection').style.display = 'block';
+            document.getElementById('patientNotFoundSection').style.display = 'none';
+        }
+        
+        function displayPatientNotFound() {
+            selectedPatient = null;
+            
+            // Show not found section
+            document.getElementById('patientSearchResults').style.display = 'block';
+            document.getElementById('patientFoundSection').style.display = 'none';
+            document.getElementById('patientNotFoundSection').style.display = 'block';
+        }
+        
+        function resetPatientSearch() {
+            document.getElementById('patientSearchInput').value = '';
+            document.getElementById('patientSearchResults').style.display = 'none';
+            document.getElementById('patientFoundSection').style.display = 'none';
+            document.getElementById('patientNotFoundSection').style.display = 'none';
+        }
+        
+        function proceedWithPatient() {
+            if (!selectedPatient) {
+                toast.warning('No patient selected', 'Selection Required');
+                return;
+            }
+            
+            // Hide patient search modal
+            modalInstances.patientSearch.hide();
+            
+            // Show appointment booking modal
+            showAppointmentBookingModal();
+        }
+        
+        // ========== STEP 3: QUICK PATIENT REGISTRATION ==========
+        function showQuickRegistration() {
+            // Hide patient search modal
+            modalInstances.patientSearch.hide();
+            
+            // Show registration modal
+            modalInstances.quickRegistration.show();
+            
+            // Reset registration form
+            document.getElementById('quickRegistrationForm').reset();
+            
+            // Set max date for DOB (18 years ago)
+            const maxDate = new Date();
+            maxDate.setFullYear(maxDate.getFullYear() - 18);
+            document.getElementById('regDOB').max = maxDate.toISOString().split('T')[0];
+        }
+        
+        function cancelQuickRegistration() {
+            // Hide registration modal
+            modalInstances.quickRegistration.hide();
+            
+            // Show patient search modal again
+            modalInstances.patientSearch.show();
+        }
+        
+        async function submitQuickRegistration() {
+            const form = document.getElementById('quickRegistrationForm');
+            
+            // Validate required fields
+            const firstName = document.getElementById('regFirstName').value.trim();
+            const lastName = document.getElementById('regLastName').value.trim();
+            const dob = document.getElementById('regDOB').value;
+            const gender = document.getElementById('regGender').value;
+            const phone = document.getElementById('regPhone').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            
+            // Check if all required fields are filled
+            if (!firstName || !lastName || !dob || !gender || !phone || !username || !email) {
+                toast.warning('Please fill in all required fields (marked with *).', 'Validation Error');
+                return;
+            }
+            
+            // Validate email format
+            const emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+            if (!emailRegex.test(email)) {
+                toast.warning('Please enter a valid email address.', 'Invalid Email');
+                return;
+            }
+
+            if (!selectedDoctor) {
+                toast.error('Missing doctor information. Please start over.', 'Error');
+                return;
+            }
+
+            // Get the submit button
+            const submitButton = document.querySelector('#quickRegistrationModal button[onclick="submitQuickRegistration()"]');
+            const originalText = submitButton.innerHTML;
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating Account...';
+
+            try {
+                console.log('=== Creating Patient Account ===');
+                console.log('Patient:', firstName, lastName, email);
+                console.log('Doctor ID:', selectedDoctor.id);
+
+                // Get anti-forgery token
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                // Create form data
+                const formData = new FormData();
+                formData.append('firstName', firstName);
+                formData.append('lastName', lastName);
+                formData.append('username', username);
+                formData.append('email', email);
+                formData.append('phoneNumber', phone);
+                formData.append('dateOfBirth', dob);
+                formData.append('gender', gender);
+                formData.append('bloodGroup', document.getElementById('regBloodGroup').value || '');
+                formData.append('address', document.getElementById('regAddress').value || '');
+                formData.append('emergencyContactName', document.getElementById('regEmergencyName').value || '');
+                formData.append('emergencyContactPhone', document.getElementById('regEmergencyPhone').value || '');
+                formData.append('__RequestVerificationToken', token);
+
+                console.log('Calling API: /Admin/Appointments/Book?handler=CreatePatient');
+
+                // Call the backend API
+                const response = await fetch('/Admin/Appointments/Book?handler=CreatePatient', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                console.log('Response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Server error:', errorText);
+                    throw new Error(`Server returned ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('Creation result:', result);
+                console.log('Success:', result.success);
+                console.log('Message:', result.message);
+
+                if (result.success) {
+                    console.log('=== Patient Created Successfully ===');
+                    console.log('Patient Data:', result.patient);
+                    console.log('Patient ID from result:', result.patient.patientId);
+                    
+                    // Verify we have a valid patient ID
+                    if (!result.patient.patientId || result.patient.patientId === 0) {
+                        toast.error('Patient was created but ID is missing. Please search for the patient and book appointment manually.', 'Error');
+                        window.location.reload();
+                        return;
+                    }
+                    
+                    // Set the newly created patient as selectedPatient
+                    selectedPatient = {
+                        id: result.patient.patientId,
+                        patientId: result.patient.patientId,  // Added for appointment booking
+                        loginId: result.patient.loginId || username,
+                        username: username,
+                        email: email,
+                        firstName: firstName,
+                        lastName: lastName,
+                        phone: phone,
+                        phoneNumber: phone,  // Added for compatibility
+                        dateOfBirth: dob,
+                        gender: gender,
+                        bloodGroup: document.getElementById('regBloodGroup').value,
+                        address: document.getElementById('regAddress').value,
+                        emergencyContactName: document.getElementById('regEmergencyName').value,
+                        emergencyContactPhone: document.getElementById('regEmergencyPhone').value,
+                        status: 'Active',
+                        isVerified: true
+                    };
+                    
+                    console.log('Selected Patient:', selectedPatient);
+                    console.log('Selected Patient ID:', selectedPatient.patientId);
+                    
+                    // Show success toast notification
+                    toast.success(`Patient account created successfully! Patient: ${result.patientName}, Email: ${email}, Default Password: ${result.defaultPassword}. The patient should change their password after first login.`, 'Patient Created', 8000);
+                    
+                    // Hide registration modal
+                    modalInstances.quickRegistration.hide();
+                    
+                    // Reset form
+                    document.getElementById('quickRegistrationForm').reset();
+                    
+                    // Show appointment booking modal
+                    console.log('Opening appointment booking modal...');
+                    showAppointmentBookingModal();
+                    
+                } else {
+                    console.error('Server returned error:', result.message);
+                    toast.error(`Failed to create patient account. Error: ${result.message}. Please check the form and try again.`, 'Creation Failed');
+                    throw new Error(result.message || 'Failed to create patient account');
+                }
+            } catch (error) {
+                console.error('=== Patient Creation Error ===');
+                console.error('Error:', error);
+                toast.error(`Failed to create patient account. ${error.message}. Check console for details.`, 'Error');
+            } finally {
+                // Restore button
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalText;
+            }
+        }
+        
+        // ========== STEP 4: APPOINTMENT BOOKING ==========
+        function showAppointmentBookingModal() {
+            if (!selectedPatient || !selectedDoctor) {
+                toast.error('Missing patient or doctor information', 'Error');
+                return;
+            }
+            
+            // Update patient info in modal
+            // Handle both API response (fullName) and quick registration (firstName + lastName)
+            const patientName = selectedPatient.fullName || `${selectedPatient.firstName} ${selectedPatient.lastName}`;
+            const patientPhone = selectedPatient.phoneNumber || selectedPatient.phone;
+            
+            document.getElementById('linkedPatientName').textContent = patientName;
+            document.getElementById('linkedPatientEmail').textContent = selectedPatient.email;
+            document.getElementById('linkedPatientPhone').textContent = patientPhone;
+            
+            // Update doctor info in modal
+            document.getElementById('modalDoctorName').textContent = selectedDoctor.name;
+            document.getElementById('modalDoctorSpecialty').textContent = selectedDoctor.specialty;
+            
+            // Set doctor image based on name
+            let imageSrc = '~/theme/images/doctor1.png';
+            if (selectedDoctor.name.includes('James')) imageSrc = '~/theme/images/doctor2.png';
+            if (selectedDoctor.name.includes('Emily')) imageSrc = '~/theme/images/doctor3.png';
+            document.getElementById('modalDoctorImage').src = imageSrc;
+            
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('appointmentDate').min = today;
+            document.getElementById('appointmentDate').value = today;
+            
+            // Reset form
+            document.getElementById('appointmentForm').reset();
+            document.getElementById('appointmentType').value = 'WalkIn';
+            
+            // Show modal
+            modalInstances.appointment.show();
+        }
+        
+        function cancelAppointment() {
+            // Hide appointment modal
+            modalInstances.appointment.hide();
+            
+            // Show patient search modal again
+            modalInstances.patientSearch.show();
+        }
+        
+        async function submitAppointment() {
+            // Validate required fields
+            const appointmentDate = document.getElementById('appointmentDate').value;
+            const appointmentTime = document.getElementById('appointmentTime').value;
+            const appointmentType = document.getElementById('appointmentType').value;
+            const reason = document.getElementById('reasonForVisit').value;
+            const notes = document.getElementById('appointmentPriority').value; // Using priority as notes for now
+            
+            if (!appointmentDate || !appointmentTime || !appointmentType) {
+                toast.warning('Please fill in all required fields.', 'Validation Error');
+                return;
+            }
+
+            if (!selectedDoctor || !selectedPatient) {
+                toast.error('Missing doctor or patient information. Please start over.', 'Error');
+                return;
+            }
+
+            // Get the submit button
+            const submitButton = document.querySelector('#appointmentModal button[onclick="submitAppointment()"]');
+            const originalText = submitButton.innerHTML;
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Booking...';
+
+            try {
+                console.log('=== Booking Appointment ===');
+                console.log('Doctor ID:', selectedDoctor.id);
+                console.log('Patient ID:', selectedPatient.patientId);
+                console.log('Date:', appointmentDate);
+                console.log('Time:', appointmentTime);
+                console.log('Type:', appointmentType);
+
+                // Get anti-forgery token
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                // Create form data
+                const formData = new FormData();
+                formData.append('doctorId', selectedDoctor.id);
+                formData.append('patientId', selectedPatient.patientId);
+                formData.append('appointmentDate', appointmentDate);
+                formData.append('appointmentTime', appointmentTime);
+                formData.append('appointmentType', appointmentType);
+                formData.append('reason', reason || 'Walk-in appointment');
+                formData.append('notes', notes || '');
+                formData.append('__RequestVerificationToken', token);
+
+                console.log('Calling API: /Admin/Appointments/Book?handler=BookAppointment');
+
+                // Call the backend API
+                const response = await fetch('/Admin/Appointments/Book?handler=BookAppointment', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                console.log('Response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Server error:', errorText);
+                    throw new Error(`Server returned ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('Booking result:', result);
+
+                if (result.success) {
+                    // Show success message
+                    const patientName = selectedPatient.fullName || `${selectedPatient.firstName} ${selectedPatient.lastName}`;
+                    const successMessage = `Appointment booked successfully! Doctor: ${selectedDoctor.name}, Patient: ${patientName}, Date: ${result.appointmentDate}, Time: ${result.appointmentTime}, Type: ${appointmentType}`;
+                    
+                    toast.success(successMessage, 'Appointment Booked', 6000);
+                    
+                    // Close modal and reset
+                    modalInstances.appointment.hide();
+                    document.getElementById('appointmentForm').reset();
+                    
+                    // Reset selections
+                    selectedDoctor = null;
+                    selectedPatient = null;
+                    
+                    console.log('=== Appointment Booked Successfully ===');
+                    
+                    // Redirect to appointments page
+                    window.location.href = '/Admin/Appointments/AppointmentsList';
+                } else {
+                    throw new Error(result.message || 'Failed to book appointment');
+                }
+            } catch (error) {
+                console.error('=== Appointment Booking Error ===');
+                console.error('Error:', error);
+                toast.error(`Failed to book appointment. ${error.message}. Check console for details.`, 'Booking Failed');
+            } finally {
+                // Restore button
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalText;
+            }
+        }
+        
+        // ========== DOCTOR FILTERS ==========
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchDoctors').value.toLowerCase();
+            const specialty = document.getElementById('filterSpecialty').value.toLowerCase();
+            const availability = document.getElementById('filterAvailability').value;
+            
+            const doctorCards = document.querySelectorAll('.doctor-card');
+            
+            doctorCards.forEach(card => {
+                const doctorName = card.querySelector('.card-title').textContent.toLowerCase();
+                const doctorSpecialty = card.querySelector('.text-muted').textContent.toLowerCase();
+                
+                let showCard = true;
+                
+                // Apply search filter
+                if (searchTerm && !doctorName.includes(searchTerm)) {
+                    showCard = false;
+                }
+                
+                // Apply specialty filter
+                if (specialty && !doctorSpecialty.includes(specialty)) {
+                    showCard = false;
+                }
+                
+                // Show/hide card
+                card.closest('.col-xl-4').style.display = showCard ? 'block' : 'none';
+            });
+        }
+        
+        // Real-time search
+        document.getElementById('searchDoctors').addEventListener('input', applyFilters);
+    </script>
+
+    <style>
+        .doctor-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #e3e6f0;
+        }
+        
+        .doctor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+        
+        .icon-box.lg {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .bg-primary-light {
+            background-color: rgba(13, 110, 253, 0.1) !important;
+        }
+        
+        .bg-success-light {
+            background-color: rgba(25, 135, 84, 0.1) !important;
+        }
+        
+        .bg-warning-light {
+            background-color: rgba(255, 193, 7, 0.1) !important;
+        }
+        
+        .working-hours {
+            font-size: 0.875rem;
+        }
+        
+        .availability .badge {
+            font-size: 0.75rem;
+        }
+        
+        /* Patient Search & Registration Styles */
+        .avatar-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .modal-header.bg-primary .btn-close-white,
+        .modal-header.bg-success .btn-close-white {
+            filter: brightness(0) invert(1);
+        }
+        
+        #patientSearchResults .card {
+            border: 1px solid #dee2e6;
+            transition: box-shadow 0.2s;
+        }
+        
+        #patientSearchResults .card:hover {
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+        
+        /* Appointment Modal Patient/Doctor Cards */
+        .card.border-success {
+            border-width: 2px;
+        }
+        
+        .card.border-primary {
+            border-width: 2px;
+        }
+        
+        .card-header.bg-success,
+        .card-header.bg-primary {
+            padding: 0.5rem 0.75rem;
+        }
+        
+        /* Loading animation (optional) */
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        #patientSearchResults {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+    </style>
+    
+    <script>
+        // Client-side search functionality
+        function searchDoctors() {
+            const searchTerm = document.getElementById('searchDoctors').value.toLowerCase();
+            const doctorCards = document.querySelectorAll('.doctor-item');
+            
+            doctorCards.forEach(card => {
+                const doctorName = card.getAttribute('data-name');
+                if (doctorName.includes(searchTerm)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        
+        // Clear all filters
+        function clearFilters() {
+            window.location.href = '/Admin/Appointments/Book';
+        }
+        
+        // Allow Enter key to trigger search
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchDoctors');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        searchDoctors();
+                    }
+                });
+            }
+        });
+    </script>
+}
