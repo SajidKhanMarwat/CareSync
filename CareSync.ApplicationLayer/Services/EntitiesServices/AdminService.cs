@@ -4,6 +4,7 @@ using CareSync.ApplicationLayer.Contracts.AdminDashboardDTOs;
 using CareSync.ApplicationLayer.Contracts.AdminDTOs;
 using CareSync.ApplicationLayer.Contracts.AppointmentsDTOs;
 using CareSync.ApplicationLayer.Contracts.DoctorsDTOs;
+using CareSync.ApplicationLayer.Contracts.LabDTOs;
 using CareSync.ApplicationLayer.Contracts.PatientsDTOs;
 using CareSync.ApplicationLayer.Contracts.UsersDTOs;
 using CareSync.ApplicationLayer.IServices.EntitiesServices;
@@ -415,6 +416,38 @@ public class AdminService(
             LastMonthCount = lastMonth,
             PercentageChange = CalculatePercentage(thisMonth, lastMonth)
         };
+    }
+
+    #endregion
+
+    #region Lab Management
+
+    public async Task<Result<List<LabListDTO>>> GetAllLabsAsync()
+    {
+        logger.LogInformation("Executing: GetAllLabsAsync");
+        try
+        {
+            var labs = await uow.LabRepo.GetAllAsync(l => !l.IsDeleted);
+            
+            var labList = labs.Select(lab => new LabListDTO
+            {
+                LabId = lab.LabID,
+                LabName = lab.LabName,
+                ArabicLabName = lab.ArabicLabName,
+                Location = lab.Location,
+                ContactNumber = lab.ContactNumber,
+                Email = lab.Email,
+                IsActive = !lab.IsDeleted
+            }).OrderBy(l => l.LabName).ToList();
+
+            logger.LogInformation("Retrieved {Count} laboratories", labList.Count);
+            return Result<List<LabListDTO>>.Success(labList);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting all labs");
+            return Result<List<LabListDTO>>.Exception(ex);
+        }
     }
 
     #endregion

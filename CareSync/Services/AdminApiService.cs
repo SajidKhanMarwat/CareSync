@@ -625,6 +625,22 @@ public class AdminApiService
         }
     }
 
+    public async Task<T?> GetAllLabsAsync<T>()
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync("Admin/labs");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting all labs");
+            return default;
+        }
+    }
+
     public async Task<T?> GetDoctorAvailabilityAsync<T>()
     {
         try

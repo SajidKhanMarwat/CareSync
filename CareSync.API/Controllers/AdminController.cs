@@ -10,6 +10,7 @@ using CareSync.ApplicationLayer.IServices.EntitiesServices;
 using CareSync.ApplicationLayer.Services.EntitiesServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using CareSync.ApplicationLayer.Contracts.LabDTOs;
 
 namespace CareSync.API.Controllers;
 
@@ -434,7 +435,7 @@ public class AdminController(IAdminService adminService, IUserService userServic
     #region Lab Registration
 
     /// <summary>
-    /// Register lab (admin-initiated)
+    /// Register lab staff (Lab or Lab Assistant) - admin-initiated
     /// </summary>
     [HttpPost("lab-registration")]
     [AllowAnonymous] // TODO: Remove after testing
@@ -446,9 +447,23 @@ public class AdminController(IAdminService adminService, IUserService userServic
                 "Validation failed",
                 System.Net.HttpStatusCode.BadRequest);
 
-        logger.LogInformation("Admin registering new lab: {Email}", dto.Email);
+        // Determine role name from RoleType enum
+        var roleName = dto.RoleType == CareSync.Shared.Enums.RoleType.Lab ? "lab" : "labassistant";
+        
+        logger.LogInformation("Admin registering new lab staff: {Email} with role {Role}", dto.Email, roleName);
         dto.RequiresPasswordReset = true;  // Require password reset on first login
-        return await userService.RegisterNewUserAsync(dto, "lab");
+        return await userService.RegisterNewUserAsync(dto, roleName);
+    }
+
+    /// <summary>
+    /// Get all laboratories
+    /// </summary>
+    [HttpGet("labs")]
+    [Authorize(Roles = "Admin")]
+    public async Task<Result<List<LabListDTO>>> GetAllLabs()
+    {
+        logger.LogInformation("Admin requesting all laboratories");
+        return await adminService.GetAllLabsAsync();
     }
 
     #endregion

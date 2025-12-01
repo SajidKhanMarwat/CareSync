@@ -3,6 +3,7 @@ using CareSync.ApplicationLayer.Common;
 using CareSync.ApplicationLayer.Contracts.AdminDashboardDTOs;
 using CareSync.ApplicationLayer.Contracts.AdminDTOs;
 using CareSync.ApplicationLayer.Contracts.DoctorsDTOs;
+using CareSync.ApplicationLayer.Contracts.LabDTOs;
 using CareSync.ApplicationLayer.Contracts.PatientsDTOs;
 using CareSync.ApplicationLayer.Contracts.UsersDTOs;
 
@@ -193,6 +194,13 @@ public interface IAdminService
     /// Get patient demographics (gender and marital status) for charts
     /// </summary>
     Task<Result<PatientDemographics_DTO>> GetPatientDemographicsAsync();
+
+    // ========== Lab Management ==========
+    
+    /// <summary>
+    /// Get all laboratories
+    /// </summary>
+    Task<Result<List<LabListDTO>>> GetAllLabsAsync();
 
     // ========== Appointment Management ==========
     

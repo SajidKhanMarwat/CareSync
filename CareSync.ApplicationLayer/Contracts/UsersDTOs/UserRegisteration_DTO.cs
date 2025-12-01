@@ -54,5 +54,20 @@ public record UserRegisteration_DTO
     public bool RequiresPasswordReset { get; set; } = false;  // Flag to indicate if password reset is required
     public RegisterPatient_DTO? RegisterPatient { get; set; }
     public RegisterDoctor_DTO? RegisterDoctor { get; set; }
+    
+    /// <summary>
+    /// Lab facility details (for RoleType.Lab - facility owner)
+    /// </summary>
+    public RegisterLab_DTO? RegisterLab { get; set; }
+    
+    /// <summary>
+    /// Lab assignment details (for RoleType.LabAssistant - technician/staff)
+    /// </summary>
+    public AssignLabAssistant_DTO? AssignLabAssistant { get; set; }
+    
+    /// <summary>
+    /// [Deprecated] Use RegisterLab for Lab role instead
+    /// </summary>
+    [Obsolete("Use RegisterLab for Lab role and AssignLabAssistant for LabAssistant role")]
     public RegisterLabAssistant_DTO? RegisterLabAssistant { get; set; }
 }
