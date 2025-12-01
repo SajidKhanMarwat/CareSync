@@ -9,6 +9,7 @@ using CareSync.ApplicationLayer.IServices.EntitiesServices;
 using CareSync.ApplicationLayer.Repository;
 using CareSync.ApplicationLayer.UnitOfWork;
 using CareSync.DataLayer.Entities;
+using CareSync.DataLayer.Entities.Lab_Entities;
 using CareSync.Shared.Enums;
 using CareSync.Shared.Models;
 using Microsoft.AspNetCore.Identity;
@@ -328,14 +329,38 @@ public sealed class UserService(
                     break;
 
                 case "lab":
-                case "labassistant":
-                    if (request.RegisterLabAssistant != null)
+                    // Lab facility owner - creates T_Lab record
+                    if (request.RegisterLab != null)
+                    {
+                        request.RegisterLab.UserID = userId;
+                        request.RegisterLab.CreatedBy = userId;
+                        var labFacility = mapper.Map<T_Lab>(request.RegisterLab);
+                        await uow.LabRepo.AddAsync(labFacility);
+                        logger.LogInformation("Lab facility created for user {UserId}", userId);
+                    }
+                    else if (request.RegisterLabAssistant != null) // Backward compatibility
                     {
                         request.RegisterLabAssistant.UserID = userId;
                         request.RegisterLabAssistant.CreatedBy = userId;
                         var labDetails = mapper.Map<T_Lab>(request.RegisterLabAssistant);
                         await uow.LabRepo.AddAsync(labDetails);
-                        logger.LogInformation("Lab details created for user {UserId}", userId);
+                        logger.LogInformation("Lab details created for user {UserId} (deprecated flow)", userId);
+                    }
+                    break;
+
+                case "labassistant":
+                    // Lab assistant - creates T_UserLabAssistant record (links assistant to lab)
+                    if (request.AssignLabAssistant != null)
+                    {
+                        request.AssignLabAssistant.LabAssistantId = userId;
+                        request.AssignLabAssistant.CreatedBy = userId;
+                        var labAssignment = mapper.Map<T_UserLabAssistant>(request.AssignLabAssistant);
+                        await uow.UserLabAssistantRepo.AddAsync(labAssignment);
+                        logger.LogInformation("Lab assistant {UserId} assigned to Lab ID {LabId}", userId, request.AssignLabAssistant.LabId);
+                    }
+                    else
+                    {
+                        logger.LogWarning("No lab assignment provided for Lab Assistant {UserId}", userId);
                     }
                     break;
 

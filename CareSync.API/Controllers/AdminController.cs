@@ -10,6 +10,7 @@ using CareSync.ApplicationLayer.IServices.EntitiesServices;
 using CareSync.ApplicationLayer.Services.EntitiesServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using CareSync.ApplicationLayer.Contracts.LabDTOs;
 
 namespace CareSync.API.Controllers;
 
@@ -434,7 +435,7 @@ public class AdminController(IAdminService adminService, IUserService userServic
     #region Lab Registration
 
     /// <summary>
-    /// Register lab (admin-initiated)
+    /// Register lab staff (Lab or Lab Assistant) - admin-initiated
     /// </summary>
     [HttpPost("lab-registration")]
     [AllowAnonymous] // TODO: Remove after testing
@@ -446,9 +447,162 @@ public class AdminController(IAdminService adminService, IUserService userServic
                 "Validation failed",
                 System.Net.HttpStatusCode.BadRequest);
 
-        logger.LogInformation("Admin registering new lab: {Email}", dto.Email);
+        // Determine role name from RoleType enum
+        var roleName = dto.RoleType == CareSync.Shared.Enums.RoleType.Lab ? "lab" : "labassistant";
+        
+        logger.LogInformation("Admin registering new lab staff: {Email} with role {Role}", dto.Email, roleName);
         dto.RequiresPasswordReset = true;  // Require password reset on first login
-        return await userService.RegisterNewUserAsync(dto, "lab");
+        return await userService.RegisterNewUserAsync(dto, roleName);
+    }
+
+    /// <summary>
+    /// Get all laboratories
+    /// </summary>
+    [HttpGet("labs")]
+    [Authorize(Roles = "Admin")]
+    public async Task<Result<List<LabListDTO>>> GetAllLabs()
+    {
+        logger.LogInformation("Admin requesting all laboratories");
+        return await adminService.GetAllLabsAsync();
+    }
+
+    /// <summary>
+    /// Get laboratory details by ID
+    /// </summary>
+    [HttpGet("labs/{labId}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<Result<LabDetails_DTO>> GetLabById(int labId)
+    {
+        logger.LogInformation("Admin requesting lab details for LabId {LabId}", labId);
+        return await adminService.GetLabByIdAsync(labId);
+    }
+
+    /// <summary>
+    /// Create a new laboratory
+    /// </summary>
+    [HttpPost("labs")]
+    [Authorize(Roles = "Admin")]
+    public async Task<Result<GeneralResponse>> CreateLab([FromBody] CreateLab_DTO dto)
+    {
+        if (!ModelState.IsValid)
+            return Result<GeneralResponse>.Failure(
+                new GeneralResponse { Success = false, Message = "Invalid lab data" },
+                "Validation failed",
+                System.Net.HttpStatusCode.BadRequest);
+
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "system";
+        logger.LogInformation("Admin creating new laboratory: {LabName}", dto.LabName);
+        return await adminService.CreateLabAsync(dto, userId);
+    }
+
+    /// <summary>
+    /// Update laboratory information
+    /// </summary>
+    [HttpPut("labs/{labId}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<Result<GeneralResponse>> UpdateLab(int labId, [FromBody] UpdateLab_DTO dto)
+    {
+        if (!ModelState.IsValid)
+            return Result<GeneralResponse>.Failure(
+                new GeneralResponse { Success = false, Message = "Invalid lab data" },
+                "Validation failed",
+                System.Net.HttpStatusCode.BadRequest);
+
+        if (labId != dto.LabId)
+            return Result<GeneralResponse>.Failure(
+                new GeneralResponse { Success = false, Message = "Lab ID mismatch" },
+                "ID mismatch",
+                System.Net.HttpStatusCode.BadRequest);
+
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "system";
+        logger.LogInformation("Admin updating laboratory: LabId {LabId}", labId);
+        return await adminService.UpdateLabAsync(dto, userId);
+    }
+
+    /// <summary>
+    /// Delete laboratory (soft delete)
+    /// </summary>
+    [HttpDelete("labs/{labId}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<Result<GeneralResponse>> DeleteLab(int labId)
+    {
+        logger.LogInformation("Admin deleting laboratory: LabId {LabId}", labId);
+        return await adminService.DeleteLabAsync(labId);
+    }
+
+    /// <summary>
+    /// Get all services for a specific laboratory
+    /// </summary>
+    [HttpGet("labs/{labId}/services")]
+    [Authorize(Roles = "Admin")]
+    public async Task<Result<List<LabService_DTO>>> GetLabServices(int labId)
+    {
+        logger.LogInformation("Admin requesting services for LabId {LabId}", labId);
+        return await adminService.GetLabServicesAsync(labId);
+    }
+
+    /// <summary>
+    /// Get all lab services across all laboratories
+    /// </summary>
+    [HttpGet("lab-services")]
+    [Authorize(Roles = "Admin")]
+    public async Task<Result<List<LabService_DTO>>> GetAllLabServices()
+    {
+        logger.LogInformation("Admin requesting all lab services");
+        return await adminService.GetAllLabServicesAsync();
+    }
+
+    /// <summary>
+    /// Create a new lab service
+    /// </summary>
+    [HttpPost("lab-services")]
+    [Authorize(Roles = "Admin")]
+    public async Task<Result<GeneralResponse>> CreateLabService([FromBody] LabService_DTO dto)
+    {
+        if (!ModelState.IsValid)
+            return Result<GeneralResponse>.Failure(
+                new GeneralResponse { Success = false, Message = "Invalid service data" },
+                "Validation failed",
+                System.Net.HttpStatusCode.BadRequest);
+
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "system";
+        logger.LogInformation("Admin creating new lab service: {ServiceName}", dto.ServiceName);
+        return await adminService.CreateLabServiceAsync(dto, userId);
+    }
+
+    /// <summary>
+    /// Update lab service information
+    /// </summary>
+    [HttpPut("lab-services/{serviceId}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<Result<GeneralResponse>> UpdateLabService(int serviceId, [FromBody] LabService_DTO dto)
+    {
+        if (!ModelState.IsValid)
+            return Result<GeneralResponse>.Failure(
+                new GeneralResponse { Success = false, Message = "Invalid service data" },
+                "Validation failed",
+                System.Net.HttpStatusCode.BadRequest);
+
+        if (serviceId != dto.LabServiceId)
+            return Result<GeneralResponse>.Failure(
+                new GeneralResponse { Success = false, Message = "Service ID mismatch" },
+                "ID mismatch",
+                System.Net.HttpStatusCode.BadRequest);
+
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "system";
+        logger.LogInformation("Admin updating lab service: ServiceId {ServiceId}", serviceId);
+        return await adminService.UpdateLabServiceAsync(dto, userId);
+    }
+
+    /// <summary>
+    /// Delete lab service (soft delete)
+    /// </summary>
+    [HttpDelete("lab-services/{serviceId}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<Result<GeneralResponse>> DeleteLabService(int serviceId)
+    {
+        logger.LogInformation("Admin deleting lab service: ServiceId {ServiceId}", serviceId);
+        return await adminService.DeleteLabServiceAsync(serviceId);
     }
 
     #endregion

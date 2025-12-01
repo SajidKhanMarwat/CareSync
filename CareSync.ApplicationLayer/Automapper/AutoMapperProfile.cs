@@ -5,6 +5,7 @@ using CareSync.ApplicationLayer.Contracts.LabDTOs;
 using CareSync.ApplicationLayer.Contracts.PatientsDTOs;
 using CareSync.ApplicationLayer.Contracts.UsersDTOs;
 using CareSync.DataLayer.Entities;
+using CareSync.DataLayer.Entities.Lab_Entities;
 using CareSync.Shared.Enums;
 
 namespace CareSync.ApplicationLayer.Automapper;
@@ -101,7 +102,7 @@ public class AutoMapperProfile : Profile
             .ForMember(dest => dest.Prescriptions, opt => opt.Ignore())
             .ForMember(dest => dest.Qualifications, opt => opt.Ignore());
 
-        // Lab Registration Mappings
+        // Lab Registration Mappings (DEPRECATED - Use RegisterLab_DTO)
         CreateMap<RegisterLabAssistant_DTO, T_Lab>()
             .ForMember(dest => dest.UserID, opt => opt.MapFrom(src => src.UserID != null ? Guid.Parse(src.UserID) : (Guid?)null))
             .ForMember(dest => dest.LabID, opt => opt.Ignore()) // Auto-incremented
@@ -119,6 +120,67 @@ public class AutoMapperProfile : Profile
             .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(src => DateTime.UtcNow))
             .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => false))
             .ForMember(dest => dest.LabServices, opt => opt.Ignore());
+
+        // NEW Lab Facility Registration (for RoleType.Lab - facility owner)
+        CreateMap<RegisterLab_DTO, T_Lab>()
+            .ForMember(dest => dest.UserID, opt => opt.MapFrom(src => src.UserID != null ? Guid.Parse(src.UserID) : (Guid?)null))
+            .ForMember(dest => dest.LabID, opt => opt.Ignore()) // Auto-incremented
+            .ForMember(dest => dest.LabName, opt => opt.MapFrom(src => src.LabName))
+            .ForMember(dest => dest.ArabicLabName, opt => opt.MapFrom(src => src.ArabicLabName))
+            .ForMember(dest => dest.LabAddress, opt => opt.MapFrom(src => src.LabAddress))
+            .ForMember(dest => dest.ArabicLabAddress, opt => opt.MapFrom(src => src.ArabicLabAddress))
+            .ForMember(dest => dest.Location, opt => opt.MapFrom(src => src.Location))
+            .ForMember(dest => dest.ContactNumber, opt => opt.MapFrom(src => src.ContactNumber))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+            .ForMember(dest => dest.LicenseNumber, opt => opt.MapFrom(src => src.LicenseNumber))
+            .ForMember(dest => dest.OpeningTime, opt => opt.MapFrom(src => src.OpeningTime))
+            .ForMember(dest => dest.ClosingTime, opt => opt.MapFrom(src => src.ClosingTime))
+            .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy))
+            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(src => DateTime.UtcNow))
+            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => false))
+            .ForMember(dest => dest.LabServices, opt => opt.Ignore());
+
+        // Lab Assistant Assignment (for RoleType.LabAssistant - links assistant to lab)
+        CreateMap<AssignLabAssistant_DTO, T_UserLabAssistant>()
+            .ForMember(dest => dest.UserLabAssistantID, opt => opt.Ignore()) // Auto-incremented
+            .ForMember(dest => dest.LabAssistantId, opt => opt.MapFrom(src => src.LabAssistantId))
+            .ForMember(dest => dest.LabId, opt => opt.MapFrom(src => src.LabId))
+            .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy))
+            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(src => DateTime.UtcNow))
+            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => false));
+
+        // Lab Management Mappings
+        CreateMap<CreateLab_DTO, T_Lab>()
+            .ForMember(dest => dest.LabID, opt => opt.Ignore()) // Auto-incremented
+            .ForMember(dest => dest.UserID, opt => opt.Ignore()) // Set separately if needed
+            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(src => DateTime.UtcNow))
+            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => false))
+            .ForMember(dest => dest.LabServices, opt => opt.Ignore());
+
+        CreateMap<UpdateLab_DTO, T_Lab>()
+            .ForMember(dest => dest.LabID, opt => opt.MapFrom(src => src.LabId))
+            .ForMember(dest => dest.UpdatedOn, opt => opt.MapFrom(src => DateTime.UtcNow))
+            .ForMember(dest => dest.LabServices, opt => opt.Ignore());
+
+        CreateMap<T_Lab, LabDetails_DTO>()
+            .ForMember(dest => dest.LabId, opt => opt.MapFrom(src => src.LabID))
+            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserID))
+            .ForMember(dest => dest.ServicesCount, opt => opt.Ignore())
+            .ForMember(dest => dest.AssistantsCount, opt => opt.Ignore())
+            .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => !src.IsDeleted));
+
+        // Lab Services Mappings
+        CreateMap<LabService_DTO, T_LabServices>()
+            .ForMember(dest => dest.LabServiceID, opt => opt.MapFrom(src => src.LabServiceId))
+            .ForMember(dest => dest.LabID, opt => opt.MapFrom(src => src.LabId))
+            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(src => DateTime.UtcNow))
+            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => false));
+
+        CreateMap<T_LabServices, LabService_DTO>()
+            .ForMember(dest => dest.LabServiceId, opt => opt.MapFrom(src => src.LabServiceID))
+            .ForMember(dest => dest.LabId, opt => opt.MapFrom(src => src.LabID))
+            .ForMember(dest => dest.LabName, opt => opt.Ignore())
+            .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => !src.IsDeleted));
 
         // User Profile Mappings (Entity to DTO - for safe API exposure)
         CreateMap<T_Users, UserProfile_DTO>()

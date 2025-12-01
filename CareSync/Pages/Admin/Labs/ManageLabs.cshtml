@@ -1,0 +1,240 @@
+@page "/Admin/Labs/ManageLabs"
+@model CareSync.Pages.Admin.Labs.ManageLabsModel
+@{
+    ViewData["Title"] = "Manage Laboratories";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1">
+                        <i class="ri-flask-line me-2"></i>Laboratory Management
+                    </h4>
+                    <p class="text-muted mb-0">Manage all laboratory facilities</p>
+                </div>
+                <div>
+                    <a href="~/Admin/Labs/Create" class="btn btn-primary">
+                        <i class="ri-add-line me-1"></i>Add New Laboratory
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Labs Grid -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="ri-building-2-line me-2"></i>All Laboratories
+                        </h5>
+                        <div class="d-flex gap-2">
+                            <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Search laboratories..." style="width: 250px;">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshGrid()">
+                                <i class="ri-refresh-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (Model.Labs == null || !Model.Labs.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="ri-flask-line" style="font-size: 4rem; color: #ddd;"></i>
+                            <p class="text-muted mt-3 mb-0">No laboratories found. Click "Add New Laboratory" to create one.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle" id="labsTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 5%;">#</th>
+                                        <th style="width: 25%;">Lab Name</th>
+                                        <th style="width: 15%;">Location</th>
+                                        <th style="width: 15%;">Contact</th>
+                                        <th style="width: 20%;">Email</th>
+                                        <th style="width: 10%;">Status</th>
+                                        <th style="width: 10%;" class="text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var lab in Model.Labs)
+                                    {
+                                        <tr data-lab-id="@lab.LabId">
+                                            <td>
+                                                <span class="fw-bold text-primary">#@lab.LabId</span>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <strong>@lab.LabName</strong>
+                                                    @if (!string.IsNullOrEmpty(lab.ArabicLabName))
+                                                    {
+                                                        <br/><small class="text-muted">@lab.ArabicLabName</small>
+                                                    }
+                                                </div>
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(lab.Location))
+                                                {
+                                                    <i class="ri-map-pin-line me-1"></i>@lab.Location
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">—</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(lab.ContactNumber))
+                                                {
+                                                    <i class="ri-phone-line me-1"></i>@lab.ContactNumber
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">—</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(lab.Email))
+                                                {
+                                                    <i class="ri-mail-line me-1"></i>
+                                                    <a href="mailto:@lab.Email">@lab.Email</a>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">—</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (lab.IsActive)
+                                                {
+                                                    <span class="badge bg-success">
+                                                        <i class="ri-checkbox-circle-fill me-1"></i>Active
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">
+                                                        <i class="ri-close-circle-fill me-1"></i>Inactive
+                                                    </span>
+                                                }
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="btn-group btn-group-sm" role="group">
+                                                    <a href="~/Admin/Labs/Details?labId=@lab.LabId" class="btn btn-outline-info" title="View Details">
+                                                        <i class="ri-eye-line"></i>
+                                                    </a>
+                                                    <a href="~/Admin/Labs/Edit?labId=@lab.LabId" class="btn btn-outline-primary" title="Edit">
+                                                        <i class="ri-edit-line"></i>
+                                                    </a>
+                                                    <button type="button" class="btn btn-outline-danger" onclick="confirmDelete(@lab.LabId, '@lab.LabName')" title="Delete">
+                                                        <i class="ri-delete-bin-line"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Stats Summary -->
+                        <div class="mt-3 p-3 bg-light rounded">
+                            <div class="row text-center">
+                                <div class="col-md-4">
+                                    <h3 class="mb-0 text-primary">@Model.Labs.Count</h3>
+                                    <small class="text-muted">Total Laboratories</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <h3 class="mb-0 text-success">@Model.Labs.Count(l => l.IsActive)</h3>
+                                    <small class="text-muted">Active Labs</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <h3 class="mb-0 text-secondary">@Model.Labs.Count(l => !l.IsActive)</h3>
+                                    <small class="text-muted">Inactive Labs</small>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="ri-alert-line text-danger me-2"></i>Confirm Delete
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong id="labNameToDelete"></strong>?</p>
+                <p class="text-muted mb-0">
+                    <i class="ri-information-line me-1"></i>This action cannot be undone. All associated data will be marked as deleted.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" asp-page-handler="Delete" id="deleteForm">
+                    <input type="hidden" name="labId" id="labIdToDelete" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="ri-delete-bin-line me-1"></i>Delete Laboratory
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Show toast notifications from TempData
+        @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+        {
+            <text>
+            toast.success('@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(Model.SuccessMessage))', 'Success');
+            </text>
+        }
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <text>
+            toast.error('@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(Model.ErrorMessage))', 'Error');
+            </text>
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#labsTable tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Delete confirmation
+        function confirmDelete(labId, labName) {
+            document.getElementById('labIdToDelete').value = labId;
+            document.getElementById('labNameToDelete').textContent = labName;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+
+        // Refresh grid
+        function refreshGrid() {
+            location.reload();
+        }
+    </script>
+}

@@ -122,12 +122,38 @@
           </ul>
         </li>
         
-        <!-- Staff Management -->
-        <li class="@(currentPath.Contains("/Admin/CreateLaboratory") ? "active current-page" : "")">
-          <a href="~/Admin/CreateLaboratory">
+        <!-- Lab Management -->
+        <li class="treeview @(currentPath.Contains("/Admin/Labs") || currentPath.Contains("/Admin/CreateLabStaff") ? "active" : "")">
+          <a href="#!">
             <i class="ri-test-tube-line"></i>
-            <span class="menu-text">Add Lab Staff</span>
+            <span class="menu-text">Lab Management</span>
           </a>
+          <ul class="treeview-menu">
+            <li class="@(currentPath.Contains("/Admin/Labs/ManageLabs") ? "active current-page" : "")">
+              <a href="~/Admin/Labs/ManageLabs">
+                <i class="ri-flask-line"></i>
+                Manage Labs
+              </a>
+            </li>
+            <li class="@(currentPath.Contains("/Admin/Labs/Create") ? "active current-page" : "")">
+              <a href="~/Admin/Labs/Create">
+                <i class="ri-add-circle-line"></i>
+                Add New Lab
+              </a>
+            </li>
+            <li class="@(currentPath.Contains("/Admin/CreateLabStaff") ? "active current-page" : "")">
+              <a href="~/Admin/CreateLabStaff">
+                <i class="ri-user-add-line"></i>
+                Add Lab Staff
+              </a>
+            </li>
+            <li class="@(currentPath.Contains("/Admin/Labs/Services") ? "active current-page" : "")">
+              <a href="~/Admin/Labs/Services">
+                <i class="ri-service-line"></i>
+                Lab Services
+              </a>
+            </li>
+          </ul>
         </li>
         
         <!-- User Management -->

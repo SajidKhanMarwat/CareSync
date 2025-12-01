@@ -625,6 +625,166 @@ public class AdminApiService
         }
     }
 
+    public async Task<T?> GetAllLabsAsync<T>()
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync("Admin/labs");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting all labs");
+            return default;
+        }
+    }
+
+    public async Task<T?> GetLabByIdAsync<T>(int labId)
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync($"Admin/labs/{labId}");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting lab details for LabId {LabId}", labId);
+            return default;
+        }
+    }
+
+    public async Task<T?> CreateLabAsync<T>(object labData)
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.PostAsJsonAsync("Admin/labs", labData);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating lab");
+            return default;
+        }
+    }
+
+    public async Task<T?> UpdateLabAsync<T>(int labId, object labData)
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.PutAsJsonAsync($"Admin/labs/{labId}", labData);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating lab");
+            return default;
+        }
+    }
+
+    public async Task<T?> DeleteLabAsync<T>(int labId)
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.DeleteAsync($"Admin/labs/{labId}");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting lab");
+            return default;
+        }
+    }
+
+    public async Task<T?> GetLabServicesAsync<T>(int labId)
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync($"Admin/labs/{labId}/services");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting lab services");
+            return default;
+        }
+    }
+
+    public async Task<T?> GetAllLabServicesAsync<T>()
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync("Admin/lab-services");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting all lab services");
+            return default;
+        }
+    }
+
+    public async Task<T?> CreateLabServiceAsync<T>(object serviceData)
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.PostAsJsonAsync("Admin/lab-services", serviceData);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating lab service");
+            return default;
+        }
+    }
+
+    public async Task<T?> UpdateLabServiceAsync<T>(int serviceId, object serviceData)
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.PutAsJsonAsync($"Admin/lab-services/{serviceId}", serviceData);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating lab service");
+            return default;
+        }
+    }
+
+    public async Task<T?> DeleteLabServiceAsync<T>(int serviceId)
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.DeleteAsync($"Admin/lab-services/{serviceId}");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting lab service");
+            return default;
+        }
+    }
+
     public async Task<T?> GetDoctorAvailabilityAsync<T>()
     {
         try
