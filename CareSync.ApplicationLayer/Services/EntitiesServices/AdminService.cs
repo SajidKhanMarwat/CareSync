@@ -800,6 +800,135 @@ public class AdminService(
         }
     }
 
+    public async Task<Result<LabServicesPagedResult_DTO>> GetLabServicesPagedAsync(LabServicesFilter_DTO filter)
+    {
+        logger.LogInformation("Executing: GetLabServicesPagedAsync - LabId: {LabId}, Category: {Category}, Page: {Page}, PageSize: {PageSize}, Search: {Search}", 
+            filter.LabId, filter.Category, filter.Page, filter.PageSize, filter.SearchTerm);
+        try
+        {
+            // Validate pagination parameters
+            if (filter.Page < 1)
+            {
+                logger.LogWarning("Invalid page number: {Page}. Setting to 1.", filter.Page);
+                filter.Page = 1;
+            }
+
+            if (filter.PageSize < LabServicesFilter_DTO.MinPageSize || filter.PageSize > LabServicesFilter_DTO.MaxPageSize)
+            {
+                logger.LogWarning("Invalid page size: {PageSize}. Setting to default: {Default}.", filter.PageSize, LabServicesFilter_DTO.DefaultPageSize);
+                filter.PageSize = LabServicesFilter_DTO.DefaultPageSize;
+            }
+
+            // Get all services with filters
+            var query = await uow.LabServicesRepo.GetAllAsync(s => !s.IsDeleted);
+            
+            // Apply filters
+            if (filter.LabId.HasValue)
+            {
+                query = query.Where(s => s.LabID == filter.LabId.Value).ToList();
+            }
+            
+            if (!string.IsNullOrEmpty(filter.Category))
+            {
+                query = query.Where(s => s.Category == filter.Category).ToList();
+            }
+            
+            if (filter.IsActive.HasValue)
+            {
+                query = query.Where(s => !s.IsDeleted == filter.IsActive.Value).ToList();
+            }
+            
+            // Apply search term
+            if (!string.IsNullOrEmpty(filter.SearchTerm))
+            {
+                var searchLower = filter.SearchTerm.ToLower();
+                query = query.Where(s => 
+                    (s.ServiceName != null && s.ServiceName.ToLower().Contains(searchLower)) ||
+                    (s.Description != null && s.Description.ToLower().Contains(searchLower)) ||
+                    (s.Category != null && s.Category.ToLower().Contains(searchLower))
+                ).ToList();
+            }
+
+            // Get total count before pagination
+            var totalCount = query.Count();
+
+            // Apply sorting
+            query = !string.IsNullOrEmpty(filter.SortBy) ? filter.SortBy.ToLower() switch
+            {
+                "servicename" => filter.SortDescending 
+                    ? query.OrderByDescending(s => s.ServiceName).ToList()
+                    : query.OrderBy(s => s.ServiceName).ToList(),
+                "price" => filter.SortDescending 
+                    ? query.OrderByDescending(s => s.Price ?? 0).ToList()
+                    : query.OrderBy(s => s.Price ?? 0).ToList(),
+                "category" => filter.SortDescending 
+                    ? query.OrderByDescending(s => s.Category).ToList()
+                    : query.OrderBy(s => s.Category).ToList(),
+                _ => query.OrderBy(s => s.ServiceName).ToList()
+            } : query.OrderBy(s => s.ServiceName).ToList();
+
+            // Apply pagination
+            var pagedServices = query
+                .Skip((filter.Page - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .ToList();
+
+            // Get labs for mapping
+            var labs = await uow.LabRepo.GetAllAsync(l => !l.IsDeleted);
+            var labDict = labs.ToDictionary(l => l.LabID, l => l.LabName);
+
+            // Map to DTOs
+            var serviceDtos = pagedServices.Select(s => new LabService_DTO
+            {
+                LabServiceId = s.LabServiceID,
+                LabId = s.LabID,
+                ServiceName = s.ServiceName ?? string.Empty,
+                Description = s.Description,
+                Category = s.Category,
+                SampleType = s.SampleType,
+                Instructions = s.Instructions,
+                Price = s.Price,
+                EstimatedTime = s.EstimatedTime,
+                LabName = labDict.TryGetValue(s.LabID, out var labName) ? labName : "Unknown Lab",
+                IsActive = !s.IsDeleted
+            }).ToList();
+
+            // Calculate statistics
+            var allServices = await uow.LabServicesRepo.GetAllAsync(s => !s.IsDeleted);
+            var activeServices = allServices.Count(s => !s.IsDeleted);
+            var avgPrice = allServices.Where(s => s.Price.HasValue).Average(s => s.Price ?? 0);
+            
+            // Category distribution
+            var categoryDist = allServices
+                .Where(s => !string.IsNullOrEmpty(s.Category))
+                .GroupBy(s => s.Category)
+                .ToDictionary(g => g.Key!, g => g.Count());
+
+            var result = new LabServicesPagedResult_DTO
+            {
+                Items = serviceDtos,
+                TotalCount = totalCount,
+                Page = filter.Page,
+                PageSize = filter.PageSize,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)filter.PageSize),
+                TotalServices = allServices.Count(),
+                ActiveServices = activeServices,
+                TotalLaboratories = labs.Select(l => l.LabID).Distinct().Count(),
+                AveragePrice = avgPrice,
+                CategoryDistribution = categoryDist
+            };
+
+            logger.LogInformation("Retrieved {Count} lab services (Page {Page} of {TotalPages})", 
+                serviceDtos.Count, result.Page, result.TotalPages);
+            return Result<LabServicesPagedResult_DTO>.Success(result);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting paged lab services");
+            return Result<LabServicesPagedResult_DTO>.Exception(ex);
+        }
+    }
+
     #endregion
 
     #region Appointment Management

@@ -1,0 +1,205 @@
+@page "/Admin/Labs/Services/Edit/{serviceId:int}"
+@model CareSync.Pages.Admin.Labs.EditServiceModel
+@{
+    ViewData["Title"] = "Edit Lab Service";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1">
+                        <i class="ri-edit-line me-2"></i>Edit Lab Service
+                    </h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a asp-page="/Admin/Dashboard">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a asp-page="/Admin/Labs/Services">Lab Services</a></li>
+                            <li class="breadcrumb-item active">Edit Service</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div>
+                    <a asp-page="/Admin/Labs/Services" class="btn btn-secondary">
+                        <i class="ri-arrow-left-line me-1"></i>Cancel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="ri-error-warning-line me-2"></i>@Model.ErrorMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-service-line me-2"></i>Service Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <input type="hidden" asp-for="ServiceInput.LabServiceId" />
+                        
+                        <div class="row g-3">
+                            <!-- Laboratory Selection -->
+                            <div class="col-12">
+                                <label asp-for="ServiceInput.LabId" class="form-label">
+                                    Laboratory <span class="text-danger">*</span>
+                                </label>
+                                <select asp-for="ServiceInput.LabId" class="form-select" required>
+                                    <option value="">-- Select Laboratory --</option>
+                                    @if (Model.AvailableLabs != null)
+                                    {
+                                        @foreach (var lab in Model.AvailableLabs)
+                                        {
+                                            <option value="@lab.LabId">@lab.LabName @(!string.IsNullOrEmpty(lab.Location) ? $"- {lab.Location}" : "")</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="ServiceInput.LabId" class="text-danger"></span>
+                            </div>
+
+                            <!-- Service Name -->
+                            <div class="col-md-6">
+                                <label asp-for="ServiceInput.ServiceName" class="form-label">
+                                    Service Name <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="ServiceInput.ServiceName" class="form-control" placeholder="e.g., Complete Blood Count" required />
+                                <span asp-validation-for="ServiceInput.ServiceName" class="text-danger"></span>
+                            </div>
+
+                            <!-- Category -->
+                            <div class="col-md-6">
+                                <label asp-for="ServiceInput.Category" class="form-label">Category</label>
+                                <select asp-for="ServiceInput.Category" class="form-select">
+                                    <option value="">-- Select Category --</option>
+                                    <option value="Blood Tests">Blood Tests</option>
+                                    <option value="Urine Tests">Urine Tests</option>
+                                    <option value="Imaging">Imaging</option>
+                                    <option value="Microbiology">Microbiology</option>
+                                    <option value="Biochemistry">Biochemistry</option>
+                                    <option value="Pathology">Pathology</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <span asp-validation-for="ServiceInput.Category" class="text-danger"></span>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="col-12">
+                                <label asp-for="ServiceInput.Description" class="form-label">Description</label>
+                                <textarea asp-for="ServiceInput.Description" class="form-control" rows="3" placeholder="Brief description of the service"></textarea>
+                                <span asp-validation-for="ServiceInput.Description" class="text-danger"></span>
+                            </div>
+
+                            <!-- Sample Type -->
+                            <div class="col-md-6">
+                                <label asp-for="ServiceInput.SampleType" class="form-label">Sample Type</label>
+                                <input asp-for="ServiceInput.SampleType" class="form-control" placeholder="e.g., Blood, Urine" />
+                                <span asp-validation-for="ServiceInput.SampleType" class="text-danger"></span>
+                            </div>
+
+                            <!-- Price -->
+                            <div class="col-md-6">
+                                <label asp-for="ServiceInput.Price" class="form-label">Price (SAR)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">SAR</span>
+                                    <input asp-for="ServiceInput.Price" type="number" step="0.01" class="form-control" placeholder="0.00" />
+                                </div>
+                                <span asp-validation-for="ServiceInput.Price" class="text-danger"></span>
+                            </div>
+
+                            <!-- Estimated Time -->
+                            <div class="col-md-6">
+                                <label asp-for="ServiceInput.EstimatedTime" class="form-label">Estimated Time</label>
+                                <input asp-for="ServiceInput.EstimatedTime" class="form-control" placeholder="e.g., 2-3 hours, 1 day" />
+                                <span asp-validation-for="ServiceInput.EstimatedTime" class="text-danger"></span>
+                            </div>
+
+                            <!-- Instructions -->
+                            <div class="col-12">
+                                <label asp-for="ServiceInput.Instructions" class="form-label">Patient Instructions</label>
+                                <textarea asp-for="ServiceInput.Instructions" class="form-control" rows="3" placeholder="Special instructions for patients (e.g., fasting required)"></textarea>
+                                <span asp-validation-for="ServiceInput.Instructions" class="text-danger"></span>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="col-12">
+                                <hr class="my-4" />
+                                <div class="d-flex justify-content-between">
+                                    <a asp-page="/Admin/Labs/Services" class="btn btn-secondary">
+                                        <i class="ri-close-line me-1"></i>Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="ri-save-line me-1"></i>Update Service
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Card -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-information-line me-2"></i>Help & Guidelines
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold">Required Fields</h6>
+                    <ul class="small">
+                        <li>Laboratory</li>
+                        <li>Service Name</li>
+                    </ul>
+
+                    <h6 class="fw-bold mt-3">Tips</h6>
+                    <ul class="small mb-0">
+                        <li>Use clear, descriptive service names</li>
+                        <li>Include abbreviations in parentheses</li>
+                        <li>Provide detailed patient instructions</li>
+                        <li>Keep pricing up to date</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Current Service Info Card -->
+            @if (Model.ServiceInput != null)
+            {
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="ri-file-info-line me-2"></i>Current Service
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted small">Service ID</span>
+                            <strong>#@Model.ServiceInput.LabServiceId</strong>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted small">Service Name</span>
+                            <strong class="text-end">@Model.ServiceInput.ServiceName</strong>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,272 @@
+@page "/Admin/Labs/Services/{serviceId:int}"
+@model CareSync.Pages.Admin.Labs.ServiceDetailsModel
+@{
+    ViewData["Title"] = "Lab Service Details";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1">
+                        <i class="ri-information-line me-2"></i>Lab Service Details
+                    </h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a asp-page="/Admin/Dashboard">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a asp-page="/Admin/Labs/Services">Lab Services</a></li>
+                            <li class="breadcrumb-item active">Service Details</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div>
+                    <a asp-page="/Admin/Labs/EditService" asp-route-serviceId="@Model.Service?.LabServiceId" class="btn btn-primary me-2">
+                        <i class="ri-edit-line me-1"></i>Edit Service
+                    </a>
+                    <a asp-page="/Admin/Labs/Services" class="btn btn-secondary">
+                        <i class="ri-arrow-left-line me-1"></i>Back to List
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Service == null)
+    {
+        <div class="alert alert-warning">
+            <i class="ri-alert-line me-2"></i>Service not found.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <!-- Service Information Card -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="ri-service-line me-2"></i>@Model.Service.ServiceName
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <!-- Service ID -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Service ID</label>
+                                <p class="form-control-plaintext">#@Model.Service.LabServiceId</p>
+                            </div>
+
+                            <!-- Laboratory -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Laboratory</label>
+                                <p class="form-control-plaintext">
+                                    <i class="ri-flask-line me-1"></i>@Model.Service.LabName
+                                </p>
+                            </div>
+
+                            <!-- Category -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Category</label>
+                                <p class="form-control-plaintext">
+                                    @if (!string.IsNullOrEmpty(Model.Service.Category))
+                                    {
+                                        <span class="badge bg-info">@Model.Service.Category</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not specified</span>
+                                    }
+                                </p>
+                            </div>
+
+                            <!-- Sample Type -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Sample Type</label>
+                                <p class="form-control-plaintext">
+                                    @if (!string.IsNullOrEmpty(Model.Service.SampleType))
+                                    {
+                                        <i class="ri-drop-line me-1"></i>@Model.Service.SampleType
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not specified</span>
+                                    }
+                                </p>
+                            </div>
+
+                            <!-- Price -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Price</label>
+                                <p class="form-control-plaintext">
+                                    @if (Model.Service.Price.HasValue)
+                                    {
+                                        <strong class="text-success fs-5">@Model.Service.Price.Value.ToString("C")</strong>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not specified</span>
+                                    }
+                                </p>
+                            </div>
+
+                            <!-- Estimated Time -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Estimated Time</label>
+                                <p class="form-control-plaintext">
+                                    @if (!string.IsNullOrEmpty(Model.Service.EstimatedTime))
+                                    {
+                                        <i class="ri-time-line me-1"></i>@Model.Service.EstimatedTime
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not specified</span>
+                                    }
+                                </p>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Status</label>
+                                <p class="form-control-plaintext">
+                                    @if (Model.Service.IsActive)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    }
+                                </p>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Description</label>
+                                <div class="border rounded p-3 bg-light">
+                                    @if (!string.IsNullOrEmpty(Model.Service.Description))
+                                    {
+                                        <p class="mb-0">@Model.Service.Description</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted mb-0">No description provided</p>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Instructions -->
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Patient Instructions</label>
+                                <div class="border rounded p-3 bg-light">
+                                    @if (!string.IsNullOrEmpty(Model.Service.Instructions))
+                                    {
+                                        <div class="alert alert-info mb-0">
+                                            <i class="ri-information-line me-2"></i>
+                                            @Model.Service.Instructions
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted mb-0">No special instructions</p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions Card -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="ri-settings-3-line me-2"></i>Actions
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a asp-page="/Admin/Labs/EditService" asp-route-serviceId="@Model.Service.LabServiceId" class="btn btn-primary">
+                                <i class="ri-edit-line me-2"></i>Edit Service
+                            </a>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                <i class="ri-delete-bin-line me-2"></i>Delete Service
+                            </button>
+                            <a asp-page="/Admin/Labs/Services" class="btn btn-secondary">
+                                <i class="ri-arrow-left-line me-2"></i>Back to List
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats Card -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="ri-bar-chart-line me-2"></i>Quick Stats
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-muted">Service ID</span>
+                            <strong>#@Model.Service.LabServiceId</strong>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-muted">Laboratory</span>
+                            <strong>@Model.Service.LabName</strong>
+                        </div>
+                        @if (Model.Service.Price.HasValue)
+                        {
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-muted">Price</span>
+                                <strong class="text-success">@Model.Service.Price.Value.ToString("C")</strong>
+                            </div>
+                        }
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Status</span>
+                            @if (Model.Service.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Inactive</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="ri-alert-line me-2"></i>Confirm Delete
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong>@Model.Service?.ServiceName</strong>?</p>
+                <div class="alert alert-warning">
+                    <i class="ri-information-line me-2"></i>This action cannot be undone.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" asp-page-handler="Delete">
+                    <input type="hidden" name="serviceId" value="@Model.Service?.LabServiceId" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="ri-delete-bin-line me-1"></i>Delete Service
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

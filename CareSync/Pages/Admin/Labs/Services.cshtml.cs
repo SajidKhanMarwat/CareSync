@@ -27,7 +27,25 @@ public class ServicesModel : BasePageModel
     public string? SuccessMessage { get; set; }
     public string? ErrorMessage { get; set; }
 
-    public async Task<IActionResult> OnGetAsync()
+    // Pagination properties
+    public int CurrentPage { get; set; } = 1;
+    public int PageSize { get; set; } = 10;
+    public int TotalPages { get; set; }
+    public int TotalCount { get; set; }
+    
+    // Statistics
+    public int TotalServices { get; set; }
+    public int ActiveServices { get; set; }
+    public int TotalLaboratories { get; set; }
+    public decimal AveragePrice { get; set; }
+    public Dictionary<string, int> CategoryDistribution { get; set; } = new();
+    
+    // Filters
+    public int? FilterLabId { get; set; }
+    public string? FilterCategory { get; set; }
+    public string? SearchTerm { get; set; }
+
+    public async Task<IActionResult> OnGetAsync(int? page, int? pageSize, int? labId, string? category, string? search)
     {
         var authResult = RequireRole("Admin");
         if (authResult != null) return authResult;
@@ -36,6 +54,15 @@ public class ServicesModel : BasePageModel
         {
             SuccessMessage = TempData["SuccessMessage"]?.ToString();
         }
+
+        // Validate and set page size (10, 25, 50, 100 only)
+        var validPageSizes = new[] { 10, 25, 50, 100 };
+        PageSize = pageSize.HasValue && validPageSizes.Contains(pageSize.Value) ? pageSize.Value : 10;
+
+        CurrentPage = page ?? 1;
+        FilterLabId = labId;
+        FilterCategory = category;
+        SearchTerm = search;
 
         await LoadDataAsync();
         return Page();
@@ -111,11 +138,42 @@ public class ServicesModel : BasePageModel
     {
         try
         {
-            // Load all services
-            var servicesResult = await _adminApiService.GetAllLabServicesAsync<Result<List<LabServiceItem>>>();
-            if (servicesResult?.IsSuccess == true && servicesResult.Data != null)
+            // Create filter for pagination
+            var filter = new LabServicesFilterRequest
             {
-                Services = servicesResult.Data;
+                LabId = FilterLabId,
+                Category = FilterCategory,
+                SearchTerm = SearchTerm,
+                Page = CurrentPage,
+                PageSize = PageSize
+            };
+
+            // Load paged services
+            var pagedResult = await _adminApiService.GetLabServicesPagedAsync<Result<LabServicesPagedResponse>>(filter);
+            if (pagedResult?.IsSuccess == true && pagedResult.Data != null)
+            {
+                Services = pagedResult.Data.Items?.Select(s => new LabServiceItem
+                {
+                    LabServiceId = s.LabServiceId,
+                    LabId = s.LabId,
+                    ServiceName = s.ServiceName,
+                    Description = s.Description,
+                    Category = s.Category,
+                    SampleType = s.SampleType,
+                    Instructions = s.Instructions,
+                    Price = s.Price,
+                    EstimatedTime = s.EstimatedTime,
+                    LabName = s.LabName,
+                    IsActive = s.IsActive
+                }).ToList() ?? new List<LabServiceItem>();
+                
+                TotalCount = pagedResult.Data.TotalCount;
+                TotalPages = pagedResult.Data.TotalPages;
+                TotalServices = pagedResult.Data.TotalServices;
+                ActiveServices = pagedResult.Data.ActiveServices;
+                TotalLaboratories = pagedResult.Data.TotalLaboratories;
+                AveragePrice = pagedResult.Data.AveragePrice;
+                CategoryDistribution = pagedResult.Data.CategoryDistribution ?? new();
             }
             else
             {
@@ -195,5 +253,43 @@ public class ServicesModel : BasePageModel
     {
         public bool Success { get; set; }
         public string? Message { get; set; }
+    }
+
+    public class LabServicesFilterRequest
+    {
+        public int? LabId { get; set; }
+        public string? Category { get; set; }
+        public string? SearchTerm { get; set; }
+        public int Page { get; set; } = 1;
+        public int PageSize { get; set; } = 10;
+    }
+
+    public class LabServicesPagedResponse
+    {
+        public List<LabServiceDto>? Items { get; set; }
+        public int TotalCount { get; set; }
+        public int Page { get; set; }
+        public int PageSize { get; set; }
+        public int TotalPages { get; set; }
+        public int TotalServices { get; set; }
+        public int ActiveServices { get; set; }
+        public int TotalLaboratories { get; set; }
+        public decimal AveragePrice { get; set; }
+        public Dictionary<string, int>? CategoryDistribution { get; set; }
+    }
+
+    public class LabServiceDto
+    {
+        public int LabServiceId { get; set; }
+        public int LabId { get; set; }
+        public string ServiceName { get; set; } = string.Empty;
+        public string? Description { get; set; }
+        public string? Category { get; set; }
+        public string? SampleType { get; set; }
+        public string? Instructions { get; set; }
+        public decimal? Price { get; set; }
+        public string? EstimatedTime { get; set; }
+        public string? LabName { get; set; }
+        public bool IsActive { get; set; }
     }
 }
