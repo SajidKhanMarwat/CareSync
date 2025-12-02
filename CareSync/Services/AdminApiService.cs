@@ -737,6 +737,22 @@ public class AdminApiService
         }
     }
 
+    public async Task<T?> GetLabServicesPagedAsync<T>(object filter)
+    {
+        try
+        {
+            var client = CreateClient();
+            var response = await client.PostAsJsonAsync("Admin/lab-services/paged", filter, _jsonOptions);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting paged lab services");
+            return default;
+        }
+    }
+
     public async Task<T?> CreateLabServiceAsync<T>(object serviceData)
     {
         try

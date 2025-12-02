@@ -34,7 +34,7 @@ builder.Services.AddTransient<AuthorizationMessageHandler>();
 // Register HttpClient with Authorization Handler
 builder.Services.AddHttpClient("ApiClient", client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5157/api/");
+    client.BaseAddress = new Uri("https://localhost:7138/api/");
     client.Timeout = TimeSpan.FromSeconds(30);
 })
 .AddHttpMessageHandler<AuthorizationMessageHandler>();

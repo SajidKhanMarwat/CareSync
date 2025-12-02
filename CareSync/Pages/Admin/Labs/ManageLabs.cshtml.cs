@@ -20,11 +20,21 @@ public class ManageLabsModel : BasePageModel
     public List<LabListItem>? Labs { get; set; }
     public string? SuccessMessage { get; set; }
     public string? ErrorMessage { get; set; }
+    
+    // Pagination properties
+    public int CurrentPage { get; set; } = 1;
+    public int PageSize { get; set; } = 10;
+    public int TotalItems { get; set; }
+    public int TotalPages => (int)Math.Ceiling(TotalItems / (double)PageSize);
 
-    public async Task<IActionResult> OnGetAsync()
+    public async Task<IActionResult> OnGetAsync(int page = 1, int pageSize = 10)
     {
         var authResult = RequireRole("Admin");
         if (authResult != null) return authResult;
+
+        // Validate pagination parameters
+        CurrentPage = page < 1 ? 1 : page;
+        PageSize = pageSize < 5 ? 10 : (pageSize > 100 ? 100 : pageSize);
 
         // Check for success message from TempData
         if (TempData["SuccessMessage"] != null)
@@ -70,11 +80,19 @@ public class ManageLabsModel : BasePageModel
             var result = await _adminApiService.GetAllLabsAsync<Result<List<LabListItem>>>();
             if (result?.IsSuccess == true && result.Data != null)
             {
-                Labs = result.Data;
+                // Store total items count
+                TotalItems = result.Data.Count;
+                
+                // Apply pagination
+                Labs = result.Data
+                    .Skip((CurrentPage - 1) * PageSize)
+                    .Take(PageSize)
+                    .ToList();
             }
             else
             {
                 Labs = new List<LabListItem>();
+                TotalItems = 0;
                 ErrorMessage = "Failed to load laboratories.";
             }
         }
@@ -82,6 +100,7 @@ public class ManageLabsModel : BasePageModel
         {
             _logger.LogError(ex, "Error loading labs");
             Labs = new List<LabListItem>();
+            TotalItems = 0;
             ErrorMessage = "An error occurred while loading laboratories.";
         }
     }

@@ -553,6 +553,32 @@ public class AdminController(IAdminService adminService, IUserService userServic
     }
 
     /// <summary>
+    /// Get lab services with pagination and filtering
+    /// </summary>
+    [HttpPost("lab-services/paged")]
+    [Authorize(Roles = "Admin")]
+    public async Task<Result<LabServicesPagedResult_DTO>> GetLabServicesPaged([FromBody] LabServicesFilter_DTO filter)
+    {
+        if (!ModelState.IsValid)
+        {
+            var errors = string.Join(", ", ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage));
+            
+            logger.LogWarning("Invalid filter parameters: {Errors}", errors);
+            return Result<LabServicesPagedResult_DTO>.Failure(
+                null,
+                $"Invalid filter parameters: {errors}",
+                System.Net.HttpStatusCode.BadRequest);
+        }
+
+        logger.LogInformation("Admin requesting paged lab services - Page: {Page}, PageSize: {PageSize}, LabId: {LabId}, Search: {Search}", 
+            filter.Page, filter.PageSize, filter.LabId, filter.SearchTerm);
+        
+        return await adminService.GetLabServicesPagedAsync(filter);
+    }
+
+    /// <summary>
     /// Create a new lab service
     /// </summary>
     [HttpPost("lab-services")]

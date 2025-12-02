@@ -233,6 +233,11 @@ public interface IAdminService
     Task<Result<List<LabService_DTO>>> GetAllLabServicesAsync();
 
     /// <summary>
+    /// Get lab services with pagination and filtering
+    /// </summary>
+    Task<Result<LabServicesPagedResult_DTO>> GetLabServicesPagedAsync(LabServicesFilter_DTO filter);
+
+    /// <summary>
     /// Create a new lab service
     /// </summary>
     Task<Result<GeneralResponse>> CreateLabServiceAsync(LabService_DTO dto, string createdBy);
