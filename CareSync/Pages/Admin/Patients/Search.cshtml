@@ -12,7 +12,7 @@
             </a>
         </li>
         <li class="breadcrumb-item">
-            <a href="~/Admin/Patients">Patient Management</a>
+            <a href="~/Admin/Patients/PatientsList">Patient Management</a>
         </li>
         <li class="breadcrumb-item text-primary" aria-current="page">
             Search Patients
@@ -22,7 +22,7 @@
 
 @section PageActions {
     <div class="d-flex gap-2">
-        <a href="~/Admin/Patients" class="btn btn-outline-secondary">
+        <a href="~/Admin/Patients/PatientsList" class="btn btn-outline-secondary">
             <i class="ri-arrow-left-line me-2"></i>Back to All Patients
         </a>
         <a href="~/Admin/Patients/Create" class="btn btn-primary">
@@ -266,23 +266,23 @@
                                                     </button>
                                                     <ul class="dropdown-menu">
                                                         <li>
-                                                            <a class="dropdown-item" href="/Admin/PatientProfile?id=@patient.PatientID">
+                                                            <a class="dropdown-item" href="/Admin/Patients/Profile?id=@patient.PatientID">
                                                                 <i class="ri-eye-line me-2"></i>View Profile
                                                             </a>
                                                         </li>
                                                         <li>
-                                                            <a class="dropdown-item" href="/Admin/EditPatient?id=@patient.PatientID">
+                                                            <a class="dropdown-item" href="/Admin/Patients/Edit?id=@patient.PatientID">
                                                                 <i class="ri-edit-line me-2"></i>Edit Patient
                                                             </a>
                                                         </li>
                                                         <li>
-                                                            <a class="dropdown-item" href="/Admin/BookAppointment?patientId=@patient.PatientID">
+                                                            <a class="dropdown-item" href="/Admin/Appointments/Book?patientId=@patient.PatientID">
                                                                 <i class="ri-calendar-line me-2"></i>Book Appointment
                                                             </a>
                                                         </li>
                                                         <li><hr class="dropdown-divider"></li>
                                                         <li>
-                                                            <form method="post" asp-page="/Admin/Patients" asp-page-handler="DeletePatient" class="d-inline">
+                                                            <form method="post" asp-page="/Admin/Patients/PatientsList" asp-page-handler="DeletePatient" class="d-inline">
                                                                 <input type="hidden" name="userId" value="@patient.UserID" />
                                                                 <input type="hidden" name="patientId" value="@patient.PatientID" />
                                                                 <button type="submit" class="dropdown-item text-danger" 

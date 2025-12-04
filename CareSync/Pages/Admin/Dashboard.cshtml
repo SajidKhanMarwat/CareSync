@@ -79,7 +79,7 @@
                     </div>
                 </div>
                 <div class="d-flex align-items-end justify-content-between mt-3">
-                    <a class="text-primary" href="~/Admin/Appointments">
+                    <a class="text-primary" href="~/Admin/Appointments/AppointmentsList">
                         <span>View All</span>
                         <i class="ri-arrow-right-line text-primary ms-1"></i>
                     </a>
@@ -113,7 +113,7 @@
                     </div>
                 </div>
                 <div class="d-flex align-items-end justify-content-between mt-3">
-                    <a class="text-primary" href="~/Admin/Doctors">
+                    <a class="text-primary" href="~/Admin/Doctors/DoctorsList">
                         <span>View All</span>
                         <i class="ri-arrow-right-line ms-1"></i>
                     </a>
@@ -147,7 +147,7 @@
                     </div>
                 </div>
                 <div class="d-flex align-items-end justify-content-between mt-3">
-                    <a class="text-primary" href="~/Admin/Patients">
+                    <a class="text-primary" href="~/Admin/Patients/PatientsList">
                         <span>View All</span>
                         <i class="ri-arrow-right-line text-primary ms-1"></i>
                     </a>
@@ -186,13 +186,13 @@
                         </a>
                     </div>
                     <div class="col-md-2">
-                        <a href="~/Admin/CreateDoctor" class="btn btn-outline-success w-100 d-flex flex-column align-items-center py-3 quick-action-btn">
+                        <a href="~/Admin/Doctors/Create" class="btn btn-outline-success w-100 d-flex flex-column align-items-center py-3 quick-action-btn">
                             <i class="ri-user-star-line mb-2" style="font-size: 1.5rem;"></i>
                             <span>Add Doctor</span>
                         </a>
                     </div>
                     <div class="col-md-2">
-                        <a href="~/Admin/CreateLaboratory" class="btn btn-outline-info w-100 d-flex flex-column align-items-center py-3 quick-action-btn">
+                        <a href="~/Admin/Labs/CreateLabStaff" class="btn btn-outline-info w-100 d-flex flex-column align-items-center py-3 quick-action-btn">
                             <i class="ri-test-tube-line mb-2" style="font-size: 1.5rem;"></i>
                             <span>Add Lab Staff</span>
                         </a>
@@ -204,7 +204,7 @@
                         </a>
                     </div>
                     <div class="col-md-2">
-                        <a href="~/Admin/MedicalStaff" class="btn btn-outline-secondary w-100 d-flex flex-column align-items-center py-3 quick-action-btn">
+                        <a href="~/Admin/Labs/StaffList" class="btn btn-outline-secondary w-100 d-flex flex-column align-items-center py-3 quick-action-btn">
                             <i class="ri-team-line mb-2" style="font-size: 1.5rem;"></i>
                             <span>Manage Staff</span>
                         </a>
@@ -286,7 +286,7 @@
                         @if (Model.DoctorAvailability.Doctors.Count > 6)
                         {
                             <div class="text-center mt-3">
-                                <a href="~/Admin/Doctors" class="btn btn-sm btn-outline-primary">
+                                <a href="~/Admin/Doctors/DoctorsList" class="btn btn-sm btn-outline-primary">
                                     View All Doctors (@Model.DoctorAvailability.Doctors.Count)
                                 </a>
                             </div>
@@ -298,7 +298,7 @@
                     <div class="text-center py-4">
                         <i class="ri-user-star-line text-muted" style="font-size: 3rem;"></i>
                         <p class="text-muted mb-0">No doctors available</p>
-                        <a href="~/Admin/CreateDoctor" class="btn btn-sm btn-primary mt-2">
+                        <a href="~/Admin/Doctors/Create" class="btn btn-sm btn-primary mt-2">
                             <i class="ri-add-line me-1"></i>Add Doctor
                         </a>
                     </div>
@@ -757,7 +757,7 @@
                     <div class="text-center py-4">
                         <i class="ri-calendar-line text-muted" style="font-size: 3rem;"></i>
                         <p class="text-muted mb-0">No appointments scheduled for today</p>
-                        <a href="~/Admin/BookAppointment" class="btn btn-sm btn-primary mt-2">
+                        <a href="~/Admin/Appointments/Book" class="btn btn-sm btn-primary mt-2">
                             <i class="ri-add-line me-1"></i>Schedule Appointment
                         </a>
                     </div>

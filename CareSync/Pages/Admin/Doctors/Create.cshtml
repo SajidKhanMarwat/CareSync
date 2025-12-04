@@ -1,0 +1,686 @@
+@page "/Admin/Doctors/Create"
+@model CareSync.Pages.Admin.Doctors.CreateDoctorModel
+@{
+    ViewData["Title"] = "Create Doctor";
+}
+
+@section Breadcrumb {
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="~/Admin/Dashboard">
+                <i class="ri-home-3-line"></i>
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="~/Admin/Labs/StaffList">Staff & Patient Management</a>
+        </li>
+        <li class="breadcrumb-item text-primary" aria-current="page">
+            Create Doctor
+        </li>
+    </ol>
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <a href="~/Admin/Labs/StaffList" class="btn btn-outline-secondary">
+            <i class="ri-arrow-left-line me-2"></i>Back to Staff
+        </a>
+        <button class="btn btn-outline-info" onclick="saveDraft()">
+            <i class="ri-save-line me-2"></i>Save Draft
+        </button>
+    </div>
+}
+
+<!-- Progress Steps -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="progress-steps">
+                    <div class="step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-title">Personal Info</div>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-title">Professional Details</div>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-title">Schedule & Fees</div>
+                    </div>
+                    <div class="step" data-step="4">
+                        <div class="step-number">4</div>
+                        <div class="step-title">Documents</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Form Container -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title" id="stepTitle">Step 1: Personal Information</h5>
+            </div>
+            <div class="card-body">
+                <form id="doctorForm">
+                    @Html.AntiForgeryToken()
+                    
+                    <!-- Step 1: Personal Information -->
+                    <div class="step-content active" data-step="1">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="firstName" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="lastName" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Date of Birth <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" name="dateOfBirth" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Gender <span class="text-danger">*</span></label>
+                                <select class="form-select" name="gender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" name="phoneNumber" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Address</label>
+                                <textarea class="form-control" name="address" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Professional Details -->
+                    <div class="step-content" data-step="2">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Medical License Number <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="licenseNumber" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Years of Experience <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="experience" min="0" max="50" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Specialization <span class="text-danger">*</span></label>
+                                <select class="form-select" name="specialization" required>
+                                    <option value="">Select Specialization</option>
+                                    <option value="Cardiology">Cardiology</option>
+                                    <option value="Neurology">Neurology</option>
+                                    <option value="Orthopedics">Orthopedics</option>
+                                    <option value="Pediatrics">Pediatrics</option>
+                                    <option value="Emergency Medicine">Emergency Medicine</option>
+                                    <option value="Internal Medicine">Internal Medicine</option>
+                                    <option value="Dermatology">Dermatology</option>
+                                    <option value="Psychiatry">Psychiatry</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Department <span class="text-danger">*</span></label>
+                                <select class="form-select" name="department" required>
+                                    <option value="">Select Department</option>
+                                    <option value="Cardiology">Cardiology</option>
+                                    <option value="Neurology">Neurology</option>
+                                    <option value="Orthopedics">Orthopedics</option>
+                                    <option value="Pediatrics">Pediatrics</option>
+                                    <option value="Emergency">Emergency</option>
+                                    <option value="Internal Medicine">Internal Medicine</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Qualifications <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="qualifications" placeholder="e.g., MBBS, MD, MS" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Board Certifications</label>
+                                <input type="text" class="form-control" name="certifications" placeholder="e.g., American Board of Internal Medicine">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Schedule & Fees -->
+                    <div class="step-content" data-step="3">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Working Days <span class="text-danger">*</span></label>
+                                <div class="form-check-group">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="workingDays" value="Monday" id="monday">
+                                        <label class="form-check-label" for="monday">Mon</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="workingDays" value="Tuesday" id="tuesday">
+                                        <label class="form-check-label" for="tuesday">Tue</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="workingDays" value="Wednesday" id="wednesday">
+                                        <label class="form-check-label" for="wednesday">Wed</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="workingDays" value="Thursday" id="thursday">
+                                        <label class="form-check-label" for="thursday">Thu</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="workingDays" value="Friday" id="friday">
+                                        <label class="form-check-label" for="friday">Fri</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="workingDays" value="Saturday" id="saturday">
+                                        <label class="form-check-label" for="saturday">Sat</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="workingDays" value="Sunday" id="sunday">
+                                        <label class="form-check-label" for="sunday">Sun</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Doctor Sitting Time Range <span class="text-danger">*</span></label>
+                                
+                                <!-- Quick Presets -->
+                                <div class="mb-3">
+                                    <small class="text-muted d-block mb-2">Quick Presets:</small>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button type="button" class="btn btn-outline-primary" onclick="setTimeRange('08:00', '16:00')">
+                                            <i class="ri-sun-line me-1"></i>Morning (8 AM - 4 PM)
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary" onclick="setTimeRange('14:00', '22:00')">
+                                            <i class="ri-moon-line me-1"></i>Evening (2 PM - 10 PM)
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary" onclick="setTimeRange('09:00', '17:00')">
+                                            <i class="ri-time-line me-1"></i>Standard (9 AM - 5 PM)
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary" onclick="setTimeRange('08:00', '20:00')">
+                                            <i class="ri-hourglass-line me-1"></i>Extended (8 AM - 8 PM)
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">Start Time</label>
+                                        <input type="time" class="form-control" name="startTime" id="startTime" required>
+                                        <small class="text-muted">When doctor starts consulting</small>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">End Time</label>
+                                        <input type="time" class="form-control" name="endTime" id="endTime" required>
+                                        <small class="text-muted">When doctor finishes consulting</small>
+                                    </div>
+                                </div>
+                                <div class="mt-2" id="timeRangeDisplay"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Appointment Duration (minutes)</label>
+                                <select class="form-select" name="appointmentDuration">
+                                    <option value="15">15 minutes</option>
+                                    <option value="30" selected>30 minutes</option>
+                                    <option value="45">45 minutes</option>
+                                    <option value="60">60 minutes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Max Patients Per Day</label>
+                                <input type="number" class="form-control" name="maxPatients" min="1" max="100" value="20">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Documents -->
+                    <div class="step-content" data-step="4">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label">Profile Picture</label>
+                                <div class="upload-area" onclick="document.getElementById('profilePicture').click()">
+                                    <i class="ri-image-add-line"></i>
+                                    <p>Click to upload profile picture</p>
+                                    <input type="file" id="profilePicture" name="profilePicture" accept="image/*" style="display: none;">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Medical License Document</label>
+                                <div class="upload-area" onclick="document.getElementById('licenseDoc').click()">
+                                    <i class="ri-file-add-line"></i>
+                                    <p>Click to upload medical license document</p>
+                                    <input type="file" id="licenseDoc" name="licenseDoc" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Certificates & Qualifications</label>
+                                <div class="upload-area" onclick="document.getElementById('certificates').click()">
+                                    <i class="ri-file-list-3-line"></i>
+                                    <p>Click to upload certificates and qualification documents</p>
+                                    <input type="file" id="certificates" name="certificates" multiple accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-outline-secondary" id="prevBtn" onclick="changeStep(-1)" style="display: none;">
+                            <i class="ri-arrow-left-line me-2"></i>Previous
+                        </button>
+                        <div class="ms-auto">
+                            <button type="button" class="btn btn-primary" id="nextBtn" onclick="changeStep(1)">
+                                Next<i class="ri-arrow-right-line ms-2"></i>
+                            </button>
+                            <button type="submit" class="btn btn-success" id="submitBtn" style="display: none;">
+                                <i class="ri-user-add-line me-2"></i>Create Doctor
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        function changeStep(direction) {
+            if (direction === 1 && !validateCurrentStep()) {
+                return;
+            }
+
+            currentStep += direction;
+            
+            if (currentStep < 1) currentStep = 1;
+            if (currentStep > totalSteps) currentStep = totalSteps;
+
+            updateStepDisplay();
+        }
+
+        function updateStepDisplay() {
+            // Update progress steps
+            document.querySelectorAll('.step').forEach((step, index) => {
+                step.classList.toggle('active', index + 1 === currentStep);
+                step.classList.toggle('completed', index + 1 < currentStep);
+            });
+
+            // Update step content
+            document.querySelectorAll('.step-content').forEach((content, index) => {
+                content.classList.toggle('active', index + 1 === currentStep);
+            });
+
+            // Update step title
+            const titles = ['Personal Information', 'Professional Details', 'Schedule & Fees', 'Documents'];
+            document.getElementById('stepTitle').textContent = `Step ${currentStep}: ${titles[currentStep - 1]}`;
+
+            // Update navigation buttons
+            document.getElementById('prevBtn').style.display = currentStep === 1 ? 'none' : 'inline-block';
+            document.getElementById('nextBtn').style.display = currentStep === totalSteps ? 'none' : 'inline-block';
+            document.getElementById('submitBtn').style.display = currentStep === totalSteps ? 'inline-block' : 'none';
+        }
+
+        function validateCurrentStep() {
+            const currentStepContent = document.querySelector(`.step-content[data-step="${currentStep}"]`);
+            const requiredFields = currentStepContent.querySelectorAll('[required]');
+            
+            for (let field of requiredFields) {
+                if (!field.value.trim()) {
+                    field.focus();
+                    toast.warning('Please fill in all required fields before proceeding.', 'Validation Error');
+                    return false;
+                }
+            }
+
+            // Additional validation for step 3 (working days and time range)
+            if (currentStep === 3) {
+                const workingDays = document.querySelectorAll('input[name="workingDays"]:checked');
+                if (workingDays.length === 0) {
+                    toast.warning('Please select at least one working day.', 'Validation Error');
+                    return false;
+                }
+                
+                // Validate time range
+                const startTime = document.getElementById('startTime').value;
+                const endTime = document.getElementById('endTime').value;
+                
+                if (startTime && endTime) {
+                    const start = new Date('1970-01-01T' + startTime);
+                    const end = new Date('1970-01-01T' + endTime);
+                    
+                    if (end <= start) {
+                        toast.warning('End time must be after start time!', 'Invalid Time');
+                        document.getElementById('endTime').focus();
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        function saveDraft() {
+            toast.success('Doctor information saved as draft!', 'Draft Saved');
+        }
+
+        // Form submission
+        document.getElementById('doctorForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!validateCurrentStep()) {
+                return;
+            }
+
+            const doctorData = collectFormData();
+            console.log('Doctor Data to Submit:', doctorData);
+            
+            // Show loading state
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="ri-loader-4-line ri-spin me-2"></i>Creating Doctor...';
+            
+            try {
+                // Get anti-forgery token
+                const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+                
+                // Send to backend API
+                const response = await fetch(window.location.pathname, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token || ''
+                    },
+                    body: JSON.stringify(doctorData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Display success message
+                    const summary = `
+Doctor Account Created Successfully!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👤 Name: Dr. ${doctorData.firstName} ${doctorData.lastName || ''}
+📧 Email: ${doctorData.email}
+🏥 Specialization: ${doctorData.specialization}
+📅 Working Days: ${doctorData.availableDays}
+⏰ Sitting Time: ${formatTime(doctorData.startTime)} - ${formatTime(doctorData.endTime)}
+🔐 Default Password: CareSync@123
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The doctor should change their password on first login.
+                    `;
+                    
+                    console.log(summary);
+                    toast.success(result.message || 'Doctor created successfully!', 'Success', 6000);
+                    
+                    // Redirect to doctors list after a short delay
+                    setTimeout(() => {
+                        window.location.href = '/Admin/Doctors/DoctorsList';
+                    }, 1500);
+                } else {
+                    toast.error(result.message || 'Failed to create doctor. Please try again.', 'Error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            } catch (error) {
+                console.error('Error creating doctor:', error);
+                toast.error('An error occurred while creating the doctor. Please check the console for details.', 'Error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        });
+
+        // Collect and convert form data for submission
+        function collectFormData() {
+            const form = document.getElementById('doctorForm');
+            const formData = new FormData(form);
+            
+            // Collect working days as comma-separated string
+            const workingDays = [];
+            document.querySelectorAll('input[name="workingDays"]:checked').forEach(checkbox => {
+                workingDays.push(checkbox.value);
+            });
+            
+            return {
+                // Personal Info
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                dateOfBirth: formData.get('dateOfBirth'),
+                gender: formData.get('gender'),
+                email: formData.get('email'),
+                phoneNumber: formData.get('phoneNumber'),
+                address: formData.get('address'),
+                
+                // Professional Details
+                licenseNumber: formData.get('licenseNumber'),
+                experienceYears: parseInt(formData.get('experience')) || 0,
+                specialization: formData.get('specialization'),
+                department: formData.get('department'),
+                qualifications: formData.get('qualifications'),
+                certifications: formData.get('certifications'),
+                
+                // Schedule & Fees
+                availableDays: workingDays.join(', '),  // "Monday, Wednesday, Friday"
+                startTime: formData.get('startTime'),    // "09:00" format
+                endTime: formData.get('endTime'),        // "17:00" format
+                appointmentDuration: parseInt(formData.get('appointmentDuration')) || 30,
+                maxPatients: parseInt(formData.get('maxPatients')) || 20
+            };
+        }
+
+        // Time range validation and display
+        function validateTimeRange() {
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            const displayDiv = document.getElementById('timeRangeDisplay');
+            
+            if (startTime && endTime) {
+                const start = new Date('1970-01-01T' + startTime);
+                const end = new Date('1970-01-01T' + endTime);
+                
+                if (end <= start) {
+                    displayDiv.innerHTML = '<div class="alert alert-danger py-2"><i class="ri-error-warning-line me-2"></i>End time must be after start time!</div>';
+                    return false;
+                } else {
+                    const diffMs = end - start;
+                    const diffHrs = Math.floor(diffMs / 3600000);
+                    const diffMins = Math.round((diffMs % 3600000) / 60000);
+                    
+                    displayDiv.innerHTML = `
+                        <div class="alert alert-success py-2">
+                            <i class="ri-time-line me-2"></i>
+                            <strong>Sitting Duration:</strong> ${diffHrs} hour${diffHrs !== 1 ? 's' : ''} ${diffMins > 0 ? diffMins + ' minutes' : ''}
+                            <br>
+                            <small class="text-muted">Doctor will be available from ${formatTime(startTime)} to ${formatTime(endTime)}</small>
+                        </div>
+                    `;
+                    return true;
+                }
+            }
+            displayDiv.innerHTML = '';
+            return true;
+        }
+
+        function formatTime(time) {
+            const [hours, minutes] = time.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour % 12 || 12;
+            return `${displayHour}:${minutes} ${ampm}`;
+        }
+
+        document.getElementById('startTime').addEventListener('change', validateTimeRange);
+        document.getElementById('endTime').addEventListener('change', validateTimeRange);
+
+        // Quick preset time range setter
+        function setTimeRange(start, end) {
+            document.getElementById('startTime').value = start;
+            document.getElementById('endTime').value = end;
+            validateTimeRange();
+        }
+
+        // File upload preview
+        document.getElementById('profilePicture').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                e.target.parentElement.innerHTML = `<i class="ri-check-line text-success"></i><p class="text-success">Profile picture selected</p>`;
+            }
+        });
+
+        document.getElementById('licenseDoc').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                e.target.parentElement.innerHTML = `<i class="ri-check-line text-success"></i><p class="text-success">License document selected</p>`;
+            }
+        });
+
+        document.getElementById('certificates').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                e.target.parentElement.innerHTML = `<i class="ri-check-line text-success"></i><p class="text-success">${e.target.files.length} certificate(s) selected</p>`;
+            }
+        });
+    </script>
+
+    <style>
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e9ecef;
+            z-index: 1;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            background: white;
+            padding: 0 10px;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-number {
+            background: #0d6efd;
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background: #198754;
+            color: white;
+        }
+
+        .step-title {
+            font-size: 0.875rem;
+            text-align: center;
+            color: #6c757d;
+        }
+
+        .step.active .step-title {
+            color: #0d6efd;
+            font-weight: 600;
+        }
+
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        .upload-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover {
+            border-color: #0d6efd;
+            background: #f8f9fa;
+        }
+
+        .upload-area i {
+            font-size: 2rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        .upload-area p {
+            margin: 0;
+            color: #6c757d;
+        }
+
+        .form-check-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        /* Time Range Presets */
+        .btn-group-sm {
+            flex-wrap: wrap;
+        }
+        
+        .btn-group-sm .btn {
+            margin-bottom: 5px;
+        }
+        
+        @@media (max-width: 768px) {
+            .btn-group-sm {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .btn-group-sm .btn {
+                width: 100%;
+                border-radius: 0.25rem !important;
+            }
+        }
+        
+        #timeRangeDisplay .alert {
+            margin-bottom: 0;
+        }
+    </style>
+}

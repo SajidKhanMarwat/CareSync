@@ -1,0 +1,322 @@
+@page "/Admin/Labs/Details"
+@model CareSync.Pages.Admin.Labs.DetailsModel
+@{
+    ViewData["Title"] = "Laboratory Details";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1">
+                        <i class="ri-flask-line me-2"></i>Laboratory Details
+                    </h4>
+                    <p class="text-muted mb-0">View detailed information about @Model.Lab?.LabName</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="~/Admin/Labs/Edit?labId=@Model.Lab?.LabId" class="btn btn-primary">
+                        <i class="ri-edit-line me-1"></i>Edit Lab
+                    </a>
+                    <a href="~/Admin/Labs/ManageLabs" class="btn btn-outline-secondary">
+                        <i class="ri-arrow-left-line me-1"></i>Back to Labs
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Lab == null)
+    {
+        <div class="alert alert-warning">
+            <i class="ri-error-warning-line me-2"></i>Laboratory not found.
+        </div>
+    }
+    else
+    {
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <i class="ri-flask-line" style="font-size: 2.5rem;"></i>
+                        <h3 class="mt-2 mb-0">@Model.Lab.ServicesCount</h3>
+                        <small>Lab Services</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <i class="ri-user-line" style="font-size: 2.5rem;"></i>
+                        <h3 class="mt-2 mb-0">@Model.Lab.AssistantsCount</h3>
+                        <small>Lab Assistants</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card @(Model.Lab.IsActive ? "bg-info" : "bg-secondary") text-white">
+                    <div class="card-body text-center">
+                        <i class="@(Model.Lab.IsActive ? "ri-checkbox-circle-line" : "ri-close-circle-line")" style="font-size: 2.5rem;"></i>
+                        <h3 class="mt-2 mb-0">@(Model.Lab.IsActive ? "Active" : "Inactive")</h3>
+                        <small>Status</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Information -->
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Basic Information -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="ri-information-line me-2"></i>Basic Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="text-muted mb-1">Laboratory ID</label>
+                                <p class="fw-bold">#@Model.Lab.LabId</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted mb-1">License Number</label>
+                                <p class="fw-bold">
+                                    @if (!string.IsNullOrEmpty(Model.Lab.LicenseNumber))
+                                    {
+                                        <span>@Model.Lab.LicenseNumber</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not specified</span>
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="text-muted mb-1">Laboratory Name</label>
+                                <p class="fw-bold">@Model.Lab.LabName</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted mb-1">Arabic Name</label>
+                                <p class="fw-bold" dir="rtl">
+                                    @if (!string.IsNullOrEmpty(Model.Lab.ArabicLabName))
+                                    {
+                                        <span>@Model.Lab.ArabicLabName</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not specified</span>
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address Information -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="ri-map-line me-2"></i>Address Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="text-muted mb-1">
+                                    <i class="ri-map-pin-line me-1"></i>Location / City
+                                </label>
+                                <p class="fw-bold">
+                                    @if (!string.IsNullOrEmpty(Model.Lab.Location))
+                                    {
+                                        <span>@Model.Lab.Location</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not specified</span>
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="text-muted mb-1">Full Address (English)</label>
+                                <p>
+                                    @if (!string.IsNullOrEmpty(Model.Lab.LabAddress))
+                                    {
+                                        <span>@Model.Lab.LabAddress</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not specified</span>
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <label class="text-muted mb-1">Full Address (Arabic)</label>
+                                <p dir="rtl">
+                                    @if (!string.IsNullOrEmpty(Model.Lab.ArabicLabAddress))
+                                    {
+                                        <span>@Model.Lab.ArabicLabAddress</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not specified</span>
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="ri-contacts-line me-2"></i>Contact Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="text-muted mb-1">
+                                    <i class="ri-phone-line me-1"></i>Contact Number
+                                </label>
+                                <p class="fw-bold">
+                                    @if (!string.IsNullOrEmpty(Model.Lab.ContactNumber))
+                                    {
+                                        <a href="tel:@Model.Lab.ContactNumber">@Model.Lab.ContactNumber</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not specified</span>
+                                    }
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted mb-1">
+                                    <i class="ri-mail-line me-1"></i>Email Address
+                                </label>
+                                <p class="fw-bold">
+                                    @if (!string.IsNullOrEmpty(Model.Lab.Email))
+                                    {
+                                        <a href="mailto:@Model.Lab.Email">@Model.Lab.Email</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not specified</span>
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Operating Hours -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="ri-time-line me-2"></i>Operating Hours
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="text-muted mb-1">
+                                <i class="ri-sun-line me-1"></i>Opening Time
+                            </label>
+                            <p class="fw-bold">
+                                @if (Model.Lab.OpeningTime.HasValue)
+                                {
+                                    <span>@Model.Lab.OpeningTime.Value.ToString(@"hh\:mm")</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Not specified</span>
+                                }
+                            </p>
+                        </div>
+                        <div>
+                            <label class="text-muted mb-1">
+                                <i class="ri-moon-line me-1"></i>Closing Time
+                            </label>
+                            <p class="fw-bold">
+                                @if (Model.Lab.ClosingTime.HasValue)
+                                {
+                                    <span>@Model.Lab.ClosingTime.Value.ToString(@"hh\:mm")</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Not specified</span>
+                                }
+                            </p>
+                        </div>
+                        @if (!Model.Lab.OpeningTime.HasValue && !Model.Lab.ClosingTime.HasValue)
+                        {
+                            <div class="alert alert-info mt-3 mb-0">
+                                <i class="ri-information-line me-1"></i>
+                                <small>Operating 24/7</small>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Audit Information -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="ri-file-list-line me-2"></i>Audit Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="text-muted mb-1">Created On</label>
+                            <p class="fw-bold">
+                                @if (Model.Lab.CreatedOn.HasValue)
+                                {
+                                    <span>@Model.Lab.CreatedOn.Value.ToString("MMM dd, yyyy hh:mm tt")</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Not available</span>
+                                }
+                            </p>
+                        </div>
+                        <div>
+                            <label class="text-muted mb-1">Created By</label>
+                            <p class="fw-bold">
+                                @if (!string.IsNullOrEmpty(Model.Lab.CreatedBy))
+                                {
+                                    <span>@Model.Lab.CreatedBy</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">System</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <text>
+            toast.error('@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(Model.ErrorMessage))', 'Error');
+            </text>
+        }
+    </script>
+}

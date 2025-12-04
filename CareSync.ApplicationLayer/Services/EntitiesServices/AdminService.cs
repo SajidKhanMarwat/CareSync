@@ -4,6 +4,7 @@ using CareSync.ApplicationLayer.Contracts.AdminDashboardDTOs;
 using CareSync.ApplicationLayer.Contracts.AdminDTOs;
 using CareSync.ApplicationLayer.Contracts.AppointmentsDTOs;
 using CareSync.ApplicationLayer.Contracts.DoctorsDTOs;
+using CareSync.ApplicationLayer.Contracts.LabDTOs;
 using CareSync.ApplicationLayer.Contracts.PatientsDTOs;
 using CareSync.ApplicationLayer.Contracts.UsersDTOs;
 using CareSync.ApplicationLayer.IServices.EntitiesServices;
@@ -415,6 +416,517 @@ public class AdminService(
             LastMonthCount = lastMonth,
             PercentageChange = CalculatePercentage(thisMonth, lastMonth)
         };
+    }
+
+    #endregion
+
+    #region Lab Management
+
+    public async Task<Result<List<LabListDTO>>> GetAllLabsAsync()
+    {
+        logger.LogInformation("Executing: GetAllLabsAsync");
+        try
+        {
+            var labs = await uow.LabRepo.GetAllAsync(l => !l.IsDeleted);
+            
+            var labList = labs.Select(lab => new LabListDTO
+            {
+                LabId = lab.LabID,
+                LabName = lab.LabName,
+                ArabicLabName = lab.ArabicLabName,
+                Location = lab.Location,
+                ContactNumber = lab.ContactNumber,
+                Email = lab.Email,
+                IsActive = !lab.IsDeleted
+            }).OrderBy(l => l.LabName).ToList();
+
+            logger.LogInformation("Retrieved {Count} laboratories", labList.Count);
+            return Result<List<LabListDTO>>.Success(labList);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting all labs");
+            return Result<List<LabListDTO>>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<LabDetails_DTO>> GetLabByIdAsync(int labId)
+    {
+        logger.LogInformation("Executing: GetLabByIdAsync for LabId {LabId}", labId);
+        try
+        {
+            var lab = await uow.LabRepo.GetByIdAsync(labId);
+            if (lab == null || lab.IsDeleted)
+            {
+                return Result<LabDetails_DTO>.Failure(
+                    null!,
+                    "Laboratory not found",
+                    System.Net.HttpStatusCode.NotFound);
+            }
+
+            var services = await uow.LabServicesRepo.GetAllAsync(s => s.LabID == labId && !s.IsDeleted);
+            var assistants = await uow.UserLabAssistantRepo.GetAllAsync(a => a.LabId == labId && !a.IsDeleted);
+
+            var labDetails = new LabDetails_DTO
+            {
+                LabId = lab.LabID,
+                UserId = lab.UserID,
+                LabName = lab.LabName,
+                ArabicLabName = lab.ArabicLabName,
+                LabAddress = lab.LabAddress,
+                ArabicLabAddress = lab.ArabicLabAddress,
+                Location = lab.Location,
+                ContactNumber = lab.ContactNumber,
+                Email = lab.Email,
+                LicenseNumber = lab.LicenseNumber,
+                OpeningTime = lab.OpeningTime,
+                ClosingTime = lab.ClosingTime,
+                CreatedOn = lab.CreatedOn,
+                CreatedBy = lab.CreatedBy,
+                ServicesCount = services.Count(),
+                AssistantsCount = assistants.Count(),
+                IsActive = !lab.IsDeleted
+            };
+
+            return Result<LabDetails_DTO>.Success(labDetails);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting lab details for LabId {LabId}", labId);
+            return Result<LabDetails_DTO>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<GeneralResponse>> CreateLabAsync(CreateLab_DTO dto, string createdBy)
+    {
+        logger.LogInformation("Executing: CreateLabAsync - {LabName}", dto.LabName);
+        try
+        {
+            var lab = new T_Lab
+            {
+                LabName = dto.LabName,
+                ArabicLabName = dto.ArabicLabName,
+                LabAddress = dto.LabAddress,
+                ArabicLabAddress = dto.ArabicLabAddress,
+                Location = dto.Location,
+                ContactNumber = dto.ContactNumber,
+                Email = dto.Email,
+                LicenseNumber = dto.LicenseNumber,
+                OpeningTime = dto.OpeningTime,
+                ClosingTime = dto.ClosingTime,
+                CreatedBy = createdBy,
+                CreatedOn = DateTime.UtcNow,
+                IsDeleted = false
+            };
+
+            await uow.LabRepo.AddAsync(lab);
+            await uow.SaveChangesAsync();
+
+            logger.LogInformation("Lab created successfully: {LabName} with ID {LabId}", dto.LabName, lab.LabID);
+            return Result<GeneralResponse>.Success(new GeneralResponse
+            {
+                Success = true,
+                Message = $"Laboratory '{dto.LabName}' created successfully."
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error creating lab: {LabName}", dto.LabName);
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<GeneralResponse>> UpdateLabAsync(UpdateLab_DTO dto, string updatedBy)
+    {
+        logger.LogInformation("Executing: UpdateLabAsync for LabId {LabId}", dto.LabId);
+        try
+        {
+            var lab = await uow.LabRepo.GetByIdAsync(dto.LabId);
+            if (lab == null || lab.IsDeleted)
+            {
+                return Result<GeneralResponse>.Failure(
+                    new GeneralResponse { Success = false, Message = "Laboratory not found" },
+                    "Laboratory not found",
+                    System.Net.HttpStatusCode.NotFound);
+            }
+
+            lab.LabName = dto.LabName;
+            lab.ArabicLabName = dto.ArabicLabName;
+            lab.LabAddress = dto.LabAddress;
+            lab.ArabicLabAddress = dto.ArabicLabAddress;
+            lab.Location = dto.Location;
+            lab.ContactNumber = dto.ContactNumber;
+            lab.Email = dto.Email;
+            lab.LicenseNumber = dto.LicenseNumber;
+            lab.OpeningTime = dto.OpeningTime;
+            lab.ClosingTime = dto.ClosingTime;
+            lab.UpdatedBy = updatedBy;
+            lab.UpdatedOn = DateTime.UtcNow;
+
+            await uow.LabRepo.UpdateAsync(lab);
+            await uow.SaveChangesAsync();
+
+            logger.LogInformation("Lab updated successfully: LabId {LabId}", dto.LabId);
+            return Result<GeneralResponse>.Success(new GeneralResponse
+            {
+                Success = true,
+                Message = "Laboratory updated successfully."
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error updating lab: LabId {LabId}", dto.LabId);
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<GeneralResponse>> DeleteLabAsync(int labId)
+    {
+        logger.LogInformation("Executing: DeleteLabAsync for LabId {LabId}", labId);
+        try
+        {
+            var lab = await uow.LabRepo.GetByIdAsync(labId);
+            if (lab == null || lab.IsDeleted)
+            {
+                return Result<GeneralResponse>.Failure(
+                    new GeneralResponse { Success = false, Message = "Laboratory not found" },
+                    "Laboratory not found",
+                    System.Net.HttpStatusCode.NotFound);
+            }
+
+            lab.IsDeleted = true;
+            lab.UpdatedOn = DateTime.UtcNow;
+            await uow.LabRepo.UpdateAsync(lab);
+            await uow.SaveChangesAsync();
+
+            logger.LogInformation("Lab deleted (soft) successfully: LabId {LabId}", labId);
+            return Result<GeneralResponse>.Success(new GeneralResponse
+            {
+                Success = true,
+                Message = "Laboratory deleted successfully."
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error deleting lab: LabId {LabId}", labId);
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<List<LabService_DTO>>> GetLabServicesAsync(int labId)
+    {
+        logger.LogInformation("Executing: GetLabServicesAsync for LabId {LabId}", labId);
+        try
+        {
+            var services = await uow.LabServicesRepo.GetAllAsync(s => s.LabID == labId && !s.IsDeleted);
+            var lab = await uow.LabRepo.GetByIdAsync(labId);
+
+            var serviceList = services.Select(s => new LabService_DTO
+            {
+                LabServiceId = s.LabServiceID,
+                LabId = s.LabID,
+                ServiceName = s.ServiceName ?? string.Empty,
+                Description = s.Description,
+                Category = s.Category,
+                SampleType = s.SampleType,
+                Instructions = s.Instructions,
+                Price = s.Price,
+                EstimatedTime = s.EstimatedTime,
+                LabName = lab?.LabName,
+                IsActive = !s.IsDeleted
+            }).ToList();
+
+            logger.LogInformation("Retrieved {Count} services for LabId {LabId}", serviceList.Count, labId);
+            return Result<List<LabService_DTO>>.Success(serviceList);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting lab services for LabId {LabId}", labId);
+            return Result<List<LabService_DTO>>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<List<LabService_DTO>>> GetAllLabServicesAsync()
+    {
+        logger.LogInformation("Executing: GetAllLabServicesAsync");
+        try
+        {
+            var services = await uow.LabServicesRepo.GetAllAsync(s => !s.IsDeleted);
+            var labs = await uow.LabRepo.GetAllAsync(l => !l.IsDeleted);
+            var labDict = labs.ToDictionary(l => l.LabID, l => l.LabName);
+
+            var serviceList = services.Select(s => new LabService_DTO
+            {
+                LabServiceId = s.LabServiceID,
+                LabId = s.LabID,
+                ServiceName = s.ServiceName ?? string.Empty,
+                Description = s.Description,
+                Category = s.Category,
+                SampleType = s.SampleType,
+                Instructions = s.Instructions,
+                Price = s.Price,
+                EstimatedTime = s.EstimatedTime,
+                LabName = labDict.ContainsKey(s.LabID) ? labDict[s.LabID] : null,
+                IsActive = !s.IsDeleted
+            }).ToList();
+
+            logger.LogInformation("Retrieved {Count} total lab services", serviceList.Count);
+            return Result<List<LabService_DTO>>.Success(serviceList);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting all lab services");
+            return Result<List<LabService_DTO>>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<GeneralResponse>> CreateLabServiceAsync(LabService_DTO dto, string createdBy)
+    {
+        logger.LogInformation("Executing: CreateLabServiceAsync - {ServiceName}", dto.ServiceName);
+        try
+        {
+            var lab = await uow.LabRepo.GetByIdAsync(dto.LabId);
+            if (lab == null || lab.IsDeleted)
+            {
+                return Result<GeneralResponse>.Failure(
+                    new GeneralResponse { Success = false, Message = "Laboratory not found" },
+                    "Laboratory not found",
+                    System.Net.HttpStatusCode.NotFound);
+            }
+
+            var service = new T_LabServices
+            {
+                LabID = dto.LabId,
+                ServiceName = dto.ServiceName,
+                Description = dto.Description,
+                Category = dto.Category,
+                SampleType = dto.SampleType,
+                Instructions = dto.Instructions,
+                Price = dto.Price,
+                EstimatedTime = dto.EstimatedTime,
+                CreatedBy = createdBy,
+                CreatedOn = DateTime.UtcNow,
+                IsDeleted = false
+            };
+
+            await uow.LabServicesRepo.AddAsync(service);
+            await uow.SaveChangesAsync();
+
+            logger.LogInformation("Lab service created successfully: {ServiceName}", dto.ServiceName);
+            return Result<GeneralResponse>.Success(new GeneralResponse
+            {
+                Success = true,
+                Message = $"Service '{dto.ServiceName}' created successfully."
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error creating lab service: {ServiceName}", dto.ServiceName);
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<GeneralResponse>> UpdateLabServiceAsync(LabService_DTO dto, string updatedBy)
+    {
+        logger.LogInformation("Executing: UpdateLabServiceAsync for ServiceId {ServiceId}", dto.LabServiceId);
+        try
+        {
+            var service = await uow.LabServicesRepo.GetByIdAsync(dto.LabServiceId);
+            if (service == null || service.IsDeleted)
+            {
+                return Result<GeneralResponse>.Failure(
+                    new GeneralResponse { Success = false, Message = "Service not found" },
+                    "Service not found",
+                    System.Net.HttpStatusCode.NotFound);
+            }
+
+            service.ServiceName = dto.ServiceName;
+            service.Description = dto.Description;
+            service.Category = dto.Category;
+            service.SampleType = dto.SampleType;
+            service.Instructions = dto.Instructions;
+            service.Price = dto.Price;
+            service.EstimatedTime = dto.EstimatedTime;
+            service.UpdatedBy = updatedBy;
+            service.UpdatedOn = DateTime.UtcNow;
+
+            await uow.LabServicesRepo.UpdateAsync(service);
+            await uow.SaveChangesAsync();
+
+            logger.LogInformation("Lab service updated successfully: ServiceId {ServiceId}", dto.LabServiceId);
+            return Result<GeneralResponse>.Success(new GeneralResponse
+            {
+                Success = true,
+                Message = "Service updated successfully."
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error updating lab service: ServiceId {ServiceId}", dto.LabServiceId);
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<GeneralResponse>> DeleteLabServiceAsync(int serviceId)
+    {
+        logger.LogInformation("Executing: DeleteLabServiceAsync for ServiceId {ServiceId}", serviceId);
+        try
+        {
+            var service = await uow.LabServicesRepo.GetByIdAsync(serviceId);
+            if (service == null || service.IsDeleted)
+            {
+                return Result<GeneralResponse>.Failure(
+                    new GeneralResponse { Success = false, Message = "Service not found" },
+                    "Service not found",
+                    System.Net.HttpStatusCode.NotFound);
+            }
+
+            service.IsDeleted = true;
+            service.UpdatedOn = DateTime.UtcNow;
+            await uow.LabServicesRepo.UpdateAsync(service);
+            await uow.SaveChangesAsync();
+
+            logger.LogInformation("Lab service deleted (soft) successfully: ServiceId {ServiceId}", serviceId);
+            return Result<GeneralResponse>.Success(new GeneralResponse
+            {
+                Success = true,
+                Message = "Service deleted successfully."
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error deleting lab service: ServiceId {ServiceId}", serviceId);
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    public async Task<Result<LabServicesPagedResult_DTO>> GetLabServicesPagedAsync(LabServicesFilter_DTO filter)
+    {
+        logger.LogInformation("Executing: GetLabServicesPagedAsync - LabId: {LabId}, Category: {Category}, Page: {Page}, PageSize: {PageSize}, Search: {Search}", 
+            filter.LabId, filter.Category, filter.Page, filter.PageSize, filter.SearchTerm);
+        try
+        {
+            // Validate pagination parameters
+            if (filter.Page < 1)
+            {
+                logger.LogWarning("Invalid page number: {Page}. Setting to 1.", filter.Page);
+                filter.Page = 1;
+            }
+
+            if (filter.PageSize < LabServicesFilter_DTO.MinPageSize || filter.PageSize > LabServicesFilter_DTO.MaxPageSize)
+            {
+                logger.LogWarning("Invalid page size: {PageSize}. Setting to default: {Default}.", filter.PageSize, LabServicesFilter_DTO.DefaultPageSize);
+                filter.PageSize = LabServicesFilter_DTO.DefaultPageSize;
+            }
+
+            // Get all services with filters
+            var query = await uow.LabServicesRepo.GetAllAsync(s => !s.IsDeleted);
+            
+            // Apply filters
+            if (filter.LabId.HasValue)
+            {
+                query = query.Where(s => s.LabID == filter.LabId.Value).ToList();
+            }
+            
+            if (!string.IsNullOrEmpty(filter.Category))
+            {
+                query = query.Where(s => s.Category == filter.Category).ToList();
+            }
+            
+            if (filter.IsActive.HasValue)
+            {
+                query = query.Where(s => !s.IsDeleted == filter.IsActive.Value).ToList();
+            }
+            
+            // Apply search term
+            if (!string.IsNullOrEmpty(filter.SearchTerm))
+            {
+                var searchLower = filter.SearchTerm.ToLower();
+                query = query.Where(s => 
+                    (s.ServiceName != null && s.ServiceName.ToLower().Contains(searchLower)) ||
+                    (s.Description != null && s.Description.ToLower().Contains(searchLower)) ||
+                    (s.Category != null && s.Category.ToLower().Contains(searchLower))
+                ).ToList();
+            }
+
+            // Get total count before pagination
+            var totalCount = query.Count();
+
+            // Apply sorting
+            query = !string.IsNullOrEmpty(filter.SortBy) ? filter.SortBy.ToLower() switch
+            {
+                "servicename" => filter.SortDescending 
+                    ? query.OrderByDescending(s => s.ServiceName).ToList()
+                    : query.OrderBy(s => s.ServiceName).ToList(),
+                "price" => filter.SortDescending 
+                    ? query.OrderByDescending(s => s.Price ?? 0).ToList()
+                    : query.OrderBy(s => s.Price ?? 0).ToList(),
+                "category" => filter.SortDescending 
+                    ? query.OrderByDescending(s => s.Category).ToList()
+                    : query.OrderBy(s => s.Category).ToList(),
+                _ => query.OrderBy(s => s.ServiceName).ToList()
+            } : query.OrderBy(s => s.ServiceName).ToList();
+
+            // Apply pagination
+            var pagedServices = query
+                .Skip((filter.Page - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .ToList();
+
+            // Get labs for mapping
+            var labs = await uow.LabRepo.GetAllAsync(l => !l.IsDeleted);
+            var labDict = labs.ToDictionary(l => l.LabID, l => l.LabName);
+
+            // Map to DTOs
+            var serviceDtos = pagedServices.Select(s => new LabService_DTO
+            {
+                LabServiceId = s.LabServiceID,
+                LabId = s.LabID,
+                ServiceName = s.ServiceName ?? string.Empty,
+                Description = s.Description,
+                Category = s.Category,
+                SampleType = s.SampleType,
+                Instructions = s.Instructions,
+                Price = s.Price,
+                EstimatedTime = s.EstimatedTime,
+                LabName = labDict.TryGetValue(s.LabID, out var labName) ? labName : "Unknown Lab",
+                IsActive = !s.IsDeleted
+            }).ToList();
+
+            // Calculate statistics
+            var allServices = await uow.LabServicesRepo.GetAllAsync(s => !s.IsDeleted);
+            var activeServices = allServices.Count(s => !s.IsDeleted);
+            var avgPrice = allServices.Where(s => s.Price.HasValue).Average(s => s.Price ?? 0);
+            
+            // Category distribution
+            var categoryDist = allServices
+                .Where(s => !string.IsNullOrEmpty(s.Category))
+                .GroupBy(s => s.Category)
+                .ToDictionary(g => g.Key!, g => g.Count());
+
+            var result = new LabServicesPagedResult_DTO
+            {
+                Items = serviceDtos,
+                TotalCount = totalCount,
+                Page = filter.Page,
+                PageSize = filter.PageSize,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)filter.PageSize),
+                TotalServices = allServices.Count(),
+                ActiveServices = activeServices,
+                TotalLaboratories = labs.Select(l => l.LabID).Distinct().Count(),
+                AveragePrice = avgPrice,
+                CategoryDistribution = categoryDist
+            };
+
+            logger.LogInformation("Retrieved {Count} lab services (Page {Page} of {TotalPages})", 
+                serviceDtos.Count, result.Page, result.TotalPages);
+            return Result<LabServicesPagedResult_DTO>.Success(result);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting paged lab services");
+            return Result<LabServicesPagedResult_DTO>.Exception(ex);
+        }
     }
 
     #endregion

@@ -1,0 +1,214 @@
+@page
+@model CareSync.Pages.Admin.Doctors.DoctorProfileModel
+@{
+    ViewData["Title"] = "Doctor Profile";
+    Layout = "~/Pages/Shared/Layouts/_MainLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1">Doctor Profile</h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="/Admin/Dashboard">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="/Admin/Doctors/DoctorsList">Doctors</a></li>
+                            <li class="breadcrumb-item active">Profile</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div>
+                    <a href="/Admin/Doctors/Edit?id=@Model.Doctor?.UserId" class="btn btn-primary">
+                        <i class="ri-edit-line me-2"></i>Edit Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Doctor != null)
+    {
+        <!-- Profile Overview -->
+        <div class="row mb-4">
+            <div class="col-xl-4 col-lg-5">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <img src="@(Model.Doctor.ProfileImage ?? "/theme/images/default-doctor.png")" 
+                             alt="@Model.Doctor.FullName" 
+                             class="rounded-circle mb-3" 
+                             style="width: 150px; height: 150px; object-fit: cover;">
+                        <h5 class="mb-1">@Model.Doctor.FullName</h5>
+                        <p class="text-muted mb-2">@(Model.Doctor.Specialization ?? "General Practitioner")</p>
+                        <div class="mb-3">
+                            @if (Model.Doctor.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Inactive</span>
+                            }
+                        </div>
+                        <div class="d-flex justify-content-center gap-2 mb-3">
+                            <div class="text-center">
+                                <h6 class="mb-0">@Model.Doctor.TotalPatients</h6>
+                                <small class="text-muted">Patients</small>
+                            </div>
+                            <div class="vr"></div>
+                            <div class="text-center">
+                                <h6 class="mb-0">@Model.Doctor.TotalAppointments</h6>
+                                <small class="text-muted">Appointments</small>
+                            </div>
+                            <div class="vr"></div>
+                            <div class="text-center">
+                                <h6 class="mb-0">@Model.Doctor.ExperienceYears yrs</h6>
+                                <small class="text-muted">Experience</small>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-center align-items-center">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= Math.Floor(Model.Doctor.Rating))
+                                    {
+                                        <i class="ri-star-fill text-warning"></i>
+                                    }
+                                    else if ((decimal)(i - 0.5) <= Model.Doctor.Rating)
+                                    {
+                                        <i class="ri-star-half-fill text-warning"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="ri-star-line text-warning"></i>
+                                    }
+                                }
+                                <span class="ms-2">@Model.Doctor.Rating.ToString("F1") (@Model.Doctor.ReviewCount reviews)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h6 class="mb-0">Contact Information</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="text-muted small">Email</label>
+                            <p class="mb-0">@Model.Doctor.Email</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-muted small">Phone</label>
+                            <p class="mb-0">@(Model.Doctor.PhoneNumber ?? "Not provided")</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-muted small">Address</label>
+                            <p class="mb-0">@(Model.Doctor.Address ?? "Not provided")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-8 col-lg-7">
+                <!-- Professional Information -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6 class="mb-0">Professional Information</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small">License Number</label>
+                                <p class="mb-0">@(Model.Doctor.LicenseNumber ?? "Not provided")</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small">Hospital Affiliation</label>
+                                <p class="mb-0">@(Model.Doctor.HospitalAffiliation ?? "Not provided")</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small">Qualifications</label>
+                                <p class="mb-0">@(Model.Doctor.Qualifications ?? "Not provided")</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small">Consultation Fee</label>
+                                <p class="mb-0">$@(Model.Doctor.ConsultationFee?.ToString("F2") ?? "0.00")</p>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="text-muted small">About</label>
+                                <p class="mb-0">@(Model.Doctor.About ?? "No description provided")</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schedule Information -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6 class="mb-0">Schedule Information</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">Available Days</label>
+                                <p class="mb-0">@(Model.Doctor.AvailableDays ?? "Not set")</p>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">Start Time</label>
+                                <p class="mb-0">@(Model.Doctor.StartTime ?? "Not set")</p>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">End Time</label>
+                                <p class="mb-0">@(Model.Doctor.EndTime ?? "Not set")</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Statistics</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center">
+                                    <h4 class="text-primary">@Model.Doctor.TotalPatients</h4>
+                                    <small class="text-muted">Total Patients</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center">
+                                    <h4 class="text-success">@Model.Doctor.CompletedAppointments</h4>
+                                    <small class="text-muted">Completed</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center">
+                                    <h4 class="text-info">@Model.Doctor.TodayAppointments</h4>
+                                    <small class="text-muted">Today</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center">
+                                    <h4 class="text-warning">@Model.Doctor.Rating.ToString("F1")</h4>
+                                    <small class="text-muted">Rating</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <i class="ri-alert-line me-2"></i>Doctor profile not found.
+        </div>
+    }
+</div>

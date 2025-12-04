@@ -1,0 +1,642 @@
+@page "/Admin/Users/Management"
+@model CareSync.Pages.Admin.Users.UserManagementModel
+@{
+    ViewData["Title"] = "User Management";
+}
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal">
+            <i class="ri-user-add-line me-1"></i>Add User
+        </button>
+        <button type="button" class="btn btn-primary">
+            <i class="ri-upload-line me-1"></i>Bulk Import
+        </button>
+        <button type="button" class="btn btn-outline-info">
+            <i class="ri-download-line me-1"></i>Export Users
+        </button>
+    </div>
+}
+
+<!-- User Statistics -->
+<div class="row gx-3 mb-3">
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-primary-subtle rounded-5 me-3">
+                        <i class="ri-user-line fs-4 text-primary"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-primary mb-1">1,247</h4>
+                        <small class="text-muted">Total Users</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-success-subtle rounded-5 me-3">
+                        <i class="ri-user-heart-line fs-4 text-success"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-success mb-1">856</h4>
+                        <small class="text-muted">Patients</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-info-subtle rounded-5 me-3">
+                        <i class="ri-stethoscope-line fs-4 text-info"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-info mb-1">124</h4>
+                        <small class="text-muted">Doctors</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border rounded-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box lg bg-warning-subtle rounded-5 me-3">
+                        <i class="ri-test-tube-line fs-4 text-warning"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-warning mb-1">67</h4>
+                        <small class="text-muted">Lab Staff</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="row gx-3">
+    <div class="col-xl-9">
+        <!-- Users List -->
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-team-line me-2"></i>System Users
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <div class="input-group" style="width: 300px;">
+                            <input type="text" class="form-control form-control-sm" placeholder="Search users...">
+                            <button class="btn btn-outline-secondary btn-sm">
+                                <i class="ri-search-line"></i>
+                            </button>
+                        </div>
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>All Roles</option>
+                            <option>Admin</option>
+                            <option>Doctor</option>
+                            <option>Patient</option>
+                            <option>Lab Technician</option>
+                        </select>
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>All Status</option>
+                            <option>Active</option>
+                            <option>Inactive</option>
+                            <option>Suspended</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="selectAll">
+                                    </div>
+                                </th>
+                                <th>User</th>
+                                <th>Role</th>
+                                <th>Department</th>
+                                <th>Status</th>
+                                <th>Last Login</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/doctor1.png" class="img-2x rounded-circle me-2" alt="User">
+                                        <div>
+                                            <h6 class="mb-0">Dr. Sarah Johnson</h6>
+                                            <small class="text-muted">sarah.johnson@caresync.com</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-info-subtle text-info">Doctor</span></td>
+                                <td>Cardiology</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <small>Nov 12, 2024</small>
+                                    <div class="text-muted">2:30 PM</div>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-primary" title="View Profile">
+                                            <i class="ri-eye-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-warning" title="Edit User">
+                                            <i class="ri-edit-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" title="Reset Password">
+                                            <i class="ri-key-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" title="Suspend User">
+                                            <i class="ri-user-forbid-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/patient1.png" class="img-2x rounded-circle me-2" alt="User">
+                                        <div>
+                                            <h6 class="mb-0">John Smith</h6>
+                                            <small class="text-muted">john.smith@email.com</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-success-subtle text-success">Patient</span></td>
+                                <td>-</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <small>Nov 11, 2024</small>
+                                    <div class="text-muted">4:15 PM</div>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-primary" title="View Profile">
+                                            <i class="ri-eye-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-warning" title="Edit User">
+                                            <i class="ri-edit-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" title="Medical Records">
+                                            <i class="ri-file-text-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary" title="Deactivate">
+                                            <i class="ri-user-unfollow-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/tech1.png" class="img-2x rounded-circle me-2" alt="User">
+                                        <div>
+                                            <h6 class="mb-0">Alice Johnson</h6>
+                                            <small class="text-muted">alice.johnson@caresync.com</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-warning-subtle text-warning">Lab Tech</span></td>
+                                <td>Hematology</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <small>Nov 12, 2024</small>
+                                    <div class="text-muted">1:45 PM</div>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-primary" title="View Profile">
+                                            <i class="ri-eye-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-warning" title="Edit User">
+                                            <i class="ri-edit-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" title="Workload">
+                                            <i class="ri-bar-chart-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" title="Schedule">
+                                            <i class="ri-calendar-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/theme/images/admin1.png" class="img-2x rounded-circle me-2" alt="User">
+                                        <div>
+                                            <h6 class="mb-0">Michael Brown</h6>
+                                            <small class="text-muted">michael.brown@caresync.com</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-danger-subtle text-danger">Admin</span></td>
+                                <td>IT Department</td>
+                                <td><span class="badge bg-warning">Suspended</span></td>
+                                <td>
+                                    <small>Nov 10, 2024</small>
+                                    <div class="text-muted">9:20 AM</div>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-primary" title="View Profile">
+                                            <i class="ri-eye-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" title="Reactivate">
+                                            <i class="ri-user-add-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" title="Audit Log">
+                                            <i class="ri-history-line"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" title="Delete User">
+                                            <i class="ri-delete-bin-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                        </li>
+                        <li class="page-item active">
+                            <a class="page-link" href="#">1</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">2</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">3</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3">
+        <!-- Quick Filters -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-filter-line me-2"></i>Quick Filters
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="filter-section mb-3">
+                    <h6 class="mb-2">By Role</h6>
+                    <div class="d-grid gap-1">
+                        <button class="btn btn-sm btn-outline-danger">Admin (12)</button>
+                        <button class="btn btn-sm btn-outline-info">Doctors (124)</button>
+                        <button class="btn btn-sm btn-outline-success">Patients (856)</button>
+                        <button class="btn btn-sm btn-outline-warning">Lab Staff (67)</button>
+                    </div>
+                </div>
+                <div class="filter-section mb-3">
+                    <h6 class="mb-2">By Status</h6>
+                    <div class="d-grid gap-1">
+                        <button class="btn btn-sm btn-outline-success">Active (1,189)</button>
+                        <button class="btn btn-sm btn-outline-warning">Suspended (23)</button>
+                        <button class="btn btn-sm btn-outline-secondary">Inactive (35)</button>
+                    </div>
+                </div>
+                <div class="filter-section">
+                    <h6 class="mb-2">By Department</h6>
+                    <div class="d-grid gap-1">
+                        <button class="btn btn-sm btn-outline-primary">Cardiology (45)</button>
+                        <button class="btn btn-sm btn-outline-info">Laboratory (67)</button>
+                        <button class="btn btn-sm btn-outline-success">General Medicine (89)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-history-line me-2"></i>Recent Activity
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="activity-item d-flex align-items-start mb-3">
+                    <div class="icon-box sm bg-success-subtle rounded-circle me-2">
+                        <i class="ri-user-add-line text-success"></i>
+                    </div>
+                    <div>
+                        <small class="fw-semibold">New user registered</small>
+                        <div class="text-muted">Dr. Lisa Anderson</div>
+                        <small class="text-muted">2 hours ago</small>
+                    </div>
+                </div>
+                <div class="activity-item d-flex align-items-start mb-3">
+                    <div class="icon-box sm bg-warning-subtle rounded-circle me-2">
+                        <i class="ri-user-forbid-line text-warning"></i>
+                    </div>
+                    <div>
+                        <small class="fw-semibold">User suspended</small>
+                        <div class="text-muted">Michael Brown</div>
+                        <small class="text-muted">4 hours ago</small>
+                    </div>
+                </div>
+                <div class="activity-item d-flex align-items-start">
+                    <div class="icon-box sm bg-info-subtle rounded-circle me-2">
+                        <i class="ri-key-line text-info"></i>
+                    </div>
+                    <div>
+                        <small class="fw-semibold">Password reset</small>
+                        <div class="text-muted">Emma Wilson</div>
+                        <small class="text-muted">6 hours ago</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bulk Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-settings-line me-2"></i>Bulk Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-success">
+                        <i class="ri-user-add-line me-2"></i>Activate Selected
+                    </button>
+                    <button class="btn btn-outline-warning">
+                        <i class="ri-user-forbid-line me-2"></i>Suspend Selected
+                    </button>
+                    <button class="btn btn-outline-info">
+                        <i class="ri-mail-line me-2"></i>Send Email
+                    </button>
+                    <button class="btn btn-outline-danger">
+                        <i class="ri-delete-bin-line me-2"></i>Delete Selected
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">First Name</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Role</label>
+                            <select class="form-select" required>
+                                <option value="">Select role...</option>
+                                <option value="admin">Admin</option>
+                                <option value="doctor">Doctor</option>
+                                <option value="patient">Patient</option>
+                                <option value="lab">Lab Technician</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Department</label>
+                            <select class="form-select">
+                                <option value="">Select department...</option>
+                                <option value="cardiology">Cardiology</option>
+                                <option value="laboratory">Laboratory</option>
+                                <option value="general">General Medicine</option>
+                                <option value="admin">Administration</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Temporary Password</label>
+                        <input type="password" class="form-control" required>
+                        <small class="text-muted">User will be required to change password on first login</small>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="sendWelcomeEmail">
+                        <label class="form-check-label" for="sendWelcomeEmail">
+                            Send welcome email with login credentials
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success">Create User</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Select all checkbox
+            document.getElementById('selectAll').addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+                checkboxes.forEach(cb => cb.checked = this.checked);
+            });
+            
+            // User actions
+            document.querySelectorAll('.table button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const userName = row.querySelector('h6').textContent;
+                    const icon = this.querySelector('i').className;
+                    
+                    switch(true) {
+                        case icon.includes('eye'):
+                            toast.info(`Viewing profile for ${userName}...`, 'Profile');
+                            break;
+                        case icon.includes('edit'):
+                            toast.info(`Editing user ${userName}...`, 'Edit User');
+                            break;
+                        case icon.includes('key'):
+                            toast.confirm({
+                                title: 'Reset Password',
+                                message: `Reset password for ${userName}?`,
+                                type: 'warning'
+                            }).then(confirmed => {
+                                if (confirmed) {
+                                    toast.success('Password reset email sent successfully!', 'Success');
+                                }
+                            });
+                            break;
+                        case icon.includes('forbid'):
+                            toast.confirm({
+                                title: 'Suspend User',
+                                message: `Suspend user ${userName}?`,
+                                type: 'warning'
+                            }).then(confirmed => {
+                                if (confirmed) {
+                                    toast.success('User suspended successfully.', 'Success');
+                                }
+                            });
+                            break;
+                        case icon.includes('user-add'):
+                            toast.confirm({
+                                title: 'Reactivate User',
+                                message: `Reactivate user ${userName}?`,
+                                type: 'info'
+                            }).then(confirmed => {
+                                if (confirmed) {
+                                    toast.success('User reactivated successfully.', 'Success');
+                                }
+                            });
+                            break;
+                        case icon.includes('delete'):
+                            toast.confirm({
+                                title: 'Delete User',
+                                message: `Delete user ${userName}? This action cannot be undone.`,
+                                type: 'error',
+                                confirmText: 'Delete',
+                                cancelText: 'Cancel'
+                            }).then(confirmed => {
+                                if (confirmed) {
+                                    toast.success('User deleted successfully.', 'Success');
+                                }
+                            });
+                            break;
+                        case icon.includes('file-text'):
+                            toast.info(`Opening medical records for ${userName}...`, 'Medical Records');
+                            break;
+                        case icon.includes('bar-chart'):
+                            toast.info(`Viewing workload for ${userName}...`, 'Workload');
+                            break;
+                        case icon.includes('calendar'):
+                            toast.info(`Opening schedule for ${userName}...`, 'Schedule');
+                            break;
+                        case icon.includes('history'):
+                            toast.info(`Viewing audit log for ${userName}...`, 'Audit Log');
+                            break;
+                    }
+                });
+            });
+            
+            // Filter buttons
+            document.querySelectorAll('.filter-section button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const filter = this.textContent.trim();
+                    toast.info(`Filtering by: ${filter}`, 'Filter Applied');
+                });
+            });
+            
+            // Search functionality
+            document.querySelector('.input-group button').addEventListener('click', function() {
+                const searchTerm = this.previousElementSibling.value;
+                if (searchTerm) {
+                    toast.info(`Searching for: ${searchTerm}`, 'Search');
+                } else {
+                    toast.warning('Please enter a search term.', 'Search Required');
+                }
+            });
+            
+            // Bulk actions
+            document.querySelectorAll('.card:last-child .btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const selectedUsers = document.querySelectorAll('tbody input[type="checkbox"]:checked').length;
+                    if (selectedUsers === 0) {
+                        toast.warning('Please select users first.', 'No Selection');
+                        return;
+                    }
+                    
+                    const action = this.textContent.trim();
+                    toast.confirm({
+                        title: 'Bulk Action',
+                        message: `${action} for ${selectedUsers} selected users?`,
+                        type: 'warning'
+                    }).then(confirmed => {
+                        if (confirmed) {
+                            toast.success(`${action} completed for ${selectedUsers} users.`, 'Success');
+                        }
+                    });
+                });
+            });
+            
+            // Add user modal
+            document.querySelector('.modal-footer .btn-success').addEventListener('click', function() {
+                const form = document.querySelector('.modal form');
+                const firstName = form.querySelector('input[type="text"]').value;
+                const email = form.querySelector('input[type="email"]').value;
+                const role = form.querySelector('select').value;
+                
+                if (!firstName || !email || !role) {
+                    toast.warning('Please fill in all required fields.', 'Validation Error');
+                    return;
+                }
+                
+                toast.success('User created successfully!', 'User Added');
+                bootstrap.Modal.getInstance(document.getElementById('addUserModal')).hide();
+                form.reset();
+            });
+        });
+    </script>
+}

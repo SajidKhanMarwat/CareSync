@@ -3,6 +3,7 @@ using CareSync.ApplicationLayer.Common;
 using CareSync.ApplicationLayer.Contracts.AdminDashboardDTOs;
 using CareSync.ApplicationLayer.Contracts.AdminDTOs;
 using CareSync.ApplicationLayer.Contracts.DoctorsDTOs;
+using CareSync.ApplicationLayer.Contracts.LabDTOs;
 using CareSync.ApplicationLayer.Contracts.PatientsDTOs;
 using CareSync.ApplicationLayer.Contracts.UsersDTOs;
 
@@ -193,6 +194,63 @@ public interface IAdminService
     /// Get patient demographics (gender and marital status) for charts
     /// </summary>
     Task<Result<PatientDemographics_DTO>> GetPatientDemographicsAsync();
+
+    // ========== Lab Management ==========
+    
+    /// <summary>
+    /// Get all laboratories
+    /// </summary>
+    Task<Result<List<LabListDTO>>> GetAllLabsAsync();
+
+    /// <summary>
+    /// Get laboratory details by ID
+    /// </summary>
+    Task<Result<LabDetails_DTO>> GetLabByIdAsync(int labId);
+
+    /// <summary>
+    /// Create a new laboratory
+    /// </summary>
+    Task<Result<GeneralResponse>> CreateLabAsync(CreateLab_DTO dto, string createdBy);
+
+    /// <summary>
+    /// Update laboratory information
+    /// </summary>
+    Task<Result<GeneralResponse>> UpdateLabAsync(UpdateLab_DTO dto, string updatedBy);
+
+    /// <summary>
+    /// Delete laboratory (soft delete)
+    /// </summary>
+    Task<Result<GeneralResponse>> DeleteLabAsync(int labId);
+
+    /// <summary>
+    /// Get all services for a specific laboratory
+    /// </summary>
+    Task<Result<List<LabService_DTO>>> GetLabServicesAsync(int labId);
+
+    /// <summary>
+    /// Get all lab services across all laboratories
+    /// </summary>
+    Task<Result<List<LabService_DTO>>> GetAllLabServicesAsync();
+
+    /// <summary>
+    /// Get lab services with pagination and filtering
+    /// </summary>
+    Task<Result<LabServicesPagedResult_DTO>> GetLabServicesPagedAsync(LabServicesFilter_DTO filter);
+
+    /// <summary>
+    /// Create a new lab service
+    /// </summary>
+    Task<Result<GeneralResponse>> CreateLabServiceAsync(LabService_DTO dto, string createdBy);
+
+    /// <summary>
+    /// Update lab service information
+    /// </summary>
+    Task<Result<GeneralResponse>> UpdateLabServiceAsync(LabService_DTO dto, string updatedBy);
+
+    /// <summary>
+    /// Delete lab service (soft delete)
+    /// </summary>
+    Task<Result<GeneralResponse>> DeleteLabServiceAsync(int serviceId);
 
     // ========== Appointment Management ==========
     
