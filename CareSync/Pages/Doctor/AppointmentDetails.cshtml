@@ -1,0 +1,386 @@
+@page "/Doctor/AppointmentDetails"
+@model CareSync.Pages.Doctor.AppointmentDetails
+@{
+    ViewData["Title"] = "Appointment Details";
+}
+
+<form id="__antiForm" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>
+
+@section PageActions {
+    <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary" onclick="window.history.back()">
+            <i class="ri-arrow-left-line me-1"></i>Back
+        </button>
+        <button id="startEndButton" class="btn btn-success" onclick="startConsultation()">
+            <i class="ri-play-line me-1"></i><span id="startEndButtonText">Start Consultation</span>
+        </button>
+        @* <button class="btn btn-outline-primary" onclick="messagePatient()">
+            <i class="ri-message-line me-1"></i>Message Patient
+        </button> *@
+        <button class="btn btn-outline-secondary" onclick="window.print()">
+            <i class="ri-printer-line me-1"></i>Print
+        </button>
+    </div>
+}
+
+<div class="row gx-3">
+    <div class="col-xl-8">
+        <div class="card mb-3">
+            <div class="card-header bg-primary-subtle">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-calendar-check-line me-2"></i>Appointment Information
+                    </h5>
+                    <span class="badge bg-@((Model.Status.ToLower() == "completed") ? "success" : "warning")">@Model.Status</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    @* <div class="col-md-6">
+                        <small class="text-muted d-block">Appointment</small>
+                        <strong class="text-primary">@Model.AppointmentNumber</strong>
+                    </div> *@
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Date & Time</small>
+                        <strong>@Model.AppointmentDate.ToString("MMMM dd, yyyy") - @Model.AppointmentTime</strong>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Type</small>
+                        <strong>@Model.AppointmentType</strong>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Status</small>
+                        <strong>@Model.Status</strong>
+                    </div>
+                    <div class="col-12">
+                        <small class="text-muted d-block mb-1">Reason</small>
+                        <p class="mb-0">@Model.Reason</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patient Info -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-user-line me-2"></i>Patient Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex gap-3 align-items-center">
+                    <img src="~/theme/images/default-patient.png" class="img-5x rounded-circle" alt="Patient">
+                    <div class="flex-grow-1">
+                        <h5 class="mb-1">@Model.PatientName</h5>
+                        <p class="text-muted mb-1">Patient ID: P@Model.PatientId</p>
+                        <p class="text-muted mb-0">@Model.PatientAge years • @Model.PatientContact • @Model.PatientEmail</p>
+                    </div>
+                    <div>
+                        <a class="btn btn-sm btn-outline-info" href="/Admin/Patients/Profile?patientId=@Model.PatientId">
+                            <i class="ri-eye-line me-1"></i>View Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medical Notes -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-file-text-line me-2"></i>Medical Notes & Diagnosis
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="text-primary mb-2">Diagnosis</h6>
+                    <p class="text-muted mb-0">@Model.Diagnosis</p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="text-primary mb-2">Treatment Plan</h6>
+                    <p class="text-muted mb-0">@Model.TreatmentPlan</p>
+                </div>
+                <div>
+                    <h6 class="text-primary mb-2">Doctor's Notes</h6>
+                    <p class="text-muted mb-0">@Model.DoctorNotes</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vitals -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ri-heart-pulse-line me-2"></i>Vitals
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Blood Pressure</small>
+                        <strong>@Model.BloodPressure</strong>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Heart Rate</small>
+                        <strong>@Model.HeartRate bpm</strong>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Temperature</small>
+                        <strong>@Model.Temperature°F</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prescriptions -->
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0"><i class="ri-medicine-bottle-line me-2"></i>Prescriptions</h5>
+                <button class="btn btn-sm btn-outline-primary" onclick="downloadPrescription()">
+                    <i class="ri-download-line me-1"></i>Download
+                </button>
+            </div>
+            <div class="card-body">
+                @if (Model.Prescriptions.Any())
+                {
+                    foreach (var p in Model.Prescriptions)
+                    {
+                        <div class="prescription-item border rounded-3 p-3 mb-2">
+                            <div class="d-flex justify-content-between">
+                                <div>@p</div>
+                                <span class="badge bg-success">Active</span>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-muted">No prescriptions on record</div>
+                }
+            </div>
+        </div>
+
+        <!-- Lab Reports -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title"><i class="ri-test-tube-line me-2"></i>Lab Reports</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.LabReports.Any())
+                {
+                    <ul class="list-group">
+                        @foreach (var l in Model.LabReports)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                @l
+                                <button class="btn btn-sm btn-outline-secondary">Download</button>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <div class="text-muted">No lab reports found</div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-xl-4">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">Quick Actions</h6>
+            </div>
+            <div class="card-body d-grid gap-2">
+                <button class="btn btn-primary" onclick="startConsultation()">
+                    <i class="ri-play-line me-1"></i>Start Consultation
+                </button>
+                @* <button class="btn btn-outline-info" onclick="messagePatient()">
+                    <i class="ri-message-line me-1"></i>Message Patient
+                </button> *@
+                <a class="btn btn-outline-secondary" href="/Doctor/Appointments">
+                    <i class="ri-arrow-left-line me-1"></i>Back to Appointments
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">Appointment Timeline</h6>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-success"></div>
+                        <div class="timeline-content">
+                            <small class="text-muted">@Model.AppointmentDate.ToString("MMM dd, yyyy") - @Model.AppointmentTime</small>
+                            <p class="mb-0 small"><strong>Appointment Scheduled</strong></p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-info"></div>
+                        <div class="timeline-content">
+                            <small class="text-muted">--</small>
+                            <p class="mb-0 small"><strong>Consultation</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    // helper to get antiforgery token value rendered by @Html.AntiForgeryToken()
+    function getAntiForgeryToken() {
+        const tokenInput = document.querySelector('#__antiForm input[name="__RequestVerificationToken"]');
+        return tokenInput ? tokenInput.value : '';
+    }
+
+    function setStatusBadge(newStatus) {
+        const badge = document.querySelector('.card-header .badge') || document.querySelector('.badge');
+        if (!badge) return;
+        badge.textContent = newStatus;
+        // update color classes (simple heuristic)
+        badge.classList.remove('bg-success','bg-warning','bg-danger','bg-primary');
+        if (newStatus.toLowerCase().includes('complete')) {
+            badge.classList.add('bg-success');
+        } else if (newStatus.toLowerCase().includes('inprogress') || newStatus.toLowerCase().includes('in progress')) {
+            badge.classList.add('bg-warning');
+        } else if (newStatus.toLowerCase().includes('cancel')) {
+            badge.classList.add('bg-danger');
+        } else {
+            badge.classList.add('bg-primary');
+        }
+    }
+
+    async function startConsultation() {
+        const appointmentId = @Model.AppointmentId;
+        if (!appointmentId || appointmentId <= 0) {
+            alert('Invalid appointment id');
+            return;
+        }
+
+        const token = getAntiForgeryToken();
+        const form = new FormData();
+        form.append('appointmentId', appointmentId);
+        if (token) form.append('__RequestVerificationToken', token);
+
+        const btn = document.getElementById('startEndButton');
+        const txt = document.getElementById('startEndButtonText');
+        btn.disabled = true;
+        const prevHtml = btn.innerHTML;
+
+        try {
+            txt.textContent = 'Starting...';
+            const resp = await fetch(window.location.pathname + '?handler=Start&id=' + appointmentId, {
+                method: 'POST',
+                body: form
+            });
+            const data = await resp.json();
+            if (data && data.success) {
+                setStatusBadge(data.status || 'InProgress');
+                // switch button to "End Consultation"
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-danger');
+                txt.textContent = 'End Consultation';
+                btn.onclick = endConsultation;
+                // Optionally show startedAt
+                console.info('Consultation started at', data.startedAt);
+            } else {
+                alert(data?.message ?? 'Failed to start consultation');
+                txt.textContent = 'Start Consultation';
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error starting consultation');
+            txt.textContent = 'Start Consultation';
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    async function endConsultation() {
+        const appointmentId = @Model.AppointmentId;
+        if (!appointmentId || appointmentId <= 0) {
+            alert('Invalid appointment id');
+            return;
+        }
+
+        const token = getAntiForgeryToken();
+        const form = new FormData();
+        form.append('appointmentId', appointmentId);
+        if (token) form.append('__RequestVerificationToken', token);
+
+        const btn = document.getElementById('startEndButton');
+        const txt = document.getElementById('startEndButtonText');
+        btn.disabled = true;
+
+        try {
+            txt.textContent = 'Ending...';
+            const resp = await fetch(window.location.pathname + '?handler=End&id=' + appointmentId, {
+                method: 'POST',
+                body: form
+            });
+            const data = await resp.json();
+            if (data && data.success) {
+                setStatusBadge(data.status || 'Completed');
+                // switch button back to "Start Consultation"
+                btn.classList.remove('btn-danger');
+                btn.classList.add('btn-success');
+                txt.textContent = 'Start Consultation';
+                btn.onclick = startConsultation;
+                console.info('Consultation ended at', data.endedAt);
+            } else {
+                alert(data?.message ?? 'Failed to end consultation');
+                txt.textContent = 'End Consultation';
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error ending consultation');
+            txt.textContent = 'End Consultation';
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    function messagePatient() {
+        alert('Open messaging panel with patient.');
+    }
+
+    function downloadPrescription() {
+        alert('Download prescription PDF (not implemented).');
+    }
+</script>
+
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 8px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #e9ecef;
+    }
+    .timeline-item { position: relative; margin-bottom: 16px; }
+    .timeline-marker {
+        position: absolute;
+        left: -26px;
+        top: 2px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 3px solid #fff;
+        box-shadow: 0 0 0 2px #e9ecef;
+    }
+</style>
+}

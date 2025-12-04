@@ -2,7 +2,6 @@
 using CareSync.DataLayer;
 using CareSync.DataLayer.Entities;
 using CareSync.DataLayer.Entities.Lab_Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace CareSync.ApplicationLayer.UnitOfWork;
 
@@ -19,6 +18,8 @@ public sealed class UnitOfWork : IUnitOfWork
     public IRepository<T_Appointments> AppointmentsRepo { get; }
     public IRepository<T_PatientVitals> PatientVitalsRepo { get; }
     public IRepository<T_PatientReports> PatientReportsRepo { get; }
+    public IRepository<T_Prescriptions> PrescriptionsRepo { get; }
+    public IRepository<T_LabReports> LabReportsRepo { get; }
 
     public UnitOfWork(
         CareSyncDbContext dbContext,
@@ -30,7 +31,9 @@ public sealed class UnitOfWork : IUnitOfWork
         IRepository<T_LabServices> labServicesRepo,
         IRepository<T_Appointments> appointmentRepo,
         IRepository<T_PatientVitals> patientVitalsRepo,
-        IRepository<T_PatientReports> patientReportsRepo)
+        IRepository<T_PatientReports> patientReportsRepo,
+        IRepository<T_Prescriptions> prescriptionsRepo,
+        IRepository<T_LabReports> labReportsRepo)
     {
         _dbContext = dbContext;
         UserRepo = userRepo;
@@ -42,6 +45,8 @@ public sealed class UnitOfWork : IUnitOfWork
         AppointmentsRepo = appointmentRepo;
         PatientVitalsRepo = patientVitalsRepo;
         PatientReportsRepo = patientReportsRepo;
+        PrescriptionsRepo = prescriptionsRepo;
+        LabReportsRepo = labReportsRepo;
     }
 
     public async Task BeginTransactionAsync() =>

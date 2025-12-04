@@ -54,7 +54,7 @@ public interface IAdminService
     /// <summary>
     /// Get today's appointments with doctor and patient details
     /// </summary>
-    Task<Result<List<TodayAppointment_DTO>>> GetTodaysAppointmentsAsync();
+    Task<Result<List<Contracts.AdminDashboardDTOs.TodayAppointment_DTO>>> GetTodaysAppointmentsAsync();
 
     // ========== Doctor Management ==========
     

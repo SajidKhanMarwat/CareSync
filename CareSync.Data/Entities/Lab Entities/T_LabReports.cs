@@ -14,4 +14,5 @@ public class T_LabReports : BaseEntity
 
     //// Navigation properties
     //public virtual T_LabRequests LabRequest { get; set; }
+    public int AppointmentID { get; set; }
 }

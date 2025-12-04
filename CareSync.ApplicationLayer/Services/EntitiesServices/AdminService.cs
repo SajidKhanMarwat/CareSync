@@ -280,7 +280,7 @@ public class AdminService(
 
             summary.UrgentItems = urgentTask.Result.Data ?? new List<UrgentItem_DTO>();
             summary.TodayPerformance = performanceTask.Result.Data ?? new TodayPerformance_DTO();
-            summary.TodaysAppointments = appointmentsTask.Result.Data ?? new List<TodayAppointment_DTO>();
+            summary.TodaysAppointments = appointmentsTask.Result.Data ?? new List<Contracts.AdminDashboardDTOs.TodayAppointment_DTO>();
 
             return Result<DashboardSummary_DTO>.Success(summary);
         }
@@ -1244,7 +1244,7 @@ public class AdminService(
         }
     }
 
-    public async Task<Result<List<TodayAppointment_DTO>>> GetTodaysAppointmentsAsync()
+    public async Task<Result<List<Contracts.AdminDashboardDTOs.TodayAppointment_DTO>>> GetTodaysAppointmentsAsync()
     {
         logger.LogInformation("Executing: GetTodaysAppointmentsAsync");
         try
@@ -1252,7 +1252,7 @@ public class AdminService(
             var today = DateTime.UtcNow.Date;
             var appointments = await uow.AppointmentsRepo.GetAllAsync(a => a.AppointmentDate.Date == today);
 
-            var result = new List<TodayAppointment_DTO>();
+            var result = new List<Contracts.AdminDashboardDTOs.TodayAppointment_DTO>();
 
             foreach (var appointment in appointments)
             {
@@ -1262,7 +1262,7 @@ public class AdminService(
                 var doctorUser = doctor != null ? await userManager.FindByIdAsync(doctor.UserID) : null;
                 var patientUser = patient != null && patient.UserID != null ? await userManager.FindByIdAsync(patient.UserID) : null;
 
-                result.Add(new TodayAppointment_DTO
+                result.Add(new Contracts.AdminDashboardDTOs.TodayAppointment_DTO
                 {
                     AppointmentID = appointment.AppointmentID,
                     DoctorName = doctorUser != null ? $"Dr. {doctorUser.FirstName} {doctorUser.LastName}" : "Unknown",
@@ -1274,12 +1274,12 @@ public class AdminService(
                 });
             }
 
-            return Result<List<TodayAppointment_DTO>>.Success(result.OrderBy(a => a.AppointmentTime).ToList());
+            return Result<List<Contracts.AdminDashboardDTOs.TodayAppointment_DTO>>.Success(result.OrderBy(a => a.AppointmentTime).ToList());
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error getting today's appointments");
-            return Result<List<TodayAppointment_DTO>>.Exception(ex);
+            return Result<List<Contracts.AdminDashboardDTOs.TodayAppointment_DTO>>.Exception(ex);
         }
     }
 

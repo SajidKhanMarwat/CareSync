@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -58,6 +59,27 @@ public class LoginModel : PageModel
                     HttpContext.Session.SetString("RefreshToken", result.Data.RefreshToken ?? "");
                     HttpContext.Session.SetString("UserEmail", LoginRequest.Email);
                     HttpContext.Session.SetString("UserName", LoginRequest.Email);
+
+                    string? extractedUserId = null;
+                    var token = result.Data.Token ?? string.Empty;
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        var handler = new JwtSecurityTokenHandler();
+                        var jwt = handler.ReadJwtToken(token);
+                        var idClaim = jwt.Claims.FirstOrDefault(c =>
+                            c.Type == ClaimTypes.NameIdentifier ||
+                            c.Type == "nameid" ||
+                            c.Type == "sub" ||
+                            c.Type == "uid" ||
+                            c.Type == "id");
+                        if (idClaim != null)
+                            extractedUserId = idClaim.Value;
+                    }
+
+                    if (!string.IsNullOrEmpty(extractedUserId))
+                    {
+                        HttpContext.Session.SetString("UserId", extractedUserId);
+                    }
 
                     // Store role rights as JSON
                     if (result.Data.RoleRights != null && result.Data.RoleRights.Any())
