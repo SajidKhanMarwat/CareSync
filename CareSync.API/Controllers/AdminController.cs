@@ -71,7 +71,7 @@ public class AdminController(IAdminService adminService, IUserService userServic
     /// Get today's appointments with details
     /// </summary>
     [HttpGet("dashboard/todays-appointments")]
-    public async Task<Result<List<TodayAppointment_DTO>>> GetTodaysAppointments()
+    public async Task<Result<List<ApplicationLayer.Contracts.AdminDashboardDTOs.TodayAppointment_DTO>>> GetTodaysAppointments()
         => await adminService.GetTodaysAppointmentsAsync();
 
     /// <summary>

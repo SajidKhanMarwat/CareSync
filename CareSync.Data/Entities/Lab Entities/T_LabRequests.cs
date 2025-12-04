@@ -13,5 +13,5 @@ public class T_LabRequests : BaseEntity
     //// Navigation properties
     //public virtual T_Appointments Appointment { get; set; }
     //public virtual T_LabServices LabService { get; set; }
-    //public virtual ICollection<T_LabReports> LabReports { get; set; } = new List<T_LabReports>();
+    public virtual ICollection<T_LabReports> LabReports { get; set; } = new List<T_LabReports>();
 }

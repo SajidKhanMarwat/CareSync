@@ -1,5 +1,6 @@
 @page "/Doctor/Dashboard"
 @model CareSync.Pages.Doctor.DashboardModel
+@using System.Text.Json
 @{
     ViewData["Title"] = "Doctor Dashboard";
 }
@@ -24,10 +25,10 @@
                         <i class="ri-alarm-warning-line fs-4 text-danger"></i>
                     </div>
                     <div class="flex-grow-1">
-                        <strong>1 Critical</strong>
+                        <strong id="criticalLabBadge">@Model.LabReports Critical</strong>
                         <p class="mb-0 small">Lab result needs immediate review</p>
                     </div>
-                    <button class="btn btn-sm btn-danger">View</button>
+                    <button class="btn btn-sm btn-danger" onclick="window.location.href='/Doctor/LabReports'">View</button>
                 </div>
             </div>
             <!-- Priority Notifications -->
@@ -37,10 +38,10 @@
                         <i class="ri-time-line fs-4 text-warning"></i>
                     </div>
                     <div class="flex-grow-1">
-                        <strong>2 Pending</strong>
+                        <strong id="pendingApptsBadge">@Model.PendingAppointments Pending</strong>
                         <p class="mb-0 small">Appointments awaiting approval</p>
                     </div>
-                    <button class="btn btn-sm btn-warning">Approve</button>
+                    <button class="btn btn-sm btn-warning" onclick="window.location.href='/Doctor/Appointments'">Approve</button>
                 </div>
             </div>
             <!-- Info Notifications -->
@@ -50,7 +51,7 @@
                         <i class="ri-file-list-3-line fs-4 text-info"></i>
                     </div>
                     <div class="flex-grow-1">
-                        <strong>@Model.PendingAppointments Pending</strong>
+                        <strong id="pendingPrescriptionsBadge">@Model.TotalPrescriptions Pending</strong>
                         <p class="mb-0 small">Prescriptions to be issued</p>
                     </div>
                     <button class="btn btn-sm btn-info" onclick="window.location.href='/Doctor/Prescriptions'">View</button>
@@ -83,14 +84,13 @@
                                     </ul>
                                 </div>
                                 <h6 class="fw-normal mt-2">Good Morning,</h6>
-                                <h5 class="fw-normal">@Model.DoctorName</h5>
-                                <h6 class="fw-normal">@Model.Specialization</h6>
+                                <h5 class="fw-normal" id="doctorName">@Model.DoctorName</h5>
+                                <h6 class="fw-normal" id="doctorSpecialization">@Model.Specialization</h6>
                                 <h6 class="fw-normal">Speaks: English, and Arabic</h6>
                                 <div class="d-flex mt-3">
                                     <div class="rating-stars">
                                         <div class="readonly5"></div>
                                     </div>
-                                    <span class="fw-bold ms-2">@Model.TotalRatings</span>
                                 </div>
                             </div>
                         </div>
@@ -105,7 +105,7 @@
                                             <div class="icon-box md border border-primary rounded-5 mb-2 m-auto">
                                                 <i class="ri-empathize-line fs-5 text-primary"></i>
                                             </div>
-                                            <h3 class="text-primary">@Model.TotalPatients</h3>
+                                            <h3 class="text-primary" id="totalPatients">@Model.TotalPatients</h3>
                                             <h6>Total Patients</h6>
                                             <small class="text-primary">20% Higher than last week.</small>
                                         </div>
@@ -119,7 +119,7 @@
                                             <div class="icon-box md border border-primary rounded-5 mb-2 m-auto">
                                                 <i class="ri-stethoscope-line fs-5 text-primary"></i>
                                             </div>
-                                            <h3 class="text-primary">@Model.TotalSurgeries</h3>
+                                            <h3 class="text-primary" id="totalSurgeries">@Model.TotalSurgeries</h3>
                                             <h6>Surgeries</h6>
                                             <small class="text-primary">30% Higher than last week.</small>
                                         </div>
@@ -133,7 +133,7 @@
                                             <div class="icon-box md border border-success rounded-5 mb-2 m-auto">
                                                 <i class="ri-time-line fs-5 text-success"></i>
                                             </div>
-                                            <h3 class="text-success">@(Model.TodayAppointmentsCount > 0 ? (240 / Model.TodayAppointmentsCount) : 0)<span class="fs-6">min</span></h3>
+                                            <h3 class="text-success" id="avgConsult">@(Model.TodayAppointmentsCount > 0 ? (240 / Model.TodayAppointmentsCount) : 0)<span class="fs-6">min</span></h3>
                                             <h6>Avg. Consultation</h6>
                                             <small class="text-success">Efficient patient care</small>
                                         </div>
@@ -159,7 +159,7 @@
                     </div>
                     <div class="flex-fill">
                         <h6 class="mb-0">Today's Appointments</h6>
-                        <h3 class="mb-0 text-primary">@Model.TodayAppointmentsCount</h3>
+                        <h3 class="mb-0 text-primary" id="todayAppointmentsCount">@Model.TodayAppointmentsCount</h3>
                         <small class="text-success"><i class="ri-arrow-up-line"></i> 12% vs yesterday</small>
                     </div>
                 </div>
@@ -175,7 +175,7 @@
                     </div>
                     <div class="flex-fill">
                         <h6 class="mb-0">Prescriptions Written</h6>
-                        <h3 class="mb-0 text-success">@Model.TotalPrescriptions</h3>
+                        <h3 class="mb-0 text-success" id="totalPrescriptions">@Model.TotalPrescriptions</h3>
                         <small class="text-success"><i class="ri-arrow-up-line"></i> This month</small>
                     </div>
                 </div>
@@ -191,7 +191,7 @@
                     </div>
                     <div class="flex-fill">
                         <h6 class="mb-0">Pending Appointments</h6>
-                        <h3 class="mb-0 text-warning">@Model.PendingAppointments</h3>
+                        <h3 class="mb-0 text-warning" id="pendingAppointments">@Model.PendingAppointments</h3>
                         <small class="text-muted">Awaiting approval</small>
                     </div>
                 </div>
@@ -207,7 +207,7 @@
                     </div>
                     <div class="flex-fill">
                         <h6 class="mb-0">Lab Reports</h6>
-                        <h3 class="mb-0 text-info">@Model.LabReports</h3>
+                        <h3 class="mb-0 text-info" id="labReports">@Model.LabReports</h3>
                         <small class="text-info"><i class="ri-arrow-down-line"></i> Pending review</small>
                     </div>
                 </div>
@@ -234,7 +234,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Patient Status Chart -->
     <div class="col-xxl-4 col-sm-12">
         <div class="card mb-3">
@@ -249,21 +249,21 @@
                             <i class="ri-checkbox-blank-circle-fill text-primary me-2"></i>
                             New Patients
                         </span>
-                        <span class="fw-semibold">@Model.NewPatients</span>
+                        <span class="fw-semibold" id="newPatients">@Model.NewPatients</span>
                     </div>
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="d-flex align-items-center">
                             <i class="ri-checkbox-blank-circle-fill text-success me-2"></i>
                             Regular Patients
                         </span>
-                        <span class="fw-semibold">@Model.RegularPatients</span>
+                        <span class="fw-semibold" id="regularPatients">@Model.RegularPatients</span>
                     </div>
                     <div class="d-flex align-items-center justify-content-between">
                         <span class="d-flex align-items-center">
                             <i class="ri-checkbox-blank-circle-fill text-warning me-2"></i>
                             Follow-up Patients
                         </span>
-                        <span class="fw-semibold">@Model.FollowUpPatients</span>
+                        <span class="fw-semibold" id="followUpPatients">@Model.FollowUpPatients</span>
                     </div>
                 </div>
             </div>
@@ -325,7 +325,7 @@
                                 <th width="15%">Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="appointmentsBody">
                             @foreach (var appointment in Model.TodayAppointments)
                             {
                                 var isNext = Model.TodayAppointments.IndexOf(appointment) == 0;
@@ -534,7 +534,6 @@
                             <i class="ri-star-fill text-warning me-2"></i>
                             Patient Satisfaction
                         </span>
-                        <strong class="text-warning">@Model.TotalRatings/5.0</strong>
                     </div>
                     <div class="d-flex align-items-center justify-content-between">
                         <span class="small d-flex align-items-center">
@@ -562,7 +561,7 @@
             </div>
             <div class="card-body">
                 <div class="scroll300">
-                    <div class="d-flex flex-column gap-3">
+                    <div class="d-flex flex-column gap-3" id="recentPatientsList">
                         @foreach (var patient in Model.RecentPatients)
                         {
                             var statusColor = patient.Notes.Contains("Critical") ? "danger" : (patient.Notes.Contains("Follow") ? "warning" : "success");
@@ -715,22 +714,326 @@
             });
         }
 
-        // Calendar toggle and initialization
+        // global reference to appointments chart so it can be updated after API refresh
+        window.appointmentsChart = null;
+
+        function createOrUpdateAppointmentsChart(labels, dataSeries) {
+            try {
+                const chartEl = document.querySelector("#appointmentsChart");
+                const options = {
+                    chart: {
+                        type: 'area',
+                        height: 300,
+                        toolbar: { show: false }
+                    },
+                    series: [{
+                        name: 'Appointments',
+                        data: dataSeries || []
+                    }],
+                    xaxis: { categories: labels || [] },
+                    colors: ['#1e88e5'],
+                    fill: {
+                        type: 'gradient',
+                        gradient: { shadeIntensity: 1, opacityFrom: 0.7, opacityTo: 0.3 }
+                    },
+                    dataLabels: { enabled: false },
+                    stroke: { curve: 'smooth', width: 3 }
+                };
+
+                if (window.appointmentsChart) {
+                    window.appointmentsChart.updateOptions({
+                        xaxis: { categories: labels || [] }
+                    }, false, true);
+                    window.appointmentsChart.updateSeries([{ name: 'Appointments', data: dataSeries || [] }], true);
+                } else {
+                    window.appointmentsChart = new ApexCharts(chartEl, options);
+                    window.appointmentsChart.render();
+                }
+            } catch (e) {
+                console.warn('Unable to render appointments chart', e);
+            }
+        }
+
+        // Fetch dashboard via API and update UI without full reload
+        async function fetchDashboardAndUpdateUI() {
+            try {
+                const resp = await fetch('/api/doctors/dashboard', {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!resp.ok) {
+                    console.warn('Doctor dashboard API returned', resp.status);
+                    return;
+                }
+
+                const payload = await resp.json();
+
+                // API uses Result<T> wrapper; try to extract data
+                const data = payload && payload.data ? payload.data : payload;
+
+                if (!data) {
+                    console.warn('Doctor dashboard API returned empty data');
+                    return;
+                }
+
+                // Update simple counts and labels
+                const safeSet = (id, value) => {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = value ?? '';
+                };
+
+                safeSet('doctorName', data.doctorName);
+                safeSet('doctorSpecialization', data.specialization);
+                safeSet('totalRatings', data.totalRatings);
+                safeSet('totalPatients', data.totalPatients);
+                safeSet('totalSurgeries', data.totalSurgeries);
+                safeSet('todayAppointmentsCount', data.todayAppointmentsCount);
+                safeSet('appointmentsSummaryCount', data.todayAppointmentsCount);
+                safeSet('metricPatients', data.todayAppointmentsCount);
+                safeSet('totalPrescriptions', data.totalPrescriptions);
+                safeSet('metricPrescriptions', data.totalPrescriptions);
+                safeSet('pendingAppointments', data.pendingAppointments);
+                safeSet('pendingApptsBadge', `${data.pendingAppointments} Pending`);
+                safeSet('pendingPrescriptionsBadge', `${data.totalPrescriptions} Pending`);
+                safeSet('criticalLabBadge', `${data.labReports} Critical`);
+                safeSet('labReports', data.labReports);
+                safeSet('newPatients', data.newPatients);
+                safeSet('regularPatients', data.regularPatients);
+                safeSet('followUpPatients', data.followUpPatients);
+                safeSet('metricTotalPatients', data.totalPatients);
+                safeSet('weeklyCompleted', data.todayAppointmentsCount * 5);
+                safeSet('patientSatisfaction', (data.totalRatings / 5.0).toString());
+                safeSet('avgConsult', (data.todayAppointmentsCount > 0 ? Math.floor(240 / data.todayAppointmentsCount) : 0) + 'min');
+                safeSet('metricAvg', (data.todayAppointmentsCount > 0 ? Math.floor(240 / data.todayAppointmentsCount) : 0) + ' min');
+
+                // update appointments chart if backend provides monthly data
+                const labels = data.appointmentsOverviewLabels || [];
+                const seriesData = data.appointmentsOverviewData || [];
+                if (labels.length && seriesData.length) {
+                    createOrUpdateAppointmentsChart(labels, seriesData);
+                }
+
+                // Rebuild appointments table body
+                const tbody = document.getElementById('appointmentsBody');
+                if (tbody) {
+                    tbody.innerHTML = ''; // clear
+                    const appts = data.todayAppointments || [];
+                    appts.forEach((a, idx) => {
+                        const isNext = idx === 0;
+                        const isUrgent = (a.type || '').toLowerCase() === 'emergency';
+                        const rowClass = isNext ? 'table-primary' : (isUrgent ? 'table-danger' : '');
+                        const tr = document.createElement('tr');
+                        tr.className = `${rowClass} appointment-row`;
+                        tr.setAttribute('data-appointment-id', a.id);
+
+                        const idCell = document.createElement('td');
+                        if (isNext) {
+                            idCell.innerHTML = '<span class="badge bg-primary">NEXT</span>';
+                        } else if (isUrgent) {
+                            idCell.innerHTML = '<i class="ri-alarm-warning-fill text-danger fs-5 blink-animation"></i>';
+                        } else {
+                            idCell.innerHTML = `<span class="text-muted">${String(a.id).padStart(3,'0')}</span>`;
+                        }
+                        tr.appendChild(idCell);
+
+                        const patientCell = document.createElement('td');
+                        patientCell.innerHTML = `<div class="d-flex align-items-center">
+                                <img src="~/theme/images/patient.png" class="img-3x rounded-circle me-2 border border-2" alt="Patient">
+                                <div><strong class="d-block">${a.patientName}</strong><small class="text-muted">${a.patientAge} years old</small></div>
+                            </div>`;
+                        tr.appendChild(patientCell);
+
+                        const timeCell = document.createElement('td');
+                        const time = new Date(a.appointmentTime);
+                        const hh = time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        timeCell.innerHTML = `<div><i class="ri-time-line text-primary"></i> <strong>${hh}</strong>${isNext ? '<div class="badge bg-success-subtle text-success mt-1">Now</div>' : ''}</div>`;
+                        tr.appendChild(timeCell);
+
+                        const statusCell = document.createElement('td');
+                        statusCell.innerHTML = `<div class="d-flex align-items-center gap-2"><span class="status-dot bg-warning" title="Waiting"></span><small>Waiting</small></div>`;
+                        tr.appendChild(statusCell);
+
+                        const diagCell = document.createElement('td');
+                        diagCell.textContent = a.diagnosis || '';
+                        tr.appendChild(diagCell);
+
+                        const typeCell = document.createElement('td');
+                        const typeClass = (a.type === 'General') ? 'bg-info' : (a.type === 'Emergency') ? 'bg-danger' : 'bg-primary';
+                        const icon = (a.type === 'General') ? 'ri-stethoscope-line' : (a.type === 'Emergency') ? 'ri-alarm-warning-line' : 'ri-calendar-check-line';
+                        typeCell.innerHTML = `<span class="badge ${typeClass} fs-6"><i class="${icon} me-1"></i>${a.type}</span>`;
+                        tr.appendChild(typeCell);
+
+                        const quickCell = document.createElement('td');
+                        quickCell.innerHTML = `<button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#details${a.id}" aria-expanded="false"><i class="ri-eye-line"></i> Details</button>`;
+                        tr.appendChild(quickCell);
+
+                        const actionsCell = document.createElement('td');
+                        let actionsHtml = '<div class="d-flex gap-1">';
+                        if (isNext) {
+                            actionsHtml += `<a href="/Doctor/Checkup?appointmentId=${a.id}" class="btn btn-success btn-sm rounded-2" data-bs-toggle="tooltip" title="Start Consultation"><i class="ri-stethoscope-line"></i> Start</a>`;
+                        } else {
+                            actionsHtml += `<button type="button" class="btn btn-outline-danger btn-sm rounded-2" onclick="rejectAppointment(${a.id})" data-bs-toggle="tooltip" title="Cancel"><i class="ri-close-line"></i></button>`;
+                            actionsHtml += `<button type="button" class="btn btn-outline-success btn-sm rounded-2" onclick="approveAppointment(${a.id})" data-bs-toggle="tooltip" title="Confirm"><i class="ri-check-line"></i></button>`;
+                        }
+                        actionsHtml += '</div>';
+                        actionsCell.innerHTML = actionsHtml;
+                        tr.appendChild(actionsCell);
+
+                        tbody.appendChild(tr);
+
+                        // Details row
+                        const detailsTr = document.createElement('tr');
+                        detailsTr.className = 'collapse';
+                        detailsTr.id = `details${a.id}`;
+                        detailsTr.innerHTML = `<td colspan="8">
+                            <div class="card border-0 bg-light m-2">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <h6 class="text-muted mb-2"><i class="ri-history-line"></i> Medical History</h6>
+                                            <ul class="list-unstyled mb-0 small">
+                                                <li>• Diabetes Type 2</li>
+                                                <li>• Hypertension</li>
+                                                <li class="text-danger">• Allergic to Penicillin</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h6 class="text-muted mb-2"><i class="ri-capsule-line"></i> Current Medications</h6>
+                                            <ul class="list-unstyled mb-0 small">
+                                                <li>• Metformin 500mg (2x daily)</li>
+                                                <li>• Lisinopril 10mg (1x daily)</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h6 class="text-muted mb-2"><i class="ri-flask-line"></i> Recent Labs</h6>
+                                            <ul class="list-unstyled mb-0 small">
+                                                <li>• Blood Sugar: 140 mg/dL</li>
+                                                <li>• BP: 130/85 mmHg</li>
+                                                <li class="text-warning">• Cholesterol: Pending</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h6 class="text-muted mb-2"><i class="ri-file-text-line"></i> Last Visit</h6>
+                                            <p class="mb-0 small">15 days ago - Routine checkup. Prescribed diabetes medication adjustment.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>`;
+                        tbody.appendChild(detailsTr);
+                    });
+                }
+
+                // Rebuild recent patients list
+                const recentList = document.getElementById('recentPatientsList');
+                if (recentList) {
+                    recentList.innerHTML = '';
+                    const r = data.recentPatients || [];
+                    r.forEach(p => {
+                        const statusColor = (p.notes || '').includes('Critical') ? 'danger' : ((p.notes || '').includes('Follow') ? 'warning' : 'success');
+                        const div = document.createElement('div');
+                        div.className = 'patient-card border rounded-3 p-3 hover-card position-relative';
+                        div.innerHTML = `<div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-${statusColor}-subtle text-${statusColor}"><i class="ri-heart-pulse-line"></i> Active</span>
+                            </div>
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="position-relative">
+                                    <img src="~/theme/images/patient.png" class="img-5x rounded-circle border border-3 border-primary" alt="Patient">
+                                    <span class="position-absolute bottom-0 end-0 badge bg-success rounded-circle p-2" title="Online"><i class="ri-checkbox-blank-circle-fill"></i></span>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-start justify-content-between mb-2">
+                                        <div>
+                                            <h6 class="mb-1 fw-bold">${p.name}</h6>
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <span class="badge bg-light text-dark border"><i class="ri-user-line"></i> P${String(p.id).padStart(4,'0')}</span>
+                                                <span class="badge bg-info-subtle text-info"><i class="ri-calendar-line"></i> ${new Date(p.lastAppointment).toLocaleDateString(undefined, {day:'2-digit', month:'short'})}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="mb-3 small text-muted"><i class="ri-file-text-line"></i> ${p.notes}</p>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <button class="btn btn-primary btn-sm d-flex align-items-center gap-1" onclick="window.location.href='/Doctor/Appointments/Schedule?patientId=${p.id}'">
+                                            <i class="ri-calendar-check-line"></i><span>Schedule</span>
+                                        </button>
+                                        <button class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1" onclick="window.location.href='/Patient/Profile?id=${p.id}'">
+                                            <i class="ri-file-user-line"></i><span>Profile</span>
+                                        </button>
+                                        <button class="btn btn-outline-success btn-sm d-flex align-items-center gap-1" onclick="startVideoCall()">
+                                            <i class="ri-video-chat-line"></i><span>Call</span>
+                                        </button>
+                                        <button class="btn btn-outline-info btn-sm d-flex align-items-center gap-1" onclick="writePrescription()">
+                                            <i class="ri-file-list-3-line"></i><span>Prescribe</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>`;
+                        recentList.appendChild(div);
+                    });
+                }
+            } catch (err) {
+                console.error('Error refreshing dashboard', err);
+            }
+        }
+
+        // Appointment actions using API then refresh UI
+        async function approveAppointment(appointmentId) {
+            if (!confirm('Are you sure you want to accept this appointment?')) return;
+            try {
+                const resp = await fetch(`/api/appointments/${appointmentId}/approve`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
+                });
+                const json = await resp.json();
+                if (resp.ok && json?.data?.success || json?.success || json?.data?.success === undefined) {
+                    alert('Appointment accepted successfully!');
+                    await fetchDashboardAndUpdateUI();
+                } else {
+                    alert(json?.message || 'Failed to accept appointment');
+                }
+            } catch (err) {
+                console.error('Error approving appointment', err);
+                alert('An error occurred while accepting appointment');
+            }
+        }
+
+        async function rejectAppointment(appointmentId) {
+            if (!confirm('Are you sure you want to reject this appointment?')) return;
+            try {
+                const resp = await fetch(`/api/appointments/${appointmentId}/reject`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
+                });
+                const json = await resp.json();
+                if (resp.ok && json?.data?.success || json?.success || json?.data?.success === undefined) {
+                    alert('Appointment rejected successfully!');
+                    await fetchDashboardAndUpdateUI();
+                } else {
+                    alert(json?.message || 'Failed to reject appointment');
+                }
+            } catch (err) {
+                console.error('Error rejecting appointment', err);
+                alert('An error occurred while rejecting appointment');
+            }
+        }
+
+        // Calendar toggle and initialization (keeps server-side rendered initial events, supports refresh)
         let calendar = null;
         document.addEventListener('DOMContentLoaded', function() {
             const calendarCollapse = document.getElementById('calendarCollapse');
             if (calendarCollapse) {
-                // Update text when collapse starts
                 calendarCollapse.addEventListener('show.bs.collapse', function () {
                     document.getElementById('calendarToggleText').textContent = 'Hide Calendar';
                 });
                 
-                // Initialize and render calendar after collapse animation completes
                 calendarCollapse.addEventListener('shown.bs.collapse', function () {
                     if (!calendar) {
                         initializeCalendar();
                     } else {
-                        // If calendar already exists, update its size
                         calendar.updateSize();
                     }
                 });
@@ -739,12 +1042,36 @@
                     document.getElementById('calendarToggleText').textContent = 'Show Calendar';
                 });
             }
+
+            // Create initial appointments chart from server-side data if provided
+            const initialLabels = @Html.Raw(JsonSerializer.Serialize(Model.AppointmentsOverviewLabels));
+            const initialData = @Html.Raw(JsonSerializer.Serialize(Model.AppointmentsOverviewData));
+            if ((initialLabels && initialLabels.length) || (initialData && initialData.length)) {
+                createOrUpdateAppointmentsChart(initialLabels || [], initialData || []);
+            }
+
+            // Fetch latest dashboard after page load for fresh data
+            fetchDashboardAndUpdateUI();
         });
 
         // Separate calendar initialization function
         function initializeCalendar() {
             var calendarEl = document.getElementById('appointmentsCal');
             if (calendarEl && !calendar) {
+                // Try to gather events from server-rendered appointments as fallback
+                var events = [];
+                try {
+                    document.querySelectorAll('#appointmentsBody tr[data-appointment-id]').forEach(r => {
+                        const id = r.getAttribute('data-appointment-id');
+                        const timeText = r.querySelector('td:nth-child(3) strong')?.textContent;
+                        const title = r.querySelector('td:nth-child(2) strong')?.textContent || ('Appointment ' + id);
+                        if (timeText) {
+                            // attempt to parse today + time
+                            events.push({ title, start: new Date().toISOString() });
+                        }
+                    });
+                } catch (e) { /* ignore */ }
+
                 calendar = new FullCalendar.Calendar(calendarEl, {
                     initialView: 'dayGridMonth',
                     headerToolbar: {
@@ -753,17 +1080,7 @@
                         right: 'dayGridMonth,timeGridWeek,timeGridDay'
                     },
                     height: 'auto',
-                    events: [
-                        @foreach (var appointment in Model.TodayAppointments)
-                        {
-                            @:{
-                            @:    title: '@appointment.PatientName',
-                            @:    start: '@appointment.AppointmentTime.ToString("yyyy-MM-ddTHH:mm:ss")',
-                            @:    backgroundColor: '@(appointment.Type == "General" ? "#fb8c00" : "#1e88e5")',
-                            @:    borderColor: '@(appointment.Type == "General" ? "#fb8c00" : "#1e88e5")'
-                            @:},
-                        }
-                    ],
+                    events: events,
                     eventClick: function(info) {
                         alert('Appointment: ' + info.event.title);
                     }
@@ -772,95 +1089,8 @@
             }
         }
 
-        // Appointment actions
-        function approveAppointment(appointmentId) {
-            if (confirm('Are you sure you want to accept this appointment?')) {
-                // Add AJAX call to approve appointment
-                fetch(`/api/appointments/${appointmentId}/approve`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Appointment accepted successfully!');
-                        location.reload();
-                    } else {
-                        alert('Failed to accept appointment');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred');
-                });
-            }
-        }
-
-        function rejectAppointment(appointmentId) {
-            if (confirm('Are you sure you want to reject this appointment?')) {
-                // Add AJAX call to reject appointment
-                fetch(`/api/appointments/${appointmentId}/reject`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Appointment rejected successfully!');
-                        location.reload();
-                    } else {
-                        alert('Failed to reject appointment');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred');
-                });
-            }
-        }
-
-        // Initialize charts and calendar
+        // Initialize charts and other UI widgets (kept server logic but no change)
         document.addEventListener('DOMContentLoaded', function() {
-            // Appointments Overview Chart
-            var appointmentsChartOptions = {
-                chart: {
-                    type: 'area',
-                    height: 300,
-                    toolbar: {
-                        show: false
-                    }
-                },
-                series: [{
-                    name: 'Appointments',
-                    data: [30, 40, 45, 50, 49, 60, 70, 91, 85, 95, 100, 110]
-                }],
-                xaxis: {
-                    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-                },
-                colors: ['#1e88e5'],
-                fill: {
-                    type: 'gradient',
-                    gradient: {
-                        shadeIntensity: 1,
-                        opacityFrom: 0.7,
-                        opacityTo: 0.3,
-                    }
-                },
-                dataLabels: {
-                    enabled: false
-                },
-                stroke: {
-                    curve: 'smooth',
-                    width: 3
-                }
-            };
-            var appointmentsChart = new ApexCharts(document.querySelector("#appointmentsChart"), appointmentsChartOptions);
-            appointmentsChart.render();
-
             // Patient Status Pie Chart
             var patientStatusOptions = {
                 chart: {
@@ -880,9 +1110,6 @@
             var patientStatusChart = new ApexCharts(document.querySelector("#patientStatusChart"), patientStatusOptions);
             patientStatusChart.render();
 
-            // Note: Calendar is now initialized on-demand when user clicks "Show Calendar" button
-            // This improves performance and prevents rendering issues with hidden elements
-
             // Initialize date range picker
             if (typeof $.fn.daterangepicker !== 'undefined') {
                 $('#dateRange').daterangepicker({
@@ -892,12 +1119,6 @@
                     $('#dateRange').val(start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
                 });
             }
-
-            // Auto-refresh appointments every 30 seconds
-            setInterval(function() {
-                // Add AJAX call to refresh appointment data
-                console.log('Checking for new appointments...');
-            }, 30000);
         });
     </script>
 }
@@ -908,7 +1129,7 @@
     <link rel="stylesheet" href="~/theme/vendor/calendar/css/custom.css">
     <!-- Apex Charts CSS -->
     <link rel="stylesheet" href="~/theme/vendor/apex/apexcharts.css">
-    
+
     <!-- Custom Styles -->
     <style>
         /* Status indicator animation */
@@ -920,6 +1141,7 @@
             0%, 100% {
                 opacity: 1;
             }
+
             50% {
                 opacity: 0.5;
             }
@@ -934,6 +1156,7 @@
             0%, 50%, 100% {
                 opacity: 1;
             }
+
             25%, 75% {
                 opacity: 0.3;
             }
@@ -952,6 +1175,7 @@
             0%, 100% {
                 box-shadow: 0 0 0 0 rgba(251, 140, 0, 0.7);
             }
+
             50% {
                 box-shadow: 0 0 0 5px rgba(251, 140, 0, 0);
             }
@@ -962,29 +1186,29 @@
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
-        }
+            .card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+            }
 
         /* Table row hover */
         .appointment-row {
             transition: all 0.2s ease;
         }
 
-        .appointment-row:hover {
-            background-color: rgba(30, 136, 229, 0.05) !important;
-        }
+            .appointment-row:hover {
+                background-color: rgba(30, 136, 229, 0.05) !important;
+            }
 
         /* Quick actions button animation */
         .btn {
             transition: all 0.2s ease;
         }
 
-        .btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        }
+            .btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            }
 
         /* Notification badge pulse */
         .alert {
@@ -996,6 +1220,7 @@
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -1007,7 +1232,7 @@
             .d-flex.flex-wrap.gap-2 {
                 flex-direction: column;
             }
-            
+
             .flex-fill {
                 width: 100%;
             }
@@ -1051,11 +1276,11 @@
             cursor: pointer;
         }
 
-        .hover-card:hover {
-            transform: translateX(5px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-            border-color: #1e88e5 !important;
-        }
+            .hover-card:hover {
+                transform: translateX(5px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+                border-color: #1e88e5 !important;
+            }
 
         /* Review card specific styles */
         .review-card {
@@ -1068,9 +1293,9 @@
             border: 1px solid #e9ecef !important;
         }
 
-        .patient-card:hover {
-            background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
-        }
+            .patient-card:hover {
+                background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+            }
 
         /* Scroll container */
         .scroll300 {
@@ -1079,23 +1304,23 @@
             overflow-x: hidden;
         }
 
-        .scroll300::-webkit-scrollbar {
-            width: 6px;
-        }
+            .scroll300::-webkit-scrollbar {
+                width: 6px;
+            }
 
-        .scroll300::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
+            .scroll300::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 10px;
+            }
 
-        .scroll300::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 10px;
-        }
+            .scroll300::-webkit-scrollbar-thumb {
+                background: #888;
+                border-radius: 10px;
+            }
 
-        .scroll300::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
+                .scroll300::-webkit-scrollbar-thumb:hover {
+                    background: #555;
+                }
 
         /* Enhanced image sizes */
         .img-5x {
@@ -1130,9 +1355,9 @@
             padding: 1rem 1.5rem;
         }
 
-        .card-header h5 {
-            margin-bottom: 0;
-        }
+            .card-header h5 {
+                margin-bottom: 0;
+            }
 
         /* Badge pulse animation for online status */
         .badge.bg-success.rounded-circle {
@@ -1143,6 +1368,7 @@
             0%, 100% {
                 box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.7);
             }
+
             50% {
                 box-shadow: 0 0 0 4px rgba(25, 135, 84, 0);
             }
@@ -1174,19 +1400,19 @@
             transition: all 0.3s ease;
         }
 
-        #calendarCollapse.show {
-            display: block;
-        }
+            #calendarCollapse.show {
+                display: block;
+            }
 
         /* Metric card styles */
         .metric-card {
             transition: all 0.3s ease;
         }
 
-        .metric-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
+            .metric-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            }
 
         /* Time indicator styling */
         #currentTime {
@@ -1212,6 +1438,7 @@
             0%, 100% {
                 transform: scale(1);
             }
+
             50% {
                 transform: scale(1.05);
             }

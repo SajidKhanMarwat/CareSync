@@ -16,6 +16,8 @@ public interface IUnitOfWork : IDisposable
     IRepository<T_Appointments> AppointmentsRepo { get; }
     IRepository<T_PatientVitals> PatientVitalsRepo { get; }
     IRepository<T_PatientReports> PatientReportsRepo { get; }
+    IRepository<T_Prescriptions> PrescriptionsRepo { get; }
+    IRepository<T_LabReports> LabReportsRepo { get; }
 
     Task BeginTransactionAsync();
     Task CommitAsync();

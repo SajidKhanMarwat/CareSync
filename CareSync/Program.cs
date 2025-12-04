@@ -1,5 +1,8 @@
 using CareSync.Handlers;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Polly;
+using CareSync.ApplicationLayer.IServices.EntitiesServices;
+using CareSync.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,18 +34,29 @@ builder.Services.AddAuthorization(options =>
 // Register Authorization Handler
 builder.Services.AddTransient<AuthorizationMessageHandler>();
 
-// Register HttpClient with Authorization Handler
+// Register HttpClient with Authorization Handler and a Polly retry policy
 builder.Services.AddHttpClient("ApiClient", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7138/api/");
     client.Timeout = TimeSpan.FromSeconds(30);
 })
-.AddHttpMessageHandler<AuthorizationMessageHandler>();
+.AddHttpMessageHandler<AuthorizationMessageHandler>()
+.AddTransientHttpErrorPolicy(policyBuilder =>
+    policyBuilder.WaitAndRetryAsync(
+        retryCount: 3,
+        sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+        onRetry: (outcome, timespan, retryAttempt, context) =>
+        {
+            // Minimal logging hook - resolves at runtime from DI's logger if needed.
+            // Keep this small to avoid depending on logger here.
+        }));
 
 // Register API Services
-builder.Services.AddScoped<CareSync.Services.AdminApiService>();
-builder.Services.AddScoped<CareSync.Services.PatientApiService>();
-builder.Services.AddScoped<CareSync.Services.UserManagementApiService>();
+builder.Services.AddScoped<AdminApiService>();
+builder.Services.AddScoped<PatientApiService>();
+builder.Services.AddScoped<UserManagementApiService>();
+builder.Services.AddScoped<DoctorApiService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentApiAdapter>();
 
 // Add services to the container.
 builder.Services.AddRazorPages(options =>
