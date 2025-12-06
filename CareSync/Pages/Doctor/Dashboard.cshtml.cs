@@ -1,6 +1,7 @@
 using CareSync.Pages.Shared;
 using CareSync.Services;
 using Microsoft.AspNetCore.Mvc;
+using CareSync.Shared.Enums.Appointment;
 
 namespace CareSync.Pages.Doctor;
 
@@ -94,7 +95,8 @@ public class DashboardModel : BasePageModel
                 PatientAge = a.PatientAge,
                 AppointmentTime = a.AppointmentTime,
                 Diagnosis = a.Diagnosis,
-                Type = a.AppointmentType.ToString()
+                Type = a.AppointmentType.ToString(),
+                Status = a.Status
             }).ToList();
 
             RecentPatients = result.Data.RecentPatients.Select(p => new RecentPatient
@@ -129,6 +131,7 @@ public class TodayAppointment
     public DateTime AppointmentTime { get; set; }
     public string Diagnosis { get; set; } = string.Empty;
     public string Type { get; set; } = string.Empty;
+    public AppointmentStatus_Enum Status { get; set; }
 }
 
 public class PatientReview

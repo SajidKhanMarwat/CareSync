@@ -211,6 +211,34 @@ public class DoctorApiService
     }
 
     /// <summary>
+    /// Ask API to mark appointment as Accepted for the authenticated doctor.
+    /// </summary>
+    public async Task<Result<GeneralResponse>?> AcceptAppointmentAsync(int appointmentId)
+    {
+        try
+        {
+            var client = CreateClient();
+            var resp = await client.PostAsync($"doctors/appointments/{appointmentId}/accept", null);
+            var content = await resp.Content.ReadAsStringAsync();
+
+            if (!resp.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("AcceptAppointmentAsync returned {Status}. Body: {Body}", resp.StatusCode, Truncate(content, 1000));
+                var failure = JsonSerializer.Deserialize<Result<GeneralResponse>>(content, _jsonOptions);
+                return failure ?? Result<GeneralResponse>.Failure(new GeneralResponse { Success = false, Message = "API failure" }, $"API {resp.StatusCode}");
+            }
+
+            var result = JsonSerializer.Deserialize<Result<GeneralResponse>>(content, _jsonOptions);
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error calling AcceptAppointment API for {AppointmentId}", appointmentId);
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    /// <summary>
     /// Update vitals and chronic disease info for an appointment/patient pair.
     /// </summary>
     public async Task<Result<GeneralResponse>?> UpdateVitalsAsync(DoctorUpdateVitals_DTO dto)
@@ -297,6 +325,35 @@ public class DoctorApiService
     }
 
     /// <summary>
+    /// Ask API to mark appointment as Completed for the authenticated doctor.
+    /// Uses the /complete endpoint.
+    /// </summary>
+    public async Task<Result<GeneralResponse>?> CompleteAppointmentAsync(int appointmentId)
+    {
+        try
+        {
+            var client = CreateClient();
+            var resp = await client.PostAsync($"doctors/appointments/{appointmentId}/complete", null);
+            var content = await resp.Content.ReadAsStringAsync();
+
+            if (!resp.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("CompleteAppointmentAsync returned {Status}. Body: {Body}", resp.StatusCode, Truncate(content, 1000));
+                var failure = JsonSerializer.Deserialize<Result<GeneralResponse>>(content, _jsonOptions);
+                return failure ?? Result<GeneralResponse>.Failure(new GeneralResponse { Success = false, Message = "API failure" }, $"API {resp.StatusCode}");
+            }
+
+            var result = JsonSerializer.Deserialize<Result<GeneralResponse>>(content, _jsonOptions);
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error calling CompleteAppointment API for {AppointmentId}", appointmentId);
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    /// <summary>
     /// Ask API to cancel/reject an appointment for the authenticated doctor.
     /// </summary>
     public async Task<Result<GeneralResponse>?> RejectAppointmentAsync(int appointmentId)
@@ -320,6 +377,34 @@ public class DoctorApiService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error calling RejectAppointment API for {AppointmentId}", appointmentId);
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    /// <summary>
+    /// Ask API to mark appointment as FollowUpRequired for the authenticated doctor.
+    /// </summary>
+    public async Task<Result<GeneralResponse>?> MarkFollowUpRequiredAsync(int appointmentId)
+    {
+        try
+        {
+            var client = CreateClient();
+            var resp = await client.PostAsync($"doctors/appointments/{appointmentId}/followup", null);
+            var content = await resp.Content.ReadAsStringAsync();
+
+            if (!resp.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("MarkFollowUpRequiredAsync returned {Status}. Body: {Body}", resp.StatusCode, Truncate(content, 1000));
+                var failure = JsonSerializer.Deserialize<Result<GeneralResponse>>(content, _jsonOptions);
+                return failure ?? Result<GeneralResponse>.Failure(new GeneralResponse { Success = false, Message = "API failure" }, $"API {resp.StatusCode}");
+            }
+
+            var result = JsonSerializer.Deserialize<Result<GeneralResponse>>(content, _jsonOptions);
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error calling MarkFollowUpRequired API for {AppointmentId}", appointmentId);
             return Result<GeneralResponse>.Exception(ex);
         }
     }

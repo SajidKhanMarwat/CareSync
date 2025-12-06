@@ -259,19 +259,16 @@
                                                         <i class="ri-file-list-3-line"></i>
                                                     </button>
                                                 }
-                                                else if (appt.CanStart &&
-                                                         (appt.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Created ||
-                                                          appt.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Pending ||
-                                                          appt.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Scheduled))
+                                                else if (appt.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Pending ||
+                                                         appt.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Scheduled)
                                                 {
-                                                    <form method="post" asp-page-handler="Start" asp-route-appointmentId="@appt.AppointmentId" class="d-inline me-1">
-                                                        <button type="submit" class="btn btn-sm btn-success" title="Start Consultation">
-                                                            <i class="ri-play-line"></i>
+                                                    <form method="post" asp-page-handler="Accept" asp-route-appointmentId="@appt.AppointmentId" class="d-inline me-1">
+                                                        <button type="submit" class="btn btn-sm btn-success" title="Accept Appointment">
+                                                            <i class="ri-check-line"></i>
                                                         </button>
                                                     </form>
 
-                                                    @if (appt.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Created ||
-                                                         appt.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Pending)
+                                                    @if (appt.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Pending)
                                                     {
                                                         <form method="post" asp-page-handler="Reject" asp-route-appointmentId="@appt.AppointmentId" class="d-inline">
                                                             <button type="submit" class="btn btn-sm btn-outline-danger" title="Reject Appointment">
@@ -279,6 +276,15 @@
                                                             </button>
                                                         </form>
                                                     }
+                                                }
+                                                else if (appt.CanStart &&
+                                                         appt.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Accepted)
+                                                {
+                                                    <form method="post" asp-page-handler="Start" asp-route-appointmentId="@appt.AppointmentId" class="d-inline me-1">
+                                                        <button type="submit" class="btn btn-sm btn-success" title="Start Consultation">
+                                                            <i class="ri-play-line"></i>
+                                                        </button>
+                                                    </form>
                                                 }
                                                 else
                                                 {
@@ -341,18 +347,16 @@
                                         <td><span class="badge bg-@r.StatusBadge">@r.Status</span></td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                @if (r.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Created ||
-                                                     r.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Pending ||
+                                                @if (r.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Pending ||
                                                      r.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Scheduled)
                                                 {
-                                                    <form method="post" asp-page-handler="Start" asp-route-appointmentId="@r.AppointmentId" class="d-inline me-1">
-                                                        <button type="submit" class="btn btn-sm btn-success" title="Start Consultation">
-                                                            <i class="ri-play-line"></i>
+                                                    <form method="post" asp-page-handler="Accept" asp-route-appointmentId="@r.AppointmentId" class="d-inline me-1">
+                                                        <button type="submit" class="btn btn-sm btn-success" title="Accept Appointment">
+                                                            <i class="ri-check-line"></i>
                                                         </button>
                                                     </form>
 
-                                                    @if (r.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Created ||
-                                                         r.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Pending)
+                                                    @if (r.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Pending)
                                                     {
                                                         <form method="post" asp-page-handler="Reject" asp-route-appointmentId="@r.AppointmentId" class="d-inline">
                                                             <button type="submit" class="btn btn-sm btn-outline-danger" title="Reject Appointment">
@@ -386,6 +390,11 @@
 
                                                     @if (r.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Completed)
                                                     {
+                                                        <form method="post" asp-page-handler="FollowUp" asp-route-appointmentId="@r.AppointmentId" class="d-inline me-1">
+                                                            <button type="submit" class="btn btn-sm btn-outline-warning" title="Mark Follow-Up Required">
+                                                                <i class="ri-arrow-go-forward-line"></i>
+                                                            </button>
+                                                        </form>
                                                         <button type="button" class="btn btn-sm btn-outline-info" title="View Prescription" onclick="location.href='/Doctor/AppointmentDetails?id=@r.AppointmentId'">
                                                             <i class="ri-capsule-line"></i>
                                                         </button>

@@ -367,8 +367,31 @@
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
-                                            <span class="status-dot bg-warning" title="Waiting"></span>
-                                            <small>Waiting</small>
+                                            @{ 
+                                                var statusForDisplay = appointment.Status;
+                                                var statusTextForDisplay = statusForDisplay.ToString();
+                                                var statusColorForDisplay = statusForDisplay switch
+                                                {
+                                                    CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Created => "secondary",
+                                                    CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Pending => "warning",
+                                                    CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Scheduled => "info",
+                                                    CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Accepted => "primary",
+                                                    CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Approved => "success",
+                                                    CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Confirmed => "primary",
+                                                    CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.InProgress => "info",
+                                                    CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Completed => "success",
+                                                    CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Cancelled => "danger",
+                                                    CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.NoShow => "danger",
+                                                    CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Rescheduled => "warning",
+                                                    CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.PrescriptionPending => "warning",
+                                                    CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.LabRequested => "info",
+                                                    CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.LabCompleted => "success",
+                                                    CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.FollowUpRequired => "warning",
+                                                    _ => "secondary"
+                                                };
+                                            }
+                                            <span class="status-dot bg-@statusColorForDisplay" title="@statusTextForDisplay"></span>
+                                            <small>@statusTextForDisplay</small>
                                         </div>
                                     </td>
                                     <td>@appointment.Diagnosis</td>
@@ -388,26 +411,47 @@
                                     </td>
                                     <td>
                                         <div class="d-flex gap-1">
-                                            @if (isNext)
-                                            {
-                                                <a href="/Doctor/AppointmentDetails?id=@appointment.Id" 
-                                                   class="btn btn-success btn-sm rounded-2"
-                                                   data-bs-toggle="tooltip" title="Start Consultation">
-                                                    <i class="ri-stethoscope-line"></i> Start
-                                                </a>
+                                            @{
+                                                var status = appointment.Status;
                                             }
-                                            else
+
+                                            @if (status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Created
+                                                || status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Pending
+                                                || status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Scheduled
+                                                || status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Accepted)
                                             {
                                                 <button type="button" class="btn btn-outline-danger btn-sm rounded-2" 
                                                         onclick="rejectAppointment(@appointment.Id)"
-                                                        data-bs-toggle="tooltip" title="Cancel">
+                                                        data-bs-toggle="tooltip" title="Cancel Appointment">
                                                     <i class="ri-close-line"></i>
                                                 </button>
                                                 <button type="button" class="btn btn-outline-success btn-sm rounded-2" 
                                                         onclick="approveAppointment(@appointment.Id)"
-                                                        data-bs-toggle="tooltip" title="Confirm">
+                                                        data-bs-toggle="tooltip" title="Approve & Confirm">
                                                     <i class="ri-check-line"></i>
                                                 </button>
+                                            }
+                                            else if (status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Approved
+                                                || status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Confirmed
+                                                || status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.InProgress)
+                                            {
+                                                <a href="/Doctor/AppointmentDetails?id=@appointment.Id" 
+                                                   class="btn btn-success btn-sm rounded-2"
+                                                   data-bs-toggle="tooltip" title="Start / Continue Consultation">
+                                                    <i class="ri-stethoscope-line"></i> Start
+                                                </a>
+                                            }
+                                            else if (status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.PrescriptionPending)
+                                            {
+                                                <a href="/Doctor/AppointmentDetails?id=@appointment.Id" 
+                                                   class="btn btn-primary btn-sm rounded-2"
+                                                   data-bs-toggle="tooltip" title="Write Prescription">
+                                                    <i class="ri-file-list-3-line"></i> Prescription
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-light text-muted">No actions</span>
                                             }
                                         </div>
                                     </td>

@@ -13,5 +13,9 @@ public enum AppointmentStatus_Enum
     Cancelled = 8,
     NoShow = 9,
     Rescheduled = 10,
-    PrescriptionPending = 11
+    PrescriptionPending = 11,
+    LabRequested = 12,
+    LabCompleted = 13,
+    Accepted = 14,
+    FollowUpRequired = 15
 }

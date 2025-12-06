@@ -204,6 +204,28 @@ public class DoctorsController : ControllerBase
     }
 
     /// <summary>
+    /// Accept an appointment (sets status to Accepted) - only allowed for the owning doctor.
+    /// </summary>
+    [HttpPost("appointments/{appointmentId}/accept")]
+    [AllowAnonymous]
+    public async Task<Result<GeneralResponse>> AcceptAppointment(int appointmentId)
+    {
+        try
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Result<GeneralResponse>.Failure(new GeneralResponse { Success = false, Message = "Unauthenticated" }, "Unauthenticated");
+
+            return await _doctorService.UpdateAppointmentStatusAsync(appointmentId, AppointmentStatus_Enum.Accepted, userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error accepting appointment {AppointmentId}", appointmentId);
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    /// <summary>
     /// Reject/cancel an appointment - only allowed for the owning doctor.
     /// </summary>
     [HttpPost("appointments/{appointmentId}/reject")]
@@ -216,11 +238,33 @@ public class DoctorsController : ControllerBase
             if (string.IsNullOrEmpty(userId))
                 return Result<GeneralResponse>.Failure(new GeneralResponse { Success = false, Message = "Unauthenticated" }, "Unauthenticated");
 
-            return await _doctorService.UpdateAppointmentStatusAsync(appointmentId, AppointmentStatus_Enum.Cancelled, userId);
+            return await _doctorService.UpdateAppointmentStatusAsync(appointmentId, AppointmentStatus_Enum.Rejected, userId);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error rejecting appointment {AppointmentId}", appointmentId);
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    /// <summary>
+    /// Mark an appointment as requiring follow-up - only allowed for the owning doctor.
+    /// </summary>
+    [HttpPost("appointments/{appointmentId}/followup")]
+    [AllowAnonymous]
+    public async Task<Result<GeneralResponse>> MarkFollowUpRequired(int appointmentId)
+    {
+        try
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Result<GeneralResponse>.Failure(new GeneralResponse { Success = false, Message = "Unauthenticated" }, "Unauthenticated");
+
+            return await _doctorService.UpdateAppointmentStatusAsync(appointmentId, AppointmentStatus_Enum.FollowUpRequired, userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error marking appointment {AppointmentId} as FollowUpRequired", appointmentId);
             return Result<GeneralResponse>.Exception(ex);
         }
     }

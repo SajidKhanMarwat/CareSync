@@ -154,6 +154,32 @@ public class AppointmentsModel : BasePageModel
         return RedirectToPage();
     }
 
+    public async Task<IActionResult> OnPostAcceptAsync(int appointmentId)
+    {
+        var authResult = RequireRole("Doctor");
+        if (authResult != null) return authResult;
+
+        try
+        {
+            var result = await _doctorApiService.AcceptAppointmentAsync(appointmentId);
+            if (result?.IsSuccess == true && result.Data != null && result.Data.Success)
+            {
+                TempData["SuccessMessage"] = result.Data.Message;
+            }
+            else
+            {
+                TempData["ErrorMessage"] = result?.GetError() ?? "Failed to accept appointment.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error accepting appointment {AppointmentId}", appointmentId);
+            TempData["ErrorMessage"] = "An error occurred while accepting the appointment.";
+        }
+
+        return RedirectToPage();
+    }
+
     public async Task<IActionResult> OnPostRejectAsync(int appointmentId)
     {
         var authResult = RequireRole("Doctor");
@@ -187,7 +213,7 @@ public class AppointmentsModel : BasePageModel
 
         try
         {
-            var result = await _doctorApiService.EndAppointmentAsync(appointmentId);
+            var result = await _doctorApiService.CompleteAppointmentAsync(appointmentId);
             if (result?.IsSuccess == true && result.Data != null && result.Data.Success)
             {
                 TempData["SuccessMessage"] = result.Data.Message;
@@ -206,6 +232,32 @@ public class AppointmentsModel : BasePageModel
         return RedirectToPage();
     }
 
+    public async Task<IActionResult> OnPostFollowUpAsync(int appointmentId)
+    {
+        var authResult = RequireRole("Doctor");
+        if (authResult != null) return authResult;
+
+        try
+        {
+            var result = await _doctorApiService.MarkFollowUpRequiredAsync(appointmentId);
+            if (result?.IsSuccess == true && result.Data != null && result.Data.Success)
+            {
+                TempData["SuccessMessage"] = result.Data.Message;
+            }
+            else
+            {
+                TempData["ErrorMessage"] = result?.GetError() ?? "Failed to mark follow-up required.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error marking follow-up required for appointment {AppointmentId}", appointmentId);
+            TempData["ErrorMessage"] = "An error occurred while marking follow-up required.";
+        }
+
+        return RedirectToPage();
+    }
+
     private string GetBadgeForStatus(string? status)
     {
         if (string.IsNullOrEmpty(status)) return "secondary";
@@ -216,6 +268,10 @@ public class AppointmentsModel : BasePageModel
             "scheduled" => "primary",
             "pending" => "warning",
             "prescriptionpending" => "warning",
+            "accepted" => "info",
+            "labrequested" => "warning",
+            "labcompleted" => "primary",
+            "followuprequired" => "secondary",
             "cancelled" => "danger",
             _ => "secondary"
         };
@@ -230,6 +286,9 @@ public class AppointmentsModel : BasePageModel
             "confirmed" => "info",
             "scheduled" => "primary",
             "pending" => "warning",
+            "accepted" => "info",
+            "labrequested" => "warning",
+            "labcompleted" => "primary",
             "cancelled" => "danger",
             _ => "secondary"
         };
@@ -240,7 +299,9 @@ public class AppointmentsModel : BasePageModel
         return time <= DateTime.Now.AddMinutes(15) &&
                status != AppointmentStatus_Enum.Completed &&
                status != AppointmentStatus_Enum.InProgress &&
-               status != AppointmentStatus_Enum.PrescriptionPending;
+               status != AppointmentStatus_Enum.PrescriptionPending &&
+               status != AppointmentStatus_Enum.Rejected &&
+               status != AppointmentStatus_Enum.Cancelled;
     }
 
     private List<RecentAppointmentView> BuildRecentAppointments(
@@ -277,7 +338,7 @@ public class AppointmentsModel : BasePageModel
     private List<TodayAppointmentView> BuildTodayAppointments(List<TodayAppointmentItem> apptItems)
     {
         return apptItems
-            .Where(a => a.AppointmentTime.Date == DateTime.Today && 
+            .Where(a => a.AppointmentTime.Date == DateTime.Today &&
                         a.Status != AppointmentStatus_Enum.Completed)
             .OrderBy(a => a.AppointmentTime)
             .Select(a => new TodayAppointmentView
@@ -320,7 +381,10 @@ public class AppointmentsModel : BasePageModel
             a.Status == AppointmentStatus_Enum.Pending ||
             a.Status == AppointmentStatus_Enum.Created ||
             a.Status == AppointmentStatus_Enum.Scheduled ||
-            a.Status == AppointmentStatus_Enum.PrescriptionPending);
+            a.Status == AppointmentStatus_Enum.PrescriptionPending ||
+            a.Status == AppointmentStatus_Enum.Accepted ||
+            a.Status == AppointmentStatus_Enum.LabRequested ||
+            a.Status == AppointmentStatus_Enum.LabCompleted);
         TotalCancelled = rangeItems.Count(a => a.Status == AppointmentStatus_Enum.Cancelled);
     }
 
@@ -336,7 +400,10 @@ public class AppointmentsModel : BasePageModel
             a.Status == AppointmentStatus_Enum.Pending ||
             a.Status == AppointmentStatus_Enum.Created ||
             a.Status == AppointmentStatus_Enum.Scheduled ||
-            a.Status == AppointmentStatus_Enum.PrescriptionPending);
+            a.Status == AppointmentStatus_Enum.PrescriptionPending ||
+            a.Status == AppointmentStatus_Enum.Accepted ||
+            a.Status == AppointmentStatus_Enum.LabRequested ||
+            a.Status == AppointmentStatus_Enum.LabCompleted);
         TotalCancelled = rangeItems.Count(a => a.Status == AppointmentStatus_Enum.Cancelled);
     }
 

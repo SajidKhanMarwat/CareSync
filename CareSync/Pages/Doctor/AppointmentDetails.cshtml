@@ -7,6 +7,11 @@
 
     var isInProgress = Model.Status == AppointmentStatus_Enum.InProgress;
     var isCompleted  = Model.Status == AppointmentStatus_Enum.Completed;
+
+    var isScheduledOrBeyond      = Model.Status >= AppointmentStatus_Enum.Scheduled;
+    var isConsultationStarted    = Model.Status >= AppointmentStatus_Enum.InProgress && Model.Status != AppointmentStatus_Enum.Cancelled && Model.Status != AppointmentStatus_Enum.NoShow;
+    var isConsultationCompleted  = Model.Status >= AppointmentStatus_Enum.Completed && Model.Status != AppointmentStatus_Enum.Cancelled && Model.Status != AppointmentStatus_Enum.NoShow;
+    var isCancelledOrNoShow      = Model.Status == AppointmentStatus_Enum.Cancelled || Model.Status == AppointmentStatus_Enum.NoShow;
 }
 
 <form id="__antiForm" style="display:none;">
@@ -95,13 +100,16 @@
                         <a class="btn btn-sm btn-outline-info" href="/Admin/Patients/Profile?patientId=@Model.PatientId">
                             <i class="ri-eye-line me-1"></i>View Profile
                         </a>
+                        <a class="btn btn-sm btn-outline-primary mt-2" href="/Doctor/MedicalHistory?patientId=@Model.PatientId">
+                            <i class="ri-file-list-3-line me-1"></i>Medical History
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Medical Notes -->
-        <div class="card mb-3">
+        <!-- <div class="card mb-3">
             <div class="card-header">
                 <h5 class="card-title">
                     <i class="ri-file-text-line me-2"></i>Medical Notes & Diagnosis
@@ -121,10 +129,10 @@
                     <p class="text-muted mb-0">@Model.DoctorNotes</p>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- Vitals -->
-        <div class="card mb-3">
+        <!-- <div class="card mb-3">
             <div class="card-header">
                 <h5 class="card-title">
                     <i class="ri-heart-pulse-line me-2"></i>Vitals
@@ -149,7 +157,7 @@
         </div>
 
         <!-- Prescriptions -->
-        <div class="card mb-3">
+        <!-- <div class="card mb-3">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0"><i class="ri-medicine-bottle-line me-2"></i>Prescriptions</h5>
                 <button class="btn btn-sm btn-outline-primary" onclick="downloadPrescription()">
@@ -174,10 +182,10 @@
                     <div class="text-muted">No prescriptions on record</div>
                 }
             </div>
-        </div>
+        </div> -->
 
         <!-- Lab Reports -->
-        <div class="card mb-3">
+        <!-- <div class="card mb-3">
             <div class="card-header">
                 <h5 class="card-title"><i class="ri-test-tube-line me-2"></i>Lab Reports</h5>
             </div>
@@ -199,7 +207,7 @@
                     <div class="text-muted">No lab reports found</div>
                 }
             </div>
-        </div>
+        </div> -->
     </div>
 
     <!-- Sidebar -->
@@ -224,6 +232,9 @@
                         <i class="ri-stethoscope-line me-1"></i> Go to Checkup Page
                     </a>
                 }
+                <a class="btn btn-outline-primary" href="/Doctor/MedicalHistory?patientId=@Model.PatientId">
+                    <i class="ri-file-list-3-line me-1"></i>View Medical History
+                </a>
                 @* <button class="btn btn-outline-info" onclick="messagePatient()">
                     <i class="ri-message-line me-1"></i>Message Patient
                 </button> *@
@@ -240,17 +251,35 @@
             <div class="card-body">
                 <div class="timeline">
                     <div class="timeline-item">
-                        <div class="timeline-marker bg-success"></div>
+                        <div class="timeline-marker @(isScheduledOrBeyond ? "bg-success" : "bg-secondary")"></div>
                         <div class="timeline-content">
                             <small class="text-muted">@Model.AppointmentDate.ToString("MMM dd, yyyy") - @Model.AppointmentTime</small>
                             <p class="mb-0 small"><strong>Appointment Scheduled</strong></p>
                         </div>
                     </div>
                     <div class="timeline-item">
-                        <div class="timeline-marker bg-info"></div>
+                        <div class="timeline-marker @(isConsultationStarted ? "bg-info" : "bg-secondary")"></div>
                         <div class="timeline-content">
                             <small class="text-muted">--</small>
-                            <p class="mb-0 small"><strong>Consultation</strong></p>
+                            <p class="mb-0 small"><strong>Consultation In Progress</strong></p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker @(isConsultationCompleted ? "bg-success" : (isCancelledOrNoShow ? "bg-danger" : "bg-secondary"))"></div>
+                        <div class="timeline-content">
+                            <small class="text-muted">--</small>
+                            @if (isCancelledOrNoShow)
+                            {
+                                <p class="mb-0 small"><strong>@(Model.Status == AppointmentStatus_Enum.NoShow ? "Patient Did Not Attend" : "Appointment Cancelled")</strong></p>
+                            }
+                            else if (isConsultationCompleted)
+                            {
+                                <p class="mb-0 small"><strong>Appointment Completed</strong></p>
+                            }
+                            else
+                            {
+                                <p class="mb-0 small"><strong>Awaiting Completion</strong></p>
+                            }
                         </div>
                     </div>
                 </div>
