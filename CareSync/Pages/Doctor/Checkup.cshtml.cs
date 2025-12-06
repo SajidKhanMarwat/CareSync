@@ -4,6 +4,7 @@ using CareSync.Pages.Shared;
 using CareSync.Services;
 using CareSync.Shared.Enums;
 using CareSync.Shared.Enums.Appointment;
+using CareSync.Shared.Enums.Patient;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -26,7 +27,7 @@ public class CheckupModel : BasePageModel
     public int PatientAge { get; set; }
     public Gender_Enum Gender { get; set; }
     public string? BloodGroup { get; set; }
-    public string MaritalStatus { get; set; } = string.Empty;
+    public MaritalStatusEnum MaritalStatus { get; set; }
     public string EmergencyContactName { get; set; } = string.Empty;
     public string EmergencyContactNumber { get; set; } = string.Empty;
 

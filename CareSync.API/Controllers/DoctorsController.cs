@@ -400,4 +400,30 @@ public class DoctorsController : ControllerBase
             return Result<List<DoctorLabReport_DTO>>.Exception(ex);
         }
     }
+
+    /// <summary>
+    /// Get aggregated medical history for a specific patient, scoped to the authenticated doctor.
+    /// </summary>
+    [HttpGet("patients/{patientId}/medical-history")]
+    [AllowAnonymous]
+    public async Task<Result<DoctorPatientMedicalHistory_DTO>> GetPatientMedicalHistory(int patientId)
+    {
+        try
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                _logger.LogWarning("Patient medical history requested but user id claim not present.");
+                return Result<DoctorPatientMedicalHistory_DTO>.Failure(new DoctorPatientMedicalHistory_DTO(), "Unauthenticated.");
+            }
+
+            _logger.LogInformation("Getting medical history for patient {PatientId} and doctor user {UserId}", patientId, userId);
+            return await _doctorService.GetPatientMedicalHistoryAsync(patientId, userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting medical history for patient {PatientId}", patientId);
+            return Result<DoctorPatientMedicalHistory_DTO>.Exception(ex);
+        }
+    }
 }

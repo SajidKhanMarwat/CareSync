@@ -29,6 +29,13 @@ public partial class DoctorService : IDoctorService
         _logger = logger;
     }
 
+    private static int CalculateAge(DateTime dob, DateTime asOf)
+    {
+        var age = asOf.Year - dob.Year;
+        if (asOf < dob.AddYears(age)) age--;
+        return Math.Max(0, age);
+    }
+
     public async Task<Result<DoctorDashboard_DTO>> GetDoctorDashboardAsync(string userId)
     {
         try
@@ -356,11 +363,138 @@ public partial class DoctorService : IDoctorService
         }
     }
 
-    private static int CalculateAge(DateTime dob, DateTime asOf)
+    public async Task<Result<DoctorPatientMedicalHistory_DTO>> GetPatientMedicalHistoryAsync(int patientId, string doctorUserId)
     {
-        var age = asOf.Year - dob.Year;
-        if (asOf < dob.AddYears(age)) age--;
-        return Math.Max(0, age);
+        try
+        {
+            // Resolve doctor from user id
+            var doctors = (await _uow.DoctorDetailsRepo
+                .GetAllAsync(d => d.UserID == doctorUserId && !d.IsDeleted))?.ToList()
+                         ?? new List<T_DoctorDetails>();
+
+            var doctor = doctors.FirstOrDefault();
+            if (doctor == null)
+            {
+                _logger.LogWarning("Doctor profile not found for user {UserId}", doctorUserId);
+                return Result<DoctorPatientMedicalHistory_DTO>
+                    .Failure(new DoctorPatientMedicalHistory_DTO(), "Doctor profile not found.");
+            }
+
+            // Load patient details
+            var patient = await _uow.PatientDetailsRepo.GetByIdAsync(patientId);
+            if (patient == null || patient.IsDeleted)
+            {
+                _logger.LogWarning("Patient {PatientId} not found", patientId);
+                return Result<DoctorPatientMedicalHistory_DTO>
+                    .Failure(new DoctorPatientMedicalHistory_DTO(), "Patient not found.");
+            }
+
+            // Load associated user (if any)
+            T_Users? user = null;
+            if (!string.IsNullOrEmpty(patient.UserID))
+            {
+                user = await _uow.UserRepo.GetByIdAsync(patient.UserID);
+            }
+
+            // Build basic header
+            string fullName = user != null
+                ? $"{user.FirstName} {user.LastName}".Trim()
+                : $"P{patient.PatientID}";
+
+            int age = 0;
+            if (user?.DateOfBirth != null)
+            {
+                age = CalculateAge(user.DateOfBirth.Value, DateTime.UtcNow.Date);
+            }
+            else if (user?.Age != null)
+            {
+                age = Math.Max(0, user.Age.Value);
+            }
+
+            var dto = new DoctorPatientMedicalHistory_DTO
+            {
+                PatientId = patient.PatientID,
+                PatientName = string.IsNullOrWhiteSpace(fullName) ? $"P{patient.PatientID}" : fullName,
+                PatientAge = age,
+                Gender = user != null ? user.Gender.ToString() : string.Empty,
+                BloodGroup = patient.BloodGroup ?? string.Empty,
+                Phone = user?.PhoneNumber ?? string.Empty,
+                Email = user?.Email ?? string.Empty,
+                Address = user?.Address ?? string.Empty
+            };
+
+            // ========== STATISTICS ==========
+
+            var appointments = (await _uow.AppointmentsRepo
+                .GetAllAsync(a => a.PatientID == patientId && !a.IsDeleted && a.DoctorID == doctor.DoctorID))
+                ?.ToList() ?? new List<T_Appointments>();
+
+            dto.TotalVisits = appointments.Count;
+
+            var prescriptions = (await _uow.PrescriptionsRepo
+                .GetAllAsync(p => p.PatientID == patientId && !p.IsDeleted && p.DoctorID == doctor.DoctorID))
+                ?.ToList() ?? new List<T_Prescriptions>();
+
+            dto.TotalPrescriptions = prescriptions.Count;
+
+            var labReports = (await _uow.LabReportsRepo
+                .GetAllAsync(l => !l.IsDeleted))
+                ?.Where(l => appointments.Any(a => a.AppointmentID == l.AppointmentID))
+                .ToList() ?? new List<T_LabReports>();
+
+            dto.TotalLabTests = labReports.Count;
+            dto.TotalReports = labReports.Count;
+
+            // ========== CURRENT VITALS ==========
+
+            var vitalsList = (await _uow.PatientVitalsRepo
+                .GetAllAsync(v => v.PatientID == patientId && !v.IsDeleted))
+                ?.ToList() ?? new List<T_PatientVitals>();
+
+            var latestVitals = vitalsList
+                .OrderByDescending(v => v.CreatedOn)
+                .FirstOrDefault();
+
+            if (latestVitals != null)
+            {
+                dto.CurrentVitals = new DoctorMedicalHistoryVitalsDto
+                {
+                    BloodPressure = latestVitals.BloodPressure ?? string.Empty,
+                    HeartRate = latestVitals.PulseRate,
+                    Temperature = null,
+                    Weight = latestVitals.Weight,
+                    Height = latestVitals.Height,
+                    BMI = null,
+                    LastUpdated = latestVitals.UpdatedOn ?? latestVitals.CreatedOn
+                };
+            }
+
+            // ========== VISIT HISTORY (from appointments) ==========
+
+            dto.VisitHistory = appointments
+                .OrderByDescending(a => a.AppointmentDate)
+                .Select(a => new DoctorMedicalHistoryVisitDto
+                {
+                    VisitID = a.AppointmentID,
+                    VisitDate = a.AppointmentDate,
+                    VisitType = a.AppointmentType.ToString(),
+                    ChiefComplaint = a.Reason ?? string.Empty,
+                    Diagnosis = a.Notes ?? string.Empty,
+                    Treatment = string.Empty,
+                    Notes = a.Notes ?? string.Empty
+                })
+                .ToList();
+
+            // For now, leave prescriptions, lab tests, chronic diseases, allergies, and notes
+            // either empty or based on minimal data to ensure the method works without breaking UI.
+
+            return Result<DoctorPatientMedicalHistory_DTO>.Success(dto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error building medical history for patient {PatientId}", patientId);
+            return Result<DoctorPatientMedicalHistory_DTO>.Exception(ex);
+        }
     }
 
     public async Task<Result<AppointmentDetails_DTO>> GetAppointmentDetailsAsync(int appointmentId, string doctorUserId)
@@ -398,6 +532,9 @@ public partial class DoctorService : IDoctorService
             int patientAge = 0;
             string? patientContact = null;
             string? patientEmail = null;
+            var gender = CareSync.Shared.Enums.Gender_Enum.Male;
+            string? bloodGroup = null;
+            var maritalStatus = patientDetails?.MaritalStatus ?? CareSync.Shared.Enums.Patient.MaritalStatusEnum.Single;
 
             if (patientDetails != null && !string.IsNullOrEmpty(patientDetails.UserID))
             {
@@ -407,9 +544,12 @@ public partial class DoctorService : IDoctorService
                     patientName = $"{user.FirstName} {user.LastName}".Trim();
                     patientContact = user.PhoneNumber;
                     patientEmail = user.Email;
+                    gender = user.Gender;
                     if (user.DateOfBirth.HasValue)
                         patientAge = CalculateAge(user.DateOfBirth.Value, DateTime.UtcNow.Date);
                 }
+
+                bloodGroup = patientDetails.BloodGroup;
             }
 
             // Prescriptions linked to appointment
@@ -435,6 +575,8 @@ public partial class DoctorService : IDoctorService
                 AppointmentType = appointment.AppointmentType,
                 Status = appointment.Status,
                 Reason = appointment.Reason ?? string.Empty,
+                Notes = appointment.Notes,
+                CreatedOn = appointment.CreatedOn,
 
                 DoctorID = appointment.DoctorID,
                 DoctorName = $"{doctor.User?.FirstName} {doctor.User?.LastName}".Trim(),
@@ -455,7 +597,10 @@ public partial class DoctorService : IDoctorService
                 Temperature = null,
 
                 Prescriptions = prescriptionItems,
-                LabReports = labReportList
+                LabReports = labReportList,
+                Gender = gender,
+                BloodGroup = bloodGroup,
+                MaritalStatus = maritalStatus
             };
 
             return Result<AppointmentDetails_DTO>.Success(dto);
@@ -509,14 +654,15 @@ public partial class DoctorService : IDoctorService
 
                 PatientId = patientDetails.PatientID,
                 BloodGroup = patientDetails.BloodGroup,
-                MaritalStatus = patientDetails.MaritalStatus.ToString(),
+                MaritalStatus = patientDetails.MaritalStatus,
                 EmergencyContactName = patientDetails.EmergencyContactName ?? string.Empty,
                 EmergencyContactNumber = patientDetails.EmergencyContactNumber ?? string.Empty,
-                PatientName = $"P{patientDetails.PatientID}",
+                PatientName = $"{patientDetails?.User?.FirstName} {patientDetails?.User?.LastName}",
+                ArabicPatientName = $"{patientDetails?.User?.ArabicFirstName} {patientDetails?.User?.ArabicLastName}",
                 PatientAge = 0
             };
 
-            if (!string.IsNullOrEmpty(patientDetails.UserID))
+            if (!string.IsNullOrEmpty(patientDetails?.UserID))
             {
                 var user = await _uow.UserRepo.GetByIdAsync(patientDetails.UserID);
                 if (user != null && !user.IsDeleted)
@@ -552,21 +698,19 @@ public partial class DoctorService : IDoctorService
                 dto.BloodPressureReadings = latestVitals.BloodPressureReadings;
             }
 
-            dto.ChronicDiseases = (patientDetails.ChronicDiseases ?? new List<T_ChronicDiseases>())
+            dto.ChronicDiseases = patientDetails?.ChronicDiseases
                 .Where(cd => !cd.IsDeleted)
                 .Select(cd => new CheckupChronicDisease_DTO
                 {
                     DiseaseName = cd.DiseaseName,
                     DiagnosedDate = cd.DiagnosedDate,
                     CurrentStatus = cd.CurrentStatus
-                })
-                .ToList();
+                }).ToList()!;
 
             var prescriptions = (await _uow.PrescriptionsRepo
-                .GetAllAsync(p => p.PatientID == patientDetails.PatientID && !p.IsDeleted))?.ToList()
-                ?? new List<T_Prescriptions>();
+                .GetAllAsync(p => p.PatientID == patientDetails.PatientID && !p.IsDeleted))?.ToList();
 
-            dto.PreviousPrescriptions = prescriptions
+            dto.PreviousPrescriptions = prescriptions?
                 .OrderByDescending(p => p.CreatedOn)
                 .Take(10)
                 .Select(p => new PreviousPrescription_DTO
@@ -580,8 +724,7 @@ public partial class DoctorService : IDoctorService
                     Medications = string.Join(", ", (p.PrescriptionItems ?? new List<T_PrescriptionItems>())
                         .Where(i => !i.IsDeleted && !string.IsNullOrWhiteSpace(i.MedicineName))
                         .Select(i => $"{i.MedicineName} {i.Dosage}"))
-                })
-                .ToList();
+                }).ToList()!;
 
             dto.PreviousVitals = vitalsList
                 .OrderByDescending(v => v.CreatedOn)
@@ -595,8 +738,7 @@ public partial class DoctorService : IDoctorService
                     BloodPressure = v.BloodPressure,
                     PulseRate = v.PulseRate,
                     IsDiabetic = v.IsDiabetic ?? false
-                })
-                .ToList();
+                }).ToList();
 
             return Result<DoctorCheckup_DTO>.Success(dto);
         }

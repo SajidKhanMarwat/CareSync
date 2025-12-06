@@ -1,5 +1,6 @@
 using CareSync.Shared.Enums;
 using CareSync.Shared.Enums.Appointment;
+using CareSync.Shared.Enums.Patient;
 
 namespace CareSync.ApplicationLayer.Contracts.AppointmentsDTOs;
 
@@ -11,6 +12,8 @@ public class AppointmentDetails_DTO
     public AppointmentType_Enum AppointmentType { get; set; }
     public AppointmentStatus_Enum Status { get; set; }
     public string Reason { get; set; } = string.Empty;
+    public string? Notes { get; set; }
+    public DateTime CreatedOn { get; set; }
 
     // Doctor
     public int DoctorID { get; set; }
@@ -39,5 +42,5 @@ public class AppointmentDetails_DTO
     public List<string> LabReports { get; set; } = new();
     public Gender_Enum Gender { get; set; }
     public string? BloodGroup { get; set; }
-    public string MaritalStatus { get; set; }
+    public MaritalStatusEnum MaritalStatus { get; set; }
 }

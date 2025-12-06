@@ -74,11 +74,16 @@
                         <strong>@Model.Status</strong>
                     </div>
                     <div class="col-12">
-                        <small class="text-muted d-block mb-1">Reason</small>
-                        <p class="mb-0">@Model.Reason</p>
+                        <small class="text-muted d-block mb-1">Notes</small>
+                        <p class="mb-0">@Model.Notes</p>
+                    </div>
+                    <div class="col-12">
+                        <small class="text-muted d-block mb-1">Created On</small>
+                        <p class="mb-0">@Model.CreatedOn.ToString("MMMM dd, yyyy hh:mm tt")</p>
                     </div>
                 </div>
             </div>
+
         </div>
 
         <!-- Patient Info -->
@@ -90,17 +95,34 @@
             </div>
             <div class="card-body">
                 <div class="d-flex gap-3 align-items-center">
-                    <img src="~/theme/images/default-patient.png" class="img-5x rounded-circle" alt="Patient">
+                    <img src="~/theme/images/default-patient.png"
+                         class="img-5x rounded-circle" alt="Patient">
                     <div class="flex-grow-1">
                         <h5 class="mb-1">@Model.PatientName</h5>
-                        <p class="text-muted mb-1">Patient ID: P@Model.PatientId</p>
-                        <p class="text-muted mb-0">@Model.PatientAge years � @Model.PatientContact � @Model.PatientEmail</p>
+                        <p class="text-muted mb-1">
+                            Patient ID: P@Model.PatientId
+                        </p>
+                        <p class="text-muted mb-0">
+                            @Model.PatientAge years • @Model.PatientContact • @Model.PatientEmail
+                        </p>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block">Gender</small>
+                                <strong>@Model.Gender</strong>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted d-block">Blood Group</small>
+                                <strong>@Model.BloodGroup</strong>
+                            </div>
+                        </div>
                     </div>
                     <div>
-                        <a class="btn btn-sm btn-outline-info" href="/Admin/Patients/Profile?patientId=@Model.PatientId">
+                        <a class="btn btn-sm btn-outline-info"
+                           href="/Admin/Patients/Profile?patientId=@Model.PatientId">
                             <i class="ri-eye-line me-1"></i>View Profile
                         </a>
-                        <a class="btn btn-sm btn-outline-primary mt-2" href="/Doctor/MedicalHistory?patientId=@Model.PatientId">
+                        <a class="btn btn-sm btn-outline-primary mt-2"
+                           href="/Doctor/MedicalHistory?patientId=@Model.PatientId">
                             <i class="ri-file-list-3-line me-1"></i>Medical History
                         </a>
                     </div>
@@ -244,7 +266,7 @@
             </div>
         </div>
 
-        <div class="card">
+        @* <div class="card">
             <div class="card-header">
                 <h6 class="card-title mb-0">Appointment Timeline</h6>
             </div>
@@ -284,7 +306,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> *@
     </div>
 </div>
 

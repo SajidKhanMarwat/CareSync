@@ -41,4 +41,9 @@ public interface IDoctorService
     /// Get all lab reports associated with the doctor identified by the given userId.
     /// </summary>
     Task<Result<List<DoctorLabReport_DTO>>> GetDoctorLabReportsAsync(string userId);
+
+    /// <summary>
+    /// Get aggregated patient medical history (visits, vitals, prescriptions, labs) scoped to the authenticated doctor.
+    /// </summary>
+    Task<Result<DoctorPatientMedicalHistory_DTO>> GetPatientMedicalHistoryAsync(int patientId, string doctorUserId);
 }

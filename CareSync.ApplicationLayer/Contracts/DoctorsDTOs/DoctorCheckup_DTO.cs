@@ -1,5 +1,6 @@
 using CareSync.Shared.Enums;
 using CareSync.Shared.Enums.Appointment;
+using CareSync.Shared.Enums.Patient;
 
 namespace CareSync.ApplicationLayer.Contracts.DoctorsDTOs;
 
@@ -8,10 +9,11 @@ public class DoctorCheckup_DTO
     // Patient Information
     public int PatientId { get; set; }
     public string PatientName { get; set; } = string.Empty;
+    public string ArabicPatientName { get; set; } = string.Empty;
     public int PatientAge { get; set; }
     public Gender_Enum Gender { get; set; }
     public string? BloodGroup { get; set; }
-    public string MaritalStatus { get; set; } = string.Empty;
+    public MaritalStatusEnum MaritalStatus { get; set; }
     public string EmergencyContactName { get; set; } = string.Empty;
     public string EmergencyContactNumber { get; set; } = string.Empty;
 
