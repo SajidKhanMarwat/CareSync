@@ -1,23 +1,31 @@
-using Microsoft.AspNetCore.Mvc;
+using CareSync.ApplicationLayer.Contracts.AppointmentsDTOs;
+using CareSync.ApplicationLayer.Contracts.DoctorsDTOs;
 using CareSync.Pages.Shared;
+using CareSync.Services;
+using CareSync.Shared.Enums;
+using CareSync.Shared.Enums.Appointment;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CareSync.Pages.Doctor;
 
 public class CheckupModel : BasePageModel
 {
     private readonly ILogger<CheckupModel> _logger;
+    private readonly DoctorApiService _doctorApiService;
 
-    public CheckupModel(ILogger<CheckupModel> logger)
+    public CheckupModel(ILogger<CheckupModel> logger, DoctorApiService doctorApiService)
     {
         _logger = logger;
+        _doctorApiService = doctorApiService;
     }
 
     // Patient Information
     public int PatientId { get; set; }
     public string PatientName { get; set; } = string.Empty;
     public int PatientAge { get; set; }
-    public string Gender { get; set; } = string.Empty;
-    public string BloodGroup { get; set; } = string.Empty;
+    public Gender_Enum Gender { get; set; }
+    public string? BloodGroup { get; set; }
     public string MaritalStatus { get; set; } = string.Empty;
     public string EmergencyContactName { get; set; } = string.Empty;
     public string EmergencyContactNumber { get; set; } = string.Empty;
@@ -25,7 +33,7 @@ public class CheckupModel : BasePageModel
     // Appointment Information
     public int AppointmentId { get; set; }
     public DateTime AppointmentDate { get; set; }
-    public string AppointmentType { get; set; } = string.Empty;
+    public AppointmentType_Enum AppointmentType { get; set; }
     public string Reason { get; set; } = string.Empty;
 
     // Current Vitals
@@ -53,106 +61,112 @@ public class CheckupModel : BasePageModel
 
         try
         {
-            await LoadCheckupData(appointmentId);
+            // Always keep track of the requested appointment so the page can bind even on partial failure
+            AppointmentId = appointmentId;
+            var result = await _doctorApiService.GetCheckupAsync(appointmentId);
+            if (result != null && result.IsSuccess && result.Data is not null)
+            {
+                BindFromDto(result.Data);
+                return Page();
+            }
+
+            // Fallback: try to at least load basic appointment details so doctor can still write a prescription
+            var basic = await _doctorApiService.GetAppointmentByIdAsync(appointmentId);
+            if (basic != null && basic.IsSuccess && basic.Data is not null)
+            {
+                BindBasicFromAppointment(basic.Data);
+                TempData["Warning"] = result?.GetError() ?? basic.GetError() ?? "Loaded limited checkup data for this appointment.";
+                return Page();
+            }
+
+            TempData["Error"] = result?.GetError() ?? basic?.GetError() ?? "Unable to load checkup data.";
             return Page();
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading checkup data for appointment {AppointmentId}", appointmentId);
             TempData["Error"] = "Unable to load checkup data. Please try again.";
-            return RedirectToPage("/Doctor/Dashboard");
+            return Page();
         }
     }
 
-    private async Task LoadCheckupData(int appointmentId)
+    private void BindFromDto(DoctorCheckup_DTO dto)
     {
-        // Load appointment and patient data
-        // This would typically come from database
-        AppointmentId = appointmentId;
-        
-        // Mock patient data
-        PatientId = 101;
-        PatientName = "Willian Mathews";
-        PatientAge = 21;
-        Gender = "Male";
-        BloodGroup = "O+";
-        MaritalStatus = "Single";
-        EmergencyContactName = "Sarah Mathews";
-        EmergencyContactNumber = "+1234567890";
+        AppointmentId = dto.AppointmentId;
+        AppointmentDate = dto.AppointmentDate;
+        AppointmentType = dto.AppointmentType;
+        Reason = dto.Reason;
 
-        // Mock appointment data
-        AppointmentDate = DateTime.Now;
-        AppointmentType = "General Consultation";
-        Reason = "Heart Attack symptoms";
+        PatientId = dto.PatientId;
+        PatientName = dto.PatientName;
+        PatientAge = dto.PatientAge;
+        Gender = dto.Gender;
+        BloodGroup = dto.BloodGroup;
+        MaritalStatus = dto.MaritalStatus;
+        EmergencyContactName = dto.EmergencyContactName;
+        EmergencyContactNumber = dto.EmergencyContactNumber;
 
-        // Mock current vitals
-        Height = 175.5m;
-        Weight = 75.0m;
-        PulseRate = 72;
-        BloodPressure = "120/80";
-        IsDiabetic = false;
-        DiabeticReadings = "";
-        HasHighBloodPressure = false;
-        BloodPressureReadings = "Previous: 118/78 (2 weeks ago)";
+        Height = dto.Height;
+        Weight = dto.Weight;
+        PulseRate = dto.PulseRate;
+        BloodPressure = dto.BloodPressure;
+        IsDiabetic = dto.IsDiabetic;
+        DiabeticReadings = dto.DiabeticReadings;
+        HasHighBloodPressure = dto.HasHighBloodPressure;
+        BloodPressureReadings = dto.BloodPressureReadings;
 
-        // Mock chronic diseases
-        ChronicDiseases = new List<CheckupChronicDiseaseDto>
-        {
-            new CheckupChronicDiseaseDto
+        ChronicDiseases = dto.ChronicDiseases
+            .Select(cd => new CheckupChronicDiseaseDto
             {
-                DiseaseName = "Asthma",
-                DiagnosedDate = DateTime.Now.AddYears(-2),
-                CurrentStatus = "Controlled"
-            }
-        };
+                DiseaseName = cd.DiseaseName,
+                DiagnosedDate = cd.DiagnosedDate,
+                CurrentStatus = cd.CurrentStatus
+            })
+            .ToList();
 
-        // Mock previous prescriptions
-        PreviousPrescriptions = new List<PreviousPrescriptionDto>
-        {
-            new PreviousPrescriptionDto
+        PreviousPrescriptions = dto.PreviousPrescriptions
+            .Select(p => new PreviousPrescriptionDto
             {
-                PrescriptionID = 1,
-                DoctorName = "Dr. Jane Smith",
-                CreatedOn = DateTime.Now.AddDays(-30),
-                Notes = "For seasonal allergies",
-                Medications = "Cetirizine 10mg, Once daily for 10 days"
-            },
-            new PreviousPrescriptionDto
-            {
-                PrescriptionID = 2,
-                DoctorName = "Dr. John Doe",
-                CreatedOn = DateTime.Now.AddDays(-60),
-                Notes = "Common cold treatment",
-                Medications = "Paracetamol 500mg, Three times daily for 5 days"
-            }
-        };
+                PrescriptionID = p.PrescriptionID,
+                DoctorName = p.DoctorName,
+                CreatedOn = p.CreatedOn,
+                Notes = p.Notes,
+                Medications = p.Medications
+            })
+            .ToList();
 
-        // Mock previous vitals
-        PreviousVitals = new List<PreviousVitalDto>
-        {
-            new PreviousVitalDto
+        PreviousVitals = dto.PreviousVitals
+            .Select(v => new PreviousVitalDto
             {
-                RecordedDate = DateTime.Now.AddDays(-14),
-                Height = 175.5m,
-                Weight = 74.5m,
-                BloodPressure = "118/78",
-                PulseRate = 70,
-                IsDiabetic = false
-            },
-            new PreviousVitalDto
-            {
-                RecordedDate = DateTime.Now.AddDays(-30),
-                Height = 175.5m,
-                Weight = 74.0m,
-                BloodPressure = "120/80",
-                PulseRate = 68,
-                IsDiabetic = false
-            }
-        };
+                RecordedDate = v.RecordedDate,
+                Height = v.Height,
+                Weight = v.Weight,
+                BloodPressure = v.BloodPressure,
+                PulseRate = v.PulseRate,
+                IsDiabetic = v.IsDiabetic
+            })
+            .ToList();
+    }
+
+    private void BindBasicFromAppointment(AppointmentDetails_DTO dto)
+    {
+        AppointmentId = dto.AppointmentID;
+        AppointmentDate = dto.AppointmentDate;
+        AppointmentType = dto.AppointmentType;
+        Reason = dto.Reason ?? string.Empty;
+
+        PatientId = dto.PatientID;
+        PatientName = dto.PatientName;
+        PatientAge = dto.PatientAge;
+        Gender = dto.Gender;
+        BloodGroup = dto.BloodGroup;
+        MaritalStatus = dto.MaritalStatus;
+        EmergencyContactName = dto.PatientContact ?? string.Empty;
+        EmergencyContactNumber = dto.PatientContact ?? string.Empty;
     }
 
     public async Task<IActionResult> OnPostUpdateVitalsAsync(
-        int appointmentId, 
+        int appointmentId,
         int patientId,
         decimal? height,
         decimal? weight,
@@ -166,15 +180,38 @@ public class CheckupModel : BasePageModel
     {
         try
         {
-            // Here you would save the vitals to the database
-            // For now, we'll just show a success message
-            
             _logger.LogInformation("Updating vitals for patient {PatientId} in appointment {AppointmentId}", patientId, appointmentId);
-            
-            // TODO: Save to T_PatientVitals table
-            // TODO: Update T_ChronicDiseases table
-            
-            TempData["Success"] = "Patient vitals and health information updated successfully!";
+
+            var input = new DoctorUpdateVitals_DTO
+            {
+                AppointmentId = appointmentId,
+                PatientId = patientId,
+                Height = height,
+                Weight = weight,
+                PulseRate = pulseRate,
+                BloodPressure = bloodPressure,
+                IsDiabetic = isDiabetic,
+                DiabeticReadings = diabeticReadings,
+                HasHighBloodPressure = hasHighBloodPressure,
+                BloodPressureReadings = bloodPressureReadings,
+                ChronicDiseases = chronicDiseases?.Select(cd => new CheckupChronicDisease_DTO
+                {
+                    DiseaseName = cd.DiseaseName,
+                    DiagnosedDate = cd.DiagnosedDate,
+                    CurrentStatus = cd.CurrentStatus
+                }).ToList()
+            };
+
+            var result = await _doctorApiService.UpdateVitalsAsync(input);
+            if (!result.IsSuccess)
+            {
+                TempData["Error"] = result.GetError() ?? "Failed to update vitals. Please try again.";
+            }
+            else if (result.Data is not null)
+            {
+                TempData["Success"] = result.Data.Message;
+            }
+
             return RedirectToPage("/Doctor/Checkup", new { appointmentId });
         }
         catch (Exception ex)
@@ -194,12 +231,46 @@ public class CheckupModel : BasePageModel
         try
         {
             _logger.LogInformation("Creating prescription for patient {PatientId} in appointment {AppointmentId}", patientId, appointmentId);
-            
-            // TODO: Save to T_Prescriptions table
-            // TODO: Save medications to T_PrescriptionItems table
-            
-            TempData["Success"] = "Prescription created successfully!";
-            return RedirectToPage("/Doctor/Checkup", new { appointmentId });
+
+            if (appointmentId <= 0 || patientId <= 0)
+            {
+                TempData["Error"] = "Invalid appointment or patient information.";
+                return RedirectToPage("/Doctor/Checkup", new { appointmentId });
+            }
+
+            if (medications == null || medications.Count == 0)
+            {
+                TempData["Error"] = "Please add at least one medication to create a prescription.";
+                return RedirectToPage("/Doctor/Checkup", new { appointmentId });
+            }
+
+            var input = new DoctorCreatePrescription_DTO
+            {
+                AppointmentId = appointmentId,
+                PatientId = patientId,
+                Medications = medications.Select(m => new Medication_DTO
+                {
+                    MedicineName = m.MedicineName,
+                    Dosage = m.Dosage,
+                    Frequency = m.Frequency,
+                    DurationDays = m.DurationDays,
+                    Instructions = m.Instructions
+                }).ToList(),
+                PrescriptionNotes = prescriptionNotes
+            };
+
+            var result = await _doctorApiService.CreatePrescriptionAsync(input);
+            if (!result.IsSuccess)
+            {
+                TempData["Error"] = result.GetError() ?? "Failed to create prescription. Please try again.";
+                return RedirectToPage("/Doctor/Checkup", new { appointmentId });
+            }
+
+            if (result.Data is not null)
+            {
+                TempData["Success"] = result.Data.Message;
+            }
+            return RedirectToPage("/Doctor/AppointmentDetails", new { id = appointmentId });
         }
         catch (Exception ex)
         {

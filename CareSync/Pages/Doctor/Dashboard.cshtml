@@ -51,7 +51,7 @@
                         <i class="ri-file-list-3-line fs-4 text-info"></i>
                     </div>
                     <div class="flex-grow-1">
-                        <strong id="pendingPrescriptionsBadge">@Model.TotalPrescriptions Pending</strong>
+                        <strong id="pendingPrescriptionsBadge">@Model.PendingPrescriptionsCount Pending</strong>
                         <p class="mb-0 small">Prescriptions to be issued</p>
                     </div>
                     <button class="btn btn-sm btn-info" onclick="window.location.href='/Doctor/Prescriptions'">View</button>
@@ -390,7 +390,7 @@
                                         <div class="d-flex gap-1">
                                             @if (isNext)
                                             {
-                                                <a href="/Doctor/Checkup?appointmentId=@appointment.Id" 
+                                                <a href="/Doctor/AppointmentDetails?id=@appointment.Id" 
                                                    class="btn btn-success btn-sm rounded-2"
                                                    data-bs-toggle="tooltip" title="Start Consultation">
                                                     <i class="ri-stethoscope-line"></i> Start

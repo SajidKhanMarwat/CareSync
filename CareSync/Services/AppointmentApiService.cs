@@ -6,12 +6,12 @@ using CareSync.Shared.Enums.Appointment;
 
 namespace CareSync.Services;
 
-public class AppointmentApiAdapter : IAppointmentService
+public class AppointmentApiService : IAppointmentService
 {
     private readonly AdminApiService _adminApiService;
-    private readonly ILogger<AppointmentApiAdapter> _logger;
+    private readonly ILogger<AppointmentApiService> _logger;
 
-    public AppointmentApiAdapter(AdminApiService adminApiService, ILogger<AppointmentApiAdapter> logger)
+    public AppointmentApiService(AdminApiService adminApiService, ILogger<AppointmentApiService> logger)
     {
         _adminApiService = adminApiService;
         _logger = logger;
@@ -72,6 +72,8 @@ public class AppointmentApiAdapter : IAppointmentService
             DoctorID = item.DoctorID,
             PatientID = item.PatientID,
             AppointmentDate = item.AppointmentDate,
+            AppointmentType = item.AppointmentType,
+            Status = item.Status,
             DoctorName = item.DoctorName,
             PatientName = item.PatientName,
             Reason = item.Reason ?? string.Empty,
@@ -79,28 +81,6 @@ public class AppointmentApiAdapter : IAppointmentService
             CreatedBy = string.Empty,
             CreatedOn = DateTime.UtcNow
         };
-
-        // Parse AppointmentType (string) into enum when possible
-        if (!string.IsNullOrWhiteSpace(item.AppointmentType) &&
-            Enum.TryParse<AppointmentType_Enum>(item.AppointmentType, true, out var at))
-        {
-            dto.AppointmentType = at;
-        }
-        else
-        {
-            dto.AppointmentType = AppointmentType_Enum.Consultation;
-        }
-
-        // Parse Status
-        if (!string.IsNullOrWhiteSpace(item.Status) &&
-            Enum.TryParse<AppointmentStatus_Enum>(item.Status, true, out var st))
-        {
-            dto.Status = st;
-        }
-        else
-        {
-            dto.Status = AppointmentStatus_Enum.Scheduled;
-        }
 
         return dto;
     }

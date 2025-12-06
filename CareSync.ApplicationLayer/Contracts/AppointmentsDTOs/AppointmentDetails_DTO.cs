@@ -1,3 +1,6 @@
+using CareSync.Shared.Enums;
+using CareSync.Shared.Enums.Appointment;
+
 namespace CareSync.ApplicationLayer.Contracts.AppointmentsDTOs;
 
 public class AppointmentDetails_DTO
@@ -5,8 +8,8 @@ public class AppointmentDetails_DTO
     public int AppointmentID { get; set; }
     //public string AppointmentNumber { get; set; } = string.Empty;
     public DateTime AppointmentDate { get; set; }
-    public string AppointmentType { get; set; } = string.Empty;
-    public string Status { get; set; } = string.Empty;
+    public AppointmentType_Enum AppointmentType { get; set; }
+    public AppointmentStatus_Enum Status { get; set; }
     public string Reason { get; set; } = string.Empty;
 
     // Doctor
@@ -34,4 +37,7 @@ public class AppointmentDetails_DTO
     // Related lists
     public List<string> Prescriptions { get; set; } = new();
     public List<string> LabReports { get; set; } = new();
+    public Gender_Enum Gender { get; set; }
+    public string? BloodGroup { get; set; }
+    public string MaritalStatus { get; set; }
 }

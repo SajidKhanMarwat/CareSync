@@ -4,6 +4,7 @@ using CareSync.ApplicationLayer.Contracts.AdminDashboardDTOs;
 using CareSync.ApplicationLayer.Contracts.DoctorsDTOs;
 using CareSync.ApplicationLayer.Contracts.AppointmentsDTOs;
 using System.Text.Json;
+using System.Text;
 
 namespace CareSync.Services;
 
@@ -73,6 +74,33 @@ public class DoctorApiService
         {
             _logger.LogError(ex, "Error calling doctor appointments API");
             return Result<TodaysAppointmentsList_DTO>.Exception(ex);
+        }
+    }
+
+    /// <summary>
+    /// Get full checkup data for a specific appointment for the authenticated doctor.
+    /// </summary>
+    public async Task<Result<DoctorCheckup_DTO>?> GetCheckupAsync(int appointmentId)
+    {
+        try
+        {
+            var client = CreateClient();
+            var resp = await client.GetAsync($"doctors/appointments/{appointmentId}/checkup");
+            var content = await resp.Content.ReadAsStringAsync();
+
+            if (!resp.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("GetCheckupAsync returned {Status} for {AppointmentId}. Body: {Body}", resp.StatusCode, appointmentId, Truncate(content, 1000));
+                return JsonSerializer.Deserialize<Result<DoctorCheckup_DTO>>(content, _jsonOptions)
+                       ?? Result<DoctorCheckup_DTO>.Failure(new DoctorCheckup_DTO(), $"API returned {resp.StatusCode}");
+            }
+
+            return JsonSerializer.Deserialize<Result<DoctorCheckup_DTO>>(content, _jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error calling doctor checkup API for {AppointmentId}", appointmentId);
+            return Result<DoctorCheckup_DTO>.Exception(ex);
         }
     }
 
@@ -183,6 +211,64 @@ public class DoctorApiService
     }
 
     /// <summary>
+    /// Update vitals and chronic disease info for an appointment/patient pair.
+    /// </summary>
+    public async Task<Result<GeneralResponse>?> UpdateVitalsAsync(DoctorUpdateVitals_DTO dto)
+    {
+        try
+        {
+            var client = CreateClient();
+            var json = JsonSerializer.Serialize(dto, _jsonOptions);
+            var resp = await client.PostAsync($"doctors/appointments/{dto.AppointmentId}/vitals",
+                new StringContent(json, Encoding.UTF8, "application/json"));
+
+            var content = await resp.Content.ReadAsStringAsync();
+            if (!resp.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("UpdateVitalsAsync returned {Status} for {AppointmentId}. Body: {Body}", resp.StatusCode, dto.AppointmentId, Truncate(content, 1000));
+                return JsonSerializer.Deserialize<Result<GeneralResponse>>(content, _jsonOptions)
+                       ?? Result<GeneralResponse>.Failure(new GeneralResponse { Success = false, Message = "API failure" }, $"API {resp.StatusCode}");
+            }
+
+            return JsonSerializer.Deserialize<Result<GeneralResponse>>(content, _jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error calling UpdateVitals API for {AppointmentId}", dto.AppointmentId);
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    /// <summary>
+    /// Create a prescription for an appointment/patient pair.
+    /// </summary>
+    public async Task<Result<GeneralResponse>?> CreatePrescriptionAsync(DoctorCreatePrescription_DTO dto)
+    {
+        try
+        {
+            var client = CreateClient();
+            var json = JsonSerializer.Serialize(dto, _jsonOptions);
+            var resp = await client.PostAsync($"doctors/appointments/{dto.AppointmentId}/prescriptions",
+                new StringContent(json, Encoding.UTF8, "application/json"));
+
+            var content = await resp.Content.ReadAsStringAsync();
+            if (!resp.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("CreatePrescriptionAsync returned {Status} for {AppointmentId}. Body: {Body}", resp.StatusCode, dto.AppointmentId, Truncate(content, 1000));
+                return JsonSerializer.Deserialize<Result<GeneralResponse>>(content, _jsonOptions)
+                       ?? Result<GeneralResponse>.Failure(new GeneralResponse { Success = false, Message = "API failure" }, $"API {resp.StatusCode}");
+            }
+
+            return JsonSerializer.Deserialize<Result<GeneralResponse>>(content, _jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error calling CreatePrescription API for {AppointmentId}", dto.AppointmentId);
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    /// <summary>
     /// Ask API to mark appointment as Completed for the authenticated doctor.
     /// </summary>
     public async Task<Result<GeneralResponse>?> EndAppointmentAsync(int appointmentId)
@@ -211,6 +297,34 @@ public class DoctorApiService
     }
 
     /// <summary>
+    /// Ask API to cancel/reject an appointment for the authenticated doctor.
+    /// </summary>
+    public async Task<Result<GeneralResponse>?> RejectAppointmentAsync(int appointmentId)
+    {
+        try
+        {
+            var client = CreateClient();
+            var resp = await client.PostAsync($"doctors/appointments/{appointmentId}/reject", null);
+            var content = await resp.Content.ReadAsStringAsync();
+
+            if (!resp.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("RejectAppointmentAsync returned {Status}. Body: {Body}", resp.StatusCode, Truncate(content, 1000));
+                var failure = JsonSerializer.Deserialize<Result<GeneralResponse>>(content, _jsonOptions);
+                return failure ?? Result<GeneralResponse>.Failure(new GeneralResponse { Success = false, Message = "API failure" }, $"API {resp.StatusCode}");
+            }
+
+            var result = JsonSerializer.Deserialize<Result<GeneralResponse>>(content, _jsonOptions);
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error calling RejectAppointment API for {AppointmentId}", appointmentId);
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    /// <summary>
     /// Get appointment details by appointment ID.
     /// </summary>
     public async Task<Result<AppointmentDetails_DTO>?> GetAppointmentByIdAsync(int appointmentId)
@@ -234,6 +348,33 @@ public class DoctorApiService
         {
             _logger.LogError(ex, "Error calling GetAppointmentById API for {AppointmentId}", appointmentId);
             return Result<AppointmentDetails_DTO>.Exception(ex);
+        }
+    }
+
+    /// <summary>
+    /// Get all lab reports for the authenticated doctor.
+    /// </summary>
+    public async Task<Result<List<DoctorLabReport_DTO>>?> GetDoctorLabReportsAsync()
+    {
+        try
+        {
+            var client = CreateClient();
+            var resp = await client.GetAsync("doctors/labreports");
+            var content = await resp.Content.ReadAsStringAsync();
+
+            if (!resp.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("GetDoctorLabReportsAsync returned {Status}. Body: {Body}", resp.StatusCode, Truncate(content, 1000));
+                return JsonSerializer.Deserialize<Result<List<DoctorLabReport_DTO>>>(content, _jsonOptions)
+                       ?? Result<List<DoctorLabReport_DTO>>.Failure(new List<DoctorLabReport_DTO>(), $"API returned {resp.StatusCode}");
+            }
+
+            return JsonSerializer.Deserialize<Result<List<DoctorLabReport_DTO>>>(content, _jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error calling doctor lab reports API");
+            return Result<List<DoctorLabReport_DTO>>.Exception(ex);
         }
     }
 

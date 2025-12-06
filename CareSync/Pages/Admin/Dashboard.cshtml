@@ -680,7 +680,10 @@
                     <div class="list-group list-group-flush">
                         @foreach (var appointment in Model.TodaysAppointmentsList.Appointments.Take(5))
                         {
-                            var statusBadgeClass = appointment.Status switch
+                            var statusText = appointment.Status.ToString();
+                            var typeText = appointment.AppointmentType.ToString();
+
+                            var statusBadgeClass = statusText switch
                             {
                                 "Approved" => "bg-success",
                                 "Pending" => "bg-warning",
@@ -688,7 +691,7 @@
                                 "Rejected" => "bg-danger",
                                 _ => "bg-secondary"
                             };
-                            var avatarClass = appointment.Status switch
+                            var avatarClass = statusText switch
                             {
                                 "Approved" => "bg-success-subtle",
                                 "Pending" => "bg-warning-subtle",
@@ -696,7 +699,7 @@
                                 "Rejected" => "bg-danger-subtle",
                                 _ => "bg-secondary-subtle"
                             };
-                            var iconColor = appointment.Status switch
+                            var iconColor = statusText switch
                             {
                                 "Approved" => "text-success",
                                 "Pending" => "text-warning",
@@ -733,7 +736,7 @@
                                             </div>
                                             <div class="appointment-type">
                                                 <i class="ri-heart-pulse-line text-danger me-1"></i>
-                                                <span class="text-muted">@appointment.AppointmentType</span>
+                                                <span class="text-muted">@typeText</span>
                                             </div>
                                             @if (!string.IsNullOrEmpty(appointment.Reason))
                                             {

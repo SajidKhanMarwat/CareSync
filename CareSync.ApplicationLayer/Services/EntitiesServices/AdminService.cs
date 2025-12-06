@@ -3297,8 +3297,8 @@ public class AdminService(
                     DoctorSpecialization = doctorDetails?.Specialization,
                     AppointmentDate = appt.AppointmentDate.Date,
                     AppointmentTime = appt.AppointmentDate,
-                    Status = appt.Status.ToString(),
-                    AppointmentType = appt.AppointmentType.ToString(),
+                    Status = appt.Status,
+                    AppointmentType = appt.AppointmentType,
                     Reason = appt.Reason
                 });
             }
@@ -3348,8 +3348,8 @@ public class AdminService(
                     DoctorSpecialization = doctorDetails?.Specialization,
                     AppointmentDate = appt.AppointmentDate.Date,
                     AppointmentTime = appt.AppointmentDate,
-                    Status = appt.Status.ToString(),
-                    AppointmentType = appt.AppointmentType.ToString(),
+                    Status = appt.Status,
+                    AppointmentType = appt.AppointmentType,
                     Reason = appt.Reason
                 });
             }
@@ -3358,8 +3358,8 @@ public class AdminService(
             {
                 Appointments = appointmentItems,
                 TotalToday = appointmentItems.Count(a => a.AppointmentDate.Date == DateTime.UtcNow.Date),
-                CompletedToday = appointmentItems.Count(a => a.AppointmentDate.Date == DateTime.UtcNow.Date && a.Status == "Approved"),
-                PendingToday = appointmentItems.Count(a => a.AppointmentDate.Date == DateTime.UtcNow.Date && (a.Status == "Pending" || a.Status == "Created"))
+                CompletedToday = appointmentItems.Count(a => a.AppointmentDate.Date == DateTime.UtcNow.Date && a.Status == AppointmentStatus_Enum.Completed),
+                PendingToday = appointmentItems.Count(a => a.AppointmentDate.Date == DateTime.UtcNow.Date && (a.Status == AppointmentStatus_Enum.Pending || a.Status == AppointmentStatus_Enum.Created))
             };
 
             return Result<TodaysAppointmentsList_DTO>.Success(list);

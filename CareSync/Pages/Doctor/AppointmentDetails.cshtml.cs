@@ -1,19 +1,14 @@
 using CareSync.Pages.Shared;
 using CareSync.Services;
+using CareSync.Shared.Enums.Appointment;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CareSync.Pages.Doctor;
 
-public class AppointmentDetails : BasePageModel
+public class AppointmentDetails(ILogger<AppointmentDetails> logger, DoctorApiService doctorApiService) : BasePageModel
 {
-    private readonly ILogger<AppointmentDetails> _logger;
-    private readonly DoctorApiService _doctorApiService;
-
-    public AppointmentDetails(ILogger<AppointmentDetails> logger, DoctorApiService doctorApiService)
-    {
-        _logger = logger;
-        _doctorApiService = doctorApiService;
-    }
+    private readonly ILogger<AppointmentDetails> _logger = logger;
+    private readonly DoctorApiService _doctorApiService = doctorApiService;
 
     [FromQuery(Name = "id")]
     public int AppointmentId { get; set; }
@@ -21,8 +16,8 @@ public class AppointmentDetails : BasePageModel
     // Appointment summary
     public DateTime AppointmentDate { get; set; }
     public string AppointmentTime => AppointmentDate.ToString("hh:mm tt");
-    public string AppointmentType { get; set; }
-    public string Status { get; set; }
+    public AppointmentType_Enum AppointmentType { get; set; }
+    public AppointmentStatus_Enum Status { get; set; }
     public string Reason { get; set; } = string.Empty;
 
     // Patient info
@@ -94,8 +89,8 @@ public class AppointmentDetails : BasePageModel
             // Map DTO to page properties
             //AppointmentNumber = dto.AppointmentNumber;
             AppointmentDate = dto.AppointmentDate;
-            AppointmentType = dto.AppointmentType ?? string.Empty;
-            Status = dto.Status ?? string.Empty;
+            AppointmentType = dto.AppointmentType;
+            Status = dto.Status;
             Reason = dto.Reason ?? string.Empty;
 
             PatientId = dto.PatientID;
@@ -172,7 +167,7 @@ public class AppointmentDetails : BasePageModel
 
             // Update local state for UI immediate feedback
             if (AppointmentId == 0) AppointmentId = appointmentId;
-            Status = "InProgress";
+            Status = AppointmentStatus_Enum.InProgress;
 
             return new JsonResult(new { success = true, status = Status, startedAt = DateTime.UtcNow });
         }
@@ -224,7 +219,7 @@ public class AppointmentDetails : BasePageModel
 
             // Update local state for UI immediate feedback
             if (AppointmentId == 0) AppointmentId = appointmentId;
-            Status = "Completed";
+            Status = AppointmentStatus_Enum.Completed;
 
             return new JsonResult(new { success = true, status = Status, endedAt = DateTime.UtcNow });
         }

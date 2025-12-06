@@ -27,6 +27,7 @@ public class DashboardModel : BasePageModel
     // Detailed Insights
     public int TodayAppointmentsCount { get; set; }
     public int TotalPrescriptions { get; set; }
+    public int PendingPrescriptionsCount { get; set; }
     public int PendingAppointments { get; set; }
     public int LabReports { get; set; }
 
@@ -77,6 +78,8 @@ public class DashboardModel : BasePageModel
 
             TodayAppointmentsCount = result.Data.TodayAppointmentsCount;
             TotalPrescriptions = result.Data.TotalPrescriptions;
+            PendingPrescriptionsCount = result.Data.PendingPrescriptionsCount;
+
             PendingAppointments = result.Data.PendingAppointments;
             LabReports = result.Data.LabReports;
 
@@ -91,7 +94,7 @@ public class DashboardModel : BasePageModel
                 PatientAge = a.PatientAge,
                 AppointmentTime = a.AppointmentTime,
                 Diagnosis = a.Diagnosis,
-                Type = a.Type
+                Type = a.AppointmentType.ToString()
             }).ToList();
 
             RecentPatients = result.Data.RecentPatients.Select(p => new RecentPatient

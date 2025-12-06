@@ -1,3 +1,5 @@
+using CareSync.Shared.Enums.Appointment;
+
 namespace CareSync.ApplicationLayer.Contracts.AdminDashboardDTOs;
 
 /// <summary>
@@ -75,6 +77,7 @@ public class AppointmentStatusBreakdown_DTO
 public class TodaysAppointmentsList_DTO
 {
     public List<TodayAppointmentItem> Appointments { get; set; } = new();
+    public List<PreviousAppointment_DTO>? PreviousAppointments { get; set; }
     public int TotalToday { get; set; }
     public int CompletedToday { get; set; }
     public int PendingToday { get; set; }
@@ -90,8 +93,23 @@ public class TodayAppointmentItem
     public string? DoctorSpecialization { get; set; }
     public DateTime AppointmentDate { get; set; }
     public DateTime AppointmentTime { get; set; }
-    public string Status { get; set; } = string.Empty;
-    public string AppointmentType { get; set; } = string.Empty;
+    public AppointmentStatus_Enum Status { get; set; }
+    public AppointmentType_Enum AppointmentType { get; set; }
+    public string? Reason { get; set; }
+}
+
+public class PreviousAppointment_DTO
+{
+    public int AppointmentID { get; set; }
+    public int PatientID { get; set; }
+    public string PatientName { get; set; } = string.Empty;
+    public int DoctorID { get; set; }
+    public string DoctorName { get; set; } = string.Empty;
+    public string? DoctorSpecialization { get; set; }
+    public DateTime AppointmentDate { get; set; }
+    public DateTime AppointmentTime { get; set; }
+    public AppointmentStatus_Enum Status { get; set; }
+    public AppointmentType_Enum AppointmentType { get; set; }
     public string? Reason { get; set; }
 }
 

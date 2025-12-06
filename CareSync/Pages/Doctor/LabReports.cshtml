@@ -1,0 +1,62 @@
+@page "/Doctor/LabReports"
+@model CareSync.Pages.Doctor.LabReportsModel
+@{
+    ViewData["Title"] = "Lab Reports";
+}
+
+<div class="row mb-3">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Lab Reports Needing Review</h4>
+        <a href="/Doctor/Dashboard" class="btn btn-outline-secondary">
+            <i class="ri-arrow-left-line"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger">@Model.ErrorMessage</div>
+        }
+        else if (!Model.Reports.Any())
+        {
+            <div class="text-center text-muted py-4">
+                <i class="ri-flask-line fs-1 d-block mb-2"></i>
+                No lab reports requiring your review.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>Reviewed On</th>
+                            <th>Patient</th>
+                            <th>Report</th>
+                            <th>Summary</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var r in Model.Reports)
+                    {
+                        <tr>
+                            <td>@(r.ReviewedDate?.ToString("dd MMM yyyy, HH:mm") ?? "-")</td>
+                            <td>@r.PatientName</td>
+                            <td>@r.ReportName</td>
+                            <td>@r.ResultSummary</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="location.href='/Doctor/AppointmentDetails?id=@r.AppointmentID'">
+                                    <i class="ri-eye-line"></i> View Appointment
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

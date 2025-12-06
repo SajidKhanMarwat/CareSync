@@ -77,7 +77,8 @@ public class DoctorsController : ControllerBase
             }
 
             var todayItems = new List<TodayAppointmentItem>();
-            var todayAppointments = dashboardResult.Data.TodayAppointments ?? new List<ApplicationLayer.Contracts.DoctorsDTOs.TodayAppointment_DTO>();
+            var todayAppointments = dashboardResult.Data.TodayAppointments ?? new List<CareSync.ApplicationLayer.Contracts.DoctorsDTOs.TodayAppointment_DTO>();
+            var previousAppointments = dashboardResult.Data.PreviousAppointments ?? new List<CareSync.ApplicationLayer.Contracts.DoctorsDTOs.PreviousAppointment_DTO>();
 
             foreach (var t in todayAppointments)
             {
@@ -85,24 +86,43 @@ public class DoctorsController : ControllerBase
                 {
                     AppointmentID = t.Id,
                     PatientID = t.PatientID,
-                    PatientName = t.PatientName ?? "Unknown",
+                    PatientName = t.PatientName,
                     DoctorID = t.DoctorID,
-                    DoctorName = dashboardResult.Data.DoctorName ?? "Unknown",
+                    DoctorName = dashboardResult.Data.DoctorName,
                     DoctorSpecialization = dashboardResult.Data.Specialization,
                     AppointmentDate = t.AppointmentTime.Date,
                     AppointmentTime = t.AppointmentTime,
-                    Status = t.Type ?? string.Empty,
-                    AppointmentType = t.Type ?? string.Empty,
-                    Reason = t.Diagnosis ?? string.Empty
+                    Status = t.Status,
+                    AppointmentType = t.AppointmentType,
+                    Reason = t.Diagnosis
                 });
             }
+
+            var previousForDashboard = previousAppointments
+                .OrderBy(a => a.AppointmentTime)
+                .Select(a => new CareSync.ApplicationLayer.Contracts.AdminDashboardDTOs.PreviousAppointment_DTO
+                {
+                    AppointmentID = a.AppointmentID,
+                    PatientID = a.PatientID,
+                    PatientName = a.PatientName,
+                    DoctorID = a.DoctorID,
+                    DoctorName = a.DoctorName,
+                    DoctorSpecialization = a.DoctorSpecialization,
+                    AppointmentDate = a.AppointmentDate,
+                    AppointmentTime = a.AppointmentTime,
+                    Status = a.Status,
+                    AppointmentType = a.AppointmentType,
+                    Reason = a.Reason
+                })
+                .ToList();
 
             var list = new TodaysAppointmentsList_DTO
             {
                 Appointments = todayItems.OrderBy(a => a.AppointmentTime).ToList(),
-                TotalToday = todayItems.Count(i => i.AppointmentDate == DateTime.UtcNow.Date),
-                CompletedToday = todayItems.Count(i => string.Equals(i.Status, "Completed", StringComparison.OrdinalIgnoreCase)),
-                PendingToday = todayItems.Count(i => string.Equals(i.Status, "Pending", StringComparison.OrdinalIgnoreCase) || string.Equals(i.Status, "Created", StringComparison.OrdinalIgnoreCase))
+                PreviousAppointments = previousForDashboard,
+                TotalToday = todayItems.Count(i => i.AppointmentDate == DateTime.Today),
+                CompletedToday = todayItems.Count(i => i.Status == AppointmentStatus_Enum.Completed),
+                PendingToday = todayItems.Count(i => i.Status == AppointmentStatus_Enum.Pending || i.Status == AppointmentStatus_Enum.Created)
             };
 
             return Result<TodaysAppointmentsList_DTO>.Success(list);
@@ -137,11 +157,12 @@ public class DoctorsController : ControllerBase
     }
 
     /// <summary>
-    /// End an appointment (sets status to Completed) - only allowed for the owning doctor.
+    /// Complete an appointment (sets status to Completed) - only allowed for the owning doctor.
+    /// This is typically invoked after the doctor has finished the checkup and documentation.
     /// </summary>
-    [HttpPost("appointments/{appointmentId}/end")]
+    [HttpPost("appointments/{appointmentId}/complete")]
     [AllowAnonymous]
-    public async Task<Result<GeneralResponse>> EndAppointment(int appointmentId)
+    public async Task<Result<GeneralResponse>> CompleteAppointment(int appointmentId)
     {
         try
         {
@@ -153,7 +174,133 @@ public class DoctorsController : ControllerBase
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Error completing appointment {AppointmentId}", appointmentId);
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    /// <summary>
+    /// End an appointment (sets status to PrescriptionPending) - only allowed for the owning doctor.
+    /// This allows prescriptions and reports to be added before final completion.
+    /// </summary>
+    [HttpPost("appointments/{appointmentId}/end")]
+    [AllowAnonymous]
+    public async Task<Result<GeneralResponse>> EndAppointment(int appointmentId)
+    {
+        try
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Result<GeneralResponse>.Failure(new GeneralResponse { Success = false, Message = "Unauthenticated" }, "Unauthenticated");
+
+            // Move appointment into documentation phase (prescriptions/reports) before final completion
+            return await _doctorService.UpdateAppointmentStatusAsync(appointmentId, AppointmentStatus_Enum.PrescriptionPending, userId);
+        }
+        catch (Exception ex)
+        {
             _logger.LogError(ex, "Error ending appointment {AppointmentId}", appointmentId);
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    /// <summary>
+    /// Reject/cancel an appointment - only allowed for the owning doctor.
+    /// </summary>
+    [HttpPost("appointments/{appointmentId}/reject")]
+    [AllowAnonymous]
+    public async Task<Result<GeneralResponse>> RejectAppointment(int appointmentId)
+    {
+        try
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Result<GeneralResponse>.Failure(new GeneralResponse { Success = false, Message = "Unauthenticated" }, "Unauthenticated");
+
+            return await _doctorService.UpdateAppointmentStatusAsync(appointmentId, AppointmentStatus_Enum.Cancelled, userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error rejecting appointment {AppointmentId}", appointmentId);
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    /// <summary>
+    /// Get full checkup data for an appointment for the authenticated doctor.
+    /// </summary>
+    [HttpGet("appointments/{appointmentId}/checkup")]
+    [AllowAnonymous]
+    public async Task<Result<DoctorCheckup_DTO>> GetCheckup(int appointmentId)
+    {
+        try
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                _logger.LogWarning("Doctor checkup requested but user id claim not present.");
+                return Result<DoctorCheckup_DTO>.Failure(new DoctorCheckup_DTO(), "Unauthenticated.");
+            }
+
+            _logger.LogInformation("Getting checkup for appointment {AppointmentId} and doctor user {UserId}", appointmentId, userId);
+            return await _doctorService.GetCheckupAsync(appointmentId, userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting checkup for appointment {AppointmentId}", appointmentId);
+            return Result<DoctorCheckup_DTO>.Exception(ex);
+        }
+    }
+
+    /// <summary>
+    /// Update vitals and chronic disease info for an appointment/patient pair for the authenticated doctor.
+    /// </summary>
+    [HttpPost("appointments/{appointmentId}/vitals")]
+    [AllowAnonymous]
+    public async Task<Result<GeneralResponse>> UpdateVitals(int appointmentId, [FromBody] DoctorUpdateVitals_DTO dto)
+    {
+        try
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                _logger.LogWarning("UpdateVitals requested but user id claim not present.");
+                return Result<GeneralResponse>.Failure(new GeneralResponse { Success = false, Message = "Unauthenticated" }, "Unauthenticated");
+            }
+
+            dto.AppointmentId = appointmentId;
+            _logger.LogInformation("Updating vitals for appointment {AppointmentId} by doctor user {UserId}", appointmentId, userId);
+            return await _doctorService.UpdateVitalsAsync(dto, userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating vitals for appointment {AppointmentId}", appointmentId);
+            return Result<GeneralResponse>.Exception(ex);
+        }
+    }
+
+    /// <summary>
+    /// Create a prescription for an appointment for the authenticated doctor.
+    /// </summary>
+    [HttpPost("appointments/{appointmentId}/prescriptions")]
+    [AllowAnonymous]
+    public async Task<Result<GeneralResponse>> CreatePrescription(int appointmentId, [FromBody] DoctorCreatePrescription_DTO dto)
+    {
+        try
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                _logger.LogWarning("CreatePrescription requested but user id claim not present.");
+                return Result<GeneralResponse>.Failure(new GeneralResponse { Success = false, Message = "Unauthenticated" }, "Unauthenticated");
+            }
+
+            dto.AppointmentId = appointmentId;
+            _logger.LogInformation("Creating prescription for appointment {AppointmentId} by doctor user {UserId}", appointmentId, userId);
+            return await _doctorService.CreatePrescriptionAsync(dto, userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating prescription for appointment {AppointmentId}", appointmentId);
             return Result<GeneralResponse>.Exception(ex);
         }
     }
@@ -181,6 +328,32 @@ public class DoctorsController : ControllerBase
         {
             _logger.LogError(ex, "Error in DoctorsController.GetAppointmentDetails for {AppointmentId}", appointmentId);
             return Result<CareSync.ApplicationLayer.Contracts.AppointmentsDTOs.AppointmentDetails_DTO>.Exception(ex);
+        }
+    }
+
+    /// <summary>
+    /// Get all lab reports associated with the authenticated doctor.
+    /// </summary>
+    [HttpGet("labreports")]
+    [AllowAnonymous]
+    public async Task<Result<List<DoctorLabReport_DTO>>> GetDoctorLabReports()
+    {
+        try
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                _logger.LogWarning("Doctor lab reports requested but user id claim not present.");
+                return Result<List<DoctorLabReport_DTO>>.Failure(new List<DoctorLabReport_DTO>(), "Unauthenticated.");
+            }
+
+            _logger.LogInformation("Getting lab reports for doctor user {UserId}", userId);
+            return await _doctorService.GetDoctorLabReportsAsync(userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting lab reports for current doctor");
+            return Result<List<DoctorLabReport_DTO>>.Exception(ex);
         }
     }
 }

@@ -1,3 +1,5 @@
+using CareSync.Shared.Enums.Appointment;
+
 namespace CareSync.ApplicationLayer.Contracts.DoctorsDTOs;
 
 public class DoctorDashboard_DTO
@@ -14,6 +16,7 @@ public class DoctorDashboard_DTO
     // Detailed insights
     public int TodayAppointmentsCount { get; set; }
     public int TotalPrescriptions { get; set; }
+    public int PendingPrescriptionsCount { get; set; }
     public int PendingAppointments { get; set; }
     public int LabReports { get; set; }
 
@@ -24,6 +27,7 @@ public class DoctorDashboard_DTO
 
     // Collections
     public List<TodayAppointment_DTO> TodayAppointments { get; set; } = new();
+    public List<PreviousAppointment_DTO> PreviousAppointments { get; set; } = new();
     public List<RecentPatient_DTO> RecentPatients { get; set; } = new();
 
     // Appointments overview timeseries (last 12 months) and labels
@@ -40,7 +44,23 @@ public class TodayAppointment_DTO
     public int PatientAge { get; set; }
     public DateTime AppointmentTime { get; set; }
     public string Diagnosis { get; set; } = string.Empty;
-    public string Type { get; set; } = string.Empty;
+    public AppointmentStatus_Enum Status { get; set; }
+    public AppointmentType_Enum AppointmentType { get; set; }
+}
+
+public class PreviousAppointment_DTO
+{
+    public int AppointmentID { get; set; }
+    public int PatientID { get; set; }
+    public string PatientName { get; set; } = string.Empty;
+    public int DoctorID { get; set; }
+    public string DoctorName { get; set; } = string.Empty;
+    public string? DoctorSpecialization { get; set; }
+    public DateTime AppointmentDate { get; set; }
+    public DateTime AppointmentTime { get; set; }
+    public AppointmentStatus_Enum Status { get; set; }
+    public AppointmentType_Enum AppointmentType { get; set; }
+    public string? Reason { get; set; }
 }
 
 public class RecentPatient_DTO
@@ -49,4 +69,15 @@ public class RecentPatient_DTO
     public string Name { get; set; } = string.Empty;
     public DateTime LastAppointment { get; set; }
     public string Notes { get; set; } = string.Empty;
+}
+
+public class DoctorLabReport_DTO
+{
+    public int LabReportID { get; set; }
+    public int AppointmentID { get; set; }
+    public int? ReviewedByDoctorID { get; set; }
+    public DateTime? ReviewedDate { get; set; }
+    public string PatientName { get; set; } = string.Empty;
+    public string? ReportName { get; set; }
+    public string? ResultSummary { get; set; }
 }

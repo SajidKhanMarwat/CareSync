@@ -82,8 +82,17 @@ public class AppointmentsListModel : PageModel
                 // Apply filters if needed
                 if (!string.IsNullOrEmpty(StatusFilter) && StatusFilter != "all")
                 {
-                    Appointments = Appointments.Where(a => 
-                        a.Status?.ToLower() == StatusFilter.ToLower()).ToList();
+                    var normalized = StatusFilter.ToLowerInvariant();
+                    string? enumName = normalized switch
+                    {
+                        "confirmed" => "Approved",
+                        _ => char.ToUpperInvariant(normalized[0]) + normalized[1..]
+                    };
+
+                    if (Enum.TryParse<CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum>(enumName, out var statusEnum))
+                    {
+                        Appointments = Appointments.Where(a => a.Status == statusEnum).ToList();
+                    }
                 }
                 
                 if (!string.IsNullOrEmpty(SearchTerm))

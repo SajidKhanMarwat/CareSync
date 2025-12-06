@@ -4,6 +4,25 @@
     ViewData["Title"] = "Patient Checkup";
 }
 
+@if (TempData["Error"] is string error && !string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-danger" role="alert">
+        @error
+    </div>
+}
+else if (TempData["Warning"] is string warning && !string.IsNullOrWhiteSpace(warning))
+{
+    <div class="alert alert-warning" role="alert">
+        @warning
+    </div>
+}
+else if (TempData["Success"] is string success && !string.IsNullOrWhiteSpace(success))
+{
+    <div class="alert alert-success" role="alert">
+        @success
+    </div>
+}
+
 <!-- Breadcrumb -->
 <div class="row">
     <div class="col-12">
@@ -29,9 +48,6 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <h5 class="mb-3">@Model.PatientName</h5>
-                                <div class="mb-2">
-                                    <strong>Patient ID:</strong> P@Model.PatientId.ToString("0000")
-                                </div>
                                 <div class="mb-2">
                                     <strong>Age:</strong> @Model.PatientAge years
                                 </div>
@@ -432,27 +448,45 @@
         }
         
         function completeCheckup() {
-            if (confirm('Are you sure you want to complete this checkup? This will mark the appointment as completed.')) {
-                fetch('/api/appointments/@Model.AppointmentId/complete', {
+            toast.confirm({
+                title: 'Complete Checkup',
+                message: 'Are you sure you want to complete this checkup? This will mark the appointment as completed.',
+                type: 'warning',
+                confirmText: 'Complete',
+                cancelText: 'Cancel'
+            }).then(confirmed => {
+                if (!confirmed) {
+                    return;
+                }
+
+                fetch(`/api/Doctors/appointments/@Model.AppointmentId/complete`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                    }
+                    },
+                    credentials: 'include'
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success) {
-                        alert('Checkup completed successfully!');
-                        window.location.href = '/Doctor/Dashboard';
+                    // API returns Result<GeneralResponse> from DoctorsController.CompleteAppointment
+                    // Shape: { isSuccess, message, data: { success, message } }
+                    const isSuccess = data?.isSuccess === true && data?.data?.success === true;
+                    if (isSuccess) {
+                        const msg = data.data.message || 'Checkup completed successfully!';
+                        toast.success(msg, 'Success');
+                        setTimeout(() => {
+                            window.location.href = '/Doctor/Dashboard';
+                        }, 1500);
                     } else {
-                        alert('Failed to complete checkup');
+                        const errorMessage = data?.message || data?.data?.message || 'Failed to complete checkup';
+                        toast.error(errorMessage, 'Error');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('An error occurred');
+                    toast.error('An error occurred while completing the checkup.', 'Error');
                 });
-            }
+            });
         }
     </script>
 }

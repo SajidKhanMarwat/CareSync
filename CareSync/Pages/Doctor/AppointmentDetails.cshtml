@@ -1,7 +1,12 @@
 @page "/Doctor/AppointmentDetails"
 @model CareSync.Pages.Doctor.AppointmentDetails
+@using CareSync.Shared.Enums.Appointment
+
 @{
     ViewData["Title"] = "Appointment Details";
+
+    var isInProgress = Model.Status == AppointmentStatus_Enum.InProgress;
+    var isCompleted  = Model.Status == AppointmentStatus_Enum.Completed;
 }
 
 <form id="__antiForm" style="display:none;">
@@ -13,12 +18,21 @@
         <button class="btn btn-outline-secondary" onclick="window.history.back()">
             <i class="ri-arrow-left-line me-1"></i>Back
         </button>
-        <button id="startEndButton" class="btn btn-success" onclick="startConsultation()">
-            <i class="ri-play-line me-1"></i><span id="startEndButtonText">Start Consultation</span>
+
+        <button id="startEndButton"
+                class="btn @(isInProgress ? "btn-danger" : "btn-success") @(isCompleted ? "disabled" : string.Empty)"
+                onclick="@(isCompleted ? "return false;" : (isInProgress ? "endConsultation()" : "startConsultation()"))">
+            <i class="@(isInProgress ? "ri-stop-line" : "ri-play-line") me-1"></i>
+            <span id="startEndButtonText">
+                @(isInProgress ? "End Consultation"
+                               : (isCompleted ? "Consultation Completed" : "Start Consultation"))
+            </span>
         </button>
+
         @* <button class="btn btn-outline-primary" onclick="messagePatient()">
             <i class="ri-message-line me-1"></i>Message Patient
         </button> *@
+
         <button class="btn btn-outline-secondary" onclick="window.print()">
             <i class="ri-printer-line me-1"></i>Print
         </button>
@@ -33,7 +47,7 @@
                     <h5 class="card-title mb-0">
                         <i class="ri-calendar-check-line me-2"></i>Appointment Information
                     </h5>
-                    <span class="badge bg-@((Model.Status.ToLower() == "completed") ? "success" : "warning")">@Model.Status</span>
+                    <span class="badge bg-@((Model.Status.ToString() == "completed") ? "success" : "warning")">@Model.Status</span>
                 </div>
             </div>
             <div class="card-body">
@@ -75,7 +89,7 @@
                     <div class="flex-grow-1">
                         <h5 class="mb-1">@Model.PatientName</h5>
                         <p class="text-muted mb-1">Patient ID: P@Model.PatientId</p>
-                        <p class="text-muted mb-0">@Model.PatientAge years • @Model.PatientContact • @Model.PatientEmail</p>
+                        <p class="text-muted mb-0">@Model.PatientAge years ï¿½ @Model.PatientContact ï¿½ @Model.PatientEmail</p>
                     </div>
                     <div>
                         <a class="btn btn-sm btn-outline-info" href="/Admin/Patients/Profile?patientId=@Model.PatientId">
@@ -128,7 +142,7 @@
                     </div>
                     <div class="col-md-4">
                         <small class="text-muted d-block">Temperature</small>
-                        <strong>@Model.Temperature°F</strong>
+                        <strong>@Model.Temperatureï¿½F</strong>
                     </div>
                 </div>
             </div>
@@ -195,9 +209,21 @@
                 <h6 class="card-title mb-0">Quick Actions</h6>
             </div>
             <div class="card-body d-grid gap-2">
-                <button class="btn btn-primary" onclick="startConsultation()">
-                    <i class="ri-play-line me-1"></i>Start Consultation
-                </button>
+                <button id="quickStartEndButton"
+                    class="btn @(isInProgress ? "btn-danger" : "btn-primary") @(isCompleted ? "disabled" : string.Empty)"
+                    onclick="@(isCompleted ? "return false;" : (isInProgress ? "endConsultation()" : "startConsultation()"))">
+                <i class="@(isInProgress ? "ri-stop-line" : "ri-play-line") me-1"></i>
+                <span id="quickStartEndButtonText">
+                    @(isInProgress ? "End Consultation"
+                                : (isCompleted ? "Consultation Completed" : "Start Consultation"))
+                </span>
+            </button>
+                @if (isInProgress)
+                {
+                    <a class="btn btn-success" href="/Doctor/Checkup?appointmentId=@Model.AppointmentId">
+                        <i class="ri-stethoscope-line me-1"></i> Go to Checkup Page
+                    </a>
+                }
                 @* <button class="btn btn-outline-info" onclick="messagePatient()">
                     <i class="ri-message-line me-1"></i>Message Patient
                 </button> *@
@@ -281,18 +307,19 @@
                 method: 'POST',
                 body: form
             });
-            const data = await resp.json();
-            if (data && data.success) {
-                setStatusBadge(data.status || 'InProgress');
-                // switch button to "End Consultation"
-                btn.classList.remove('btn-success');
-                btn.classList.add('btn-danger');
-                txt.textContent = 'End Consultation';
-                btn.onclick = endConsultation;
-                // Optionally show startedAt
-                console.info('Consultation started at', data.startedAt);
+
+            // Many Razor handlers return a redirect or plain 200 without JSON.
+            // Treat any successful HTTP status as a successful start.
+            if (resp.ok) {
+                setStatusBadge('InProgress');
+
+                // After successfully starting the consultation, navigate to the
+                // checkup page where the doctor will record findings and later
+                // complete/stop the appointment.
+                window.location.href = `/Doctor/Checkup?appointmentId=${appointmentId}`;
+                return;
             } else {
-                alert(data?.message ?? 'Failed to start consultation');
+                alert('Failed to start consultation');
                 txt.textContent = 'Start Consultation';
             }
         } catch (err) {
@@ -326,17 +353,29 @@
                 method: 'POST',
                 body: form
             });
-            const data = await resp.json();
-            if (data && data.success) {
-                setStatusBadge(data.status || 'Completed');
-                // switch button back to "Start Consultation"
-                btn.classList.remove('btn-danger');
-                btn.classList.add('btn-success');
-                txt.textContent = 'Start Consultation';
-                btn.onclick = startConsultation;
-                console.info('Consultation ended at', data.endedAt);
+
+            if (resp.ok) {
+                setStatusBadge('Completed');
+
+                // Header button -> Consultation Completed (disabled)
+                btn.classList.remove('btn-danger', 'btn-success');
+                btn.classList.add('btn-secondary', 'disabled');
+                txt.textContent = 'Consultation Completed';
+                btn.onclick = null;
+
+                // Quick Actions button
+                const qBtn = document.getElementById('quickStartEndButton');
+                const qTxt = document.getElementById('quickStartEndButtonText');
+                if (qBtn && qTxt) {
+                    qBtn.classList.remove('btn-danger', 'btn-primary');
+                    qBtn.classList.add('btn-secondary', 'disabled');
+                    qTxt.textContent = 'Consultation Completed';
+                    qBtn.onclick = null;
+                }
+
+                console.info('Consultation ended');
             } else {
-                alert(data?.message ?? 'Failed to end consultation');
+                alert('Failed to end consultation');
                 txt.textContent = 'End Consultation';
             }
         } catch (err) {

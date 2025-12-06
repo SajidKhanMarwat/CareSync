@@ -203,7 +203,10 @@
                     {
                         @foreach (var appointment in Model.Appointments)
                         {
-                            var statusBadgeClass = appointment.Status switch
+                            var statusText = appointment.Status.ToString();
+                            var typeText = appointment.AppointmentType.ToString();
+
+                            var statusBadgeClass = statusText switch
                             {
                                 "Approved" or "Confirmed" => "bg-success",
                                 "Pending" => "bg-warning",
@@ -222,7 +225,7 @@
                                 _ => "bg-secondary-light text-secondary"
                             };
                             
-                            var typeBadgeClass = appointment.AppointmentType switch
+                            var typeBadgeClass = typeText switch
                             {
                                 "Consultation" => "bg-info-light text-info",
                                 "Follow-up" => "bg-secondary-light text-secondary",
@@ -262,8 +265,8 @@
                                         <small class="text-muted">@appointment.AppointmentTime.ToString("h:mm tt")</small>
                                     </div>
                                 </td>
-                                <td><span class="badge @typeBadgeClass">@appointment.AppointmentType</span></td>
-                                <td><span class="badge @statusBadgeClass">@appointment.Status</span></td>
+                                <td><span class="badge @typeBadgeClass">@typeText</span></td>
+                                <td><span class="badge @statusBadgeClass">@statusText</span></td>
                                 <td>
                                     <div class="dropdown">
                                         <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
@@ -272,12 +275,12 @@
                                         <ul class="dropdown-menu">
                                             <li><a class="dropdown-item" href="#" onclick="viewDetails(@appointment.AppointmentID)"><i class="ri-eye-line me-2"></i>View Details</a></li>
                                             <li><a class="dropdown-item" href="#" onclick="editAppointment(@appointment.AppointmentID)"><i class="ri-edit-line me-2"></i>Edit</a></li>
-                                            @if (appointment.Status == "Pending" || appointment.Status == "Created")
+                                            @if (appointment.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Pending || appointment.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Created)
                                             {
                                                 <li><a class="dropdown-item" href="#" onclick="confirmAppointment(@appointment.AppointmentID)"><i class="ri-calendar-check-line me-2"></i>Confirm</a></li>
                                             }
                                             <li><hr class="dropdown-divider"></li>
-                                            @if (appointment.Status != "Cancelled" && appointment.Status != "Completed")
+                                            @if (appointment.Status != CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Cancelled && appointment.Status != CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Completed)
                                             {
                                                 <li><a class="dropdown-item text-danger" href="#" onclick="cancelAppointment(@appointment.AppointmentID)"><i class="ri-close-line me-2"></i>Cancel</a></li>
                                             }

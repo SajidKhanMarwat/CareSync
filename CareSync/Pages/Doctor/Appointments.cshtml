@@ -16,22 +16,31 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize date range picker
-            if (document.getElementById('dateRange')) {
+            var dateRangeInput = document.getElementById('dateRange');
+            if (dateRangeInput) {
+                var start = '@(Model.StartDate?.ToString("MM/dd/yyyy") ?? DateTime.Today.ToString("MM/dd/yyyy"))';
+                var end = '@(Model.EndDate?.ToString("MM/dd/yyyy") ?? DateTime.Today.ToString("MM/dd/yyyy"))';
+
                 $('#dateRange').daterangepicker({
                     opens: 'left',
                     locale: {
                         format: 'MM/DD/YYYY'
-                    }
+                    },
+                    startDate: start,
+                    endDate: end
+                }, function(start, end) {
+                    var form = dateRangeInput.closest('form');
+                    if (!form) return;
+
+                    var startField = form.querySelector('input[name="StartDate"]');
+                    var endField = form.querySelector('input[name="EndDate"]');
+
+                    if (startField) startField.value = start.format('YYYY-MM-DD');
+                    if (endField) endField.value = end.format('YYYY-MM-DD');
+
+                    form.submit();
                 });
             }
-
-            // Add click handlers for appointment actions
-            document.querySelectorAll('[title="Start Consultation"], [title="Start Now"]').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    // Handle start consultation
-                    console.log('Starting consultation...');
-                });
-            });
 
             // Add tooltips
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
@@ -39,23 +48,76 @@
                 return new bootstrap.Tooltip(tooltipTriggerEl);
             });
         });
+
+        window.showToast = function(message, type) {
+            type = type || 'info';
+
+            var container = document.getElementById('toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toast-container';
+                container.className = 'position-fixed top-0 end-0 p-3';
+                container.style.zIndex = '1080';
+                document.body.appendChild(container);
+            }
+
+            var toastEl = document.createElement('div');
+            var colorClass = 'text-bg-secondary';
+            if (type === 'success') colorClass = 'text-bg-success';
+            else if (type === 'error') colorClass = 'text-bg-danger';
+            else if (type === 'warning') colorClass = 'text-bg-warning';
+
+            toastEl.className = 'toast align-items-center ' + colorClass + ' border-0';
+            toastEl.setAttribute('role', 'alert');
+            toastEl.setAttribute('aria-live', 'assertive');
+            toastEl.setAttribute('aria-atomic', 'true');
+            toastEl.innerHTML =
+                '<div class="d-flex">' +
+                '  <div class="toast-body">' + message + '</div>' +
+                '  <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>' +
+                '</div>';
+
+            container.appendChild(toastEl);
+            var toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        };
     </script>
+    @if (TempData["SuccessMessage"] is string successMsg)
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                showToast('@successMsg'.replace(/'/g, '\\''), 'success');
+            });
+        </script>
+    }
+    @if (TempData["ErrorMessage"] is string errorMsg)
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                showToast('@errorMsg'.replace(/'/g, '\\''), 'error');
+            });
+        </script>
+    }
 }
 
 @section PageActions {
     <div class="d-flex gap-2">
-        <div class="input-group" style="width: 250px;">
-            <span class="input-group-text bg-primary-subtle">
-                <i class="ri-calendar-2-line text-primary"></i>
-            </span>
-            <input type="text" id="dateRange" class="form-control" placeholder="Select Date Range">
-        </div>
-        @* <button type="button" class="btn btn-success">
-            <i class="ri-add-line me-1"></i>New Appointment
-        </button> *@
-        <button type="button" class="btn btn-primary">
-            <i class="ri-calendar-event-line me-1"></i>Calendar View
-        </button>
+        <form method="get" class="d-flex gap-2">
+            <div class="input-group" style="width: 250px;">
+                <span class="input-group-text bg-primary-subtle">
+                    <i class="ri-calendar-2-line text-primary"></i>
+                </span>
+                <input type="text" id="dateRange" class="form-control" placeholder="Select Date Range">
+            </div>
+            <input type="hidden" name="StartDate" value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
+            <input type="hidden" name="EndDate" value="@Model.EndDate?.ToString("yyyy-MM-dd")" />
+            @* <button type="button" class="btn btn-success">
+                <i class="ri-add-line me-1"></i>New Appointment
+            </button> *@
+            <button type="button" class="btn btn-primary">
+                <i class="ri-calendar-event-line me-1"></i>Calendar View
+            </button>
+        </form>
     </div>
 }
 
@@ -176,24 +238,55 @@
                                         <td><span class="badge bg-@appt.StatusBadgeBackground">@appt.Status</span></td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <button class="btn btn-sm btn-outline-primary" title="View Details" onclick="location.href='/Doctor/AppointmentDetails?id=@appt.Id'">
+                                                <button class="btn btn-sm btn-outline-primary" title="View Details" onclick="location.href='/Doctor/AppointmentDetails?id=@appt.AppointmentId'">
                                                     <i class="ri-eye-line"></i>
                                                 </button>
                                                 <button class="btn btn-sm btn-sm btn-outline-info" title="View Patient" onclick="location.href='/Admin/Patients/Profile?patientId=@appt.PatientId'">
                                                     <i class="ri-user-line"></i>
                                                 </button>
-                                                @if (appt.CanStart)
+
+                                                @if (appt.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.InProgress)
                                                 {
-                                                    <button class="btn btn-sm btn-success" title="Start Now" onclick="alert('Start consultation: @appt.Id')">
-                                                        <i class="ri-play-line"></i>
+                                                    <form method="post" asp-page-handler="Complete" asp-route-appointmentId="@appt.AppointmentId" class="d-inline">
+                                                        <button type="submit" class="btn btn-sm btn-danger" title="Complete Consultation">
+                                                            <i class="ri-stop-circle-line"></i>
+                                                        </button>
+                                                    </form>
+                                                }
+                                                else if (appt.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.PrescriptionPending)
+                                                {
+                                                    <button type="button" class="btn btn-sm btn-warning" title="Write Prescription" onclick="location.href='/Doctor/Checkup?appointmentId=@appt.AppointmentId'">
+                                                        <i class="ri-file-list-3-line"></i>
                                                     </button>
+                                                }
+                                                else if (appt.CanStart &&
+                                                         (appt.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Created ||
+                                                          appt.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Pending ||
+                                                          appt.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Scheduled))
+                                                {
+                                                    <form method="post" asp-page-handler="Start" asp-route-appointmentId="@appt.AppointmentId" class="d-inline me-1">
+                                                        <button type="submit" class="btn btn-sm btn-success" title="Start Consultation">
+                                                            <i class="ri-play-line"></i>
+                                                        </button>
+                                                    </form>
+
+                                                    @if (appt.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Created ||
+                                                         appt.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Pending)
+                                                    {
+                                                        <form method="post" asp-page-handler="Reject" asp-route-appointmentId="@appt.AppointmentId" class="d-inline">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Reject Appointment">
+                                                                <i class="ri-close-line"></i>
+                                                            </button>
+                                                        </form>
+                                                    }
                                                 }
                                                 else
                                                 {
-                                                    <button class="btn btn-sm btn-outline-secondary" title="Reschedule" onclick="alert('Reschedule @appt.Id')">
+                                                    <button class="btn btn-sm btn-outline-secondary" title="Reschedule" onclick="showToast('Reschedule @appt.AppointmentId', 'info')">
                                                         <i class="ri-calendar-line"></i>
                                                     </button>
                                                 }
+
                                             </div>
                                         </td>
                                     </tr>
@@ -247,9 +340,60 @@
                                         <td>@r.Reason</td>
                                         <td><span class="badge bg-@r.StatusBadge">@r.Status</span></td>
                                         <td>
-                                            <button class="btn btn-sm btn-outline-primary">View Report</button>
-                                            <button class="btn btn-sm btn-outline-info">Prescription</button>
+                                            <div class="btn-group" role="group">
+                                                @if (r.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Created ||
+                                                     r.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Pending ||
+                                                     r.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Scheduled)
+                                                {
+                                                    <form method="post" asp-page-handler="Start" asp-route-appointmentId="@r.AppointmentId" class="d-inline me-1">
+                                                        <button type="submit" class="btn btn-sm btn-success" title="Start Consultation">
+                                                            <i class="ri-play-line"></i>
+                                                        </button>
+                                                    </form>
+
+                                                    @if (r.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Created ||
+                                                         r.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Pending)
+                                                    {
+                                                        <form method="post" asp-page-handler="Reject" asp-route-appointmentId="@r.AppointmentId" class="d-inline">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Reject Appointment">
+                                                                <i class="ri-close-line"></i>
+                                                            </button>
+                                                        </form>
+                                                    }
+                                                }
+                                                else if (r.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.InProgress)
+                                                {
+                                                    <form method="post" asp-page-handler="Complete" asp-route-appointmentId="@r.AppointmentId" class="d-inline">
+                                                        <button type="submit" class="btn btn-sm btn-danger" title="Complete Consultation">
+                                                            <i class="ri-stop-circle-line"></i>
+                                                        </button>
+                                                    </form>
+                                                }
+                                                else if (r.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.PrescriptionPending)
+                                                {
+                                                    <button type="button" class="btn btn-sm btn-warning" title="Write Prescription" onclick="location.href='/Doctor/Checkup?appointmentId=@r.AppointmentId'">
+                                                        <i class="ri-file-list-3-line"></i>
+                                                    </button>
+                                                }
+
+                                                @* View Report always for PrescriptionPending/Completed; View Prescription only for Completed *@
+                                                @if (r.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.PrescriptionPending ||
+                                                     r.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Completed)
+                                                {
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" title="View Reports" onclick="location.href='/Doctor/AppointmentReports?appointmentId=@r.AppointmentId'">
+                                                        <i class="ri-file-chart-line"></i>
+                                                    </button>
+
+                                                    @if (r.Status == CareSync.Shared.Enums.Appointment.AppointmentStatus_Enum.Completed)
+                                                    {
+                                                        <button type="button" class="btn btn-sm btn-outline-info" title="View Prescription" onclick="location.href='/Doctor/AppointmentDetails?id=@r.AppointmentId'">
+                                                            <i class="ri-capsule-line"></i>
+                                                        </button>
+                                                    }
+                                                }
+                                            </div>
                                         </td>
+
                                     </tr>
                                 }
                             }

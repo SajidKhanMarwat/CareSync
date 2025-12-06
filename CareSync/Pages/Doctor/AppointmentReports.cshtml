@@ -1,0 +1,56 @@
+@page "/Doctor/AppointmentReports"
+@model CareSync.Pages.Doctor.AppointmentReportsModel
+@{
+    ViewData["Title"] = "Appointment Reports";
+}
+
+<div class="row mb-3">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Appointment Reports</h4>
+        <a href="/Doctor/Appointments" class="btn btn-outline-secondary">
+            <i class="ri-arrow-left-line"></i> Back to Appointments
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger">@Model.ErrorMessage</div>
+        }
+        else if (Model.Appointment == null)
+        {
+            <div class="alert alert-warning">Appointment not found.</div>
+        }
+        else
+        {
+            <div class="mb-3">
+                <h5>Appointment @Model.Appointment.AppointmentID</h5>
+                <p class="mb-1"><strong>Patient:</strong> @Model.Appointment.PatientName</p>
+                <p class="mb-1"><strong>Date:</strong> @Model.Appointment.AppointmentDate.ToString("dd MMM yyyy, hh:mm tt")</p>
+                <p class="mb-1"><strong>Type:</strong> @Model.Appointment.AppointmentType</p>
+                <p class="mb-1"><strong>Status:</strong> @Model.Appointment.Status</p>
+            </div>
+
+            <hr />
+
+            <h5 class="mb-3">Lab Reports</h5>
+            @if (Model.Appointment.LabReports != null && Model.Appointment.LabReports.Any())
+            {
+                <ul class="list-group mb-3">
+                    @foreach (var report in Model.Appointment.LabReports)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>@report</span>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <div class="text-muted">No lab reports available for this appointment.</div>
+            }
+        }
+    </div>
+</div>

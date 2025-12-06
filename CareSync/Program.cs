@@ -28,11 +28,14 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
     options.AddPolicy("DoctorOnly", policy => policy.RequireRole("Doctor"));
+    options.AddPolicy("DoctorAssistantOnly", policy => policy.RequireRole("DoctorAssistant"));
     options.AddPolicy("PatientOnly", policy => policy.RequireRole("Patient"));
+    options.AddPolicy("Lab", policy => policy.RequireRole("Lab"));
+    options.AddPolicy("LabAssistant", policy => policy.RequireRole("LabAssistant"));
 });
 
 // Register Authorization Handler
-builder.Services.AddTransient<AuthorizationMessageHandler>();
+builder.Services.AddScoped<AuthorizationMessageHandler>();
 
 // Register HttpClient with Authorization Handler and a Polly retry policy
 builder.Services.AddHttpClient("ApiClient", client =>
@@ -56,7 +59,7 @@ builder.Services.AddScoped<AdminApiService>();
 builder.Services.AddScoped<PatientApiService>();
 builder.Services.AddScoped<UserManagementApiService>();
 builder.Services.AddScoped<DoctorApiService>();
-builder.Services.AddScoped<IAppointmentService, AppointmentApiAdapter>();
+builder.Services.AddScoped<IAppointmentService, AppointmentApiService>();
 
 // Add services to the container.
 builder.Services.AddRazorPages(options =>
@@ -89,7 +92,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

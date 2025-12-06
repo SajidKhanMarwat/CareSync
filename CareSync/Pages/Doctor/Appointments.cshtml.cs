@@ -1,9 +1,12 @@
 using CareSync.ApplicationLayer.ApiResult;
-using CareSync.ApplicationLayer.Contracts.AdminDashboardDTOs;
+using CareSync.ApplicationLayer.Contracts.AppointmentsDTOs;
 using CareSync.ApplicationLayer.Contracts.DoctorsDTOs;
+using CareSync.ApplicationLayer.Contracts.AdminDashboardDTOs;
+
 using CareSync.ApplicationLayer.IServices.EntitiesServices;
 using CareSync.Pages.Shared;
 using CareSync.Services;
+using CareSync.Shared.Enums.Appointment;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CareSync.Pages.Doctor;
@@ -25,17 +28,41 @@ public class AppointmentsModel : BasePageModel
         _appointmentService = appointmentService;
     }
 
-    // Statistics
+    // Statistics (based on selected date range)
     public int TodayTotal { get; set; }
     public int TotalCompleted { get; set; }
     public int TotalPending { get; set; }
     public int TotalCancelled { get; set; }
 
-    public string TodayDateReadable => DateTime.Today.ToString("dddd, MMMM dd, yyyy");
+    // Date range filter
+    [BindProperty(SupportsGet = true)]
+    public DateTime? StartDate { get; set; }
+
+    [BindProperty(SupportsGet = true)]
+    public DateTime? EndDate { get; set; }
+
+    public string TodayDateReadable
+    {
+        get
+        {
+            var start = (StartDate ?? DateTime.Today).Date;
+            var end = (EndDate ?? DateTime.Today).Date;
+
+            if (start == end)
+            {
+                return start.ToString("dddd, MMMM dd, yyyy");
+            }
+
+            return $"{start:MMM dd, yyyy} - {end:MMM dd, yyyy}";
+        }
+    }
 
     // Lists used by the UI
     public List<TodayAppointmentView> TodaysAppointments { get; set; } = new();
     public List<RecentAppointmentView> RecentAppointments { get; set; } = new();
+
+    [BindProperty]
+    public int AppointmentId { get; set; }
 
     public async Task<IActionResult> OnGetAsync()
     {
@@ -54,127 +81,42 @@ public class AppointmentsModel : BasePageModel
 
             int? doctorId = null;
 
-            // Primary: use DoctorApiService.GetAppointmentsAsync() to fetch appointments/schedule data
+            // Determine effective date range
+            var rangeStart = (StartDate ?? DateTime.Today).Date;
+            var rangeEnd = (EndDate ?? DateTime.Today).Date;
+
             var doctorApptsResult = await _doctorApiService.GetAppointmentsAsync();
+
             if (doctorApptsResult?.IsSuccess == true && doctorApptsResult.Data != null)
             {
-                var apptItems = doctorApptsResult.Data.Appointments ?? new List<TodayAppointmentItem>();
+                var apptItems = doctorApptsResult.Data.Appointments;
+                var previousItems = doctorApptsResult.Data.PreviousAppointments;
 
-                // If appointments contain a doctor id, use it to resolve doctorId (first match)
-                if (apptItems.Any(a => a.DoctorID != 0))
-                {
-                    doctorId = apptItems.Select(a => a.DoctorID).FirstOrDefault();
-                    if (doctorId == 0) doctorId = null;
-                }
+                // Resolve Doctor ID
+                doctorId = apptItems
+                    .Where(a => a.DoctorID != 0)
+                    .Select(a => (int?)a.DoctorID)
+                    .FirstOrDefault();
 
-                // Populate RecentAppointments from api items
-                RecentAppointments = apptItems
-                    .OrderByDescending(a => a.AppointmentTime)
-                    .Take(10)
-                    .Select(a => new RecentAppointmentView
-                    {
-                        AppointmentId = a.AppointmentID,
-                        Date = a.AppointmentTime,
-                        PatientName = a.PatientName ?? "Unknown",
-                        AppointmentType = a.AppointmentType ?? "Consultation",
-                        Reason = a.Reason ?? string.Empty,
-                        Status = a.Status ?? string.Empty,
-                        StatusBadge = GetBadgeForStatus(a.Status)
-                    }).ToList();
+                // Recent (within selected date range)
+                RecentAppointments = BuildRecentAppointments(apptItems, previousItems, rangeStart, rangeEnd);
 
-                // Populate Today's appointments from the appointments API
-                var todayAppts = apptItems
-                    .Where(a => a.AppointmentTime.Date == DateTime.UtcNow.Date)
-                    .OrderBy(a => a.AppointmentTime)
-                    .ToList();
+                // Today’s appointments (still based on current day)
+                TodaysAppointments = BuildTodayAppointments(apptItems);
 
-                TodaysAppointments = todayAppts.Select((a, idx) => new TodayAppointmentView
-                {
-                    Id = idx + 1,
-                    PatientId = a.PatientID,
-                    PatientName = string.IsNullOrWhiteSpace(a.PatientName) ? "Unknown Patient" : a.PatientName,
-                    PatientImage = "~/theme/images/patient-placeholder.png",
-                    PatientMeta = a.Reason ?? "",
-                    AppointmentTime = a.AppointmentTime.ToString("hh:mm tt"),
-                    AppointmentDate = a.AppointmentTime.Date,
-                    AppointmentType = a.AppointmentType ?? "Consultation",
-                    Reason = a.Reason ?? string.Empty,
-                    Status = a.Status ?? "Scheduled",
-                    StatusBadgeBackground = GetBadgeForStatus(a.Status),
-                    StatusBadgeText = GetTextColorForStatus(a.Status),
-                    CanStart = (a.AppointmentTime <= DateTime.Now.AddMinutes(15)) && (a.Status?.ToLower() != "completed")
-                }).ToList();
-
-                // Stats from API items
-                TodayTotal = apptItems.Count(a => a.AppointmentTime.Date == DateTime.UtcNow.Date);
-                TotalCompleted = apptItems.Count(a => string.Equals(a.Status, "Completed", StringComparison.OrdinalIgnoreCase));
-                TotalPending = apptItems.Count(a => string.Equals(a.Status, "Pending", StringComparison.OrdinalIgnoreCase) || string.Equals(a.Status, "Created", StringComparison.OrdinalIgnoreCase) || string.Equals(a.Status, "Scheduled", StringComparison.OrdinalIgnoreCase));
-                TotalCancelled = apptItems.Count(a => string.Equals(a.Status, "Cancelled", StringComparison.OrdinalIgnoreCase));
+                // Stats (based on selected date range)
+                BuildStatsFromAppointments(apptItems, previousItems, rangeStart, rangeEnd);
             }
             else
             {
-                // If API failed for appointments, attempt to resolve doctorId via profile and fallback to local appointment service
-                try
-                {
-                    var profileResult = await _doctorApiService.GetDoctorProfileAsync<Result<DoctorProfile_DTO>>(userId);
-                    if (profileResult?.IsSuccess == true && profileResult.Data != null)
-                    {
-                        if (profileResult.Data.DoctorId != 0)
-                            doctorId = profileResult.Data.DoctorId;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogDebug(ex, "Unable to load doctor profile to resolve DoctorId for user {UserId}", userId);
-                }
+                doctorId = await ResolveDoctorIdFallback(userId);
+                if (!doctorId.HasValue)
+                    return Page();
 
-                if (doctorId.HasValue)
-                {
-                    // fallback to application-layer appointment service if API not available
-                    var appts = await _appointmentService.GetAppointmentsForDoctorAsync(doctorId.Value);
-                    RecentAppointments = appts
-                        .OrderByDescending(a => a.AppointmentDate)
-                        .Take(10)
-                        .Select(a => new RecentAppointmentView
-                        {
-                            AppointmentId = a.AppointmentID,
-                            Date = a.AppointmentDate,
-                            PatientName = a.PatientName ?? "Unknown",
-                            AppointmentType = a.AppointmentType.ToString(),
-                            Reason = a.Reason ?? string.Empty,
-                            Status = a.Status.ToString(),
-                            StatusBadge = GetBadgeForStatus(a.Status.ToString())
-                        }).ToList();
+                var appts = await _appointmentService.GetAppointmentsForDoctorAsync(doctorId.Value);
 
-                    TodayTotal = appts.Count(a => a.AppointmentDate.Date == DateTime.Today);
-                    TotalCompleted = appts.Count(a => a.Status.ToString().ToLower().Contains("completed"));
-                    TotalPending = appts.Count(a => a.Status.ToString().ToLower().Contains("pending") || a.Status.ToString().ToLower().Contains("scheduled"));
-                    TotalCancelled = appts.Count(a => a.Status.ToString().ToLower().Contains("cancelled"));
-
-                    // populate today's list if empty
-                    if (!TodaysAppointments.Any())
-                    {
-                        TodaysAppointments = appts
-                            .Where(a => a.AppointmentDate.Date == DateTime.Today)
-                            .OrderBy(a => a.AppointmentDate)
-                            .Select((a, idx) => new TodayAppointmentView
-                            {
-                                Id = idx + 1,
-                                PatientId = a.PatientID,
-                                PatientName = a.PatientName ?? "Unknown Patient",
-                                PatientImage = "~/theme/images/patient-placeholder.png",
-                                PatientMeta = a.Reason ?? "",
-                                AppointmentTime = a.AppointmentDate.ToString("hh:mm tt"),
-                                AppointmentDate = a.AppointmentDate.Date,
-                                AppointmentType = a.AppointmentType.ToString(),
-                                Reason = a.Reason ?? string.Empty,
-                                Status = a.Status.ToString(),
-                                StatusBadgeBackground = GetBadgeForStatus(a.Status.ToString()),
-                                StatusBadgeText = GetTextColorForStatus(a.Status.ToString()),
-                                CanStart = (a.AppointmentDate <= DateTime.Now.AddMinutes(15)) && (a.Status.ToString().ToLower() != "completed")
-                            }).ToList();
-                    }
-                }
+                // Stats (based on selected date range)
+                BuildStatsFromFallback(appts, rangeStart, rangeEnd);
             }
         }
         catch (Exception ex)
@@ -186,6 +128,84 @@ public class AppointmentsModel : BasePageModel
         return Page();
     }
 
+    public async Task<IActionResult> OnPostStartAsync(int appointmentId)
+    {
+        var authResult = RequireRole("Doctor");
+        if (authResult != null) return authResult;
+
+        try
+        {
+            var result = await _doctorApiService.StartAppointmentAsync(appointmentId);
+            if (result?.IsSuccess == true && result.Data != null && result.Data.Success)
+            {
+                TempData["SuccessMessage"] = result.Data.Message;
+            }
+            else
+            {
+                TempData["ErrorMessage"] = result?.GetError() ?? "Failed to start consultation.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error starting consultation for appointment {AppointmentId}", appointmentId);
+            TempData["ErrorMessage"] = "An error occurred while starting the consultation.";
+        }
+
+        return RedirectToPage();
+    }
+
+    public async Task<IActionResult> OnPostRejectAsync(int appointmentId)
+    {
+        var authResult = RequireRole("Doctor");
+        if (authResult != null) return authResult;
+
+        try
+        {
+            var result = await _doctorApiService.RejectAppointmentAsync(appointmentId);
+            if (result?.IsSuccess == true && result.Data != null && result.Data.Success)
+            {
+                TempData["SuccessMessage"] = result.Data.Message;
+            }
+            else
+            {
+                TempData["ErrorMessage"] = result?.GetError() ?? "Failed to reject appointment.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error rejecting appointment {AppointmentId}", appointmentId);
+            TempData["ErrorMessage"] = "An error occurred while rejecting the appointment.";
+        }
+
+        return RedirectToPage();
+    }
+
+    public async Task<IActionResult> OnPostCompleteAsync(int appointmentId)
+    {
+        var authResult = RequireRole("Doctor");
+        if (authResult != null) return authResult;
+
+        try
+        {
+            var result = await _doctorApiService.EndAppointmentAsync(appointmentId);
+            if (result?.IsSuccess == true && result.Data != null && result.Data.Success)
+            {
+                TempData["SuccessMessage"] = result.Data.Message;
+            }
+            else
+            {
+                TempData["ErrorMessage"] = result?.GetError() ?? "Failed to complete consultation.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error completing consultation for appointment {AppointmentId}", appointmentId);
+            TempData["ErrorMessage"] = "An error occurred while completing the consultation.";
+        }
+
+        return RedirectToPage();
+    }
+
     private string GetBadgeForStatus(string? status)
     {
         if (string.IsNullOrEmpty(status)) return "secondary";
@@ -195,6 +215,7 @@ public class AppointmentsModel : BasePageModel
             "confirmed" => "info",
             "scheduled" => "primary",
             "pending" => "warning",
+            "prescriptionpending" => "warning",
             "cancelled" => "danger",
             _ => "secondary"
         };
@@ -214,18 +235,139 @@ public class AppointmentsModel : BasePageModel
         };
     }
 
+    private static bool CanStartAppointment(DateTime time, AppointmentStatus_Enum status)
+    {
+        return time <= DateTime.Now.AddMinutes(15) &&
+               status != AppointmentStatus_Enum.Completed &&
+               status != AppointmentStatus_Enum.InProgress &&
+               status != AppointmentStatus_Enum.PrescriptionPending;
+    }
+
+    private List<RecentAppointmentView> BuildRecentAppointments(
+        List<TodayAppointmentItem> todayItems,
+        List<CareSync.ApplicationLayer.Contracts.AdminDashboardDTOs.PreviousAppointment_DTO> previousItems,
+        DateTime rangeStart,
+        DateTime rangeEnd)
+    {
+        var combined = new List<(int AppointmentId, DateTime Date, string PatientName, AppointmentType_Enum Type, string Reason, AppointmentStatus_Enum Status)>();
+
+        combined.AddRange(todayItems
+            .Where(a => a.AppointmentDate.Date >= rangeStart && a.AppointmentDate.Date <= rangeEnd)
+            .Select(a => (a.AppointmentID, a.AppointmentDate, a.PatientName, a.AppointmentType, a.Reason ?? string.Empty, a.Status)));
+
+        combined.AddRange(previousItems
+            .Where(p => p.AppointmentDate.Date >= rangeStart && p.AppointmentDate.Date <= rangeEnd)
+            .Select(p => (p.AppointmentID, p.AppointmentDate, p.PatientName, p.AppointmentType, p.Reason ?? string.Empty, p.Status)));
+
+        return combined
+            .OrderByDescending(a => a.Date)
+            .Take(20)
+            .Select(a => new RecentAppointmentView
+            {
+                AppointmentId = a.AppointmentId,
+                Date = a.Date,
+                PatientName = a.PatientName,
+                AppointmentType = a.Type,
+                Reason = a.Reason,
+                Status = a.Status,
+                StatusBadge = GetBadgeForStatus(a.Status.ToString())
+            }).ToList();
+    }
+
+    private List<TodayAppointmentView> BuildTodayAppointments(List<TodayAppointmentItem> apptItems)
+    {
+        return apptItems
+            .Where(a => a.AppointmentTime.Date == DateTime.Today && 
+                        a.Status != AppointmentStatus_Enum.Completed)
+            .OrderBy(a => a.AppointmentTime)
+            .Select(a => new TodayAppointmentView
+            {
+                AppointmentId = a.AppointmentID,
+                PatientId = a.PatientID,
+                PatientName = a.PatientName,
+                PatientImage = "~/theme/images/patient-placeholder.png",
+                PatientMeta = a.Reason ?? "",
+                AppointmentTime = a.AppointmentTime.ToString("hh:mm tt"),
+                AppointmentDate = a.AppointmentTime.Date,
+                AppointmentType = a.AppointmentType,
+                Reason = a.Reason ?? "",
+                Status = a.Status,
+                StatusBadgeBackground = GetBadgeForStatus(a.Status.ToString()),
+                StatusBadgeText = GetTextColorForStatus(a.Status.ToString()),
+                CanStart = CanStartAppointment(a.AppointmentTime, a.Status)
+            }).ToList();
+    }
+
+    private void BuildStatsFromAppointments(
+        List<TodayAppointmentItem> todayItems,
+        List<CareSync.ApplicationLayer.Contracts.AdminDashboardDTOs.PreviousAppointment_DTO> previousItems,
+        DateTime rangeStart,
+        DateTime rangeEnd)
+    {
+        var rangeItems = new List<(AppointmentStatus_Enum Status, DateTime Date)>();
+
+        rangeItems.AddRange(todayItems
+            .Where(a => a.AppointmentDate.Date >= rangeStart && a.AppointmentDate.Date <= rangeEnd)
+            .Select(a => (a.Status, a.AppointmentDate)));
+
+        rangeItems.AddRange(previousItems
+            .Where(p => p.AppointmentDate.Date >= rangeStart && p.AppointmentDate.Date <= rangeEnd)
+            .Select(p => (p.Status, p.AppointmentDate)));
+
+        TodayTotal = rangeItems.Count;
+        TotalCompleted = rangeItems.Count(a => a.Status == AppointmentStatus_Enum.Completed);
+        TotalPending = rangeItems.Count(a =>
+            a.Status == AppointmentStatus_Enum.Pending ||
+            a.Status == AppointmentStatus_Enum.Created ||
+            a.Status == AppointmentStatus_Enum.Scheduled ||
+            a.Status == AppointmentStatus_Enum.PrescriptionPending);
+        TotalCancelled = rangeItems.Count(a => a.Status == AppointmentStatus_Enum.Cancelled);
+    }
+
+    private void BuildStatsFromFallback(List<Appointment_DTO> items, DateTime rangeStart, DateTime rangeEnd)
+    {
+        var rangeItems = items
+            .Where(a => a.AppointmentDate.Date >= rangeStart && a.AppointmentDate.Date <= rangeEnd)
+            .ToList();
+
+        TodayTotal = rangeItems.Count;
+        TotalCompleted = rangeItems.Count(a => a.Status == AppointmentStatus_Enum.Completed);
+        TotalPending = rangeItems.Count(a =>
+            a.Status == AppointmentStatus_Enum.Pending ||
+            a.Status == AppointmentStatus_Enum.Created ||
+            a.Status == AppointmentStatus_Enum.Scheduled ||
+            a.Status == AppointmentStatus_Enum.PrescriptionPending);
+        TotalCancelled = rangeItems.Count(a => a.Status == AppointmentStatus_Enum.Cancelled);
+    }
+
+    private async Task<int?> ResolveDoctorIdFallback(string userId)
+    {
+        try
+        {
+            var profile = await _doctorApiService.GetDoctorProfileAsync<Result<DoctorProfile_DTO>>(userId);
+            if (profile?.IsSuccess == true && profile.Data?.DoctorId > 0)
+                return profile.Data.DoctorId;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug(ex, "Unable to load doctor profile for {UserId}", userId);
+        }
+        return null;
+    }
+
+
     public class TodayAppointmentView
     {
-        public int Id { get; set; }
+        public int AppointmentId { get; set; }
         public int PatientId { get; set; }
         public string PatientName { get; set; } = string.Empty;
         public string PatientImage { get; set; } = "~/theme/images/patient-placeholder.png";
         public string PatientMeta { get; set; } = string.Empty;
         public string AppointmentTime { get; set; } = string.Empty;
         public DateTime AppointmentDate { get; set; }
-        public string AppointmentType { get; set; } = string.Empty;
+        public AppointmentType_Enum AppointmentType { get; set; }
         public string Reason { get; set; } = string.Empty;
-        public string Status { get; set; } = string.Empty;
+        public AppointmentStatus_Enum Status { get; set; }
         public string StatusBadgeBackground { get; set; } = "secondary";
         public string StatusBadgeText { get; set; } = "secondary";
         public bool CanStart { get; set; } = false;
@@ -236,9 +378,9 @@ public class AppointmentsModel : BasePageModel
         public int AppointmentId { get; set; }
         public DateTime Date { get; set; }
         public string PatientName { get; set; } = string.Empty;
-        public string AppointmentType { get; set; } = string.Empty;
+        public AppointmentType_Enum AppointmentType { get; set; }
         public string Reason { get; set; } = string.Empty;
-        public string Status { get; set; } = string.Empty;
+        public AppointmentStatus_Enum Status { get; set; }
         public string StatusBadge { get; set; } = "secondary";
     }
 }
